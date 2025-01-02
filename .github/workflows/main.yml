@@ -41,7 +41,11 @@ jobs:
         run: |
           git config user.name "4201-actions-bot"
           git config user.email "gavinsjunkmail@yahoo.com"
-          
+      
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
       # Runs a single command using the runners shell
       - name: Applying spotless formatting
         run: ./gradlew spotlessApply
