@@ -26,6 +26,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
+    myInterruptingCommand = new InterruptingCommand(new Command(), new Command(), null);
+    System.out.println("Successfully used command from Codex!");
   }
 
   /**
