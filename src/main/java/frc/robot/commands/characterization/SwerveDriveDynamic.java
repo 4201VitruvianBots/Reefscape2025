@@ -4,7 +4,7 @@
 
 package frc.robot.commands.characterization;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -18,9 +18,9 @@ public class SwerveDriveDynamic extends SequentialCommandGroup {
 
     Command sysidCommand = routine.dynamic(direction);
 
-    var point = new SwerveRequest.PointWheelsAt();
+    var point = new LegacySwerveRequest.PointWheelsAt();
 
-    var stopRequest = new SwerveRequest.ApplyChassisSpeeds();
+    var stopRequest = new LegacySwerveRequest.ApplyChassisSpeeds();
 
     addCommands(
         new InstantCommand(

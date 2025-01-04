@@ -6,6 +6,11 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.*;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +19,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,9 +36,6 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.frc2023.util.Alert;
-import org.littletonrobotics.frc2023.util.Alert.AlertType;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
@@ -39,7 +43,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
   private Vision m_vision;
-  private final Alert m_alert = new Alert("SwerveDrivetrain", AlertType.INFO);
+  private final Alert m_alert = new Alert("SwerveDrivetrain", AlertType.kInfo);
 
   private final SwerveRequest.FieldCentric m_driveReqeustFieldCentric =
       new SwerveRequest.FieldCentric()

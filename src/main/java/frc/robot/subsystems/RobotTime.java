@@ -4,7 +4,6 @@ import com.ctre.phoenix6.Utils;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.Logger;
 
 public class RobotTime extends SubsystemBase {
   private static double m_time;

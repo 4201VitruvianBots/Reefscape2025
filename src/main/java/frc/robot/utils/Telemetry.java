@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.constants.SWERVE;
 import frc.robot.simulation.FieldSim;
 import frc.robot.visualizers.SwerveModuleVisualizer;
-import org.littletonrobotics.junction.Logger;
 
 public class Telemetry {
   private FieldSim m_fieldSim;

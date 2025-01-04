@@ -6,13 +6,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
+
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.CAN;
 import frc.robot.constants.SWERVE;
-import org.littletonrobotics.frc2023.util.Alert;
-import org.littletonrobotics.frc2023.util.Alert.AlertType;
-import org.littletonrobotics.junction.Logger;
 
 public final class CtreUtils {
   /**
@@ -22,7 +22,7 @@ public final class CtreUtils {
    */
   public static void initPhoenixServer() {
     var alert =
-        new Alert("Starting Phoenix Server at: " + Logger.getTimestamp() * 1.0e-6, AlertType.INFO);
+        new Alert("Starting Phoenix Server at: " + Logger.getTimestamp() * 1.0e-6, AlertType.kInfo);
     alert.set(true);
     if (RobotBase.isReal()) {
       TalonFX dummy = new TalonFX(0, CAN.driveBaseCanbus);
@@ -111,7 +111,7 @@ public final class CtreUtils {
                   + motor.getDeviceID()
                   + ". Error code: "
                   + motorStatus,
-              AlertType.ERROR);
+              AlertType.kError);
       alert.set(true);
     } else System.out.println("TalonFX ID: " + motor.getDeviceID() + " - Successfully configured!");
 
@@ -146,7 +146,7 @@ public final class CtreUtils {
                   + cancoder.getDeviceID()
                   + ". Error code: "
                   + canCoderStatus,
-              AlertType.ERROR);
+              AlertType.kError);
       alert.set(true);
     } else
       System.out.println("CANCoder ID: " + cancoder.getDeviceID() + " - Successfully configured!");

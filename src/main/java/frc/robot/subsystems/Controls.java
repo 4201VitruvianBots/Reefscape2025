@@ -4,6 +4,8 @@ import static frc.robot.constants.AUTO.AUTO_POSE_MAP;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -12,8 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ARM;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
-import org.littletonrobotics.frc2023.util.Alert;
-import org.littletonrobotics.junction.Logger;
 
 @SuppressWarnings("RedundantThrows")
 public class Controls extends SubsystemBase implements AutoCloseable {
@@ -26,11 +26,9 @@ public class Controls extends SubsystemBase implements AutoCloseable {
 
   private static boolean m_initState;
   private final Alert m_initStateAlert =
-      new Alert("RobotInit", "Robot is not ready to start a match!", Alert.AlertType.ERROR);
+      new Alert("RobotInit", "Robot is not ready to start a match!", AlertType.kError);
   private final Alert m_initPoseAlert =
-      new Alert("RobotInit", "Robot Pose is not in the correct location!", Alert.AlertType.ERROR);
-  private final Alert m_initArmAlert =
-      new Alert("RobotInit", "Robot Arm is not initialized!", Alert.AlertType.ERROR);
+      new Alert("RobotInit", "Robot Pose is not in the correct location!", AlertType.kError);
 
   public Controls() {
     m_initState = false;

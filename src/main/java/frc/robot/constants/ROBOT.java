@@ -1,10 +1,10 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
-import org.littletonrobotics.frc2023.util.Alert;
-import org.littletonrobotics.frc2023.util.Alert.AlertType;
 
 public class ROBOT {
   public static String robotName = "";
@@ -94,7 +94,7 @@ public class ROBOT {
   }
 
   public static void initConstants() {
-    var alert = new Alert("Initializing Robot Constants...", AlertType.INFO);
+    var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
     if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
       alert.setText("Setting Robot Constants for FORTE");
@@ -127,7 +127,7 @@ public class ROBOT {
           new Alert(
               "WARN: Robot Serial Not Recognized! Current roboRIO Serial: "
                   + RobotController.getSerialNumber(),
-              AlertType.WARNING);
+              AlertType.kWarning);
     }
     alert.set(true);
   }
