@@ -29,8 +29,8 @@ public class InterruptingCommand extends Command {
     m_interruptable = interruptable;
     m_interrupt = interrupt;
     m_condition = condition;
-    m_requirements.addAll(interruptable.getRequirements());
-    m_requirements.addAll(interrupt.getRequirements());
+    addRequirements(interruptable.getRequirements());
+    addRequirements(interrupt.getRequirements());
   }
 
   @Override

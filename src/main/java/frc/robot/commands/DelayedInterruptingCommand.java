@@ -36,8 +36,8 @@ public class DelayedInterruptingCommand extends Command {
     m_interrupt = interrupt;
     m_delay = delay;
     m_condition = condition;
-    m_requirements.addAll(interruptable.getRequirements());
-    m_requirements.addAll(interrupt.getRequirements());
+    addRequirements(interruptable.getRequirements());
+    addRequirements(interrupt.getRequirements());
   }
 
   @Override
