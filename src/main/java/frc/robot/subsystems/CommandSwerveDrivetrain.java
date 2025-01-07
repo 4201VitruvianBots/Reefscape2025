@@ -128,7 +128,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
   /**
@@ -150,7 +150,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
   /**
@@ -183,7 +183,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
   // TODO: Re-implement
@@ -251,6 +251,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   //              }
   //            });
   //  }
+
+  public void resetGyro(double angle) {
+    getPigeon2().setYaw(angle);
+  }
 
   private void configureAutoBuilder() {
     try {
