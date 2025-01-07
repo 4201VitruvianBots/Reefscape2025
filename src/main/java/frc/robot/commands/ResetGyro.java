@@ -9,11 +9,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Controls;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RestGyro extends Command {
-  /** Creates a new RestGyro. */
+public class ResetGyro extends Command {
+  /** Creates a new ResetGyro. */
   private final CommandSwerveDrivetrain m_swerveDrive;
 
-  public RestGyro(CommandSwerveDrivetrain swervedrive) {
+  public ResetGyro(CommandSwerveDrivetrain swervedrive) {
     m_swerveDrive = swervedrive;
     // Use addRequirements() here to declare subsystem dependencies.
 

@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.RestGyro;
+import frc.robot.commands.ResetGyro;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
@@ -60,7 +60,7 @@ public class RobotContainer {
 
   private void initSmartDashboard() {
 
-    SmartDashboard.putData("RestGyro", new RestGyro(m_swerveDrive));
+    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
   }
 
   private void initializeSubSystems() {
