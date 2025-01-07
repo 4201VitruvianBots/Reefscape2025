@@ -52,7 +52,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-  initSmartDashboard();
+    initSmartDashboard();
     // Configure the trigger bindings
     initializeSubSystems();
     configureBindings();
