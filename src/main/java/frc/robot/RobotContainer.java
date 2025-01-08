@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ResetGyro;
+import frc.robot.commands.RunCoralOuttake;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.Telemetry;
 
 /**
@@ -30,6 +32,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
   private final Telemetry m_telemetry = new Telemetry();
+  private final CoralOuttake m_coralOuttake = new CoralOuttake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -97,6 +100,7 @@ public class RobotContainer {
     //    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     //    // cancelling on release.
     //    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.5));
   }
 
   /**
