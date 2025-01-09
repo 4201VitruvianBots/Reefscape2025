@@ -15,9 +15,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunCoralOuttake;
+import frc.robot.commands.Algae.SetAlgaeIntakeSpeed;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.Telemetry;
@@ -33,6 +35,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
+  private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -100,7 +103,8 @@ public class RobotContainer {
     //    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     //    // cancelling on release.
     //    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.5));
+    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.5)); 
+    m_driverController.rightBumper().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, 0.5));
   }
 
   /**
