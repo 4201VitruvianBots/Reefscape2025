@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -11,6 +12,9 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
@@ -28,6 +32,11 @@ public class CoralOuttake extends SubsystemBase {
   private final VoltageOut m_voltageRequest = new VoltageOut(0);
   private final TorqueCurrentFOC m_TorqueCurrentFOC = new TorqueCurrentFOC(0);
   private final VelocityTorqueCurrentFOC m_focVelocityControl = new VelocityTorqueCurrentFOC(0);
+
+  // Test mode setup
+  private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
+  private final NetworkTable coralOuttakeTab =
+      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("CoralOuttake");
 
   /* Creates a new CoralOuttake. */
   public CoralOuttake() {
@@ -92,6 +101,22 @@ public class CoralOuttake extends SubsystemBase {
 
   public double getRPMsetpoint() {
     return m_rpmSetpoint;
+  }
+
+  public void testInit() {
+    coralOuttakeTab.getDoubleTopic("kP").publish().set(CORALOUTTAKE.kP);
+    coralOuttakeTab.getDoubleTopic("kI").publish().set(CORALOUTTAKE.kI);
+    coralOuttakeTab.getDoubleTopic("kD").publish().set(CORALOUTTAKE.kD);
+    m_kP_subscriber = coralOuttakeTab.getDoubleTopic("kP").subscribe(CORALOUTTAKE.kP);
+    m_kI_subscriber = coralOuttakeTab.getDoubleTopic("kI").subscribe(CORALOUTTAKE.kI);
+    m_kD_subscriber = coralOuttakeTab.getDoubleTopic("kD").subscribe(CORALOUTTAKE.kD);
+  }
+
+  public void testPeriodic() {
+    Slot0Configs slot0Configs = new Slot0Configs();
+    slot0Configs.kP = m_kP_subscriber.get(CORALOUTTAKE.kP);
+    slot0Configs.kI = m_kI_subscriber.get(CORALOUTTAKE.kI);
+    slot0Configs.kD = m_kD_subscriber.get(CORALOUTTAKE.kD);
   }
 
   private void updateSmartDashboard() {
