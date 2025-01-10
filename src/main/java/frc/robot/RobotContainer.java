@@ -104,7 +104,8 @@ public class RobotContainer {
     //    // cancelling on release.
     //    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.5)); 
-    m_driverController.rightBumper().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, 0.5));
+    m_driverController.x().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, 0.5));
+    m_driverController.y().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, -0.5));
   }
 
   /**
