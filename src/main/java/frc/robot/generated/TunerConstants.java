@@ -29,7 +29,7 @@ public class TunerConstants {
           .withKD(0.5)
           .withKS(0.1)
           .withKV(1.59)
-          .withKA(0)
+          .withKA(0.29969)
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput

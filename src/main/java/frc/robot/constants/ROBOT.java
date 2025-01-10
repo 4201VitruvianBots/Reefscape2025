@@ -1,10 +1,10 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
-import org.littletonrobotics.frc2023.util.Alert;
-import org.littletonrobotics.frc2023.util.Alert.AlertType;
 
 public class ROBOT {
   public static String robotName = "";
@@ -13,9 +13,9 @@ public class ROBOT {
   public static final boolean useReplayLogs = false;
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
 
-  public static final double driveBaseWidth = Units.inchesToMeters(26.0);
-  public static final double driveBaseLength = Units.inchesToMeters(27.5);
-  public static final double robotHeight = Units.inchesToMeters(27.5);
+  public static final double driveBaseWidth = Units.inchesToMeters(29);
+  public static final double driveBaseLength = Units.inchesToMeters(29);
+  public static final double robotHeight = Units.inchesToMeters(42);
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
@@ -64,37 +64,19 @@ public class ROBOT {
 
   public static void initAlphaBot() {}
 
-  public static void initGridlock() {
-    SWERVE.DRIVE.kFrontLeftEncoderOffset = -0.035888671875;
-    SWERVE.DRIVE.kFrontRightEncoderOffset = 0.04296875;
-    SWERVE.DRIVE.kBackLeftEncoderOffset = 0.483642578125;
-    SWERVE.DRIVE.kBackRightEncoderOffset = 0.414306640625;
+  public static void initGridlock() {}
 
-    SWERVE.DRIVE.kTrackWidth = Units.inchesToMeters(24);
-    CAN.driveBaseCanbus = CAN.rioCanbus;
-  }
-
-  public static void initBobot() {
-    SWERVE.DRIVE.kFrontLeftEncoderOffset = Units.degreesToRotations(95.27328);
-    SWERVE.DRIVE.kFrontRightEncoderOffset = Units.degreesToRotations(34.18956);
-    SWERVE.DRIVE.kBackLeftEncoderOffset = Units.degreesToRotations(77.51952);
-    SWERVE.DRIVE.kBackRightEncoderOffset = Units.degreesToRotations(330.55668);
-  }
+  public static void initBobot() {}
 
   public static void initSim() {
     logMode = LOG_MODE.DEBUG;
-
-    SWERVE.DRIVE.kFrontLeftEncoderOffset = 0;
-    SWERVE.DRIVE.kFrontRightEncoderOffset = 0;
-    SWERVE.DRIVE.kBackLeftEncoderOffset = 0;
-    SWERVE.DRIVE.kBackRightEncoderOffset = 0;
 
     // Different gear ratios seem to break SimpleJointedArmSim
     //    ARM.gearRatio = 1.0;
   }
 
   public static void initConstants() {
-    var alert = new Alert("Initializing Robot Constants...", AlertType.INFO);
+    var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
     if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
       alert.setText("Setting Robot Constants for FORTE");
@@ -127,7 +109,7 @@ public class ROBOT {
           new Alert(
               "WARN: Robot Serial Not Recognized! Current roboRIO Serial: "
                   + RobotController.getSerialNumber(),
-              AlertType.WARNING);
+              AlertType.kWarning);
     }
     alert.set(true);
   }
