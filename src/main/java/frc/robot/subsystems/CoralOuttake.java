@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
@@ -24,8 +25,8 @@ import frc.robot.utils.CtreUtils;
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
   private final TalonFX outtakeMotor = new TalonFX(CAN.outtakeMotor);
-  // private final DCMotorSim outtakeMotorSim = new DCMotorSim(CORALOUTTAKE.Gearbox,
-  // CORALOUTTAKE.gearRatio, CORALOUTTAKE.Inertia ); //TODO implement sim code
+  private final DCMotorSim outtakeMotorSim = 
+    new DCMotorSim(CORALOUTTAKE.Gearbox, CORALOUTTAKE.gearRatio, CORALOUTTAKE.Inertia); //TODO implement sim code
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
