@@ -34,7 +34,7 @@ public class SWERVE {
       new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0);
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
-  public static final double kMaxRotationRadiansPerSecond = Math.PI * 2.0;
+  public static final double kMaxRotationRadiansPerSecond = Math.PI * 1.25;
 
   // TODO: Verify values
   public static final double kDriveMotorGearRatio = 5.36;
