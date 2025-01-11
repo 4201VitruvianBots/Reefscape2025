@@ -48,7 +48,7 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
+          .withDeadband(MaxSpeed * 0.05)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */

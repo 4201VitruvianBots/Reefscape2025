@@ -37,7 +37,7 @@ public class SWERVE {
   public static final double kMaxRotationRadiansPerSecond = Math.PI * 2.0;
 
   // TODO: Verify values
-  public static final double kDriveMotorGearRatio = 6.12;
+  public static final double kDriveMotorGearRatio = 5.36;
   public static final double kTurnMotorGearRatio = 150.0 / 7.0;
   public static final double kCoupleRatio = 3.5714285714285716; // TODO: Verify
   public static final double kWheelRadiusInches = 1.95;
