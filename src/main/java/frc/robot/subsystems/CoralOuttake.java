@@ -12,9 +12,15 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,16 +30,17 @@ import frc.robot.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
+  private LinearSystem outtakePlant = LinearSystemId.createDCMotorSystem(1,1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.outtakeMotor);
   private final DCMotorSim outtakeMotorSim = 
-    new DCMotorSim(CORALOUTTAKE.Gearbox, CORALOUTTAKE.gearRatio, CORALOUTTAKE.Inertia); //TODO implement sim code
+    new DCMotorSim(outtakePlant, CORALOUTTAKE.Gearbox); //TODO implement sim code
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
   private final VoltageOut m_voltageRequest = new VoltageOut(0);
   private final TorqueCurrentFOC m_TorqueCurrentFOC = new TorqueCurrentFOC(0);
   private final VelocityTorqueCurrentFOC m_focVelocityControl = new VelocityTorqueCurrentFOC(0);
-
+  private TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
   // Test mode setup
   private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
   private final NetworkTable coralOuttakeTab =
@@ -104,6 +111,19 @@ public class CoralOuttake extends SubsystemBase {
     return m_rpmSetpoint;
   }
 
+  @Override
+  public void simulationPeriodic() {
+    m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    outtakeMotorSim.setInputVoltage(MathUtil.clamp(m_outtakeMotorSimState.getMotorVoltage(), -12, 12));
+
+    //TODO Right now this thing has no idea what time it is, so gotta update that.
+
+    m_outtakeMotorSimState.setRawRotorPosition(
+      outtakeMotorSim.getAngularPositionRotations() * CORALOUTTAKE.gearRatio);
+    m_outtakeMotorSimState.setRotorVelocity(
+      outtakeMotorSim.getAngularVelocityRPM() * CORALOUTTAKE.gearRatio / 60.0);
+  }
+
   public void testInit() {
     coralOuttakeTab.getDoubleTopic("kP").publish().set(CORALOUTTAKE.kP);
     coralOuttakeTab.getDoubleTopic("kI").publish().set(CORALOUTTAKE.kI);
@@ -119,6 +139,7 @@ public class CoralOuttake extends SubsystemBase {
     slot0Configs.kI = m_kI_subscriber.get(CORALOUTTAKE.kI);
     slot0Configs.kD = m_kD_subscriber.get(CORALOUTTAKE.kD);
   }
+  
 
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("CoralOuttake/DesiredPercentOutput", m_desiredPercentOutput);
