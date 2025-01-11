@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -39,6 +40,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
+  private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
   private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
@@ -62,11 +64,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     initializeSubSystems();
     configureBindings();
-  }
-
-  private void initSmartDashboard() {
-
-    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
+    initAutoChooser();
   }
 
   private void initializeSubSystems() {
@@ -86,6 +84,61 @@ public class RobotContainer {
             ));
   }
 
+  private void initAutoChooser() {
+    // Add the autonomous chooser to the dashboard
+    // SmartDashboard.putData("Auto Mode", m_chooser);
+  }
+
+  private void initSmartDashboard() {
+    // if (ROBOT.useSysID) initSysidChooser();
+    // else initAutoChooser();
+    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
+  }
+
+  // private void initSysidChooser(){
+  //    SignalLogger.setPath("/media/sda1/");
+
+  //        SysIdUtils.createSwerveDriveRoutines(m_swerveDrive);
+  //        SysIdUtils.createSwerveTurnRoutines(m_swerveDrive);
+
+  //        SmartDashboard.putData(
+  //       "Start Logging", new InstantCommand(SignalLogger::start).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "Stop Logging", new InstantCommand(SignalLogger::stop).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "initDriveSettings",
+  //       new InstantCommand(m_swerveDrive::initDriveSysid).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "initTurnSettings",new
+  // InstantCommand(m_swerveDrive::initTurnSysid).ignoringDisable(true));
+
+  //   m_sysidChooser.addOption(
+  //       "driveQuasistaticForward",
+  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "driveQuasistaticBackwards",
+  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+  //   m_sysidChooser.addOption(
+  //       "driveDynamicForward",
+  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "driveDynamicBackward",
+  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+
+  //   m_sysidChooser.addOption(
+  //       "turnQuasistaticForward",
+  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "turnQuasistaticBackwards",
+  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+  //   m_sysidChooser.addOption(
+  //       "turnDynamicForward",
+  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "turnDynamicBackward",
+  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+
+  // }
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
