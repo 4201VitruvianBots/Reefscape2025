@@ -174,4 +174,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new WaitCommand(0);
   }
+
+  public void testInit() {
+    m_coralOuttake.testInit();
+  }
+
+  public void testPeriodic() {
+    m_coralOuttake.testPeriodic();
+  }
 }
