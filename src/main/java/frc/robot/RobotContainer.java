@@ -112,4 +112,12 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return new WaitCommand(0);
   }
+
+  public void testInit() {
+    m_coralOuttake.testInit();
+  }
+
+  public void testPeriodic() {
+    m_coralOuttake.testPeriodic();
+  }
 }
