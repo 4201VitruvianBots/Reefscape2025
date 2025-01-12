@@ -19,7 +19,7 @@ import frc.robot.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
-  private final TalonFX outtakeMotor = new TalonFX(CAN.outtakeMotor);
+  private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   // private final DCMotorSim outtakeMotorSim = new DCMotorSim(CORALOUTTAKE.Gearbox,
   // CORALOUTTAKE.gearRatio, CORALOUTTAKE.Inertia ); //TODO implement sim code
   private double m_desiredPercentOutput;

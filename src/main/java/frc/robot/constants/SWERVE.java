@@ -73,4 +73,11 @@ public class SWERVE {
   public static final double kTurnInertia = 0.01;
   public static final double kDriveFrictionVoltage = 0.2;
   public static final double kTurnFrictionVoltage = 0.2;
+  
+  public enum ROUTINE_TYPE {
+    DRIVE_DYNAMIC,
+    DRIVE_QUASISTATIC,
+    TURN_DYNAMIC,
+    TURN_QUASISTATIC
+  }
 }

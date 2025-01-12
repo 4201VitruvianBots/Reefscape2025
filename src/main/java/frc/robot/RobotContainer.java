@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Algae.SetAlgaeIntakeSpeed;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunCoralOuttake;
+import frc.robot.commands.algae.SetAlgaeIntakeSpeed;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
@@ -36,7 +36,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
-  private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
+  private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -68,11 +68,7 @@ public class RobotContainer {
     configureBindings();
     initAutoChooser();
   }
-
-  private void initSmartDashboard() {
-    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
-  }
-
+  
   private void initializeSubSystems() {
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
@@ -166,8 +162,8 @@ public class RobotContainer {
     m_driverController
         .rightBumper()
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, 0.5)); // outtake
-    m_driverController.y().whileTrue(new SetAlgaeIntakeSpeed(m_AlgaeIntake, -0.5)); // intake
+    m_driverController.x().whileTrue(new SetAlgaeIntakeSpeed(m_algaeIntake, 0.5)); // outtake
+    m_driverController.y().whileTrue(new SetAlgaeIntakeSpeed(m_algaeIntake, -0.5)); // intake
   }
 
   /**
