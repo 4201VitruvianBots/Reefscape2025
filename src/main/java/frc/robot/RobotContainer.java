@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunCoralOuttake;
-import frc.robot.commands.algae.SetAlgaeIntakeSpeed;
+import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
@@ -162,8 +162,8 @@ public class RobotContainer {
     m_driverController
         .rightBumper()
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new SetAlgaeIntakeSpeed(m_algaeIntake, 0.5)); // outtake
-    m_driverController.y().whileTrue(new SetAlgaeIntakeSpeed(m_algaeIntake, -0.5)); // intake
+    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+    m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }
 
   /**

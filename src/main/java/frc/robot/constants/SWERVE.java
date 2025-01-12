@@ -75,9 +75,19 @@ public class SWERVE {
   public static final double kTurnFrictionVoltage = 0.2;
   
   public enum ROUTINE_TYPE {
-    DRIVE_DYNAMIC,
-    DRIVE_QUASISTATIC,
-    TURN_DYNAMIC,
-    TURN_QUASISTATIC
+    DRIVE_DYNAMIC(2),
+    DRIVE_QUASISTATIC(6),
+    TURN_DYNAMIC(8),
+    TURN_QUASISTATIC(8);
+
+    private final int lengthSeconds;
+
+    ROUTINE_TYPE(int lengthSeconds) {
+      this.lengthSeconds = lengthSeconds;
+    }
+
+    public int getLengthSeconds() {
+      return lengthSeconds;
+    }
   }
 }
