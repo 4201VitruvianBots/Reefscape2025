@@ -60,11 +60,17 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
+    
     initSmartDashboard();
-    // Configure the trigger bindings
     initializeSubSystems();
+    
+    // Configure the trigger bindings
     configureBindings();
     initAutoChooser();
+  }
+
+  private void initSmartDashboard() {
+    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
   }
 
   private void initializeSubSystems() {
@@ -170,7 +176,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return new WaitCommand(0);
   }
 }
