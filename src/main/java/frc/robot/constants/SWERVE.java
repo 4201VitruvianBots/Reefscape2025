@@ -34,7 +34,8 @@ public class SWERVE {
       new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0);
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
-  public static final double kMaxRotationRadiansPerSecond = Math.PI * 0.3; // temporary to reduce speed (original value 2.0) TODO: change back
+  public static final double kMaxRotationRadiansPerSecond =
+      Math.PI * 0.3; // temporary to reduce speed (original value 2.0) TODO: change back
 
   // TODO: Verify values
   public static final double kDriveMotorGearRatio = 6.12;
@@ -73,7 +74,7 @@ public class SWERVE {
   public static final double kTurnInertia = 0.01;
   public static final double kDriveFrictionVoltage = 0.2;
   public static final double kTurnFrictionVoltage = 0.2;
-  
+
   public enum ROUTINE_TYPE {
     DRIVE_DYNAMIC(2),
     DRIVE_QUASISTATIC(6),

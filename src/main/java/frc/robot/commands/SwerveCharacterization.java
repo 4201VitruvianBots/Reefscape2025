@@ -14,10 +14,13 @@ import frc.robot.utils.SysIdUtils;
 
 public class SwerveCharacterization extends SequentialCommandGroup {
   /** Creates a new SwerveCharacterization. */
-  public SwerveCharacterization(CommandSwerveDrivetrain swerveDrive, SysIdRoutine.Direction direction, ROUTINE_TYPE routineType) {
+  public SwerveCharacterization(
+      CommandSwerveDrivetrain swerveDrive,
+      SysIdRoutine.Direction direction,
+      ROUTINE_TYPE routineType) {
     Command sysidCommand;
-    
-    switch(routineType) {
+
+    switch (routineType) {
       case DRIVE_DYNAMIC:
         var routine = SysIdUtils.getSwerveDriveRoutine();
         sysidCommand = routine.dynamic(direction);

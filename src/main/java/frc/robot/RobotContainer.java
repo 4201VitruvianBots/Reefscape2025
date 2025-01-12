@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ResetGyro;
-import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.RunAlgaeIntake;
+import frc.robot.commands.RunCoralOuttake;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
@@ -60,15 +60,15 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-    
+
     initSmartDashboard();
     initializeSubSystems();
-    
+
     // Configure the trigger bindings
     configureBindings();
     initAutoChooser();
   }
-  
+
   private void initializeSubSystems() {
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
