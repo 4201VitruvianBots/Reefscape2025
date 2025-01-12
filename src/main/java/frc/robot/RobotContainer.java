@@ -116,7 +116,7 @@ public class RobotContainer {
   public void testInit() {
     m_coralOuttake.testInit();
   }
-  
+
   public void testPeriodic() {
     m_coralOuttake.testPeriodic();
   }

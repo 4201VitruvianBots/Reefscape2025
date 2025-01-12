@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -30,10 +29,10 @@ import frc.robot.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
-  private LinearSystem outtakePlant = LinearSystemId.createDCMotorSystem(1,1);
+  private LinearSystem outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.outtakeMotor);
-  private final DCMotorSim outtakeMotorSim = 
-    new DCMotorSim(outtakePlant, CORALOUTTAKE.Gearbox); //TODO implement sim code
+  private final DCMotorSim outtakeMotorSim =
+      new DCMotorSim(outtakePlant, CORALOUTTAKE.Gearbox); // TODO implement sim code
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
@@ -114,14 +113,15 @@ public class CoralOuttake extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    outtakeMotorSim.setInputVoltage(MathUtil.clamp(m_outtakeMotorSimState.getMotorVoltage(), -12, 12));
+    outtakeMotorSim.setInputVoltage(
+        MathUtil.clamp(m_outtakeMotorSimState.getMotorVoltage(), -12, 12));
 
-    //TODO Right now this thing has no idea what time it is, so gotta update that.
+    // TODO Right now this thing has no idea what time it is, so gotta update that.
 
     m_outtakeMotorSimState.setRawRotorPosition(
-      outtakeMotorSim.getAngularPositionRotations() * CORALOUTTAKE.gearRatio);
+        outtakeMotorSim.getAngularPositionRotations() * CORALOUTTAKE.gearRatio);
     m_outtakeMotorSimState.setRotorVelocity(
-      outtakeMotorSim.getAngularVelocityRPM() * CORALOUTTAKE.gearRatio / 60.0);
+        outtakeMotorSim.getAngularVelocityRPM() * CORALOUTTAKE.gearRatio / 60.0);
   }
 
   public void testInit() {
@@ -139,7 +139,6 @@ public class CoralOuttake extends SubsystemBase {
     slot0Configs.kI = m_kI_subscriber.get(CORALOUTTAKE.kI);
     slot0Configs.kD = m_kD_subscriber.get(CORALOUTTAKE.kD);
   }
-  
 
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("CoralOuttake/DesiredPercentOutput", m_desiredPercentOutput);
