@@ -12,6 +12,7 @@ public class SetAlgaeIntakeSpeed extends Command {
 
   private final AlgaeIntake m_algaeIntake;
   private final double m_speed;
+
   /** Creates a new SetAlgaeIntakeSpeed. */
   public SetAlgaeIntakeSpeed(AlgaeIntake algae, double speed) {
     m_algaeIntake = algae;
