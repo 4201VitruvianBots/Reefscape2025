@@ -14,9 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
-import frc.robot.simulation.FieldSim;
+// import frc.robot.simulation.FieldSim;
 import java.util.List;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
@@ -27,7 +26,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
 
-  private FieldSim m_fieldSim;
+  // private FieldSim m_fieldSim;
   private Translation2d m_goal = new Translation2d();
 
   private final NetworkTable NoteDetectionLimelight =
@@ -46,7 +45,6 @@ public class Vision extends SubsystemBase {
       new PhotonPoseEstimator(
           VISION.aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          aprilTagLimelightCameraB,
           VISION.robotToAprilTagLimelightCameraB);
   private VisionSystemSim visionSim;
   // private PhotonCameraSim aprilTagLimelightCameraASim;
@@ -98,9 +96,9 @@ public class Vision extends SubsystemBase {
     m_swerveDriveTrain = swerveDriveTrain;
   }
 
-  public void registerFieldSim(FieldSim fieldSim) {
-    m_fieldSim = fieldSim;
-  }
+  // public void registerFieldSim(FieldSim fieldSim) {
+  //   m_fieldSim = fieldSim;
+  // }
 
   public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
     var poseDelta = a.minus(b);
@@ -179,94 +177,11 @@ public class Vision extends SubsystemBase {
     m_localized = false;
   }
 
-  private void updateAngleToSpeaker() {
-    if (m_swerveDriveTrain != null) {
-      if (DriverStation.isDisabled()) {
-        if (DriverStation.isAutonomous())
-          m_goal = Controls.isRedAlliance() ? FIELD.redAutoSpeaker : FIELD.blueAutoSpeaker;
-        else m_goal = Controls.isRedAlliance() ? FIELD.redSpeaker : FIELD.blueSpeaker;
-      }
-
-      // SOTM stuff
-      double VelocityShoot = 9.255586759; // Previously 11.1 m/s
-      double PositionY = m_swerveDriveTrain.getState().Pose.getY();
-      double PositionX = m_swerveDriveTrain.getState().Pose.getX();
-      double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
-      double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
-      double AccelerationX = m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
-      double AccelerationY = m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
-      double virtualGoalX = m_goal.getX() - VelocityShoot * (VelocityX + AccelerationX);
-      double virtualGoalY = m_goal.getY() - VelocityShoot * (VelocityY + AccelerationY);
-      Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
-      Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
-      double newDist = movingGoalLocation.minus(currentPose).getDistance(new Translation2d());
-
-      if (DriverStation.isAutonomous()) {
-        m_swerveDriveTrain.setAngleToSpeaker(
-            m_swerveDriveTrain.getState().Pose.getTranslation().minus(m_goal).getAngle());
-      } else {
-        m_swerveDriveTrain.setAngleToSpeaker(
-            m_swerveDriveTrain
-                .getState()
-                .Pose
-                .getTranslation()
-                .minus(m_goal)
-                .getAngle()
-                .plus(
-                    Rotation2d.fromRadians(
-                        Math.asin(
-                            (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
-                                / (newDist * 5)))));
-      }
-    }
-  }
-
-  private void updateAngleToNote() {
-    if (m_swerveDriveTrain != null) {
-      if (hasGamePieceTarget()) {
-        m_swerveDriveTrain.setAngleToNote(
-            m_swerveDriveTrain.getState().Pose.getRotation().minus(getRobotToGamePieceRotation()));
-      }
-    }
-  }
-
   private void updateSmartDashboard() {
     // Implement the smartDashboard method here
   }
 
-  private void updateLog() {
-    try {
-      Logger.recordOutput("vision/NoteDetectionLimelight - isNoteDetected", hasGamePieceTarget());
-      Logger.recordOutput(
-          "vision/NoteDetectionLimelight - robotToGamePieceRotation", getRobotToGamePieceDegrees());
-
-      // Logger.recordOutput(
-      //     "vision/LimelightA - isCameraConnected", isCameraConnected(aprilTagLimelightCameraA));
-      // if (isCameraConnected(aprilTagLimelightCameraA)) {
-      //   Logger.recordOutput(
-      //       "vision/LimelightA - isAprilTagDetected",
-      // isAprilTagDetected(aprilTagLimelightCameraA));
-      //   Logger.recordOutput("vision/limelightA - targets", getTargets(aprilTagLimelightCameraA));
-      //   Logger.recordOutput("vision/limelightA - hasPose", cameraAHasPose);
-      //   Logger.recordOutput("vision/limelightA - EstimatedPose", cameraAEstimatedPose);
-      // }
-
-      Logger.recordOutput(
-          "vision/LimelightB - isCameraConnected", isCameraConnected(aprilTagLimelightCameraB));
-      if (isCameraConnected(aprilTagLimelightCameraB)) {
-        Logger.recordOutput(
-            "vision/LimelightB - isAprilTagDetected", isAprilTagDetected(aprilTagLimelightCameraB));
-        //        Logger.recordOutput("vision/limelightB - targets",
-        // getTargets(aprilTagLimelightCameraB));
-        Logger.recordOutput("vision/limelightB - hasPose", cameraBHasPose);
-        Logger.recordOutput("vision/limelightB - EstimatedPose", cameraBEstimatedPose);
-      }
-
-      //      Logger.recordOutput("vision/poseAgreement", poseAgreement);
-    } catch (Exception e) {
-      System.out.println("AdvantageKit could not update Vision logs");
-    }
-  }
+  private void updateLog() {}
 
   @Override
   public void periodic() {
@@ -320,16 +235,15 @@ public class Vision extends SubsystemBase {
       // }
     }
 
-    updateAngleToSpeaker();
     // updateAngleToNote();
     // This method will be called once per scheduler run
     updateSmartDashboard();
     if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.NORMAL.get()) updateLog();
 
-    if (m_fieldSim != null) {
-      // m_fieldSim.updateVisionAPose(cameraAEstimatedPose);
-      m_fieldSim.updateVisionBPose(cameraBEstimatedPose);
-    }
+    // if (m_fieldSim != null) {
+    //   // m_fieldSim.updateVisionAPose(cameraAEstimatedPose);
+    //   m_fieldSim.updateVisionBPose(cameraBEstimatedPose);
+    // }
   }
 
   @Override

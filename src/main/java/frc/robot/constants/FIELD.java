@@ -22,17 +22,13 @@ import java.util.function.BooleanSupplier;
  * methods to flip these values based on the current alliance color.
  */
 public final class FIELD {
+
+//TODO: figure out if these values need to be changed
   public static final double fieldLength = Units.inchesToMeters(651.25);
   public static final double fieldWidth = Units.inchesToMeters(315.5);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
   public static final double aprilTagWidth = Units.inchesToMeters(6.5);
 
-  public static final Translation2d redSpeaker = new Translation2d(16.579342, 5.547867999999999);
-  public static final Translation2d blueSpeaker =
-      new Translation2d(-0.038099999999999995, 5.547867999999999);
-
-  public static final Translation2d redAutoSpeaker = redSpeaker.plus(new Translation2d(0, 0.0));
-  public static final Translation2d blueAutoSpeaker = blueSpeaker.plus(new Translation2d(0, 0.0));
 
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By

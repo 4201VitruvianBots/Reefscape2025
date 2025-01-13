@@ -12,6 +12,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public final class VISION {
+
+//TODO: figure out if these values need to be changed
+
   public static final double kLimelightHFOV = 63.12;
   public static final double kLimelightVFOV = 49.54;
   public static final double kLimelightDFOV = 75.07;
@@ -56,7 +59,7 @@ public final class VISION {
       Units.degreesToRadians(0);
 
   public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+      AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
   public static final Transform3d robotToAprilTagLimelightCameraA =
@@ -124,11 +127,11 @@ public final class VISION {
     }
   }
 
-  public enum TRACKING_STATE {
-    NONE,
-    SPEAKER,
-    NOTE,
-    PASSING_NEAR,
-    PASSING_MID
-  }
+//   public enum TRACKING_STATE {
+//     NONE,
+//     SPEAKER,
+//     NOTE,
+//     PASSING_NEAR,
+//     PASSING_MID
+//   }
 }
