@@ -19,4 +19,7 @@ public class CAN {
   public static final int backLeftTurnMotor = 25;
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
+
+  public static final int coralOuttakeMotor = 30;
+  public static final int algaeMotor = 31;
 }

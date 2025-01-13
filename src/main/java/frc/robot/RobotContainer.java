@@ -8,14 +8,21 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ResetGyro;
+import frc.robot.commands.RunAlgaeIntake;
+import frc.robot.commands.RunCoralOuttake;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.Telemetry;
 
 /**
@@ -28,9 +35,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
   private final Telemetry m_telemetry = new Telemetry();
+  private final CoralOuttake m_coralOuttake = new CoralOuttake();
+  private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
+  private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
   private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
@@ -51,9 +61,12 @@ public class RobotContainer {
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
 
-    // Configure the trigger bindings
+    initSmartDashboard();
     initializeSubSystems();
+
+    // Configure the trigger bindings
     configureBindings();
+    initAutoChooser();
   }
 
   private void initializeSubSystems() {
@@ -73,6 +86,61 @@ public class RobotContainer {
             ));
   }
 
+  private void initAutoChooser() {
+    // Add the autonomous chooser to the dashboard
+    // SmartDashboard.putData("Auto Mode", m_chooser);
+  }
+
+  private void initSmartDashboard() {
+    // if (ROBOT.useSysID) initSysidChooser();
+    // else initAutoChooser();
+    SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
+  }
+
+  // private void initSysidChooser(){
+  //    SignalLogger.setPath("/media/sda1/");
+
+  //        SysIdUtils.createSwerveDriveRoutines(m_swerveDrive);
+  //        SysIdUtils.createSwerveTurnRoutines(m_swerveDrive);
+
+  //        SmartDashboard.putData(
+  //       "Start Logging", new InstantCommand(SignalLogger::start).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "Stop Logging", new InstantCommand(SignalLogger::stop).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "initDriveSettings",
+  //       new InstantCommand(m_swerveDrive::initDriveSysid).ignoringDisable(true));
+  //   SmartDashboard.putData(
+  //       "initTurnSettings",new
+  // InstantCommand(m_swerveDrive::initTurnSysid).ignoringDisable(true));
+
+  //   m_sysidChooser.addOption(
+  //       "driveQuasistaticForward",
+  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "driveQuasistaticBackwards",
+  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+  //   m_sysidChooser.addOption(
+  //       "driveDynamicForward",
+  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "driveDynamicBackward",
+  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+
+  //   m_sysidChooser.addOption(
+  //       "turnQuasistaticForward",
+  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "turnQuasistaticBackwards",
+  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+  //   m_sysidChooser.addOption(
+  //       "turnDynamicForward",
+  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
+  //   m_sysidChooser.addOption(
+  //       "turnDynamicBackward",
+  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+
+  // }
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -90,6 +158,12 @@ public class RobotContainer {
     //    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     //    // cancelling on release.
     //    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
+    m_driverController
+        .rightBumper()
+        .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
+    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+    m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }
 
   /**
@@ -98,7 +172,14 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return new WaitCommand(0);
+  }
+
+  public void testInit() {
+    m_coralOuttake.testInit();
+  }
+
+  public void testPeriodic() {
+    m_coralOuttake.testPeriodic();
   }
 }

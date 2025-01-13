@@ -4,12 +4,29 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CtreUtils;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+public class Elevator extends SubsystemBase {
+  /** Creates a new Elevator */
+  private final TalonFX[] elevatormotors = {
+    new TalonFX(0), new TalonFX(1) // These are just placeholders
+  };
+
+  private double m_desiredPositionMeters;
+  private boolean m_elevatorInitialized;
+
+  public Elevator() {
+    TalonFXConfiguration configElevator = new TalonFXConfiguration();
+    configElevator.Slot0.kP = frc.robot.constants.ELEVATOR.kPBottom;
+    configElevator.Slot0.kI = frc.robot.constants.ELEVATOR.kIBottom;
+    configElevator.Slot0.kD = frc.robot.constants.ELEVATOR.kDBottom;
+    CtreUtils.configureTalonFx(elevatormotors[0], configElevator);
+    CtreUtils.configureTalonFx(elevatormotors[1], configElevator);
+  }
 
   /**
    * Example command factory method.

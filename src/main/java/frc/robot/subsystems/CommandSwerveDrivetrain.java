@@ -93,7 +93,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SysIdRoutine m_sysIdRoutineRotation =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              /* This is in radians per second², but SysId only supports "volts per second" */
+              /* This is in radians per second^2, but SysId only supports "volts per second" */
               Volts.of(Math.PI / 6).per(Second),
               /* This is in radians per second, but SysId only supports "volts" */
               Volts.of(Math.PI),
@@ -128,9 +128,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
+  // public void initDriveSysid() {
+  //   for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
+  //     var driveMotor = getModule(i.ordinal()).getDriveMotor();
+  //     var turnMotor = getModule(i.ordinal()).getSteerMotor();
+  //     TunerConstants.configureTalonFx(driveMotor, new TalonFXConfiguration());
+  //     TunerConstants.configureTalonFx(turnMotor, TunerConstants.generateTurnMotorConfig());
+  //     driveMotor.setNeutralMode(NeutralModeValue.Brake);
+  //     BaseStatusSignal.setUpdateFrequencyForAll(
+  //         250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
+
+  //     driveMotor.optimizeBusUtilization();
+  //   }
+  // }
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -150,7 +163,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
   /**
@@ -163,9 +176,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    * @param odometryUpdateFrequency The frequency to run the odometry loop. If unspecified or set to
    *     0 Hz, this is 250 Hz on CAN FD, and 100 Hz on CAN 2.0.
    * @param odometryStandardDeviation The standard deviation for odometry calculation in the form
-   *     [x, y, theta]ᵀ, with units in meters and radians
+   *     [x, y, theta]^T, with units in meters and radians
    * @param visionStandardDeviation The standard deviation for vision calculation in the form [x, y,
-   *     theta]ᵀ, with units in meters and radians
+   *     theta]^T, with units in meters and radians
    * @param modules Constants for each specific module
    */
   public CommandSwerveDrivetrain(
@@ -183,7 +196,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+    // configureAutoBuilder();
   }
 
   // TODO: Re-implement
@@ -251,6 +264,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   //              }
   //            });
   //  }
+
+  public void resetGyro(double angle) {
+    getPigeon2().setYaw(angle);
+  }
 
   private void configureAutoBuilder() {
     try {
