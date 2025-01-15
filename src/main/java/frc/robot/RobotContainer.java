@@ -6,23 +6,29 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
+import frc.robot.commands.SwerveCharacterization;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
+import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
+import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
 /**
@@ -41,6 +47,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
@@ -87,8 +94,7 @@ public class RobotContainer {
   }
 
   private void initAutoChooser() {
-    // Add the autonomous chooser to the dashboard
-    // SmartDashboard.putData("Auto Mode", m_chooser);
+    SmartDashboard.putData("Auto Mode", m_chooser);
   }
 
   private void initSmartDashboard() {
@@ -96,51 +102,50 @@ public class RobotContainer {
     // else initAutoChooser();
     SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
   }
+   
+  private void initSysidChooser(){
+    SignalLogger.setPath("/media/sda1/");
 
-  // private void initSysidChooser(){
-  //    SignalLogger.setPath("/media/sda1/");
+    SysIdUtils.createSwerveDriveRoutines(m_swerveDrive);
+    SysIdUtils.createSwerveTurnRoutines(m_swerveDrive);
 
-  //        SysIdUtils.createSwerveDriveRoutines(m_swerveDrive);
-  //        SysIdUtils.createSwerveTurnRoutines(m_swerveDrive);
+    SmartDashboard.putData(
+      "Start Logging", new InstantCommand(SignalLogger::start).ignoringDisable(true));
+    SmartDashboard.putData(
+      "Stop Logging", new InstantCommand(SignalLogger::stop).ignoringDisable(true));
+    SmartDashboard.putData(
+      "initDriveSettings",
+        new InstantCommand(m_swerveDrive::initDriveSysid).ignoringDisable(true));
+    SmartDashboard.putData(
+      "initTurnSettings",new InstantCommand(m_swerveDrive::initTurnSysid).ignoringDisable(true));
 
-  //        SmartDashboard.putData(
-  //       "Start Logging", new InstantCommand(SignalLogger::start).ignoringDisable(true));
-  //   SmartDashboard.putData(
-  //       "Stop Logging", new InstantCommand(SignalLogger::stop).ignoringDisable(true));
-  //   SmartDashboard.putData(
-  //       "initDriveSettings",
-  //       new InstantCommand(m_swerveDrive::initDriveSysid).ignoringDisable(true));
-  //   SmartDashboard.putData(
-  //       "initTurnSettings",new
-  // InstantCommand(m_swerveDrive::initTurnSysid).ignoringDisable(true));
+    m_sysidChooser.addOption(
+         "driveQuasistaticForward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kForward, ROUTINE_TYPE.DRIVE_QUASISTATIC));
+    m_sysidChooser.addOption(
+         "driveQuasistaticBackwards",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.DRIVE_QUASISTATIC));
+    m_sysidChooser.addOption(
+         "driveDynamicForward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kForward, ROUTINE_TYPE.DRIVE_DYNAMIC));
+    m_sysidChooser.addOption(
+         "driveDynamicBackward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.DRIVE_DYNAMIC));
 
-  //   m_sysidChooser.addOption(
-  //       "driveQuasistaticForward",
-  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  //   m_sysidChooser.addOption(
-  //       "driveQuasistaticBackwards",
-  //       new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-  //   m_sysidChooser.addOption(
-  //       "driveDynamicForward",
-  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  //   m_sysidChooser.addOption(
-  //       "driveDynamicBackward",
-  //       new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
+    m_sysidChooser.addOption(
+         "turnQuasistaticForward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kForward, ROUTINE_TYPE.TURN_QUASISTATIC));
+    m_sysidChooser.addOption(
+         "turnQuasistaticBackwards",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_QUASISTATIC));
+    m_sysidChooser.addOption(
+         "turnDynamicForward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kForward, ROUTINE_TYPE.TURN_DYNAMIC));
+    m_sysidChooser.addOption(
+         "turnDynamicBackward",
+         new SwerveCharacterization(m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_DYNAMIC));
 
-  //   m_sysidChooser.addOption(
-  //       "turnQuasistaticForward",
-  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  //   m_sysidChooser.addOption(
-  //       "turnQuasistaticBackwards",
-  //       new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-  //   m_sysidChooser.addOption(
-  //       "turnDynamicForward",
-  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  //   m_sysidChooser.addOption(
-  //       "turnDynamicBackward",
-  //       new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-
-  // }
+   } 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
