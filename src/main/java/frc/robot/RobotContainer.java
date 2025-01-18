@@ -22,10 +22,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DriveForward;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.SwerveCharacterization;
+import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.USB;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -78,7 +80,7 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
-    initAutoChooser();
+    initSmartDashboard();
   }
 
   private void initializeSubSystems() {
@@ -100,11 +102,15 @@ public class RobotContainer {
 
   private void initAutoChooser() {
     SmartDashboard.putData("Auto Mode", m_chooser);
+    
+    m_chooser.addOption("Do Nothing", new WaitCommand(0));
+    
+    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
   }
 
   private void initSmartDashboard() {
-    // if (ROBOT.useSysID) initSysidChooser();
-    // else initAutoChooser();
+    if (ROBOT.useSysID) initSysidChooser();
+    else initAutoChooser();
     SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
   }
    
@@ -180,16 +186,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    try {
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
-
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
-    }
+    return m_chooser.getSelected();
   }
 
   public void testInit() {
