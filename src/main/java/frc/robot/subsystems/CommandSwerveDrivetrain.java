@@ -131,6 +131,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // configureAutoBuilder();
   }
 
+  // public void initDriveSysid() {
+  //   for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
+  //     var driveMotor = getModule(i.ordinal()).getDriveMotor();
+  //     var turnMotor = getModule(i.ordinal()).getSteerMotor();
+  //     TunerConstants.configureTalonFx(driveMotor, new TalonFXConfiguration());
+  //     TunerConstants.configureTalonFx(turnMotor, TunerConstants.generateTurnMotorConfig());
+  //     driveMotor.setNeutralMode(NeutralModeValue.Brake);
+  //     BaseStatusSignal.setUpdateFrequencyForAll(
+  //         250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
+
+  //     driveMotor.optimizeBusUtilization();
+  //   }
+  // }
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
