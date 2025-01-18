@@ -8,6 +8,11 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -95,10 +100,9 @@ public class RobotContainer {
   }
 
   private void initAutoChooser() {
-    SmartDashboard.putData("Auto Chooser", m_chooser);
-
-    m_chooser.addOption("Do Nothing", new WaitCommand(0));
-
+    SmartDashboard.putData("Auto Mode", m_chooser);
+    m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
+    
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
   }
 
@@ -177,7 +181,6 @@ public class RobotContainer {
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
