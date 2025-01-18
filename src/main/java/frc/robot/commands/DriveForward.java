@@ -28,11 +28,14 @@ public class DriveForward extends SequentialCommandGroup {
         var point = new SwerveRequest.PointWheelsAt();
         var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
         
+        // Will throw an exception if the starting pose is not present
+        var starting_pose = path.getStartingHolonomicPose().orElseThrow();
+        
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
         addCommands(
             new InstantCommand( // Reset the pose of the robot to the starting pose of the path
-                () -> swerveDrive.resetPose(path.getStartingHolonomicPose().isPresent() ? path.getStartingHolonomicPose().get() : null)),
+                () -> swerveDrive.resetPose(starting_pose)),
             new InstantCommand(
                     () -> swerveDrive.applyRequest(() -> point.withModuleDirection(new Rotation2d())),
                     swerveDrive)
