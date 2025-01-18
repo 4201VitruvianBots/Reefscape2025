@@ -146,7 +146,7 @@ public class CoralOuttake extends SubsystemBase {
     SmartDashboard.putNumber("CoralOuttake/DesiredPercentOutput", m_desiredPercentOutput);
     SmartDashboard.putNumber("CoralOuttake/rpmSetpoint", m_rpmSetpoint);
   }
-  
+
   @Override
   public void periodic() {
     updateSmartDashboard();

@@ -25,7 +25,7 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
-  
+
   public static final Translation2d kFrontLeftPosition =
       new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0);
   public static final Translation2d kFrontRightPosition =
