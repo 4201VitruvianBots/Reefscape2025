@@ -4,53 +4,48 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ELEVATOR;
 import frc.robot.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
+
   /** Creates a new Elevator */
-  private final TalonFX[] elevatormotors = {
+  private final TalonFX[] elevatorMotors = {
     new TalonFX(0), new TalonFX(1) // These are just placeholders
   };
+
+  private final StatusSignal<Angle> m_positionSignal =
+      elevatorMotors[0].getPosition().clone();
+  private final StatusSignal<Angle> m_positionSignal2 =
+      elevatorMotors[1].getPosition().clone();
 
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
 
   public Elevator() {
     TalonFXConfiguration configElevator = new TalonFXConfiguration();
-    configElevator.Slot0.kP = frc.robot.constants.ELEVATOR.kPBottom;
-    configElevator.Slot0.kI = frc.robot.constants.ELEVATOR.kIBottom;
-    configElevator.Slot0.kD = frc.robot.constants.ELEVATOR.kDBottom;
-    CtreUtils.configureTalonFx(elevatormotors[0], configElevator);
-    CtreUtils.configureTalonFx(elevatormotors[1], configElevator);
+    configElevator.Slot0.kP = ELEVATOR.kPBottom;
+    configElevator.Slot0.kI = ELEVATOR.kIBottom;
+    configElevator.Slot0.kD = ELEVATOR.kDBottom;
+    CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
+    CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+  private Angle getMotorRotations(){
+    m_positionSignal.refresh();
+    return m_positionSignal.getValue();
   }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
+  // private Angle getPositionMeters() {
+  //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;3
+  // }
 
   @Override
   public void periodic() {

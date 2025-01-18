@@ -22,4 +22,6 @@ public class CAN {
 
   public static final int coralOuttakeMotor = 30;
   public static final int algaeMotor = 31;
+  public static final int elevatorMotor1 = 33;
+  public static final int elevatorMotor2 = 34;
 }
