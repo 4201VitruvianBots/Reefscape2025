@@ -101,7 +101,7 @@ public class RobotContainer {
   }
 
   private void initAutoChooser() {
-    SmartDashboard.putData("Auto Mode", m_chooser);
+    SmartDashboard.putData("Auto Chooser", m_chooser);
     
     m_chooser.addOption("Do Nothing", new WaitCommand(0));
     
