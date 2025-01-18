@@ -21,29 +21,29 @@ public class DriveForward extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
   public DriveForward(CommandSwerveDrivetrain swerveDrive) {
     try {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
-        var m_ppCommand = AutoBuilder.followPath(path);
-        
-        var point = new SwerveRequest.PointWheelsAt();
-        var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
-        
-        // Will throw an exception if the starting pose is not present
-        var starting_pose = path.getStartingHolonomicPose().orElseThrow();
-        
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
-        addCommands(
-            new InstantCommand( // Reset the pose of the robot to the starting pose of the path
-                () -> swerveDrive.resetPose(starting_pose)),
-            new InstantCommand(
-                    () -> swerveDrive.applyRequest(() -> point.withModuleDirection(new Rotation2d())),
-                    swerveDrive)
-                .alongWith(new WaitCommand(1)),
-            m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
+      var m_ppCommand = AutoBuilder.followPath(path);
+
+      var point = new SwerveRequest.PointWheelsAt();
+      var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+      // Will throw an exception if the starting pose is not present
+      var starting_pose = path.getStartingHolonomicPose().orElseThrow();
+
+      // Add your commands in the addCommands() call, e.g.
+      // addCommands(new FooCommand(), new BarCommand());
+      addCommands(
+          new InstantCommand( // Reset the pose of the robot to the starting pose of the path
+              () -> swerveDrive.resetPose(starting_pose)),
+          new InstantCommand(
+                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(new Rotation2d())),
+                  swerveDrive)
+              .alongWith(new WaitCommand(1)),
+          m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
-        DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
-        addCommands(new WaitCommand(0));
+      DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
+      addCommands(new WaitCommand(0));
     }
   }
 }

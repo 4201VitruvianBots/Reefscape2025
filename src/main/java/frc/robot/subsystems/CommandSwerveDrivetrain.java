@@ -28,11 +28,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
 import frc.robot.utils.ModuleMap;
-
 import java.util.function.Supplier;
 
 /**
@@ -143,14 +141,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       var driveMotor = getModule(i.ordinal()).getDriveMotor();
       var turnMotor = getModule(i.ordinal()).getSteerMotor();
       CtreUtils.configureTalonFx(driveMotor, new TalonFXConfiguration());
-      CtreUtils.configureTalonFx(turnMotor, new TalonFXConfiguration() /* was previously CtreUtils.generateTurnMotorConfig() TODO: get that method working again*/);
+      CtreUtils.configureTalonFx(
+          turnMotor,
+          new TalonFXConfiguration() /* was previously CtreUtils.generateTurnMotorConfig() TODO: get that method working again*/);
       driveMotor.setNeutralMode(NeutralModeValue.Brake);
       BaseStatusSignal.setUpdateFrequencyForAll(
           250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
 
       driveMotor.optimizeBusUtilization();
     }
-  } 
+  }
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -207,9 +208,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   // TODO: Re-implement
-//   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
-//      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
-//   }
+  //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
+  //      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
+  //   }
 
   /**
    * Second-Order Kinematics <a
