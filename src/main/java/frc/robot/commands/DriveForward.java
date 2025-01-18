@@ -14,12 +14,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class DriveForward extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public DriveForward(CommandSwerveDrivetrain swerveDrive) {
+  public DriveForward(CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
