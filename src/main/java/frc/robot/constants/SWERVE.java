@@ -3,6 +3,7 @@ package frc.robot.constants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
+// TODO: most of these values have been moved to  delete or update
 public class SWERVE {
   public static double kTrackWidth = Units.inchesToMeters(21);
   public static final double kWheelBase = Units.inchesToMeters(19);
@@ -24,6 +25,7 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
+
   public static final Translation2d kFrontLeftPosition =
       new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0);
   public static final Translation2d kFrontRightPosition =
