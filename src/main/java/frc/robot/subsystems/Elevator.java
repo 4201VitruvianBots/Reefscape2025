@@ -11,14 +11,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ROBOT;
+import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(0), new TalonFX(1) // These are just placeholders
+    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
   };
 
   private final StatusSignal<Angle> m_positionSignal =
@@ -28,6 +31,9 @@ public class Elevator extends SubsystemBase {
 
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
+  private double m_joystickInput = 0.0;
+  private ROBOT.CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
+
 
   public Elevator() {
     TalonFXConfiguration configElevator = new TalonFXConfiguration();
@@ -41,11 +47,21 @@ public class Elevator extends SubsystemBase {
   private Angle getMotorRotations(){
     m_positionSignal.refresh();
     return m_positionSignal.getValue();
+
   }
 
+     public void setJoystickInput(double joystickInput){
+      m_joystickInput = joystickInput;
+     }
+     public void setControlMode(CONTROL_MODE controlMode){
+      m_controlMode = controlMode; 
+     }
+     public CONTROL_MODE getControlMode(){
+      return m_controlMode;
+     }
+
   // private Angle getPositionMeters() {
-  //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;3
-  // }
+  //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;3  // }
 
   @Override
   public void periodic() {
