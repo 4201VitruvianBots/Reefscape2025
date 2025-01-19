@@ -23,12 +23,11 @@ import java.util.function.BooleanSupplier;
  */
 public final class FIELD {
 
-//TODO: figure out if these values need to be changed
+  // TODO: figure out if these values need to be changed
   public static final double fieldLength = Units.inchesToMeters(651.25);
   public static final double fieldWidth = Units.inchesToMeters(315.5);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
   public static final double aprilTagWidth = Units.inchesToMeters(6.5);
-
 
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By

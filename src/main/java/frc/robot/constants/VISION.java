@@ -13,7 +13,7 @@ import edu.wpi.first.math.util.Units;
 
 public final class VISION {
 
-//TODO: figure out if these values need to be changed
+  // TODO: figure out if these values need to be changed
 
   public static final double kLimelightHFOV = 63.12;
   public static final double kLimelightVFOV = 49.54;
@@ -127,11 +127,11 @@ public final class VISION {
     }
   }
 
-//   public enum TRACKING_STATE {
-//     NONE,
-//     SPEAKER,
-//     NOTE,
-//     PASSING_NEAR,
-//     PASSING_MID
-//   }
+  //   public enum TRACKING_STATE {
+  //     NONE,
+  //     SPEAKER,
+  //     NOTE,
+  //     PASSING_NEAR,
+  //     PASSING_MID
+  //   }
 }

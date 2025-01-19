@@ -1,9 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -11,7 +14,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 // import frc.robot.simulation.FieldSim;
@@ -46,6 +48,7 @@ public class Vision extends SubsystemBase {
           VISION.aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VISION.robotToAprilTagLimelightCameraB);
+  private Matrix<N3, N1> curStdDevs;
   private VisionSystemSim visionSim;
   // private PhotonCameraSim aprilTagLimelightCameraASim;
   private PhotonCameraSim aprilTagLimelightCameraBSim;
@@ -200,9 +203,10 @@ public class Vision extends SubsystemBase {
       //       cameraAEstimatedPose = nullPose;
       //       cameraAHasPose = false;
       //     });
+      var change = aprilTagLimelightCameraB.getLatestResult();
       limelightPhotonPoseEstimatorB.setReferencePose(m_swerveDriveTrain.getState().Pose);
       limelightPhotonPoseEstimatorB
-          .update()
+          .update(change)
           .ifPresent(
               (estimatedRobotPose) -> {
                 cameraBEstimatedPose = estimatedRobotPose.estimatedPose.toPose2d();
