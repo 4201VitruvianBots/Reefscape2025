@@ -8,14 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-<<<<<<< Updated upstream
-=======
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.wpilibj.DriverStation;
->>>>>>> Stashed changes
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +22,7 @@ import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.SwerveCharacterization;
+import frc.robot.commands.TestAuto1;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -105,12 +98,10 @@ public class RobotContainer {
   private void initAutoChooser() {
     SmartDashboard.putData("Auto Mode", m_chooser);
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
-<<<<<<< Updated upstream
 
-=======
-    
->>>>>>> Stashed changes
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
+
   }
 
   private void initSmartDashboard() {
