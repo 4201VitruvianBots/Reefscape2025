@@ -24,9 +24,9 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
-  public static final double kPBottom = 0.0;
-  public static final double kIBottom = 0.0;
-  public static final double kDBottom = 0.0;
+  public static final double kP = 0.1;
+  public static final double kI = 0.0;
+  public static final double kD = 0.0;
 
   public static final double kPercentOutputMultiplier = 1.0;
   public static final double kLimitedPercentOutputMultiplier = 0.5;
