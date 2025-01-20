@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
+import frc.robot.utils.QuestNav;
 import frc.robot.utils.Telemetry;
 
 /**
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
+  private final QuestNav m_questNav = new QuestNav();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -181,5 +183,9 @@ public class RobotContainer {
 
   public void testPeriodic() {
     m_coralOuttake.testPeriodic();
+  }
+
+  public void simulationPeriodic() {
+    m_questNav.simulationPeriodic();
   }
 }
