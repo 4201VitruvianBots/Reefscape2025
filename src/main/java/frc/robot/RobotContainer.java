@@ -32,6 +32,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import frc.robot.visualizers.SuperStructureVisualizer;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,6 +46,8 @@ public class RobotContainer {
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
+  
+  private final SuperStructureVisualizer m_visualizer = new SuperStructureVisualizer();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
