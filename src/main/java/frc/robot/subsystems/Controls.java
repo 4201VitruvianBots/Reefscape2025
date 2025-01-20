@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Controls extends SubsystemBase {
-  private CommandSwerveDrivetrain m_swervedrive;
   private static DriverStation.Alliance m_allianceColor = DriverStation.Alliance.Red;
 
   /** Creates a new Controls. */
