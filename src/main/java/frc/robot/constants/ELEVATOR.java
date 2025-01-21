@@ -24,10 +24,11 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
-  public static final double kP = 0.1;
+  public static final double kP = 0.1; // none of these are tuned in any capacity so we should probably do that
   public static final double kI = 0.0;
   public static final double kD = 0.0;
-
+  public static final double kA = 0.1;
+  public static final double kV = 0.1;
   public static final double kPercentOutputMultiplier = 1.0;
   public static final double kLimitedPercentOutputMultiplier = 0.5;
 
@@ -44,5 +45,7 @@ public class ELEVATOR {
       return setpointMeters;
     }
   }
+
+
   
 }

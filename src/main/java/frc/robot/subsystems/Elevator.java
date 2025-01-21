@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 
@@ -35,7 +36,7 @@ public class Elevator extends SubsystemBase {
   private boolean m_elevatorInitialized;
   private double m_joystickInput = 0.0;
   private ROBOT.CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
-  
+  private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   public Elevator() {
@@ -43,6 +44,8 @@ public class Elevator extends SubsystemBase {
     configElevator.Slot0.kP = ELEVATOR.kP;
     configElevator.Slot0.kI = ELEVATOR.kI;
     configElevator.Slot0.kD = ELEVATOR.kD;
+    configElevator.Slot0.kA = ELEVATOR.kA;
+    configElevator.Slot0.kV = ELEVATOR.kV;
     CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
     CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
 
@@ -76,6 +79,12 @@ public class Elevator extends SubsystemBase {
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
+
+  public NeutralModeValue getNeutralMode() {
+    return m_neutralMode;
+  }
+
+  
 
   // private Angle getPositionMeters() {
   //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
