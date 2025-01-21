@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.team4201.codex.simulation.FieldSim;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.Joystick;
@@ -46,6 +47,8 @@ public class RobotContainer {
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
 
+  private final FieldSim m_fieldSim = new FieldSim();
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();

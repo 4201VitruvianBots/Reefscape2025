@@ -1,5 +1,7 @@
 package frc.robot.utils;
 
+import org.team4201.codex.simulation.FieldSim;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,7 +16,7 @@ public class Telemetry {
   private final double m_maxSpeed = SWERVE.kMaxSpeedMetersPerSecond;
 
   // TODO: Re-implement
-  //    private FieldSim m_fieldSim;
+  private FieldSim m_fieldSim;
   //    private final SwerveModuleVisualizer[] m_moduleVisualizer = {
   //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.FRONT_LEFT.name(), m_maxSpeed),
   //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.FRONT_RIGHT.name(),
@@ -61,9 +63,9 @@ public class Telemetry {
   /** Construct a telemetry object */
   public Telemetry() {}
 
-  //    public void registerFieldSim(FieldSim fieldSim) {
-  //        m_fieldSim = fieldSim;
-  //    }
+  public void registerFieldSim(FieldSim fieldSim) {
+    m_fieldSim = fieldSim;
+  }
 
   /* Accept the swerve drive state and telemeterize it to SmartDashboard */
   public void telemeterize(SwerveDriveState state) {
