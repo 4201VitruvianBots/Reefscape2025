@@ -29,5 +29,6 @@
             "onlineUrl": "https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json"
         }
     ],
-    "jniDependencies": []
+    "jniDependencies": [],
+    "cppDependencies": []
 }
