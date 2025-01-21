@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
+import frc.robot.subsystems.Vision;
 import frc.robot.utils.Telemetry;
 
 /**
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
+  private final Vision m_vision = new Vision();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -60,7 +62,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-
+    m_vision.registerSwerveDrive(m_swerveDrive);
     initSmartDashboard();
     initializeSubSystems();
 

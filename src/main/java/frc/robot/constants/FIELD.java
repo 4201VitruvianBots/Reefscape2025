@@ -24,8 +24,8 @@ import java.util.function.BooleanSupplier;
 public final class FIELD {
 
   // TODO: figure out if these values need to be changed
-  public static final double fieldLength = Units.inchesToMeters(651.25);
-  public static final double fieldWidth = Units.inchesToMeters(315.5);
+  public static final double fieldLength = Units.inchesToMeters(690.866142);
+  public static final double fieldWidth = Units.inchesToMeters(317.00787);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
   public static final double aprilTagWidth = Units.inchesToMeters(6.5);
 
