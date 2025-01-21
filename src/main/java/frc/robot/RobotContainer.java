@@ -8,7 +8,19 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +45,9 @@ import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.QuestNav;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import java.util.ArrayList;
+import org.team4201.codex.simulation.FieldSim;
+import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,6 +62,7 @@ public class RobotContainer {
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
   private final QuestNav m_questNav = new QuestNav();
+  private final FieldSim m_fieldSim = new FieldSim();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -168,6 +184,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    if (RobotBase.isSimulation()) {
+      // Stop joystick disconnected warnings from appearing when simulating robot code
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
@@ -197,6 +217,7 @@ public class RobotContainer {
   }
 
   public void simulationPeriodic() {
+    m_fieldSim.simulationPeriodic();
     m_questNav.simulationPeriodic();
   }
 }
