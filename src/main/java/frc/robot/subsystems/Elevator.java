@@ -6,13 +6,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
@@ -27,11 +26,13 @@ public class Elevator extends SubsystemBase {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
   };
 
-  private final StatusSignal<Angle> m_positionSignal =
-      elevatorMotors[0].getPosition().clone();
-  private final StatusSignal<Angle> m_positionSignal2 =
-      elevatorMotors[1].getPosition().clone();
-
+  // TODO: Check if the data type has actually changed in documentation
+  private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
+  private final StatusSignal<Angle> m_positionSignal2 = elevatorMotors[1].getPosition().clone();
+  private final StatusSignal<Voltage> m_leftVoltageSignal =
+      elevatorMotors[0].getMotorVoltage().clone();
+  private final StatusSignal<Voltage> m_rightVoltageSignal =
+      elevatorMotors[1].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
   private double m_joystickInput = 0.0;
@@ -54,28 +55,35 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
   }
 
-  private Angle getMotorRotations() {
+  private Double getMotorRotations() {
     m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    return m_positionSignal.getValueAsDouble();
   }
-  
+
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
-    elevatorMotors[1].set(output);
+  }
+
+  public double getPercentOutputMotor1() {
+    return elevatorMotors[0].get();
+  }
+
+  public double getPercentOutputMotor2() {
+    return elevatorMotors[1].get();
   }
 
   public void setDesiredPosition(double desiredPosition) {
     m_desiredPositionMeters = desiredPosition;
   }
-  
+
   public void setJoystickInput(double joystickInput) {
     m_joystickInput = joystickInput;
   }
-  
+
   public void setControlMode(CONTROL_MODE controlMode) {
-    m_controlMode = controlMode; 
+    m_controlMode = controlMode;
   }
-  
+
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
@@ -84,7 +92,34 @@ public class Elevator extends SubsystemBase {
     return m_neutralMode;
   }
 
-  
+  public Double getMotor1Rotations() {
+    m_positionSignal.refresh();
+    return m_positionSignal.getValueAsDouble();
+  }
+
+  public Double getMotor2Rotations() {
+    m_positionSignal2.refresh();
+    return m_positionSignal2.getValueAsDouble();
+  }
+
+  public Double getMotor1Voltage() {
+    m_leftVoltageSignal.refresh();
+    return m_leftVoltageSignal.getValueAsDouble();
+  }
+
+  public Double getMotor2Voltage() {
+    m_rightVoltageSignal.refresh();
+    return m_rightVoltageSignal.getValueAsDouble();
+  }
+
+  // TODO: Fix this cause it's going nuts because everything is angles
+  public double getHeightMetersMotor1() {
+    return getMotor1Rotations() * ELEVATOR.sprocketRotationsToMeters;
+  }
+
+  public double getHeightMetersMotor2() {
+    return getMotor2Rotations() * ELEVATOR.sprocketRotationsToMeters;
+  }
 
   // private Angle getPositionMeters() {
   //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;

@@ -42,7 +42,7 @@ public class CoralOuttake extends SubsystemBase {
   private TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
   // Test mode setup
   private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
-  private final NetworkTable coralOuttakeTab = 
+  private final NetworkTable coralOuttakeTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("CoralOuttake");
 
   /* Creates a new CoralOuttake. */
