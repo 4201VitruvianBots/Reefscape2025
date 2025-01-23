@@ -28,10 +28,12 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
-import org.team4201.codex.utils.ModuleMap;
 import java.util.function.Supplier;
+import org.team4201.codex.utils.ModuleMap;
+import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -118,6 +120,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+  /* Create a TrajectoryUtils object */
+  private TrajectoryUtils m_trajectoryUtils;
+  
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -134,6 +139,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    configureTrajectoryUtils();
   }
 
   public void initDriveSysid() {
@@ -305,6 +311,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
     }
+  }
+  
+  private void configureTrajectoryUtils() {
+    try {
+    m_trajectoryUtils = new TrajectoryUtils(this, RobotConfig.fromGUISettings(), );
+    } catch (Exception ex) {
+      DriverStation.reportError(
+          "Failed to configure TrajectoryUtils", ex.getStackTrace());
+    }
+  }
+  
+  public TrajectoryUtils getTrajectoryUtils() {
+    return m_trajectoryUtils;
   }
 
   /**

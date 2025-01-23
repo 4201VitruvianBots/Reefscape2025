@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import org.team4201.codex.simulation.FieldSim;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.Joystick;
@@ -33,6 +32,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import org.team4201.codex.simulation.FieldSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,7 +48,7 @@ public class RobotContainer {
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
 
   private final FieldSim m_fieldSim = new FieldSim();
-  
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -101,7 +101,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", m_chooser);
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
-    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
+    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
   }
 
   private void initSmartDashboard() {

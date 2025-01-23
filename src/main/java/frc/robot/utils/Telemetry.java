@@ -1,7 +1,5 @@
 package frc.robot.utils;
 
-import org.team4201.codex.simulation.FieldSim;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 import frc.robot.constants.SWERVE;
+import org.team4201.codex.simulation.FieldSim;
 
 public class Telemetry {
   private final double m_maxSpeed = SWERVE.kMaxSpeedMetersPerSecond;
