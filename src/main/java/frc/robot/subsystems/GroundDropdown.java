@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -36,6 +37,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND.DROPDOWN;
 import frc.robot.constants.ROBOT;
 import frc.robot.utils.CtreUtils;
+import static edu.wpi.first.units.Units.*;
 
 public class GroundDropdown extends SubsystemBase {
 /** Creates a new GroundDropdown. */
@@ -51,10 +53,10 @@ public class GroundDropdown extends SubsystemBase {
 
  private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
- private double m_desiredRotations = DROPDOWN.DROPDOWN_SETPOINT.STOWED.get();
+ private Angle m_desiredAngle = DROPDOWN.DROPDOWN_SETPOINT.STOWED.get();
 
  private final MotionMagicTorqueCurrentFOC m_request =
-     new MotionMagicTorqueCurrentFOC(getCurrentRotation());
+     new MotionMagicTorqueCurrentFOC(getCurrentAngle());
 
  // Simulation setup
  private final SingleJointedArmSim m_dropdownSim =
@@ -63,10 +65,10 @@ public class GroundDropdown extends SubsystemBase {
          DROPDOWN.gearRatio,
          SingleJointedArmSim.estimateMOI(DROPDOWN.dropdownLength, DROPDOWN.mass),
          DROPDOWN.dropdownLength,
-         Units.degreesToRadians(DROPDOWN.minAngleDegrees),
-         Units.degreesToRadians(DROPDOWN.maxAngleDegrees),
+         DROPDOWN.minAngle.in(Radians),
+         DROPDOWN.maxAngle.in(Radians),
          false,
-         Units.degreesToRadians(DROPDOWN.minAngleDegrees));
+         DROPDOWN.minAngle.in(Radians));
 
  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
 
@@ -138,33 +140,30 @@ public class GroundDropdown extends SubsystemBase {
    m_dropdownMotor.set(speed);
  }
 
+ @Logged(name = "PercentOutput")
  public double getPercentOutput() {
    return m_dropdownMotor.get();
  }
 
- public double setDesiredSetpointRotations(double rotations) {
-   m_desiredRotations =
-       MathUtil.clamp(
-           rotations,
-           Units.degreesToRotations(DROPDOWN.minAngleDegrees),
-           Units.degreesToRotations(DROPDOWN.maxAngleDegrees));
+ public void setDesiredSetpoint(Angle angle) {
+   m_desiredAngle =
+       Degrees.of(MathUtil.clamp(
+           angle.in(Degrees),
+           DROPDOWN.minAngle.in(Degrees),
+           DROPDOWN.maxAngle.in(Degrees)));
  }
 
- public double getDesiredSetpointRotations() {
-   return m_desiredRotations;
+ public Angle getDesiredSetpoint() {
+   return m_desiredAngle;
  }
 
- public Angle getCurrentRotation() {
-   m_positionSignal.refresh();
+ public Angle getCurrentAngle() {
+    m_positionSignal.refresh();
    return m_positionSignal.getValue();
  }
 
- public double getCurrentAngle() {
-   return Units.rotationsToDegrees(getCurrentRotation());
- }
-
- public double getCANcoderAngle() {
-   return m_dropdownEncoder.getAbsolutePosition().getValueAsDouble() * 360;
+ public Angle getCANcoderAngle() {
+   return m_dropdownEncoder.getAbsolutePosition().getValue();
  }
 
  public void setNeutralMode(NeutralModeValue mode) {
@@ -184,17 +183,17 @@ public class GroundDropdown extends SubsystemBase {
  }
 
  public void resetSensorPositionHome() {
-   resetSensorPosition(DROPDOWN.startingAngleDegrees);
+   resetSensorPosition(DROPDOWN.startingAngle);
  }
 
- public void resetSensorPosition(double m_angle) {
-   m_dropdownMotor.setPosition(Units.degreesToRotations(m_angle));
+ public void resetSensorPosition(Angle m_angle) {
+   m_dropdownMotor.setPosition(m_angle);
    resetMotionMagicState();
  }
 
  public void resetMotionMagicState() {
-   m_desiredRotations = getCurrentRotation();
-   m_dropdownMotor.setControl(m_request.withPosition(m_desiredRotations));
+   m_desiredAngle = getCurrentAngle();
+   m_dropdownMotor.setControl(m_request.withPosition(m_desiredAngle));
  }
 
  public TalonFX getMotor() {
@@ -214,12 +213,12 @@ public class GroundDropdown extends SubsystemBase {
  }
 
  private void updateLogger() {
-   Logger.recordOutput("GroundDropdown/ControlMode", m_controlMode.toString());
-   Logger.recordOutput("GroundDropdown/CurrentAngle", getCurrentAngle());
-   Logger.recordOutput("GroundDropdown/CurrentOutput", m_currentSignal.getValue());
-   Logger.recordOutput("GroundDropdown/DesiredAngle", Units.rotationsToDegrees(m_desiredRotations));
-   Logger.recordOutput("GroundDropdown/PercentOutput", m_dropdownMotor.get());
-   Logger.recordOutput("GroundDropdown/CanCoderAbsolutePos360", getCANcoderAngle());
+   SmartDashboard.putString("GroundDropdown/ControlMode", m_controlMode.toString());
+   SmartDashboard.putNumber("GroundDropdown/CurrentAngle", getCurrentAngle().in(Degrees));
+   SmartDashboard.putNumber("GroundDropdown/CurrentOutput", m_currentSignal.getValueAsDouble());
+   SmartDashboard.putNumber("GroundDropdown/DesiredAngle", m_desiredAngle.in(Degrees));
+   SmartDashboard.putNumber("GroundDropdown/PercentOutput", m_dropdownMotor.get());
+   SmartDashboard.putNumber("GroundDropdown/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
  }
 
  public void testInit() {
@@ -234,7 +233,7 @@ public class GroundDropdown extends SubsystemBase {
    dropdownTab.getDoubleTopic("kCruiseVel").publish().set(DROPDOWN.kCruiseVel);
    dropdownTab.getDoubleTopic("kJerk").publish().set(DROPDOWN.kJerk);
 
-   dropdownTab.getDoubleTopic("kSetpoint").publish().set(getCurrentAngle());
+   dropdownTab.getDoubleTopic("kSetpoint").publish().set(getCurrentAngle().in(Degrees));
 
    m_kS_subscriber = dropdownTab.getDoubleTopic("kS").subscribe(DROPDOWN.kS);
    m_kV_subscriber = dropdownTab.getDoubleTopic("kV").subscribe(DROPDOWN.kV);
@@ -248,7 +247,7 @@ public class GroundDropdown extends SubsystemBase {
    m_kJerk_subscriber = dropdownTab.getDoubleTopic("kJerk").subscribe(DROPDOWN.kJerk);
 
    m_kSetpoint_subscriber =
-       dropdownTab.getDoubleTopic("kSetpoint").subscribe(Units.rotationsToDegrees(m_desiredRotations));
+       dropdownTab.getDoubleTopic("kSetpoint").subscribe(m_desiredAngle.in(Degrees));
  }
 
  public void testPeriodic() {
@@ -270,21 +269,19 @@ public class GroundDropdown extends SubsystemBase {
 
    m_dropdownMotor.getConfigurator().apply(motionMagicConfigs);
 
-   double m_oldSetpoint = Units.rotationsToDegrees(m_desiredRotations);
-   m_desiredRotations =
-       Units.degreesToRotations(
-           m_kSetpoint_subscriber.get(Units.rotationsToDegrees(m_desiredRotations)));
-   if (m_desiredRotations != m_oldSetpoint) setDesiredSetpointRotations(m_desiredRotations);
+   Angle m_oldSetpoint = m_desiredAngle;
+   m_desiredAngle = Degrees.of(m_kSetpoint_subscriber.get(m_desiredAngle.in(Degrees)));
+   if (m_desiredAngle.equals(m_oldSetpoint)) setDesiredSetpoint(m_desiredAngle);
  }
 
  public void autonomousInit() {
    resetMotionMagicState();
-   setDesiredSetpointRotations(getCurrentRotation());
+   setDesiredSetpoint(getCurrentAngle());
  }
 
  public void teleopInit() {
    resetMotionMagicState();
-   setDesiredSetpointRotations(getCurrentRotation());
+   setDesiredSetpoint(getCurrentAngle());
  }
 
  @Override
@@ -294,7 +291,7 @@ public class GroundDropdown extends SubsystemBase {
        // This method will be called once per scheduler run
        // periodic, update the profile setpoint for 20 ms loop time
        if (DriverStation.isEnabled())
-         m_dropdownMotor.setControl(m_request.withPosition(m_desiredRotations));
+         m_dropdownMotor.setControl(m_request.withPosition(m_desiredAngle));
        break;
      default:
      case OPEN_LOOP:
@@ -325,6 +322,6 @@ public class GroundDropdown extends SubsystemBase {
    m_dropdownEncoderSimState.setRawPosition(Units.radiansToRotations(m_dropdownSim.getAngleRads()));
    m_dropdownEncoderSimState.setVelocity(Units.radiansToRotations(m_dropdownSim.getVelocityRadPerSec()));
 
-   Logger.recordOutput("GroundDropdown/Model Angle", Units.radiansToDegrees(m_dropdownSim.getAngleRads()));
+   SmartDashboard.putNumber("GroundDropdown/Model Angle", Units.radiansToDegrees(m_dropdownSim.getAngleRads()));
  }
 }

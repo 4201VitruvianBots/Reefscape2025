@@ -6,6 +6,9 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+
+import static edu.wpi.first.units.Units.*;
 
 public class GROUND {
     public class DROPDOWN {
@@ -50,19 +53,19 @@ public class GROUND {
         public static final double kJerk = 0;
 
         public enum DROPDOWN_SETPOINT {
-            STOWED(Units.degreesToRotations(0.0)), // TODO: test setpoints
-            ALGAE(Units.degreesToRotations(30.0)),
-            GROUND_INTAKE(Units.degreesToRotations(60.0));
+            STOWED(Degrees.of(0.0)), // TODO: test setpoints
+            ALGAE(Degrees.of(30.0)),
+            GROUND_INTAKE(Degrees.of(60.0));
 
-            private final double angle;
+            private final Angle angle;
 
-            DROPDOWN_SETPOINT(final double angle) {
+            DROPDOWN_SETPOINT(final Angle angle) {
             // this.sucks = taxes;
             this.angle = angle;
             }
 
-            public double get() {
-            return angle;
+            public Angle get() {
+                return angle;
             }
         }
 
@@ -77,13 +80,13 @@ public class GROUND {
 
         public static final double mass = Units.lbsToKilograms(7.0);
 
-        public static final double minAngleDegrees = -40;
+        public static final Angle minAngle = Degrees.of(-40);
 
-        public static final double maxAngleDegrees = 150;
+        public static final Angle maxAngle = Degrees.of(150);
 
-        public static final double startingAngleDegrees = minAngleDegrees;
+        public static final Angle startingAngle = minAngle;
 
-        public static final double mountingAngleDegrees = 0;
+        public static final Angle mountingAngle = Degrees.of(0);
 
         public static final double maxOutput = 0.6;
 
