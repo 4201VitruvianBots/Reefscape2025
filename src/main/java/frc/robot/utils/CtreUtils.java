@@ -5,15 +5,13 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.CAN;
+import frc.robot.constants.ALPHABOTCAN;
 
-// import frc.robot.constants.SWERVE;
-
+// TODO: This class is also a mess
 public final class CtreUtils {
   /**
    * Initialize Phoenix Server by creating a dummy device. We do this so that the CANCoders don't
@@ -25,7 +23,7 @@ public final class CtreUtils {
         new Alert("Starting Phoenix Server at: " + Timer.getFPGATimestamp(), AlertType.kInfo);
     alert.set(true);
     if (RobotBase.isReal()) {
-      TalonFX dummy = new TalonFX(0, CAN.driveBaseCanbus);
+      TalonFX dummy = new TalonFX(0, ALPHABOTCAN.driveBaseCanbus);
       Timer.delay(5);
       dummy.close();
       dummy = null;
