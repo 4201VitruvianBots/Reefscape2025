@@ -158,10 +158,7 @@ public class RobotContainer {
     //    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     //    // cancelling on release.
     //    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController.leftBumper().whileTrue(new SetElevatorSetpoint(m_coralOuttake, 0.15)); // outtake
-    m_driverController
-        .rightBumper()
-        .whileTrue(new SetElevatorSetpoint(m_coralOuttake, -0.15)); // intake
+
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }

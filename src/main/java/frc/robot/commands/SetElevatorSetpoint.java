@@ -1,31 +1,35 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralOuttake;
+import frc.robot.constants.ELEVATOR;
+import frc.robot.subsystems.Elevator;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 
 public class SetElevatorSetpoint extends Command {
-  private final CoralOuttake m_coralOuttake;
-  private final double m_desiredPercentOutput;
 
-  public SetElevatorSetpoint(CoralOuttake coralOuttake, double desiredPercentOutput) {
-    m_coralOuttake = coralOuttake;
-    m_desiredPercentOutput = desiredPercentOutput;
+  private final Elevator m_elevator;
+  private final ELEVATOR_SETPOINT m_setpoint;
+  public SetElevatorSetpoint(Elevator elevator , ELEVATOR_SETPOINT elevatorSetpoint) {
+    m_elevator = elevator;
+    m_setpoint = elevatorSetpoint;
+    addRequirements(m_elevator);
+
   }
 
-  public void initialize() {
-    m_coralOuttake.setOuttakingState(true);
+  @Override
+  public void initialize(){
+    m_elevator.setDesiredPosition(m_setpoint.getSetpointMeters());
   }
 
-  public void execute() {
-    m_coralOuttake.setDesiredPercentOutput(m_desiredPercentOutput);
-  }
+  @Override 
+  public void execute(){}
 
-  public void end(boolean interrupted) {
-    m_coralOuttake.setDesiredPercentOutput(0);
-    m_coralOuttake.setOuttakingState(false);
-  }
+  @Override
+  public void end(boolean interruped){}
 
-  public boolean isFinished() {
+  public boolean isFinished(){
     return false;
   }
+
+
 }
