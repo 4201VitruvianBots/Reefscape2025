@@ -20,6 +20,10 @@ public class CAN {
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
 
+  // AlphaBot -- DO NOT USE on competition bot
+  public static final int coralOuttakeMotor = 30;
+  public static final int algaeMotor = 31;
+
   // L2-L4
   public static final int hopperIntakeMotor1 = 30;
   public static final int hopperIntakeMotor2 = 31;
