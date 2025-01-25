@@ -28,11 +28,8 @@ public class Elevator extends SubsystemBase {
 
   // TODO: Check if the data type has actually changed in documentation
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
-  private final StatusSignal<Angle> m_positionSignal2 = elevatorMotors[1].getPosition().clone();
-  private final StatusSignal<Voltage> m_leftVoltageSignal =
+  private final StatusSignal<Voltage> m_voltageSignal =
       elevatorMotors[0].getMotorVoltage().clone();
-  private final StatusSignal<Voltage> m_rightVoltageSignal =
-      elevatorMotors[1].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
   private double m_joystickInput = 0.0;
@@ -55,21 +52,12 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
   }
 
-  private Double getMotorRotations() {
-    m_positionSignal.refresh();
-    return m_positionSignal.getValueAsDouble();
-  }
-
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
   }
 
-  public double getPercentOutputMotor1() {
+  public double getPercentOutputMotor() {
     return elevatorMotors[0].get();
-  }
-
-  public double getPercentOutputMotor2() {
-    return elevatorMotors[1].get();
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -92,38 +80,19 @@ public class Elevator extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public Double getMotor1Rotations() {
+  public Double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
 
-  public Double getMotor2Rotations() {
-    m_positionSignal2.refresh();
-    return m_positionSignal2.getValueAsDouble();
+  public Double getMotorVoltage() {
+    m_voltageSignal.refresh();
+    return m_voltageSignal.getValueAsDouble();
   }
 
-  public Double getMotor1Voltage() {
-    m_leftVoltageSignal.refresh();
-    return m_leftVoltageSignal.getValueAsDouble();
+  public double getHeightMeters() {
+    return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
   }
-
-  public Double getMotor2Voltage() {
-    m_rightVoltageSignal.refresh();
-    return m_rightVoltageSignal.getValueAsDouble();
-  }
-
-  // TODO: Fix this cause it's going nuts because everything is angles
-  public double getHeightMetersMotor1() {
-    return getMotor1Rotations() * ELEVATOR.sprocketRotationsToMeters;
-  }
-
-  public double getHeightMetersMotor2() {
-    return getMotor2Rotations() * ELEVATOR.sprocketRotationsToMeters;
-  }
-
-  // private Angle getPositionMeters() {
-  //   return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
-  // }
 
   @Override
   public void periodic() {
