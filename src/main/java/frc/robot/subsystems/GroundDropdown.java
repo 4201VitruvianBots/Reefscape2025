@@ -30,6 +30,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -83,7 +84,7 @@ public class GroundDropdown extends SubsystemBase {
      m_kCruiseVel_subscriber,
      m_kJerk_subscriber,
      m_kSetpoint_subscriber;
- private final NetworkTable dropdownTab =
+ private final NetworkTable m_dropdownTab =
      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("GroundDropdown");
 
  public GroundDropdown() {
@@ -127,7 +128,7 @@ public class GroundDropdown extends SubsystemBase {
      CANcoderConfiguration simCanCoderConfig = new CANcoderConfiguration();
      simCanCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5; // TODO update
      simCanCoderConfig.MagnetSensor.SensorDirection =
-         SensorDirectionValue.CounterClockwise_Positive;
+         SensorDirectionValue.CounterClockwise_Positive; // TODO update
      simCanCoderConfig.MagnetSensor.MagnetOffset = DROPDOWN.canCoderOffset;
      CtreUtils.configureCANCoder(m_dropdownEncoder, simCanCoderConfig);
    }
@@ -140,7 +141,6 @@ public class GroundDropdown extends SubsystemBase {
    m_dropdownMotor.set(speed);
  }
 
- @Logged(name = "PercentOutput")
  public double getPercentOutput() {
    return m_dropdownMotor.get();
  }
@@ -222,32 +222,32 @@ public class GroundDropdown extends SubsystemBase {
  }
 
  public void testInit() {
-   dropdownTab.getDoubleTopic("kS").publish().set(DROPDOWN.kS);
-   dropdownTab.getDoubleTopic("kV").publish().set(DROPDOWN.kV);
-   dropdownTab.getDoubleTopic("kA").publish().set(DROPDOWN.kA);
-   dropdownTab.getDoubleTopic("kP").publish().set(DROPDOWN.kP);
-   dropdownTab.getDoubleTopic("kI").publish().set(DROPDOWN.kI);
-   dropdownTab.getDoubleTopic("kD").publish().set(DROPDOWN.kD);
+   m_dropdownTab.getDoubleTopic("kS").publish().set(DROPDOWN.kS);
+   m_dropdownTab.getDoubleTopic("kV").publish().set(DROPDOWN.kV);
+   m_dropdownTab.getDoubleTopic("kA").publish().set(DROPDOWN.kA);
+   m_dropdownTab.getDoubleTopic("kP").publish().set(DROPDOWN.kP);
+   m_dropdownTab.getDoubleTopic("kI").publish().set(DROPDOWN.kI);
+   m_dropdownTab.getDoubleTopic("kD").publish().set(DROPDOWN.kD);
 
-   dropdownTab.getDoubleTopic("kAccel").publish().set(DROPDOWN.kAccel);
-   dropdownTab.getDoubleTopic("kCruiseVel").publish().set(DROPDOWN.kCruiseVel);
-   dropdownTab.getDoubleTopic("kJerk").publish().set(DROPDOWN.kJerk);
+   m_dropdownTab.getDoubleTopic("kAccel").publish().set(DROPDOWN.kAccel);
+   m_dropdownTab.getDoubleTopic("kCruiseVel").publish().set(DROPDOWN.kCruiseVel);
+   m_dropdownTab.getDoubleTopic("kJerk").publish().set(DROPDOWN.kJerk);
 
-   dropdownTab.getDoubleTopic("kSetpoint").publish().set(getCurrentAngle().in(Degrees));
+   m_dropdownTab.getDoubleTopic("kSetpoint").publish().set(getCurrentAngle().in(Degrees));
 
-   m_kS_subscriber = dropdownTab.getDoubleTopic("kS").subscribe(DROPDOWN.kS);
-   m_kV_subscriber = dropdownTab.getDoubleTopic("kV").subscribe(DROPDOWN.kV);
-   m_kA_subscriber = dropdownTab.getDoubleTopic("kA").subscribe(DROPDOWN.kA);
-   m_kP_subscriber = dropdownTab.getDoubleTopic("kP").subscribe(DROPDOWN.kP);
-   m_kI_subscriber = dropdownTab.getDoubleTopic("kI").subscribe(DROPDOWN.kI);
-   m_kD_subscriber = dropdownTab.getDoubleTopic("kD").subscribe(DROPDOWN.kD);
+   m_kS_subscriber = m_dropdownTab.getDoubleTopic("kS").subscribe(DROPDOWN.kS);
+   m_kV_subscriber = m_dropdownTab.getDoubleTopic("kV").subscribe(DROPDOWN.kV);
+   m_kA_subscriber = m_dropdownTab.getDoubleTopic("kA").subscribe(DROPDOWN.kA);
+   m_kP_subscriber = m_dropdownTab.getDoubleTopic("kP").subscribe(DROPDOWN.kP);
+   m_kI_subscriber = m_dropdownTab.getDoubleTopic("kI").subscribe(DROPDOWN.kI);
+   m_kD_subscriber = m_dropdownTab.getDoubleTopic("kD").subscribe(DROPDOWN.kD);
 
-   m_kAccel_subscriber = dropdownTab.getDoubleTopic("kAccel").subscribe(DROPDOWN.kAccel);
-   m_kCruiseVel_subscriber = dropdownTab.getDoubleTopic("kCruiseVel").subscribe(DROPDOWN.kCruiseVel);
-   m_kJerk_subscriber = dropdownTab.getDoubleTopic("kJerk").subscribe(DROPDOWN.kJerk);
+   m_kAccel_subscriber = m_dropdownTab.getDoubleTopic("kAccel").subscribe(DROPDOWN.kAccel);
+   m_kCruiseVel_subscriber = m_dropdownTab.getDoubleTopic("kCruiseVel").subscribe(DROPDOWN.kCruiseVel);
+   m_kJerk_subscriber = m_dropdownTab.getDoubleTopic("kJerk").subscribe(DROPDOWN.kJerk);
 
    m_kSetpoint_subscriber =
-       dropdownTab.getDoubleTopic("kSetpoint").subscribe(m_desiredAngle.in(Degrees));
+       m_dropdownTab.getDoubleTopic("kSetpoint").subscribe(m_desiredAngle.in(Degrees));
  }
 
  public void testPeriodic() {
@@ -306,12 +306,12 @@ public class GroundDropdown extends SubsystemBase {
 
  @Override
  public void simulationPeriodic() {
-   //    // Set supply voltage of flipper motor
+   // Set supply voltage of dropdown motor
    m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
    m_dropdownSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
 
-   m_dropdownSim.update(RobotTime.getTimeDelta());
+   m_dropdownSim.update(Timer.getFPGATimestamp());
 
    m_simState.setRawRotorPosition(
        Units.radiansToRotations(m_dropdownSim.getAngleRads()) * DROPDOWN.gearRatio);
