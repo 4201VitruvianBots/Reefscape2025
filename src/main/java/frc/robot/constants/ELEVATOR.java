@@ -44,7 +44,7 @@ public class ELEVATOR {
     LEVEL_4(Units.inchesToMeters(59.5)),
     NET(Units.inchesToMeters(78));
     private final double setpointMeters;
-    
+
     ELEVATOR_SETPOINT(double setpointMeters) {
       this.setpointMeters = setpointMeters;
     }

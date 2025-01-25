@@ -23,7 +23,6 @@ import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.SwerveCharacterization;
 import frc.robot.constants.ROBOT;
-import frc.robot.commands.SetElevatorSetpoint;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;

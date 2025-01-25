@@ -28,14 +28,14 @@ public class Elevator extends SubsystemBase {
 
   // TODO: Check if the data type has actually changed in documentation
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
-  private final StatusSignal<Voltage> m_voltageSignal =
-      elevatorMotors[0].getMotorVoltage().clone();
+  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
-  private double m_joystickInput = 0.0;
-  private ROBOT.CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
+  private double m_joystickInput = 0.0;  
+  private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
 
   public Elevator() {
     TalonFXConfiguration configElevator = new TalonFXConfiguration();
@@ -52,6 +52,9 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
   }
 
+  public void holdElevator() {
+    setDesiredPosition(getHeightMeters());
+  }
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
   }
@@ -85,14 +88,38 @@ public class Elevator extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
+  public CONTROL_MODE getClosedLoopControlMode(){
+    return m_controlMode;
+  }
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }
 
+  public void setJoystickY(double m_joystickY) {
+    m_joystickInput = m_joystickY;
+  }
+
   public double getHeightMeters() {
     return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
   }
+
+    // Sets the control state of the elevator
+  public void setClosedLoopControlMode(CONTROL_MODE mode) {
+      m_controlMode = mode;
+  }
+  
+  
+  public boolean isClosedLoopControl() {
+      return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
+    }
+  
+  public void setClimberNeutralMode(NeutralModeValue mode) {
+      if (mode == m_neutralMode) return;
+      m_neutralMode = mode;
+      elevatorMotors[0].setNeutralMode(mode);
+  }
+  
 
   @Override
   public void periodic() {
