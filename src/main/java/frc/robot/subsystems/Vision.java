@@ -66,10 +66,11 @@ public class Vision extends SubsystemBase {
 
   public Vision() {
 
-    // Port Forwarding to access limelight on USB Ethernet
-    for (int port = 5800; port <= 5807; port++) {
-      PortForwarder.add(port, VISION.CAMERA_SERVER.INTAKE.toString(), port);
-    }
+    // ?
+    // // Port Forwarding to access limelight on USB Ethernet
+    // for (int port = 5800; port <= 5807; port++) {
+    //   PortForwarder.add(port, VISION.CAMERA_SERVER.INTAKE.toString(), port);
+    // }
 
     PortForwarder.add(5800, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), 5800);
 
@@ -184,35 +185,36 @@ public class Vision extends SubsystemBase {
   //   m_fieldSim = fieldSim;
   // }
 
-  public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
-    var poseDelta = a.minus(b);
+  // ?
+  // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
+  //   var poseDelta = a.minus(b);
 
-    if (Math.abs(poseDelta.getTranslation().getX()) > VISION.poseXTolerance) {
-      return false;
-    }
+  //   if (Math.abs(poseDelta.getTranslation().getX()) > VISION.poseXTolerance) {
+  //     return false;
+  //   }
 
-    if (Math.abs(poseDelta.getTranslation().getY()) > VISION.poseYTolerance) {
-      return false;
-    }
+  //   if (Math.abs(poseDelta.getTranslation().getY()) > VISION.poseYTolerance) {
+  //     return false;
+  //   }
 
-    //    if (Math.abs(poseDelta.getTranslation().getZ()) > VISION.poseZTolerance) {
-    //      return false;
-    //    }
+  //   //    if (Math.abs(poseDelta.getTranslation().getZ()) > VISION.poseZTolerance) {
+  //   //      return false;
+  //   //    }
 
-    //    if (Math.abs(poseDelta.getRotation().getX()) > VISION.poseRollTolerance) {
-    //      return false;
-    //    }
-    //
-    //    if (Math.abs(poseDelta.getRotation().getY()) > VISION.posePitchTolerance) {
-    //      return false;
-    //    }
+  //   //    if (Math.abs(poseDelta.getRotation().getX()) > VISION.poseRollTolerance) {
+  //   //      return false;
+  //   //    }
+  //   //
+  //   //    if (Math.abs(poseDelta.getRotation().getY()) > VISION.posePitchTolerance) {
+  //   //      return false;
+  //   //    }
 
-    if (Math.abs(poseDelta.getRotation().getZ()) > VISION.poseYawTolerance) {
-      return false;
-    }
+  //   if (Math.abs(poseDelta.getRotation().getZ()) > VISION.poseYawTolerance) {
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   public boolean isCameraConnected(PhotonCamera camera) {
     return camera.isConnected();
@@ -229,23 +231,26 @@ public class Vision extends SubsystemBase {
     return String.join(" ", targets.stream().map(PhotonTrackedTarget::toString).toList());
   }
 
-  public boolean hasGamePieceTarget() {
-    NetworkTableEntry tv = NoteDetectionLimelight.getEntry("tv");
-    return tv.getDouble(0.0) == 1;
-  }
+  // ?
+  // public boolean hasGamePieceTarget() {
+  //   NetworkTableEntry tv = NoteDetectionLimelight.getEntry("tv");
+  //   return tv.getDouble(0.0) == 1;
+  // }
 
-  public double getRobotToGamePieceDegrees() {
-    double degreesRotation = 0.0;
-    if (hasGamePieceTarget()) {
-      NetworkTableEntry tx = NoteDetectionLimelight.getEntry("tx");
-      degreesRotation = tx.getDouble(0.0);
-    }
-    return degreesRotation;
-  }
+  // ?
+  // public double getRobotToGamePieceDegrees() {
+  //   double degreesRotation = 0.0;
+  //   if (hasGamePieceTarget()) {
+  //     NetworkTableEntry tx = NoteDetectionLimelight.getEntry("tx");
+  //     degreesRotation = tx.getDouble(0.0);
+  //   }
+  //   return degreesRotation;
+  // }
 
-  public Rotation2d getRobotToGamePieceRotation() {
-    return Rotation2d.fromDegrees(getRobotToGamePieceDegrees());
-  }
+  // ?
+  // public Rotation2d getRobotToGamePieceRotation() {
+  //   return Rotation2d.fromDegrees(getRobotToGamePieceDegrees());
+  // }
 
   public int getTargetAmount(PhotonCamera camera) {
     var result = camera.getLatestResult();
