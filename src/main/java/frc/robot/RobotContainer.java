@@ -26,10 +26,10 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.AlgaeIntake;
+import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.CoralOuttake;
+import frc.robot.subsystems.alphabot.AlgaeIntake;
+import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
@@ -40,8 +40,7 @@ import frc.robot.utils.Telemetry;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
+  private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
@@ -55,7 +54,7 @@ public class RobotContainer {
       new CommandXboxController(USB.xBoxController);
 
   private double MaxSpeed =
-      TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(SWERVE.kMaxRotationRadiansPerSecond)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -68,6 +67,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_swerveDrive = SWERVE.selectedDrivetrain;
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
 
     initSmartDashboard();

@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.constants.alphabot;
 
 public class ALGAE {
   public static final double kP = 0.0;

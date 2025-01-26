@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
+import frc.robot.generated.AlphaBotConstants;
+import frc.robot.generated.V2Constants;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
@@ -13,7 +15,8 @@ public class ROBOT {
   public static final boolean useSysID = false;
   public static final boolean useReplayLogs = false;
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
-
+  public static ROBOT_ID robotID = ROBOT_ID.SIM;
+  
   public static final double driveBaseWidth = Units.inchesToMeters(29);
   public static final double driveBaseLength = Units.inchesToMeters(29);
   public static final double robotHeight = Units.inchesToMeters(42);
@@ -24,11 +27,16 @@ public class ROBOT {
   }
 
   public enum ROBOT_ID {
-    // Robot Serial Numbers
-    FORTE("030cbc95"),
-    ALPHABOT("030cbcf0"),
-    GRIDLOCK("0306ce62"),
-    BOBOT("030e6a97"),
+    // Robot Serial Numbers (2023-2024)
+    // FORTE("030cbc95"),
+    // ALPHABOT_OLD("030cbcf0"),
+    // GRIDLOCK("0306ce62"),
+    // BOBOT("030e6a97"),
+    
+    // Robot Serial Numbers (2025)
+    ALPHABOT("Idk lol"),
+    V2("Idk lol"),
+    
     SIM("");
 
     private final String value;
@@ -61,36 +69,49 @@ public class ROBOT {
     }
   }
 
-  public static void initForte() {}
+//   public static void initForte() {}
 
-  public static void initAlphaBot() {}
+//   public static void initAlphaBotOld() {}
 
-  public static void initGridlock() {}
+//   public static void initGridlock() {}
 
-  public static void initBobot() {}
+//   public static void initBobot() {}
+
+  public static void initAlphaBot() {
+    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
+  }
+  
+  public static void initV2() {
+    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
+  }
 
   public static void initSim() {
     logMode = LOG_MODE.DEBUG;
-
-    // Different gear ratios seem to break SimpleJointedArmSim
-    //    ARM.gearRatio = 1.0;
+    
+    // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */
   }
 
   public static void initConstants() {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
-    if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
-      alert.setText("Setting Robot Constants for FORTE");
-      initForte();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
+    // if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
+    //   alert.setText("Setting Robot Constants for FORTE");
+    //   initForte();
+    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT_OLD.getSerial())) {
+    //   alert.setText("Setting Robot Constants for ALPHABOT (Old)");
+    //   initAlphaBotOld();
+    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.GRIDLOCK.getSerial())) {
+    //   alert.setText("Setting Robot Constants for Gridlock");
+    //   initGridlock();
+    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.BOBOT.getSerial())) {
+    //   alert.setText("Setting Robot Constants for Bobot");
+    //   initBobot();
+    if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
       alert.setText("Setting Robot Constants for ALPHABOT");
       initAlphaBot();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.GRIDLOCK.getSerial())) {
-      alert.setText("Setting Robot Constants for Gridlock");
-      initGridlock();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.BOBOT.getSerial())) {
-      alert.setText("Setting Robot Constants for Bobot");
-      initBobot();
+    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
+      alert.setText("Setting Robot Constants for V2");
+      initV2();
     } else if (RobotController.getSerialNumber().equals(ROBOT_ID.SIM.getSerial())
         && Robot.isSimulation()) {
       alert.setText("Setting Robot Constants for Sim");

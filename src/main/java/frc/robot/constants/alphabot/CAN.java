@@ -1,6 +1,6 @@
-package frc.robot.constants;
+package frc.robot.constants.alphabot;
 
-public class V2CAN {
+public class CAN {
   public static final String rioCanbus = "rio";
   public static String driveBaseCanbus = "drivebase";
 
@@ -19,22 +19,8 @@ public class V2CAN {
   public static final int backLeftTurnMotor = 25;
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
-
-  public static final int hopperIntakeMotor1 = 30;
-  public static final int hopperIntakeMotor2 = 31;
-
-  public static final int endEffectorPivotMotor = 32;
-  public static final int endEffectorOuttakeMotor = 35;
-  public static final int carriagePivotCanCoder = 36;
-
-  public static final int elevatorMotor1 = 33;
-  public static final int elevatorMotor2 = 34;
-
-  public static final int groundRollerMotor = 40;
-  public static final int groundPivotMotor = 41;
-  public static final int groundPivotCanCoder = 42;
-
-  public static final int cageGrabMotor = 50;
-  public static final int cageArmMotor = 51;
-  public static final int cageArmCanCoder = 52;
+  
+  public static final int coralOuttakeMotor = 30;
+  public static final int algaeMotor = 31;
 }
+
