@@ -1,6 +1,6 @@
 package frc.robot.constants;
 
-public class CAN {
+public class ALPHABOTCAN {
   public static final String rioCanbus = "rio";
   public static String driveBaseCanbus = "drivebase";
 

@@ -8,12 +8,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CAN;
+import frc.robot.constants.V2CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffector);
+  private final TalonFX m_endEffectorMotor = new TalonFX(V2CAN.endEffectorOuttakeMotor);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
