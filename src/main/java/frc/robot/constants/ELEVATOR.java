@@ -1,5 +1,5 @@
 package frc.robot.constants;
-
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class ELEVATOR {
@@ -7,17 +7,9 @@ public class ELEVATOR {
   // TODO: find correct measurements
   // SIM
   // public static final double kDistanceFromIntake = Units.inchesToMeters(17);
-  // public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
 
   public static final double upperLimitMeters = Units.inchesToMeters(21.50);
   public static final double lowerLimitMeters = Units.inchesToMeters(0.0);
-
-  // TODO: Verify gear ratio and sprocket radius
-  // public static final double gearRatio = 594.0 / 25.0;
-  // public static final double sprocketRadiusMeters = Units.inchesToMeters(1.432) / 2.0;
-  // public static final double sprocketRotationsToMeters = sprocketRadiusMeters * 2 * Math.PI;
-  // public static final double climberReduction = gearRatio * sprocketRotationsToMeters;
-  // public static final double carriageMassKg = 3.0;
 
   // TODO: figure this out
   // public static final double kMaxVel = Units.inchesToMeters(10);
@@ -33,6 +25,10 @@ public class ELEVATOR {
   public static final double kLimitedPercentOutputMultiplier = 0.5;
   public static final double sprocketRadiusMeters = Units.inchesToMeters(1.432) / 2.0;
   public static final double sprocketRotationsToMeters = sprocketRadiusMeters * 2 * Math.PI;
+  public static final double kElevatorGearing = 48.0 / 10;
+  public static final double kCarriageMassPounds = 15; // TODO: Change values after CAD done
+  public static final double kElevatorDrumRadius = Units.inchesToMeters(1);
+  public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
 
   public enum ELEVATOR_SETPOINT {
     START_POSITION(Units.inchesToMeters(0.0)),
@@ -53,4 +49,6 @@ public class ELEVATOR {
       return setpointMeters;
     }
   }
+
+
 }

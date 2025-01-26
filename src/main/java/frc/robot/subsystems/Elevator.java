@@ -10,23 +10,43 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
-
+import static edu.wpi.first.units.Units.*; //I'll use this later don't worrrryyyyy
 public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
   };
-
-  // TODO: Check if the data type has actually changed in documentation
+    // Simulation classes help us simulate what's going on, including gravity.
+  private final ElevatorSim m_elevatorSim =
+      new ElevatorSim(
+          ELEVATOR.gearbox,
+          ELEVATOR.kElevatorGearing,
+          ELEVATOR.kCarriageMassPounds,
+          ELEVATOR.kElevatorDrumRadius,
+          ELEVATOR.upperLimitMeters,
+          ELEVATOR.lowerLimitMeters,
+          true,
+          0,
+          0.01,
+          0.0);
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
@@ -35,6 +55,8 @@ public class Elevator extends SubsystemBase {
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private final TalonFXSimState m_motorSimState = elevatorMotors[0].getSimState();
+
 
 
   public Elevator() {
@@ -136,8 +158,12 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  @Override
   public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
+    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    m_elevatorSim.update(0.020);
+
+    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
+
   }
 }
