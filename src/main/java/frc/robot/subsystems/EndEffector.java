@@ -13,7 +13,7 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.EndEffector);
+  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffector);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
