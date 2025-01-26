@@ -297,9 +297,11 @@ public class Vision extends SubsystemBase {
       //         });
 
       // Correct pose estimate with vision measurements
+      limelightPhotonPoseEstimatorB.setReferencePose(m_swerveDriveTrain.getState().Pose);
       var visionEst = getEstimatedGlobalPose();
       visionEst.ifPresent(
           est -> {
+            DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = getEstimationStdDevs();
 
