@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.util.Units;
+import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class SWERVE {
@@ -19,7 +20,7 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
-  public static CommandSwerveDrivetrain selectedDrivetrain;
+  public static CommandSwerveDrivetrain selectedDrivetrain = V2Constants.createDrivetrain(); // V2 is the default
   
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =

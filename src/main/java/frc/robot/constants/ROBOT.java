@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 import frc.robot.generated.AlphaBotConstants;
-import frc.robot.generated.V2Constants;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
@@ -81,11 +80,9 @@ public class ROBOT {
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
   }
   
-  public static void initV2() {
-    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
-  }
+  public static void initV2() {} // V2 drivetrain is already the default
 
-  public static void initSim() {
+  public static void initSim() { // V2 drivetrain is the default
     logMode = LOG_MODE.DEBUG;
     
     // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */

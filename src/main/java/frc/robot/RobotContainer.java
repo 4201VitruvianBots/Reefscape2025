@@ -28,6 +28,7 @@ import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
@@ -42,8 +43,13 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
-  private final CoralOuttake m_coralOuttake = new CoralOuttake();
-  private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
+  
+  // AlphaBot subsystems
+  private CoralOuttake m_coralOuttake;
+  private AlgaeIntake m_algaeIntake;
+  
+  // V2 subsystems
+  private Elevator m_elevator;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -74,10 +80,18 @@ public class RobotContainer {
     initializeSubSystems();
 
     // Configure the trigger bindings
-    configureBindings();
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
+    else configureV2Bindings();
   }
 
   private void initializeSubSystems() {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
+      m_coralOuttake = new CoralOuttake();
+      m_algaeIntake = new AlgaeIntake();
+    } else {
+      m_elevator = new Elevator();
+    }
+    
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
@@ -155,26 +169,22 @@ public class RobotContainer {
         new SwerveCharacterization(
             m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_DYNAMIC));
   }
-
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
+  
+  private void configureAlphaBotBindings() {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
     m_driverController
         .rightBumper()
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+  }
+  
+  private void configureV2Bindings() {
+    
   }
 
   /**
