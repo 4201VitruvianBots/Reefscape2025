@@ -9,12 +9,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ALGAE;
-import frc.robot.constants.CAN;
+import frc.robot.constants.ALPHABOTCAN;
 import frc.robot.utils.CtreUtils;
 
 public class AlgaeIntake extends SubsystemBase {
 
-  private final TalonFX m_algaeMotor = new TalonFX(CAN.algaeMotor);
+  private final TalonFX m_algaeMotor = new TalonFX(ALPHABOTCAN.algaeMotor);
 
   /** Creates a new Algae. */
   public AlgaeIntake() {
