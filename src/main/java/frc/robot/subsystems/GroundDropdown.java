@@ -311,7 +311,7 @@ public class GroundDropdown extends SubsystemBase {
 
    m_dropdownSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
 
-   m_dropdownSim.update(Timer.getFPGATimestamp());
+   m_dropdownSim.update(0.020);
 
    m_simState.setRawRotorPosition(
        Units.radiansToRotations(m_dropdownSim.getAngleRads()) * DROPDOWN.gearRatio);
