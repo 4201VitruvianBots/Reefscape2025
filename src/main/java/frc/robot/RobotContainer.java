@@ -22,6 +22,7 @@ import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.SwerveCharacterization;
+import frc.robot.commands.TestAuto1;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -99,6 +100,7 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
   }
 
   private void initSmartDashboard() {
