@@ -101,7 +101,6 @@ public class RobotContainer {
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
-
   }
 
   private void initSmartDashboard() {
@@ -179,6 +178,7 @@ public class RobotContainer {
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
