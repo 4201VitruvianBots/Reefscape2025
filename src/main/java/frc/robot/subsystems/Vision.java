@@ -286,7 +286,7 @@ public class Vision extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       if (cameraBHasPose) m_localized = true;
     }
-    if (m_swerveDriveTrain != null && !DriverStation.isAutonomous()) {
+    if (m_swerveDriveTrain != null) {
       // final var globalPoseA = getEstimatedGlobalPose(limelightPhotonPoseEstimatorA);
       // globalPoseA.ifPresentOrElse(
       //     estimatedRobotPose -> {
@@ -322,9 +322,10 @@ public class Vision extends SubsystemBase {
 
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = getEstimationStdDevs();
-
+            
             m_swerveDriveTrain.addVisionMeasurement(
                 est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                  // DriverStation.reportWarning("Drivetrain called addVisionMeasurement()!", false);
           });
       //      final var globalPoseB = getEstimatedGlobalPose(limelightPhotonPoseEstimatorB);
       //      globalPoseB.ifPresent(

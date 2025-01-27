@@ -378,4 +378,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
+
+  @Override
+  public void addVisionMeasurement(Pose2d pose, double timestampSeconds) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  @Override
+  public void addVisionMeasurement(Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
+  }
 }
