@@ -9,9 +9,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -63,6 +64,14 @@ public class Vision extends SubsystemBase {
   private double /*cameraATimestamp,*/ cameraBTimestamp;
   private boolean cameraAHasPose, cameraBHasPose, poseAgreement;
   private boolean m_localized;
+
+  // Networktables publisher setup
+  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private final NetworkTable table = inst.getTable("VisionDebug");
+  private final DoublePublisher visionEstPoseTimestamp =
+      table.getDoubleTopic("EstPoseTimestamp").publish();
+  private final StructPublisher<Pose3d> visionEstPose =
+      table.getStructTopic("EstPose", Pose3d.struct).publish();
 
   public Vision() {
 
@@ -307,6 +316,10 @@ public class Vision extends SubsystemBase {
       visionEst.ifPresent(
           est -> {
             DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
+
+            visionEstPose.set(est.estimatedPose);
+            visionEstPoseTimestamp.set(est.timestampSeconds);
+
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = getEstimationStdDevs();
 
