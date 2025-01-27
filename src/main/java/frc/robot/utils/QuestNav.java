@@ -4,12 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.FloatArraySubscriber;
-import edu.wpi.first.networktables.IntegerPublisher;
-import edu.wpi.first.networktables.IntegerSubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -33,6 +28,7 @@ public class QuestNav {
   private DoubleSubscriber questBatteryPercent =
       nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
 
+ private StructPublisher<Pose2d> questNavPose = nt4Instance.getStructTopic("QuestNavPose", Pose2d.struct).publish();
   // Local heading helper variables
   private float yaw_offset = 0.0f;
   private Pose2d resetPosition = new Pose2d();
@@ -114,17 +110,14 @@ public class QuestNav {
     return new Pose2d(oculousPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
   }
 
-  // For testing only
-  // TODO: Cleanup
-  Field2d m_field2d = new Field2d();
+  public void periodic() {
+    // Republish questnav pose to work with AdvantageScope
+    questNavPose.set(getQuestNavPose());
+  }
 
   public void initSimulation() {
-    SmartDashboard.putData("QuestNav field", m_field2d);
   }
 
   public void simulationPeriodic() {
-    if (connected()) {
-      m_field2d.setRobotPose(getPose());
-    }
   }
 }

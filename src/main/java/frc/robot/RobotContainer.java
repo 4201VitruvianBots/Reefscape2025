@@ -15,9 +15,13 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -45,6 +49,8 @@ import frc.robot.subsystems.CoralOuttake;
 import frc.robot.utils.QuestNav;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import org.team4201.codex.simulation.FieldSim;
 import org.team4201.codex.utils.TrajectoryUtils;
@@ -208,6 +214,11 @@ public class RobotContainer {
     return m_chooser.getSelected();
   }
 
+  public void periodic() {
+    m_questNav.periodic();
+    m_fieldSim.addPoses("QuestNav", m_questNav.getPose());
+  }
+
   public void testInit() {
     m_coralOuttake.testInit();
   }
@@ -218,6 +229,5 @@ public class RobotContainer {
 
   public void simulationPeriodic() {
     m_fieldSim.simulationPeriodic();
-    m_questNav.simulationPeriodic();
   }
 }
