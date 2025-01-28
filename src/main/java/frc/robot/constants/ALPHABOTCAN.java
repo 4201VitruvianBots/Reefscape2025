@@ -22,5 +22,4 @@ public class ALPHABOTCAN {
 
   public static final int coralOuttakeMotor = 30;
   public static final int algaeMotor = 31;
-  public static final int endEffector = 35;
 }

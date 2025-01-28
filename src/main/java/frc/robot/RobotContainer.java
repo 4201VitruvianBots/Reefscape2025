@@ -175,7 +175,7 @@ public class RobotContainer {
     m_driverController
         .rightBumper()
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // ou,ttake
+    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     m_driverController.leftTrigger().whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); //
   }
