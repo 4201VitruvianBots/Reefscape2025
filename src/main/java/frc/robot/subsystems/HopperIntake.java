@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HOPPERINTAKE;
@@ -33,6 +32,11 @@ public class HopperIntake extends SubsystemBase {
     configBack.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configBack.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     CtreUtils.configureTalonFx(m_hopperIntakeMotors[1], configBack);
+  }
+
+  public void SetPercentOutput(double speed1, double speed2){
+    m_hopperIntakeMotors[0].set(speed1);
+    m_hopperIntakeMotors[1].set(speed2);
   }
 
   @Override
