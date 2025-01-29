@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+
 /** Add your docs here. */
 public class HOPPERINTAKE {
 
@@ -11,6 +13,8 @@ public class HOPPERINTAKE {
     public static final double kI = 0.00;
     public static final double kD = 0.00;
     public static final double gearRatio = 1.0 / 1.0;
+    public static final DCMotor hopperintakeGearbox = DCMotor.getKrakenX60(1);
+    public static final double Inertia = 0.001;
 
     public enum INTAKE_SPEED {
 

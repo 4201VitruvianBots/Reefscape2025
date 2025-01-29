@@ -6,10 +6,15 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HOPPERINTAKE;
@@ -20,9 +25,13 @@ import static edu.wpi.first.units.Units.*;
 public class HopperIntake extends SubsystemBase {
 
   private final TalonFX m_hopperIntakeMotor = new TalonFX(V2CAN.hopperIntakeMotor);
-   private final StatusSignal<AngularVelocity> m_velocitySignal1 = m_hopperIntakeMotor.getVelocity().clone();
+  private final StatusSignal<AngularVelocity> m_velocitySignal1 = m_hopperIntakeMotor.getVelocity().clone();
   private final StatusSignal<Voltage> m_voltageSignal1 = m_hopperIntakeMotor.getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal1 = m_hopperIntakeMotor.getTorqueCurrent().clone();
+  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+  private final DCMotorSim m_hopperIntakeMotorSim = 
+      new DCMotorSim(LinearSystemId.createDCMotorSystem(HOPPERINTAKE.hopperintakeGearbox, 
+      HOPPERINTAKE.gearRatio, HOPPERINTAKE.Inertia), HOPPERINTAKE.hopperintakeGearbox);
   
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -45,7 +54,21 @@ public class HopperIntake extends SubsystemBase {
     SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
   }
 
+  public void simulationPeriodic(){
+  }
+
   @Override
   public void periodic() {
+    m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    m_hopperIntakeMotorSim.setInputVoltage(
+      MathUtil.clamp(m_hopperIntakeMotorSimState.getMotorVoltage(), -12, 12));
+
+    // m_hopperIntakeMotorSim.update(RobotTime.getTimeDelta());
+
+    m_hopperIntakeMotorSimState.setRawRotorPosition(
+      m_hopperIntakeMotorSim.getAngularPositionRotations() * HOPPERINTAKE.gearRatio);
+  m_hopperIntakeMotorSimState.setRotorVelocity(
+      m_hopperIntakeMotorSim.getAngularVelocityRPM() * HOPPERINTAKE.gearRatio / 60.0);
   }
 }
