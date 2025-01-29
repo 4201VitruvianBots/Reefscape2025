@@ -7,6 +7,11 @@ package frc.robot.constants;
 /** Add your docs here. */
 public class HOPPERINTAKE {
 
+    public static final double kP = 0.10; //change these
+    public static final double kI = 0.00;
+    public static final double kD = 0.00;
+    public static final double gearRatio = 1.0 / 1.0;
+
     public enum INTAKE_SPEEDS {
 
         INTAKING(0.5, 0.5),
@@ -19,7 +24,7 @@ public class HOPPERINTAKE {
           this.value1 = value1;
           this.value2 = value2;
         }
-        
+
         public double get1() {
             return value1;
         }
