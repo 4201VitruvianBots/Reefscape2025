@@ -54,21 +54,22 @@ public class HopperIntake extends SubsystemBase {
     SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
   }
 
-  public void simulationPeriodic(){
-  }
-
   @Override
-  public void periodic() {
+  public void simulationPeriodic() {
     m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     m_hopperIntakeMotorSim.setInputVoltage(
       MathUtil.clamp(m_hopperIntakeMotorSimState.getMotorVoltage(), -12, 12));
 
-    // m_hopperIntakeMotorSim.update(RobotTime.getTimeDelta());
+    m_hopperIntakeMotorSim.update(0.02); // TODO update this later maybe?
 
     m_hopperIntakeMotorSimState.setRawRotorPosition(
       m_hopperIntakeMotorSim.getAngularPositionRotations() * HOPPERINTAKE.gearRatio);
   m_hopperIntakeMotorSimState.setRotorVelocity(
       m_hopperIntakeMotorSim.getAngularVelocityRPM() * HOPPERINTAKE.gearRatio / 60.0);
+  }
+
+  @Override
+  public void periodic() {
   }
 }
