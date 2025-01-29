@@ -12,24 +12,19 @@ public class HOPPERINTAKE {
     public static final double kD = 0.00;
     public static final double gearRatio = 1.0 / 1.0;
 
-    public enum INTAKE_SPEEDS {
+    public enum INTAKE_SPEED {
 
-        INTAKING(0.5, 0.5),
-        HOLDING_CORAL(0.5, 0.5); // TODO: update speeds later
+        INTAKING(0.5),
+        HOLDING_CORAL(0.5); // TODO: update speeds later
 
-        private final double value1;
-        private final double value2;
-        
-        INTAKE_SPEEDS(final double value1, final double value2) {
-          this.value1 = value1;
-          this.value2 = value2;
+        private final double value;
+
+        INTAKE_SPEED(final double value) {
+          this.value = value;
         }
 
-        public double get1() {
-            return value1;
-        }
-        public double get2() {
-            return value2;
+        public double get() {
+            return value;
         }
 
     }
