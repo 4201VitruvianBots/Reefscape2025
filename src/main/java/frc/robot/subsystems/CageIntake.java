@@ -31,10 +31,10 @@ import frc.robot.utils.CtreUtils;
 
 public class CageIntake extends SubsystemBase {
   private boolean m_isIntaking = false;
-  private LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
+  private LinearSystem<N2, N1, N2> intakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX m_cageIntake = new TalonFX(CAN.cageMotor);
   private final DCMotorSim m_cageIntakeSim =
-      new DCMotorSim(outtakePlant, CAGE.gearbox); 
+      new DCMotorSim(intakePlant, CAGE.gearbox); 
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
@@ -44,7 +44,7 @@ public class CageIntake extends SubsystemBase {
   private TalonFXSimState m_m_cageIntakeSimState = m_cageIntake.getSimState();
   // Test mode setup
   private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
-  private final NetworkTable coralOuttakeTab =
+  private final NetworkTable cageIntakeTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("CageIntake");
 
   /* Creates a new CageIntake. */
@@ -127,12 +127,12 @@ public class CageIntake extends SubsystemBase {
   }
 
   public void testInit() {
-    coralOuttakeTab.getDoubleTopic("kP").publish().set(CAGE.kP);
-    coralOuttakeTab.getDoubleTopic("kI").publish().set(CAGE.kI);
-    coralOuttakeTab.getDoubleTopic("kD").publish().set(CAGE.kD);
-    m_kP_subscriber = coralOuttakeTab.getDoubleTopic("kP").subscribe(CAGE.kP);
-    m_kI_subscriber = coralOuttakeTab.getDoubleTopic("kI").subscribe(CAGE.kI);
-    m_kD_subscriber = coralOuttakeTab.getDoubleTopic("kD").subscribe(CAGE.kD);
+    cageIntakeTab.getDoubleTopic("kP").publish().set(CAGE.kP);
+    cageIntakeTab.getDoubleTopic("kI").publish().set(CAGE.kI);
+    cageIntakeTab.getDoubleTopic("kD").publish().set(CAGE.kD);
+    m_kP_subscriber = cageIntakeTab.getDoubleTopic("kP").subscribe(CAGE.kP);
+    m_kI_subscriber = cageIntakeTab.getDoubleTopic("kI").subscribe(CAGE.kI);
+    m_kD_subscriber = cageIntakeTab.getDoubleTopic("kD").subscribe(CAGE.kD);
   }
 
   public void testPeriodic() {
