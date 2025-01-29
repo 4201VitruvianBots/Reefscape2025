@@ -16,7 +16,7 @@ import frc.robot.constants.V2CAN;
 public class EndEffectorWrist extends SubsystemBase {
 
   private final TalonFX m_pivotMotor = new TalonFX(V2CAN.endEffectorPivotMotor);
-  private final CANcoder m_pivotEncoder = new CANcoder(V2CAN.endEffecotrPivotCanCoder);
+  private final CANcoder m_pivotEncoder = new CANcoder(V2CAN.endEffectorPivotCanCoder);
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
