@@ -27,6 +27,7 @@ public class ELEVATOR {
   public static final double sprocketRotationsToMeters = sprocketRadiusMeters * 2 * Math.PI;
   public static final double kElevatorGearing = 48.0 / 10;
   public static final double kCarriageMassPounds = 15; // TODO: Change values after CAD done
+  public static final double gearRatio = 1.0 / 1.0; // TODO: Change values after CAD done
   public static final double kElevatorDrumRadius = Units.inchesToMeters(1);
   public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
 

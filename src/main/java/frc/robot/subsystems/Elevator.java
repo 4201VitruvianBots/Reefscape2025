@@ -166,19 +166,13 @@ public class Elevator extends SubsystemBase {
     m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    ElevatorSim.setInputVoltage(MathUtil.clamp(m_simState1.getMotorVoltage(), -12, 12));
-
-    ElevatorSim.update(RobotTime.getTimeDelta());
-
-    m_simState1.setRawRotorPosition(
-        ElevatorSim.getPositionMeters()
+    m_motorSimState.setRawRotorPosition(
+        m_elevatorSim.getPositionMeters()
             * ELEVATOR.gearRatio
             / ELEVATOR.sprocketRotationsToMeters);
-    m_simState1.setRotorVelocity(
-        ElevatorSim.getVelocityMetersPerSecond()
+    m_motorSimState.setRotorVelocity(
+        m_elevatorSim.getVelocityMetersPerSecond()
             * ELEVATOR.gearRatio
             / ELEVATOR.sprocketRotationsToMeters);
-  }
-    
   }
 }
