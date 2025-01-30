@@ -24,7 +24,7 @@ public class V2CAN {
 
   public static final int endEffectorPivotMotor = 32;
   public static final int endEffectorOuttakeMotor = 35;
-  public static final int carriagePivotCanCoder = 36;
+  public static final int endEffectorPivotCanCoder = 36;
 
   public static final int elevatorMotor1 = 33;
   public static final int elevatorMotor2 = 34;
