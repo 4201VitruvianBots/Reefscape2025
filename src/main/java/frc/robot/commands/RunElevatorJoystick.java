@@ -1,17 +1,15 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.Elevator;
+import java.util.function.DoubleSupplier;
 
 public class RunElevatorJoystick extends Command {
 
   private final Elevator m_elevator;
   private final DoubleSupplier m_joystickY;
-
 
   public RunElevatorJoystick(Elevator elevator, DoubleSupplier joystickY) {
     m_elevator = elevator;
@@ -20,9 +18,7 @@ public class RunElevatorJoystick extends Command {
   }
 
   @Override
-  public void initialize() {
-
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
@@ -35,8 +31,7 @@ public class RunElevatorJoystick extends Command {
 
       if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
     } else if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP) {
-      m_elevator.setDesiredPosition(
-          m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
+      m_elevator.setDesiredPosition(m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
 
       if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
     }

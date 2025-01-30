@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -11,30 +13,26 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.constants.ELEVATOR;
-import frc.robot.constants.ROBOT;
-import frc.robot.constants.V2CAN;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
+import frc.robot.constants.V2CAN;
 import frc.robot.utils.CtreUtils;
-import static edu.wpi.first.units.Units.*; //I'll use this later don't worrrryyyyy
+
 public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(V2CAN.elevatorMotor1), new TalonFX(V2CAN.elevatorMotor2) // These are just placeholders
+    new TalonFX(V2CAN.elevatorMotor1),
+    new TalonFX(V2CAN.elevatorMotor2) // These are just placeholders
   };
-    // Simulation classes help us simulate what's going on, including gravity.
+
+  // Simulation classes help us simulate what's going on, including gravity.
   private final ElevatorSim m_elevatorSim =
       new ElevatorSim(
           ELEVATOR.gearbox,
@@ -51,13 +49,11 @@ public class Elevator extends SubsystemBase {
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
-  private double m_joystickInput = 0.0;  
+  private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = elevatorMotors[0].getSimState();
-
-
 
   public Elevator() {
     TalonFXConfiguration configElevator = new TalonFXConfiguration();
@@ -77,6 +73,7 @@ public class Elevator extends SubsystemBase {
   public void holdElevator() {
     setDesiredPosition(getHeightMeters());
   }
+
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
   }
@@ -110,9 +107,10 @@ public class Elevator extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public CONTROL_MODE getClosedLoopControlMode(){
+  public CONTROL_MODE getClosedLoopControlMode() {
     return m_controlMode;
   }
+
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
@@ -126,22 +124,20 @@ public class Elevator extends SubsystemBase {
     return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
   }
 
-    // Sets the control state of the elevator
+  // Sets the control state of the elevator
   public void setClosedLoopControlMode(CONTROL_MODE mode) {
-      m_controlMode = mode;
+    m_controlMode = mode;
   }
-  
-  
+
   public boolean isClosedLoopControl() {
-      return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
-    }
-  
-  public void setClimberNeutralMode(NeutralModeValue mode) {
-      if (mode == m_neutralMode) return;
-      m_neutralMode = mode;
-      elevatorMotors[0].setNeutralMode(mode);
+    return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
-  
+
+  public void setClimberNeutralMode(NeutralModeValue mode) {
+    if (mode == m_neutralMode) return;
+    m_neutralMode = mode;
+    elevatorMotors[0].setNeutralMode(mode);
+  }
 
   @Override
   public void periodic() {

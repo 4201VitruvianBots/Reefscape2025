@@ -1,4 +1,5 @@
 package frc.robot.constants;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
@@ -50,6 +51,4 @@ public class ELEVATOR {
       return setpointMeters;
     }
   }
-
-
 }
