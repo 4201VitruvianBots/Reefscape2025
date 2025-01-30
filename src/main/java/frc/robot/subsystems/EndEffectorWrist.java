@@ -10,8 +10,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ENDEFFECTOR;
 
 public class EndEffectorWrist extends SubsystemBase {
 
