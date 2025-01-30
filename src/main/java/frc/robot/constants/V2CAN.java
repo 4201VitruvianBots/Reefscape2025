@@ -20,7 +20,9 @@ public class V2CAN {
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
 
-  public static final int hopperIntakeMotor = 30; //31 is just gone. it used to be the second motor, but phong removed that because of matt so i don't like matt
+  public static final int hopperIntakeMotor =
+      30; // 31 is just gone. it used to be the second motor, but phong removed that because of matt
+  // so i don't like matt
 
   public static final int endEffectorPivotMotor = 32;
   public static final int endEffectorOuttakeMotor = 35;
