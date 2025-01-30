@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.constants.alphabot;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 

@@ -21,15 +21,15 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.constants.V2CAN;
+import frc.robot.constants.CAN;
 import frc.robot.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(V2CAN.elevatorMotor1),
-    new TalonFX(V2CAN.elevatorMotor2) // These are just placeholders
+    new TalonFX(CAN.elevatorMotor1),
+    new TalonFX(CAN.elevatorMotor2) // These are just placeholders
   };
 
   // Simulation classes help us simulate what's going on, including gravity.

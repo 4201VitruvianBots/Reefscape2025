@@ -13,23 +13,21 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HOPPERINTAKE;
-import frc.robot.constants.V2CAN;
+import frc.robot.constants.CAN;
 import frc.robot.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
 
-  private final TalonFX m_hopperIntakeMotor = new TalonFX(V2CAN.hopperIntakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal1 =
-      m_hopperIntakeMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 =
-      m_hopperIntakeMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 =
-      m_hopperIntakeMotor.getTorqueCurrent().clone();
+  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
+  private final StatusSignal<AngularVelocity> m_velocitySignal1 = m_hopperIntakeMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal1 = m_hopperIntakeMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal1 = m_hopperIntakeMotor.getTorqueCurrent().clone();
   private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
