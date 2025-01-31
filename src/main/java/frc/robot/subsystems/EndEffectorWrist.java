@@ -10,13 +10,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
-import frc.robot.constants.V2CAN;
 
 public class EndEffectorWrist extends SubsystemBase {
 
-  private final TalonFX m_pivotMotor = new TalonFX(V2CAN.endEffectorPivotMotor);
-  private final CANcoder m_pivotEncoder = new CANcoder(V2CAN.endEffectorPivotCanCoder);
+  private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
+  private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
