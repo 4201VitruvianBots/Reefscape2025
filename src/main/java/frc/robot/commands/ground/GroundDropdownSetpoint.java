@@ -6,7 +6,6 @@ package frc.robot.commands.ground;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.GROUND;
 import frc.robot.constants.GROUND.DROPDOWN;
 import frc.robot.constants.GROUND.DROPDOWN.DROPDOWN_SETPOINT;
 import frc.robot.subsystems.GroundDropdown;
@@ -21,7 +20,7 @@ public class GroundDropdownSetpoint extends Command {
     m_groundDropdown = groundDropdown;
     m_setpoint = setpoint;
     m_auto = DriverStation.isAutonomous();
-    
+
     addRequirements(m_groundDropdown);
   }
 

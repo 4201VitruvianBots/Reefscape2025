@@ -17,10 +17,14 @@ public class GroundDropdownControlMode extends InstantCommand {
     m_groundDropdown = groundDropdown;
     m_controlMode = controlMode;
   }
-  
+
   /** Toggle control mode */
   public GroundDropdownControlMode(GroundDropdown groundDropdown) {
-    this(groundDropdown, groundDropdown.getControlMode() == CONTROL_MODE.CLOSED_LOOP ? CONTROL_MODE.OPEN_LOOP : CONTROL_MODE.CLOSED_LOOP);
+    this(
+        groundDropdown,
+        groundDropdown.getControlMode() == CONTROL_MODE.CLOSED_LOOP
+            ? CONTROL_MODE.OPEN_LOOP
+            : CONTROL_MODE.CLOSED_LOOP);
   }
 
   /** Called when the command is initially scheduled. */
@@ -28,7 +32,7 @@ public class GroundDropdownControlMode extends InstantCommand {
   public void initialize() {
     m_groundDropdown.setControlMode(m_controlMode);
   }
-  
+
   @Override
   public boolean runsWhenDisabled() {
     return true;
