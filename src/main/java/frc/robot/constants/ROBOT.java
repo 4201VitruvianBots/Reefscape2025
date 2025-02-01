@@ -15,7 +15,7 @@ public class ROBOT {
   public static final boolean useReplayLogs = false;
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
   public static ROBOT_ID robotID = ROBOT_ID.SIM;
-  
+
   public static final double driveBaseWidth = Units.inchesToMeters(29);
   public static final double driveBaseLength = Units.inchesToMeters(29);
   public static final double robotHeight = Units.inchesToMeters(42);
@@ -31,12 +31,12 @@ public class ROBOT {
     // ALPHABOT_OLD - 030cbcf0
     // GRIDLOCK - 0306ce62
     // BOBOT - 030e6a97
-    
+
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
     V2("32398ed"), // 23-2 Rio 2.0
     // 23-1 Rio 2.0 - 32381fb
-    
+
     SIM("");
 
     private final String value;
@@ -73,7 +73,7 @@ public class ROBOT {
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
     robotID = ROBOT_ID.ALPHABOT;
   }
-  
+
   public static void initV2() {
     robotID = ROBOT_ID.V2;
   } // V2 drivetrain is already the default
@@ -81,13 +81,13 @@ public class ROBOT {
   public static void initSim() { // V2 drivetrain is the default
     logMode = LOG_MODE.DEBUG;
     robotID = ROBOT_ID.SIM;
-    
+
     // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */
   }
 
   public static void initConstants() {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
-    
+
     if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
       alert.setText("Setting Robot Constants for ALPHABOT");
       initAlphaBot();

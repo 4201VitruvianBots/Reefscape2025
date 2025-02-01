@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
@@ -46,11 +45,11 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
-  
+
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
-  
+
   // V2 subsystems
   private Elevator m_elevator;
   private EndEffector m_endEffector;
@@ -96,7 +95,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
     }
-    
+
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
@@ -175,12 +174,12 @@ public class RobotContainer {
         new SwerveCharacterization(
             m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_DYNAMIC));
   }
-  
+
   private void configureAlphaBotBindings() {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    
+
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
     m_driverController
         .rightBumper()
@@ -188,11 +187,11 @@ public class RobotContainer {
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
   }
-  
+
   private void configureV2Bindings() {
     m_driverController
-    .leftTrigger()
-    .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+        .leftTrigger()
+        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
   }
 
   /**

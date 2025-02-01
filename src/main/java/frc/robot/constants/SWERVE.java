@@ -20,8 +20,9 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
-  public static CommandSwerveDrivetrain selectedDrivetrain = V2Constants.createDrivetrain(); // V2 is the default
-  
+  public static CommandSwerveDrivetrain selectedDrivetrain =
+      V2Constants.createDrivetrain(); // V2 is the default
+
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =
       Math.PI * 0.3; // temporary to reduce speed (original value 2.0) TODO: change back
