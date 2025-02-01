@@ -41,7 +41,7 @@ public class CAN {
   public static final int groundDropdownCANcoder = 42;
 
   // Climber
-  public static final int cageGrabberMotor = 50;
+  public static final int cageMotor = 50;
   public static final int climberMotor = 51;
 
   public static final int climberCANcoder = 52;
