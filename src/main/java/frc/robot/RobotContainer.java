@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveForward;
 import frc.robot.commands.ResetGyro;
-import frc.robot.commands.RunAlgaeIntake;
-import frc.robot.commands.RunCoralOuttake;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.SwerveCharacterization;
 import frc.robot.constants.ROBOT;
@@ -28,9 +26,7 @@ import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.CoralOuttake;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
@@ -45,8 +41,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CommandSwerveDrivetrain m_swerveDrive = TunerConstants.createDrivetrain();
   private final Telemetry m_telemetry = new Telemetry();
-  private final CoralOuttake m_coralOuttake = new CoralOuttake();
-  private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
   private final EndEffector m_endEffector = new EndEffector();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -170,13 +164,6 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
-    m_driverController
-        .rightBumper()
-        .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-    m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     m_driverController.leftTrigger().whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); //
   }
 
@@ -189,11 +176,7 @@ public class RobotContainer {
     return m_chooser.getSelected();
   }
 
-  public void testInit() {
-    m_coralOuttake.testInit();
-  }
+  public void testInit() {}
 
-  public void testPeriodic() {
-    m_coralOuttake.testPeriodic();
-  }
+  public void testPeriodic() {}
 }
