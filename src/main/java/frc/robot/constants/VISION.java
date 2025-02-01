@@ -20,17 +20,17 @@ public final class VISION {
   public static final double kLimelightDFOV = 75.07;
 
   public static final double aprilTagLimelightCameraADistanceFromCenterX =
-      Units.inchesToMeters(-7.590951);
+      Units.inchesToMeters(-14);
   public static final double aprilTagLimelightCameraADistanceFromCenterY =
-      Units.inchesToMeters(-9.541729);
+      Units.inchesToMeters(6.5);
   public static final double aprilTagLimelightCameraADistanceFromGroundZ =
-      Units.inchesToMeters(15.184963);
+      Units.inchesToMeters(14.6875);
   public static final double aprilTagLimelightCameraAOffsetInRadiansRoll =
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraAOffsetInRadiansPitch =
-      Units.degreesToRadians(6.172091);
+      Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraAOffsetInRadiansYaw =
-      Units.degreesToRadians(-145.513393);
+      Units.degreesToRadians(0);
 
   public static final double aprilTagLimelightCameraBDistanceFromCenterX = Units.inchesToMeters(14);
   public static final double aprilTagLimelightCameraBDistanceFromCenterY =
