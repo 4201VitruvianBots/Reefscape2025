@@ -4,14 +4,23 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ENDEFFECTOR;
+import frc.robot.constants.ROBOT;
 import frc.robot.constants.V2CAN;
+import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class EndEffectorWrist extends SubsystemBase {
 
@@ -20,9 +29,18 @@ public class EndEffectorWrist extends SubsystemBase {
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC();
+  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getCurrentRotation());
 
-  private double m_desiredRotations;
+  private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
+  private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
+
+  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
+  private double m_joystickInput;
+  private boolean m_limitJoystickInput;
+  private boolean m_enforceLimits;
+  private boolean m_userSetpoint;
+  
+  private Angle m_desiredRotations;
   private boolean m_pivotState;
 
   /** Creates a nepw EndEffectorWrist. */
@@ -43,12 +61,15 @@ public class EndEffectorWrist extends SubsystemBase {
     return m_pivotState;
   }
 
-  public void setPosition(double rotations) {
+  public void setPosition(Angle rotations) {
     m_desiredRotations =
-        MathUtil.clamp(rotations, ENDEFFECTOR.minAngleDegrees, ENDEFFECTOR.maxAngleDegrees);
+        Degrees.of(MathUtil.clamp(
+          rotations.in(Degrees),
+          ENDEFFECTOR.minAngle.in(Degrees),
+          ENDEFFECTOR.maxAngle.in(Degrees)));
   }
 
-  public double getPosition() {
+  public Angle getPosition() {
     return m_desiredRotations;
   }
 
@@ -60,8 +81,53 @@ public class EndEffectorWrist extends SubsystemBase {
     return m_pivotMotor.get();
   }
 
+  public Angle getCurrentRotation() {
+    m_positionSignal.refresh();
+    return m_positionSignal.getValue();
+  }
+
+  public void resetMotionMagicState() {
+    m_desiredRotations = getCurrentRotation();
+    m_pivotMotor.setControl(m_request.withPosition(m_desiredRotations));
+  }
+
+  public void resetEncoderPosition() {
+    resetEncoderPosition(ENDEFFECTOR.startingAngle);
+  }
+
+  public void resetEncoderPosition(Angle angle) {
+    m_pivotMotor.setPosition(angle);
+    resetMotionMagicState();
+  }
+
+  public void setControlLoop(CONTROL_MODE mode) {
+    m_controlMode = mode;
+  }
+
+  public CONTROL_MODE getControlLoop() {
+    return m_controlMode;
+  }
+
+  public void setJoystickLimit(boolean limit) {
+    m_limitJoystickInput = limit;
+  }
+
+  public void setJoystick(double m_joystickY) {
+    m_joystickInput = m_joystickY;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    switch (m_controlMode) {
+      case CLOSED_LOOP:
+        m_pivotMotor.setControl(m_request.withPosition(m_desiredRotations));
+        break;
+      case OPEN_LOOP:
+      default:
+        double percentOutput = m_joystickInput * ENDEFFECTOR.kPercentOutputMultiplier;
+        setPercentOutput(percentOutput);
+        break;
+    }
   }
 }
