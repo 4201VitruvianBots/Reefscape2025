@@ -4,33 +4,28 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.constants.ROBOT;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
-import static edu.wpi.first.units.Units.*; //I'll use this later don't worrrryyyyy
+
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
-  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);// These are just placeholders
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
+
   //   // Simulation classes help us simulate what's going on, including gravity.
   //     // Simulation classes help us simulate what's going on, including gravity.
   // private final ElevatorSim m_climberSim =
@@ -49,13 +44,11 @@ public class Climber extends SubsystemBase {
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_climberInitialized;
-  private double m_joystickInput = 0.0;  
+  private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
-
-
 
   public Climber() {
     TalonFXConfiguration configclimber = new TalonFXConfiguration();
@@ -71,6 +64,7 @@ public class Climber extends SubsystemBase {
   public void holdclimber() {
     setDesiredPosition(getHeightMeters());
   }
+
   public void setPercentOutput(double output) {
     climberMotor.set(output);
   }
@@ -104,9 +98,10 @@ public class Climber extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public CONTROL_MODE getClosedLoopControlMode(){
+  public CONTROL_MODE getClosedLoopControlMode() {
     return m_controlMode;
   }
+
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
@@ -120,22 +115,20 @@ public class Climber extends SubsystemBase {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
   }
 
-    // Sets the control state of the climber
+  // Sets the control state of the climber
   public void setClosedLoopControlMode(CONTROL_MODE mode) {
-      m_controlMode = mode;
+    m_controlMode = mode;
   }
-  
-  
+
   public boolean isClosedLoopControl() {
-      return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
-    }
-  
-  public void setClimberNeutralMode(NeutralModeValue mode) {
-      if (mode == m_neutralMode) return;
-      m_neutralMode = mode;
-      climberMotor.setNeutralMode(mode);
+    return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
-  
+
+  public void setClimberNeutralMode(NeutralModeValue mode) {
+    if (mode == m_neutralMode) return;
+    m_neutralMode = mode;
+    climberMotor.setNeutralMode(mode);
+  }
 
   @Override
   public void periodic() {

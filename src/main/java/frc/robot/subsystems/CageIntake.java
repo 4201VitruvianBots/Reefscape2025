@@ -25,16 +25,15 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CAN;
 import frc.robot.constants.CAGE;
+import frc.robot.constants.CAN;
 import frc.robot.utils.CtreUtils;
 
 public class CageIntake extends SubsystemBase {
   private boolean m_isIntaking = false;
   private LinearSystem<N2, N1, N2> intakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX m_cageIntake = new TalonFX(CAN.cageMotor);
-  private final DCMotorSim m_cageIntakeSim =
-      new DCMotorSim(intakePlant, CAGE.gearbox); 
+  private final DCMotorSim m_cageIntakeSim = new DCMotorSim(intakePlant, CAGE.gearbox);
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
