@@ -20,9 +20,29 @@ public class CAN {
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
 
-  public static final int coralOuttakeMotor = 30;
-  public static final int algaeMotor = 31;
+  public static final int hopperIntakeMotor =
+      30; // 31 is just gone. it used to be the second motor, but phong removed that because of matt
+  // so i don't like matt
 
+  public static final int endEffectorPivotMotor = 32;
+  public static final int endEffectorOuttakeMotor = 35;
+  public static final int endEffectorPivotCanCoder = 36;
+
+  public static final int elevatorMotor1 = 33;
+  public static final int elevatorMotor2 = 34;
+  public static final int endEffectorMotor = 35;
+
+  public static final int outtakePivotCANcoder = 36;
+
+  // L1/Ground
+  public static final int groundRollerMotor = 40;
+  public static final int groundDropdownMotor = 41;
+
+  public static final int groundDropdownCANcoder = 42;
+
+  // Climber
   public static final int cageMotor = 50;
   public static final int climberMotor = 51;
+
+  public static final int climberCANcoder = 52;
 }
