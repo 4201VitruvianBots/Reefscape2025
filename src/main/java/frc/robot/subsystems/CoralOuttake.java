@@ -25,14 +25,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ALPHABOTCAN;
-import frc.robot.constants.CORALOUTTAKE;
+import frc.robot.constants.alphabot.CAN;
+import frc.robot.constants.alphabot.CORALOUTTAKE;
 import frc.robot.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
   private LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
-  private final TalonFX outtakeMotor = new TalonFX(ALPHABOTCAN.coralOuttakeMotor);
+  private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   private final DCMotorSim outtakeMotorSim =
       new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); // TODO implement sim code
   private double m_desiredPercentOutput;

@@ -17,12 +17,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveForward;
-import frc.robot.commands.ResetGyro;
-import frc.robot.commands.RunAlgaeIntake;
-import frc.robot.commands.RunCoralOuttake;
-import frc.robot.commands.SwerveCharacterization;
-import frc.robot.commands.TestAuto1;
+import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.alphabot.RunAlgaeIntake;
+import frc.robot.commands.alphabot.RunCoralOuttake;
+import frc.robot.commands.autos.DriveForward;
+import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.swerve.ResetGyro;
+import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -31,6 +32,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
+import frc.robot.subsystems.EndEffector;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import frc.robot.visualizers.SuperStructureVisualizer;
@@ -47,6 +49,7 @@ public class RobotContainer {
   private final Telemetry m_telemetry = new Telemetry();
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
+  private final EndEffector m_endEffector = new EndEffector();
   
   private final SuperStructureVisualizer m_visualizer = new SuperStructureVisualizer();
 
@@ -180,6 +183,9 @@ public class RobotContainer {
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+    m_driverController
+        .leftTrigger()
+        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
   }
 
   /**
