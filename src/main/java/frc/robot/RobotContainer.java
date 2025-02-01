@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveForward;
-import frc.robot.commands.ResetGyro;
-import frc.robot.commands.RunAlgaeIntake;
-import frc.robot.commands.RunCoralOuttake;
-import frc.robot.commands.SwerveCharacterization;
+import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.alphabot.RunAlgaeIntake;
+import frc.robot.commands.alphabot.RunCoralOuttake;
+import frc.robot.commands.autos.DriveForward;
+import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.swerve.ResetGyro;
+import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -29,6 +31,7 @@ import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
@@ -50,6 +53,7 @@ public class RobotContainer {
   
   // V2 subsystems
   private Elevator m_elevator;
+  private EndEffector m_endEffector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -90,6 +94,7 @@ public class RobotContainer {
       m_algaeIntake = new AlgaeIntake();
     } else {
       m_elevator = new Elevator();
+      m_endEffector = new EndEffector();
     }
     
     m_swerveDrive.setDefaultCommand(
@@ -113,6 +118,7 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
   }
 
   private void initSmartDashboard() {
@@ -184,7 +190,9 @@ public class RobotContainer {
   }
   
   private void configureV2Bindings() {
-    
+    m_driverController
+    .leftTrigger()
+    .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
   }
 
   /**

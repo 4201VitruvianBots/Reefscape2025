@@ -71,35 +71,27 @@ public class ROBOT {
 
   public static void initAlphaBot() {
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
+    robotID = ROBOT_ID.ALPHABOT;
   }
   
-  public static void initV2() {} // V2 drivetrain is already the default
+  public static void initV2() {
+    robotID = ROBOT_ID.V2;
+  } // V2 drivetrain is already the default
 
   public static void initSim() { // V2 drivetrain is the default
     logMode = LOG_MODE.DEBUG;
+    robotID = ROBOT_ID.SIM;
     
     // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */
   }
 
   public static void initConstants() {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
-
-    // if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
-    //   alert.setText("Setting Robot Constants for FORTE");
-    //   initForte();
-    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT_OLD.getSerial())) {
-    //   alert.setText("Setting Robot Constants for ALPHABOT (Old)");
-    //   initAlphaBotOld();
-    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.GRIDLOCK.getSerial())) {
-    //   alert.setText("Setting Robot Constants for Gridlock");
-    //   initGridlock();
-    // } else if (RobotController.getSerialNumber().equals(ROBOT_ID.BOBOT.getSerial())) {
-    //   alert.setText("Setting Robot Constants for Bobot");
-    //   initBobot();
+    
     if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
       alert.setText("Setting Robot Constants for ALPHABOT");
       initAlphaBot();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
+    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V2.getSerial())) {
       alert.setText("Setting Robot Constants for V2");
       initV2();
     } else if (RobotController.getSerialNumber().equals(ROBOT_ID.SIM.getSerial())
