@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -18,7 +19,7 @@ import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
   private final TalonFX endEffectorMotor = new TalonFX(V2CAN.endEffectorOuttakeMotor);
-
+VoltageConfigs m_voltageConfigs = new VoltageConfigs();
   /** Creates a new EndEffector. */
   public EndEffector() {
     TalonFXConfiguration m_endEffectorMotorconfig = new TalonFXConfiguration();
@@ -28,6 +29,8 @@ public class EndEffector extends SubsystemBase {
     m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.endEffectorGearRatio;
     CtreUtils.configureTalonFx(endEffectorMotor, m_endEffectorMotorconfig);
+
+    m_voltageConfigs.PeakForwardVoltage = 12;
   }
 
   public void setPercentOutput(double output) {
