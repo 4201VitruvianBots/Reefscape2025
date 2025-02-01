@@ -27,14 +27,15 @@ public class ROBOT {
 
   public enum ROBOT_ID {
     // Robot Serial Numbers (2023-2024)
-    // FORTE("030cbc95"),
-    // ALPHABOT_OLD("030cbcf0"),
-    // GRIDLOCK("0306ce62"),
-    // BOBOT("030e6a97"),
+    // FORTE - 030cbc95
+    // ALPHABOT_OLD - 030cbcf0
+    // GRIDLOCK - 0306ce62
+    // BOBOT - 030e6a97
     
     // Robot Serial Numbers (2025)
-    ALPHABOT("Idk lol"),
-    V2("Idk lol"),
+    ALPHABOT("030cbc95"), // Rio 1.0
+    V2("32398ed"), // 23-2 Rio 2.0
+    // 23-1 Rio 2.0 - 32381fb
     
     SIM("");
 
@@ -67,14 +68,6 @@ public class ROBOT {
       return value;
     }
   }
-
-//   public static void initForte() {}
-
-//   public static void initAlphaBotOld() {}
-
-//   public static void initGridlock() {}
-
-//   public static void initBobot() {}
 
   public static void initAlphaBot() {
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
