@@ -5,20 +5,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.AlgaeIntake;
+import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RunAlgaeIntake extends Command {
+public class RunEndEffectorIntake extends Command {
 
-  private final AlgaeIntake m_algaeIntake;
+  private final EndEffector m_EndEffector;
   private final double m_speed;
 
   /** Creates a new SetAlgaeIntakeSpeed. */
-  public RunAlgaeIntake(AlgaeIntake algae, double speed) {
-    m_algaeIntake = algae;
+  public RunEndEffectorIntake(EndEffector endeffector, double speed) {
+    m_EndEffector = endeffector;
     m_speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_algaeIntake);
+    addRequirements(m_EndEffector);
   }
 
   // Called when the command is initially scheduled.
@@ -28,13 +28,13 @@ public class RunAlgaeIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_algaeIntake.setPercentOutput(m_speed);
+    m_EndEffector.setPercentOutput(m_speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_algaeIntake.setPercentOutput(0);
+    m_EndEffector.setPercentOutput(0);
   }
 
   // Returns true when the command should end.

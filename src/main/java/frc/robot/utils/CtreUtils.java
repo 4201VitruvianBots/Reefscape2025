@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.ALPHABOTCAN;
+import frc.robot.constants.CAN;
 
 // TODO: This class is also a mess
 public final class CtreUtils {
@@ -23,7 +23,7 @@ public final class CtreUtils {
         new Alert("Starting Phoenix Server at: " + Timer.getFPGATimestamp(), AlertType.kInfo);
     alert.set(true);
     if (RobotBase.isReal()) {
-      TalonFX dummy = new TalonFX(0, ALPHABOTCAN.driveBaseCanbus);
+      TalonFX dummy = new TalonFX(0, CAN.driveBaseCanbus);
       Timer.delay(5);
       dummy.close();
       dummy = null;
