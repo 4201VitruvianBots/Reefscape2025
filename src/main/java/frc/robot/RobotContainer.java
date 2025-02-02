@@ -8,20 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -40,6 +27,7 @@ import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -52,11 +40,8 @@ import frc.robot.subsystems.EndEffector;
 import frc.robot.utils.QuestNav;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
-
-import java.net.NetworkInterface;
-import java.util.ArrayList;
+import java.util.Arrays;
 import org.team4201.codex.simulation.FieldSim;
-import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -97,7 +82,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-
     initSmartDashboard();
     initializeSubSystems();
 
@@ -235,7 +219,50 @@ public class RobotContainer {
     m_coralOuttake.testPeriodic();
   }
 
+  public void simulationInit() {
+
+    //    m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+    m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
+    m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+
+    m_fieldSim.initializePoses(
+        "RED_REEF_NEAR_LEFT AprilTag", FIELD.APRIL_TAG.RED_REEF_NEAR_LEFT.getPose2d());
+    m_fieldSim.initializePoses(
+        "RED_REEF_NEAR_LEFT_LEFT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_LEFT.getPose2d());
+    m_fieldSim.initializePoses(
+        "RED_REEF_NEAR_LEFT_RIGHT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_RIGHT.getPose2d());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_RIGHT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_RIGHT.getZone());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER AprilTag",
+    // FIELD.APRIL_TAG.RED_REEF_NEAR_CENTER.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_LEFT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_LEFT.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_RIGHT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_RIGHT.getPose2d());
+  }
+
   public void simulationPeriodic() {
-    m_fieldSim.simulationPeriodic();
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+            });
   }
 }

@@ -7,8 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class QuestNav {
   // Configure Network Tables topics (questnav/...) to communicate with the Quest HMD
@@ -28,7 +26,8 @@ public class QuestNav {
   private DoubleSubscriber questBatteryPercent =
       nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
 
- private StructPublisher<Pose2d> questNavPose = nt4Instance.getStructTopic("QuestNavPose", Pose2d.struct).publish();
+  private StructPublisher<Pose2d> questNavPose =
+      nt4Instance.getStructTopic("QuestNavPose", Pose2d.struct).publish();
   // Local heading helper variables
   private float yaw_offset = 0.0f;
   private Pose2d resetPosition = new Pose2d();
@@ -115,9 +114,7 @@ public class QuestNav {
     questNavPose.set(getQuestNavPose());
   }
 
-  public void initSimulation() {
-  }
+  public void initSimulation() {}
 
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }
