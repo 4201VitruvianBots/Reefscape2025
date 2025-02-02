@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 
 public class ENDEFFECTOR {
@@ -9,6 +10,8 @@ public class ENDEFFECTOR {
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double endEffectorGearRatio = 1.0;
+public static DCMotor endeffectorGearbox = DCMotor.getKrakenX60(1);
+public static final double Inertia = 0.001;
 
   // Pivot motor stuff
   public static final Angle minAngle = Degrees.of(0.0);
