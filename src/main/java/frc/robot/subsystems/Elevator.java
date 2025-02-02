@@ -16,6 +16,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,7 +51,7 @@ public class Elevator extends SubsystemBase {
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
   private boolean m_elevatorInitialized;
-  private double m_joystickInput = 0.0;
+  private double m_joystickInput;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
@@ -69,7 +70,7 @@ public class Elevator extends SubsystemBase {
     configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
     configElevator.MotionMagic.MotionMagicAcceleration = 200;
     m_motorSimState = elevatorMotors[0].getSimState();
-    elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
+    elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
     SmartDashboard.putData(this);
   }
 
@@ -147,9 +148,7 @@ public class Elevator extends SubsystemBase {
     setDesiredPosition(getHeightMeters());
   }
 
-  
-
-
+  @Override
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
@@ -173,6 +172,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Desired Height", m_desiredPositionMeters);
     SmartDashboard.putNumber("Motor Voltage", getMotorVoltage());
     SmartDashboard.putNumber("Motor Rotations", getMotorRotations());
+    SmartDashboard.putNumber("Joystick Input", m_joystickInput);
+    SmartDashboard.putBoolean("isClosedLoop", isClosedLoopControl());
   }
 
   @Override

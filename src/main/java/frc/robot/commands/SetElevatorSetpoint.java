@@ -28,6 +28,7 @@ public class SetElevatorSetpoint extends Command {
   @Override
   public void end(boolean interruped) {}
 
+  @Override
   public boolean isFinished() {
     return false;
   }

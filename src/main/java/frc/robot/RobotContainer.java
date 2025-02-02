@@ -101,7 +101,7 @@ public class RobotContainer {
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
 
             ));
-    m_elevator.setDefaultCommand(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION));
+    m_elevator.setDefaultCommand(new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
   }
 
   private void initAutoChooser() {
