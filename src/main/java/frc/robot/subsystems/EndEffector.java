@@ -9,8 +9,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ENDEFFECTOR;
@@ -18,8 +21,17 @@ import frc.robot.constants.V2CAN;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX endEffectorMotor = new TalonFX(V2CAN.endEffectorOuttakeMotor);
-VoltageConfigs m_voltageConfigs = new VoltageConfigs();
+private final TalonFX m_endEffector = new TalonFX(V2CAN.endEffectorOuttakeMotor);
+private final StatusSignal <AngularVelocity> m_velocitySignal1 = 
+m_endEffector.getVelocity().clone();
+private final StatusSignal<Voltage> m_voltageSignal1 =
+m_endEffector.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal1 =
+  m_endEffector.getTorqueCurrent().clone();
+    private final TalonFXSimState m_endEffectorMotorSimState =
+    m_endEffector.getSimState();
+
+
   /** Creates a new EndEffector. */
   public EndEffector() {
     TalonFXConfiguration m_endEffectorMotorconfig = new TalonFXConfiguration();
@@ -28,20 +40,19 @@ VoltageConfigs m_voltageConfigs = new VoltageConfigs();
     m_endEffectorMotorconfig.Slot0.kD = ENDEFFECTOR.kD;
     m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.endEffectorGearRatio;
-    CtreUtils.configureTalonFx(endEffectorMotor, m_endEffectorMotorconfig);
+    CtreUtils.configureTalonFx(m_endEffector, m_endEffectorMotorconfig);
 
-    m_voltageConfigs.PeakForwardVoltage = 12;
   }
 
   public void setPercentOutput(double output) {
-    endEffectorMotor.set(output);
+    m_endEffector.set(output);
   }
 
   public void getspeed() {
-    endEffectorMotor.getVelocity();
+    m_endEffector.getVelocity();
   }
 
-  public void updateSmartDashboard() {}
+  public void updatelogger() {}
 
 
   
