@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Controls extends SubsystemBase {
@@ -28,5 +30,6 @@ public class Controls extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putString("Controls/Serial Number", RobotController.getSerialNumber());
   }
 }
