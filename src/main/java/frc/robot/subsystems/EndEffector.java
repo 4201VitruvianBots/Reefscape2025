@@ -11,9 +11,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ENDEFFECTOR;
@@ -28,9 +31,12 @@ private final StatusSignal<Voltage> m_voltageSignal1 =
 m_endEffector.getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal1 =
   m_endEffector.getTorqueCurrent().clone();
-    private final TalonFXSimState m_endEffectorMotorSimState =
+    private final TalonFXSimState m_endEffectorSimState =
     m_endEffector.getSimState();
-
+// private final DCMotorSim m_endEffectorSimState = 
+// new DCMotorSim(
+//   LinearSystemId.createDCMotorSystem()
+// );
 
   /** Creates a new EndEffector. */
   public EndEffector() {
