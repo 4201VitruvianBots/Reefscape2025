@@ -21,17 +21,21 @@ import frc.robot.commands.DriveForward;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.RunAlgaeIntake;
 import frc.robot.commands.RunCoralOuttake;
+import frc.robot.commands.RunElevatorJoystick;
 import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.SetElevatorSetpoint;
 import frc.robot.commands.SwerveCharacterization;
 import frc.robot.commands.TestAuto1;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
@@ -49,6 +53,7 @@ public class RobotContainer {
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
   private final EndEffector m_endEffector = new EndEffector();
+  private final Elevator m_elevator = new Elevator();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -94,7 +99,9 @@ public class RobotContainer {
                     .withRotationalRate(
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
+
             ));
+    m_elevator.setDefaultCommand(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION));
   }
 
   private void initAutoChooser() {
@@ -182,6 +189,7 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    m_driverController.a().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
   }
 
   /**

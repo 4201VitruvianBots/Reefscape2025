@@ -9,15 +9,15 @@ public class ELEVATOR {
   // SIM
   // public static final double kDistanceFromIntake = Units.inchesToMeters(17);
 
-  public static final double upperLimitMeters = Units.inchesToMeters(21.50);
-  public static final double lowerLimitMeters = Units.inchesToMeters(0.0);
+  public static final double upperLimitMeters = Units.inchesToMeters(21.5);
+  public static final double lowerLimitMeters = Units.inchesToMeters(0);
 
   // TODO: figure this out
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
   public static final double kP =
-      0.1; // none of these are tuned in any capacity so we should probably do that
+      100000; // none of these are tuned in any capacity so we should probably do that
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kA = 0.1;

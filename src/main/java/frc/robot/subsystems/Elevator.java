@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
@@ -39,11 +40,11 @@ public class Elevator extends SubsystemBase {
           ELEVATOR.kElevatorGearing,
           ELEVATOR.kCarriageMassPounds,
           ELEVATOR.kElevatorDrumRadius,
-          ELEVATOR.upperLimitMeters,
           ELEVATOR.lowerLimitMeters,
-          true,
+          ELEVATOR.upperLimitMeters,
+          false,
           0,
-          0.01,
+          0.0,
           0.0);
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
@@ -53,7 +54,7 @@ public class Elevator extends SubsystemBase {
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-  private final TalonFXSimState m_motorSimState = elevatorMotors[0].getSimState();
+  private final TalonFXSimState m_motorSimState;
 
   public Elevator() {
     TalonFXConfiguration configElevator = new TalonFXConfiguration();
@@ -67,7 +68,9 @@ public class Elevator extends SubsystemBase {
 
     configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
     configElevator.MotionMagic.MotionMagicAcceleration = 200;
+    m_motorSimState = elevatorMotors[0].getSimState();
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
+    SmartDashboard.putData(this);
   }
 
   public void holdElevator() {
@@ -139,20 +142,13 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].setNeutralMode(mode);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    switch (m_controlMode) {
-      case CLOSED_LOOP:
-        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));
-        break;
-      case OPEN_LOOP:
-      default:
-        double percentOutput = m_joystickInput * ELEVATOR.kPercentOutputMultiplier;
-        setPercentOutput(percentOutput);
-        break;
-    }
+  public void teleopInit() {
+    holdElevator();
+    setDesiredPosition(getHeightMeters());
   }
+
+  
+
 
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
@@ -170,5 +166,28 @@ public class Elevator extends SubsystemBase {
         m_elevatorSim.getVelocityMetersPerSecond()
             * ELEVATOR.gearRatio
             / ELEVATOR.sprocketRotationsToMeters);
+  }
+
+  private void updateSmartDashboard() {
+    SmartDashboard.putNumber("Elevator Height", getHeightMeters());
+    SmartDashboard.putNumber("Elevator Desired Height", m_desiredPositionMeters);
+    SmartDashboard.putNumber("Motor Voltage", getMotorVoltage());
+    SmartDashboard.putNumber("Motor Rotations", getMotorRotations());
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    switch (m_controlMode) {
+      case CLOSED_LOOP:
+        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));
+        break;
+      case OPEN_LOOP:
+      default:
+        double percentOutput = m_joystickInput * ELEVATOR.kPercentOutputMultiplier;
+        setPercentOutput(percentOutput); 
+        break;
+    }
+    updateSmartDashboard();
   }
 }
