@@ -86,6 +86,10 @@ public class EndEffectorWrist extends SubsystemBase {
     return m_positionSignal.getValue();
   }
 
+  public double getCANcoderAngle() {
+    return m_pivotEncoder.getAbsolutePosition().getValueAsDouble() * 360;
+  }
+
   public void resetMotionMagicState() {
     m_desiredRotations = getCurrentRotation();
     m_pivotMotor.setControl(m_request.withPosition(m_desiredRotations));
@@ -100,11 +104,11 @@ public class EndEffectorWrist extends SubsystemBase {
     resetMotionMagicState();
   }
 
-  public void setControlLoop(CONTROL_MODE mode) {
+  public void setControlMode(CONTROL_MODE mode) {
     m_controlMode = mode;
   }
 
-  public CONTROL_MODE getControlLoop() {
+  public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
 
@@ -112,7 +116,7 @@ public class EndEffectorWrist extends SubsystemBase {
     m_limitJoystickInput = limit;
   }
 
-  public void setJoystick(double m_joystickY) {
+  public void setJoystickY(double m_joystickY) {
     m_joystickInput = m_joystickY;
   }
 
