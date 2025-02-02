@@ -72,15 +72,15 @@ new DCMotorSim(
   public void simulationPeriodic() {
     m_endEffectorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(
+    m_endEffectorsim.setInputVoltage(
         MathUtil.clamp(m_endEffectorSim.getMotorVoltage(), -12, 12));
 
-        m_endEffectorSim.update(0.02); // TODO update this later maybe?
+        m_endEffectorsim.update(0.02); // TODO update this later maybe?
 
         m_endEffectorSim.setRawRotorPosition(
-          m_endEffectorSim.getAngularPositionRotations() * ENDEFFECTOR.endEffectorGearRatio);
+          m_endEffectorsim.getAngularPositionRotations() * ENDEFFECTOR.endEffectorGearRatio);
           m_endEffectorSim.setRotorVelocity(
-            m_endEffectorSim.getAngularVelocityRPM() * ENDEFFECTOR.endEffectorGearRatio / 60.0);
+            m_endEffectorsim.getAngularVelocityRPM() * ENDEFFECTOR.endEffectorGearRatio / 60.0);
   }
 
   
