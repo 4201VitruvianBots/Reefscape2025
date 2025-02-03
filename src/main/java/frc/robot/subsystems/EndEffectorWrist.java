@@ -17,15 +17,15 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ROBOT;
-import frc.robot.constants.V2CAN;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class EndEffectorWrist extends SubsystemBase {
 
-  private final TalonFX m_pivotMotor = new TalonFX(V2CAN.endEffectorPivotMotor);
-  private final CANcoder m_pivotEncoder = new CANcoder(V2CAN.endEffecotrPivotCanCoder);
+  private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
+  private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 

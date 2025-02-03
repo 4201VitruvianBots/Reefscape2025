@@ -16,8 +16,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
-import frc.robot.constants.V2CAN;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
@@ -30,7 +30,6 @@ m_endEffector.getMotorVoltage().clone();
   m_endEffector.getTorqueCurrent().clone();
     private final TalonFXSimState m_endEffectorMotorSimState =
     m_endEffector.getSimState();
-
 
   /** Creates a new EndEffector. */
   public EndEffector() {
