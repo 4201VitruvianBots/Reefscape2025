@@ -15,13 +15,13 @@ import java.util.function.DoubleSupplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorJoystick extends Command {
-  private final EndEffectorWrist m_endEffecotrWrist;
+  private final EndEffectorWrist m_endEffectorWrist;
   private final DoubleSupplier m_joystickY;
 
   /** Creates a new EndEffectorJoystick. */
   public EndEffectorJoystick(EndEffectorWrist endEffectorWrist, DoubleSupplier joystickY) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_endEffecotrWrist = endEffectorWrist;
+    m_endEffectorWrist = endEffectorWrist;
     m_joystickY = joystickY;
   }
 
@@ -35,31 +35,31 @@ public class EndEffectorJoystick extends Command {
     double m_joystickDeadband = MathUtil.applyDeadband(Math.pow(m_joystickY.getAsDouble(), 3), 0.2);
 
     if (m_joystickDeadband != 0.0) {
-      if (m_endEffecotrWrist.getControlMode() == ROBOT.CONTROL_MODE.CLOSED_LOOP) {
+      if (m_endEffectorWrist.getControlMode() == ROBOT.CONTROL_MODE.CLOSED_LOOP) {
         var rotationSetpoint =
             Degrees.of(
                 MathUtil.clamp(
-                    m_joystickDeadband * 0.5 + m_endEffecotrWrist.getCurrentRotation().in(Degrees),
+                    m_joystickDeadband * 0.5 + m_endEffectorWrist.getCurrentRotation().in(Degrees),
                     ENDEFFECTOR.minAngle.in(Degrees),
                     ENDEFFECTOR.maxAngle.in(Degrees)));
-        m_endEffecotrWrist.setPosition(rotationSetpoint);
-      } else if (m_endEffecotrWrist.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP) {
+        m_endEffectorWrist.setPosition(rotationSetpoint);
+      } else if (m_endEffectorWrist.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP) {
         if (ENDEFFECTOR.limitOpenLoop) {
           // Upper limit
-          if (m_endEffecotrWrist.getCurrentRotation().in(Degrees)
+          if (m_endEffectorWrist.getCurrentRotation().in(Degrees)
               >= ENDEFFECTOR.maxAngle.in(Degrees) - 1)
             m_joystickDeadband = Math.min(m_joystickDeadband, 0);
 
           // Lower limit
-          if (m_endEffecotrWrist.getCurrentRotation().in(Degrees)
+          if (m_endEffectorWrist.getCurrentRotation().in(Degrees)
               <= ENDEFFECTOR.minAngle.in(Degrees) + 1)
             m_joystickDeadband = Math.max(m_joystickDeadband, 0);
         }
-        m_endEffecotrWrist.setPercentOutput(m_joystickDeadband * ENDEFFECTOR.joystickMultiplier);
+        m_endEffectorWrist.setPercentOutput(m_joystickDeadband * ENDEFFECTOR.joystickMultiplier);
       }
     } else {
-      if (m_endEffecotrWrist.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP)
-        m_endEffecotrWrist.setPercentOutput(m_joystickDeadband * ENDEFFECTOR.joystickMultiplier);
+      if (m_endEffectorWrist.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP)
+        m_endEffectorWrist.setPercentOutput(m_joystickDeadband * ENDEFFECTOR.joystickMultiplier);
     }
   }
 

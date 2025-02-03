@@ -11,20 +11,20 @@ import frc.robot.subsystems.EndEffectorWrist;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorControlMode extends Command {
 
-  private final EndEffectorWrist m_endEffecotrWrist;
+  private final EndEffectorWrist m_endEffectorWrist;
   private CONTROL_MODE m_controlMode;
 
   /** Creates a new Endefecitr. */
   public EndEffectorControlMode(EndEffectorWrist endEffectorWrist, CONTROL_MODE controlMode) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_endEffecotrWrist = endEffectorWrist;
+    m_endEffectorWrist = endEffectorWrist;
     m_controlMode = controlMode;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endEffecotrWrist.setControlMode(m_controlMode);
+    m_endEffectorWrist.setControlMode(m_controlMode);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
