@@ -64,11 +64,12 @@ public class Elevator extends SubsystemBase {
     configElevator.Slot0.kD = ELEVATOR.kD;
     configElevator.Slot0.kA = ELEVATOR.kA;
     configElevator.Slot0.kV = ELEVATOR.kV;
-    CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
-    CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
+
 
     configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
     configElevator.MotionMagic.MotionMagicAcceleration = 200;
+    CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
+    CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
     m_motorSimState = elevatorMotors[0].getSimState();
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
     SmartDashboard.putData(this);
