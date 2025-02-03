@@ -13,7 +13,7 @@ public class RunEndEffectorIntake extends Command {
   private final EndEffector m_EndEffector;
   private final double m_speed;
 
-  /** Creates a new SetAlgaeIntakeSpeed. */
+  /** Creates a new RunEndEffectorIntake. */
   public RunEndEffectorIntake(EndEffector endeffector, double speed) {
     m_EndEffector = endeffector;
     m_speed = speed;

@@ -201,7 +201,19 @@ public class RobotContainer {
     return m_chooser.getSelected();
   }
 
-  public void testInit() {}
+  public void testInit() {
+    try {
+      if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testInit();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-  public void testPeriodic() {}
+  public void testPeriodic() {
+   try {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
+   } catch (Exception e) {
+     e.printStackTrace();
+   }
+  }
 }

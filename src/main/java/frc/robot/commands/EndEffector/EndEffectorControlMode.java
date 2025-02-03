@@ -2,11 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.EndEffector;
+package frc.robot.commands.endEffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.EndEffectorWrist;
+import frc.robot.subsystems.GroundDropdown;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorControlMode extends Command {
@@ -14,14 +15,23 @@ public class EndEffectorControlMode extends Command {
   private final EndEffectorWrist m_endEffectorWrist;
   private CONTROL_MODE m_controlMode;
 
-  /** Creates a new Endefecitr. */
+  /** Set control mode directly */
   public EndEffectorControlMode(EndEffectorWrist endEffectorWrist, CONTROL_MODE controlMode) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorWrist = endEffectorWrist;
     m_controlMode = controlMode;
   }
+  
+  /** Toggle control mode */
+  public EndEffectorControlMode(EndEffectorWrist endEffectorWrist) {
+    this(
+        endEffectorWrist,
+        endEffectorWrist.getControlMode() == CONTROL_MODE.CLOSED_LOOP
+            ? CONTROL_MODE.OPEN_LOOP
+            : CONTROL_MODE.CLOSED_LOOP);
+  }
 
-  // Called when the command is initially scheduled.
+  /** Called when the command is initially scheduled. */
   @Override
   public void initialize() {
     m_endEffectorWrist.setControlMode(m_controlMode);
@@ -39,5 +49,10 @@ public class EndEffectorControlMode extends Command {
   @Override
   public boolean isFinished() {
     return false;
+  }
+  
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
   }
 }

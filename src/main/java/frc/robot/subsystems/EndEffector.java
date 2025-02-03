@@ -18,33 +18,33 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_endEffector = new TalonFX(CAN.endEffectorOuttakeMotor);
+  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal1 =
-      m_endEffector.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 = m_endEffector.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 = m_endEffector.getTorqueCurrent().clone();
-  private final TalonFXSimState m_endEffectorMotorSimState = m_endEffector.getSimState();
+      m_endEffectorMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal1 = m_endEffectorMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal1 = m_endEffectorMotor.getTorqueCurrent().clone();
+  private final TalonFXSimState m_endEffectorMotorSimState = m_endEffectorMotor.getSimState();
 
   /** Creates a new EndEffector. */
   public EndEffector() {
-    TalonFXConfiguration m_endEffectorMotorconfig = new TalonFXConfiguration();
-    m_endEffectorMotorconfig.Slot0.kP = ENDEFFECTOR.kP;
-    m_endEffectorMotorconfig.Slot0.kI = ENDEFFECTOR.kI;
-    m_endEffectorMotorconfig.Slot0.kD = ENDEFFECTOR.kD;
-    m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.endEffectorGearRatio;
-    CtreUtils.configureTalonFx(m_endEffector, m_endEffectorMotorconfig);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = ENDEFFECTOR.kP;
+    config.Slot0.kI = ENDEFFECTOR.kI;
+    config.Slot0.kD = ENDEFFECTOR.kD;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.Feedback.SensorToMechanismRatio = ENDEFFECTOR.endEffectorGearRatio;
+    CtreUtils.configureTalonFx(m_endEffectorMotor, config);
   }
 
   public void setPercentOutput(double output) {
-    m_endEffector.set(output);
+    m_endEffectorMotor.set(output);
   }
 
-  public void getspeed() {
-    m_endEffector.getVelocity();
+  public AngularVelocity getSpeed() {
+    return m_velocitySignal1.getValue();
   }
 
-  public void updatelogger() {}
+  public void updateLogger() {}
 
   @Override
   public void periodic() {
