@@ -11,8 +11,9 @@ import frc.robot.subsystems.EndEffectorWrist;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorControlMode extends Command {
 
-private final EndEffectorWrist m_endEffecotrWrist;
-private CONTROL_MODE m_controlMode;
+  private final EndEffectorWrist m_endEffecotrWrist;
+  private CONTROL_MODE m_controlMode;
+
   /** Creates a new Endefecitr. */
   public EndEffectorControlMode(EndEffectorWrist endEffectorWrist, CONTROL_MODE controlMode) {
     // Use addRequirements() here to declare subsystem dependencies.

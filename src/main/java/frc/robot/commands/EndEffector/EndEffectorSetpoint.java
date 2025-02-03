@@ -14,8 +14,9 @@ public class EndEffectorSetpoint extends Command {
   private final EndEffectorWrist m_endEffectorWrist;
   private WRIST_SETPOINT m_setpoint;
   private boolean m_auto;
+
   /** Creates a new EndEffectorSetpoint. */
-  public EndEffectorSetpoint(EndEffectorWrist endEffectorWrist, WRIST_SETPOINT setpoint ) {
+  public EndEffectorSetpoint(EndEffectorWrist endEffectorWrist, WRIST_SETPOINT setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorWrist = endEffectorWrist;
     m_setpoint = setpoint;

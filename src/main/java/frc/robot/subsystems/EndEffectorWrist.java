@@ -13,7 +13,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,7 +28,8 @@ public class EndEffectorWrist extends SubsystemBase {
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getCurrentRotation());
+  private final MotionMagicTorqueCurrentFOC m_request =
+      new MotionMagicTorqueCurrentFOC(getCurrentRotation());
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
@@ -39,7 +39,7 @@ public class EndEffectorWrist extends SubsystemBase {
   private boolean m_limitJoystickInput;
   private boolean m_enforceLimits;
   private boolean m_userSetpoint;
-  
+
   private Angle m_desiredRotations;
   private boolean m_pivotState;
 
@@ -63,10 +63,11 @@ public class EndEffectorWrist extends SubsystemBase {
 
   public void setPosition(Angle rotations) {
     m_desiredRotations =
-        Degrees.of(MathUtil.clamp(
-          rotations.in(Degrees),
-          ENDEFFECTOR.minAngle.in(Degrees),
-          ENDEFFECTOR.maxAngle.in(Degrees)));
+        Degrees.of(
+            MathUtil.clamp(
+                rotations.in(Degrees),
+                ENDEFFECTOR.minAngle.in(Degrees),
+                ENDEFFECTOR.maxAngle.in(Degrees)));
   }
 
   public Angle getPosition() {

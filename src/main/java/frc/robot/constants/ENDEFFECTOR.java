@@ -19,7 +19,7 @@ public class ENDEFFECTOR {
 
   public static final double kPercentOutputMultiplier = 1.0;
   public static final double kLimitedPercentOutputMultiplier = 0.5;
-  
+
   public static final Angle minAngle = Degrees.of(0.0);
   public static final Angle maxAngle = Degrees.of(151.0);
   public static final Angle startingAngle = minAngle;
