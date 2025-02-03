@@ -26,7 +26,10 @@ public class SetElevatorSetpoint extends Command {
   public void execute() {}
 
   @Override
-  public void end(boolean interruped) {}
+  public void end(boolean interruped) {
+    m_elevator.setClosedLoopControlMode(CONTROL_MODE.OPEN_LOOP);
+    m_elevator.holdElevator();
+  }
 
   @Override
   public boolean isFinished() {

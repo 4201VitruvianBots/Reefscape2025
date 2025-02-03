@@ -17,7 +17,7 @@ public class ELEVATOR {
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
   public static final double kP =
-      0.1; // none of these are tuned in any capacity so we should probably do that
+      50.0; // none of these are tuned in any capacity so we should probably do that
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kA = 0.1;
