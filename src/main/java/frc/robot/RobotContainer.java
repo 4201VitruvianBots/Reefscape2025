@@ -178,8 +178,6 @@ public class RobotContainer {
   private void configureAlphaBotBindings() {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
     m_driverController
         .rightBumper()
@@ -204,10 +202,18 @@ public class RobotContainer {
   }
 
   public void testInit() {
-    m_coralOuttake.testInit();
+    try {
+      if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testInit();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public void testPeriodic() {
-    m_coralOuttake.testPeriodic();
+    try {
+      if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

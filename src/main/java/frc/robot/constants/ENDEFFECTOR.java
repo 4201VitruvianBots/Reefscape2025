@@ -1,5 +1,9 @@
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.units.measure.Angle;
+
 public class ENDEFFECTOR {
   public static final double kP = 0.0;
   public static final double kI = 0.0;
@@ -7,27 +11,39 @@ public class ENDEFFECTOR {
   public static final double endEffectorGearRatio = 1.0;
 
   // Pivot motor stuff
-  public static final double minAngleDegrees = 270;
-  public static final double maxAngleDegrees = 3;
-
   public static final double kPivotP = 0.0;
   public static final double kPivotI = 0.0;
   public static final double kPivotD = 0.0;
 
   public static final double endEffectorPivotGearRatio = 70.0;
 
+  public static final double kPercentOutputMultiplier = 1.0;
+  public static final double kLimitedPercentOutputMultiplier = 0.5;
+
+  public static final Angle minAngle = Degrees.of(0.0);
+  public static final Angle maxAngle = Degrees.of(151.0);
+  public static final Angle startingAngle = minAngle;
+
+  public static final boolean limitOpenLoop = false;
+
+  public static final double maxOutput = 0.6;
+
+  public static final double joystickMultiplier = maxOutput;
+
   public enum WRIST_SETPOINT {
-    STOWED(0),
-    L4(0),
-    L3_L2(0);
+    INTAKE_ALGAE(Degrees.of(0.0)),
+    STOWED(Degrees.of(30.0)),
+    L3_L2(Degrees.of(45.0)),
+    L4(Degrees.of(120.0)),
+    BARGE(Degrees.of(150.0));
 
-    private final double angle;
+    private final Angle angle;
 
-    WRIST_SETPOINT(double angle) {
+    WRIST_SETPOINT(final Angle angle) {
       this.angle = angle;
     }
 
-    public double get() {
+    public Angle get() {
       return angle;
     }
   }
