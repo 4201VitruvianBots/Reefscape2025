@@ -51,4 +51,8 @@ public class ELEVATOR {
       return setpointMeters;
     }
   }
+  
+  // Visualizer constants
+ public static final double distanceFromFront = Units.inchesToMeters(8.5);
+ public static final double stage1Height = Units.inchesToMeters(39.25);
 }

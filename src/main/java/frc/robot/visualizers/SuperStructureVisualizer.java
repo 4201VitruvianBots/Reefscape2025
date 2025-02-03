@@ -27,7 +27,12 @@ public class SuperStructureVisualizer {
   private final MechanismLigament2d m_elevatorStage1_2d = 
     m_elevatorRoot2d.append(
       new MechanismLigament2d("elevatorStage1", ELEVATOR.stage1Height, 90));
-      
+
+  // Super structure parts:
+  // Static bar extending from the bottom of the elevator to the back, 20 inches at a 54.5 degree angle
+  // Static bar extending from the back of the drivebase to the other static bar, 15.75 inches at a 75 degree angle (starts 3.6 inches from the middle of the drivebase)
+  // 
+  
   public SuperStructureVisualizer() {
     m_drivebase2d.setColor(new Color8Bit(235, 137, 52));
     m_elevatorStage1_2d.setColor(new Color8Bit(189, 189, 189));
