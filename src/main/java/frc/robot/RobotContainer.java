@@ -79,13 +79,14 @@ public class RobotContainer {
         m_swerveDrive.applyRequest(
             () -> drive
                 .withVelocityX(
-                    m_nathanDebugController.getRawAxis(1)
+                    leftJoystick.getRawAxis(1)
                         * MaxSpeed) // Drive forward with negative Y (forward)
                 .withVelocityY(
-                    m_nathanDebugController.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                    leftJoystick.getRawAxis(0)
+                        * MaxSpeed) // Drive left with negative X (left)
                 .withRotationalRate(
-                    m_nathanDebugController.getRawAxis(3)
-                        * -MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    rightJoystick.getRawAxis(0)
+                        * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
   }
 
@@ -100,52 +101,6 @@ public class RobotContainer {
     SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
   }
 
-  // private void initSysidChooser(){
-  // SignalLogger.setPath("/media/sda1/");
-
-  // SysIdUtils.createSwerveDriveRoutines(m_swerveDrive);
-  // SysIdUtils.createSwerveTurnRoutines(m_swerveDrive);
-
-  // SmartDashboard.putData(
-  // "Start Logging", new
-  // InstantCommand(SignalLogger::start).ignoringDisable(true));
-  // SmartDashboard.putData(
-  // "Stop Logging", new
-  // InstantCommand(SignalLogger::stop).ignoringDisable(true));
-  // SmartDashboard.putData(
-  // "initDriveSettings",
-  // new InstantCommand(m_swerveDrive::initDriveSysid).ignoringDisable(true));
-  // SmartDashboard.putData(
-  // "initTurnSettings",new
-  // InstantCommand(m_swerveDrive::initTurnSysid).ignoringDisable(true));
-
-  // m_sysidChooser.addOption(
-  // "driveQuasistaticForward",
-  // new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  // m_sysidChooser.addOption(
-  // "driveQuasistaticBackwards",
-  // new SwerveDriveQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-  // m_sysidChooser.addOption(
-  // "driveDynamicForward",
-  // new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  // m_sysidChooser.addOption(
-  // "driveDynamicBackward",
-  // new SwerveDriveDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-
-  // m_sysidChooser.addOption(
-  // "turnQuasistaticForward",
-  // new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  // m_sysidChooser.addOption(
-  // "turnQuasistaticBackwards",
-  // new SwerveTurnQuasistatic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-  // m_sysidChooser.addOption(
-  // "turnDynamicForward",
-  // new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kForward));
-  // m_sysidChooser.addOption(
-  // "turnDynamicBackward",
-  // new SwerveTurnDynamic(m_swerveDrive, SysIdRoutine.Direction.kReverse));
-
-  // }
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the
@@ -161,14 +116,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // new Trigger(m_exampleSubsystem::exampleCondition)
-    // .onTrue(new ExampleCommand(m_exampleSubsystem));
-    //
-    // // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // // cancelling on release.
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
     m_driverController
         .rightBumper()

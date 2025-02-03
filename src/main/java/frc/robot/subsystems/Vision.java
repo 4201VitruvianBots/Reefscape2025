@@ -5,26 +5,22 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 import java.util.List;
 import java.util.Optional;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -55,8 +51,7 @@ public class Vision extends SubsystemBase {
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("VisionDebug");
   private final DoublePublisher visionEstPoseTimestamp = table.getDoubleTopic("EstPoseTimestamp").publish();
-  private final StructPublisher<Pose3d> visionEstPose = table.getStructTopic("EstPose", Pose3d.struct)
-      .publish();
+  private final StructPublisher<Pose3d> visionEstPose = table.getStructTopic("EstPose", Pose3d.struct).publish();
 
   public Vision() {
     // Port Forwarding to access limelight on USB Ethernet
@@ -103,7 +98,7 @@ public class Vision extends SubsystemBase {
     Optional<EstimatedRobotPose> visionEst = Optional.empty();
     for (PhotonPipelineResult change : aprilTagLimelightCameraB.getAllUnreadResults()) {
       visionEst = limelightPhotonPoseEstimatorB.update(change);
-
+      
       updateEstimationStdDevs(visionEst, change.getTargets());
 
       if (Robot.isSimulation()) {
