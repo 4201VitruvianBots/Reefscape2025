@@ -13,11 +13,12 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_endEffector = new TalonFX(V2CAN.endEffectorOuttakeMotor);
+  private final TalonFX m_endEffector = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal1 =
       m_endEffector.getVelocity().clone();
   private final StatusSignal<Voltage> m_voltageSignal1 = m_endEffector.getMotorVoltage().clone();
