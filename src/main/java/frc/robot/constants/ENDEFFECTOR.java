@@ -1,5 +1,11 @@
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+
 public class ENDEFFECTOR {
   public static final double kP = 0.0;
   public static final double kI = 0.0;
@@ -36,4 +42,8 @@ public class ENDEFFECTOR {
     STILL,
     MOVING
   }
+  
+  // Visualizer constants
+  public static final Distance baseBarLength = Inches.of(8.8);
+  public static final Angle baseBarAngle = Degrees.of(58);
 }

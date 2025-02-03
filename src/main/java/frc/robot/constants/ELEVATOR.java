@@ -2,6 +2,8 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+import static edu.wpi.first.units.Units.*;
 
 public class ELEVATOR {
 
@@ -51,8 +53,9 @@ public class ELEVATOR {
       return setpointMeters;
     }
   }
-  
+
   // Visualizer constants
- public static final double distanceFromFront = Units.inchesToMeters(8.5);
- public static final double stage1Height = Units.inchesToMeters(39.25);
+  public static final Distance distanceFromFront = Inches.of(8.5);
+  public static final Distance stage1Height = Inches.of(39.25);
+  public static final Distance initialCarriageHeight = Inches.of(4.2965);
 }
