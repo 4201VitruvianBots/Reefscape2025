@@ -17,19 +17,24 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.RunCageIntake;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
+import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeIntake;
+import frc.robot.subsystems.CageIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
 import frc.robot.subsystems.EndEffector;
@@ -49,6 +54,8 @@ public class RobotContainer {
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
   private final EndEffector m_endEffector = new EndEffector();
+  private final CageIntake m_CageIntake = new CageIntake();
+  private final Climber m_Climber = new Climber(); 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -182,6 +189,8 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    m_driverController.povLeft().whileTrue(new RunCageIntake(m_CageIntake, 0.25));
+    m_driverController.povRight().onTrue(new SetClimberSetpoint(m_Climber, CLIMBER_SETPOINT.CLIMB));
   }
 
   /**

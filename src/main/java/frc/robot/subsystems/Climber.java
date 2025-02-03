@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
+// import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,6 +15,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+// import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
@@ -29,8 +30,8 @@ public class Climber extends SubsystemBase {
   //   // Simulation classes help us simulate what's going on, including gravity.
   //     // Simulation classes help us simulate what's going on, including gravity.
   // private final ElevatorSim m_climberSim =
-  // new eleSim(
-  //     climber.gearbox,
+  // new ElevatorSim(
+  //     CLIMBER.gearbox,
   //     climber.kclimberGearing,
   //     climber.kCarriageMassPounds,
   //     climber.kclimberDrumRadius,
@@ -43,7 +44,7 @@ public class Climber extends SubsystemBase {
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
   private double m_desiredPositionMeters;
-  private boolean m_climberInitialized;
+  // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
@@ -105,10 +106,6 @@ public class Climber extends SubsystemBase {
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
-  }
-
-  public void setJoystickY(double m_joystickY) {
-    m_joystickInput = m_joystickY;
   }
 
   public double getHeightMeters() {
