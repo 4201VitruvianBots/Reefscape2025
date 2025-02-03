@@ -21,8 +21,10 @@ public class EndEffector extends SubsystemBase {
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal1 =
       m_endEffectorMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 = m_endEffectorMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 = m_endEffectorMotor.getTorqueCurrent().clone();
+  private final StatusSignal<Voltage> m_voltageSignal1 =
+      m_endEffectorMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal1 =
+      m_endEffectorMotor.getTorqueCurrent().clone();
   private final TalonFXSimState m_endEffectorMotorSimState = m_endEffectorMotor.getSimState();
 
   /** Creates a new EndEffector. */

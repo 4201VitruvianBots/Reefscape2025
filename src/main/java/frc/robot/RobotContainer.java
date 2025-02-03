@@ -210,10 +210,10 @@ public class RobotContainer {
   }
 
   public void testPeriodic() {
-   try {
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
-   } catch (Exception e) {
-     e.printStackTrace();
-   }
+    try {
+      if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

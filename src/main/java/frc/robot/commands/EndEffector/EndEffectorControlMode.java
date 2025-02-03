@@ -7,7 +7,6 @@ package frc.robot.commands.endEffector;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.EndEffectorWrist;
-import frc.robot.subsystems.GroundDropdown;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorControlMode extends Command {
@@ -21,7 +20,7 @@ public class EndEffectorControlMode extends Command {
     m_endEffectorWrist = endEffectorWrist;
     m_controlMode = controlMode;
   }
-  
+
   /** Toggle control mode */
   public EndEffectorControlMode(EndEffectorWrist endEffectorWrist) {
     this(
@@ -50,7 +49,7 @@ public class EndEffectorControlMode extends Command {
   public boolean isFinished() {
     return false;
   }
-  
+
   @Override
   public boolean runsWhenDisabled() {
     return true;
