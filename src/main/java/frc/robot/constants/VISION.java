@@ -41,7 +41,8 @@ public final class VISION {
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
       Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
+  public static final double aprilTagLimelightCameraBOffsetInRadiansYaw =
+      Units.degreesToRadians(0);
 
   public static final double noteDetectionLimelightCameraDistanceFromCenterX =
       Units.inchesToMeters(12.125);
