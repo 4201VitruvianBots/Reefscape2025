@@ -1,4 +1,3 @@
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,7 +8,7 @@ public class SetHopperIntake extends Command {
 
   private final HopperIntake m_hopperIntake;
   private final INTAKE_SPEED m_speed;
- 
+
   public SetHopperIntake(HopperIntake hopper, INTAKE_SPEED speed) {
     m_hopperIntake = hopper;
     m_speed = speed;
