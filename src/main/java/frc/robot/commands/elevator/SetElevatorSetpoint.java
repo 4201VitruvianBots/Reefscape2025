@@ -1,6 +1,7 @@
 package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.Elevator;
@@ -19,7 +20,7 @@ public class SetElevatorSetpoint extends Command {
   @Override
   public void initialize() {
     m_elevator.setClosedLoopControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_elevator.setDesiredPosition(m_setpoint.getSetpointMeters());
+    m_elevator.setDesiredPosition(m_setpoint.getSetpointMeters()/(2*Math.PI*ELEVATOR.sprocketRadiusMeters));
   }
 
   @Override
