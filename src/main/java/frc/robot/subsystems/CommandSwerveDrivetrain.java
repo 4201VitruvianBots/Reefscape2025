@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
-import frc.robot.utils.ModuleMap;
+import org.team4201.codex.utils.ModuleMap;
 import java.util.function.Supplier;
 
 /**
