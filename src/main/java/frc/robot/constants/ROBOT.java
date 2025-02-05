@@ -22,7 +22,9 @@ public class ROBOT {
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
-    CLOSED_LOOP
+    CLOSED_LOOP,
+    CLOSED_LOOP_NET
+
   }
 
   public enum ROBOT_ID {

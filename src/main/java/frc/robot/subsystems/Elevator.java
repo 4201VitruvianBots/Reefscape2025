@@ -10,6 +10,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -56,19 +57,21 @@ public class Elevator extends SubsystemBase {
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState;
 
+
   public Elevator() {
-    TalonFXConfiguration configElevator = new TalonFXConfiguration();
-    configElevator.Slot0.kP = ELEVATOR.kP;
-    configElevator.Slot0.kI = ELEVATOR.kI;
-    configElevator.Slot0.kD = ELEVATOR.kD;
-    configElevator.Slot0.kA = ELEVATOR.kA;
-    configElevator.Slot0.kV = ELEVATOR.kV;
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = ELEVATOR.kP;
+    config.Slot0.kI = ELEVATOR.kI;
+    config.Slot0.kD = ELEVATOR.kD;
+    config.Slot0.kA = ELEVATOR.kA;
+    config.Slot0.kV = ELEVATOR.kV;
 
 
-    configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
-    configElevator.MotionMagic.MotionMagicAcceleration = 200;
-    CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
-    CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
+    config.MotionMagic.MotionMagicCruiseVelocity = 100;
+    config.MotionMagic.MotionMagicAcceleration = 200;
+    config.MotionMagic.MotionMagicJerk = 1000;
+    CtreUtils.configureTalonFx(elevatorMotors[0], config);
+    CtreUtils.configureTalonFx(elevatorMotors[1], config);
     m_motorSimState = elevatorMotors[0].getSimState();
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
     SmartDashboard.putData(this);
@@ -180,6 +183,9 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
+      case CLOSED_LOOP_NET:
+        // elevatorMotors[0].setControl(m_request.Acceleration = 100); // Placeholder text it'll be different from CLOSED_LOOP elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters)); 
+        break;
       case CLOSED_LOOP:
         elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));
         break;
