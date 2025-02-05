@@ -27,19 +27,19 @@ import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
 private final TalonFX m_endEffector = new TalonFX(V2CAN.endEffectorOuttakeMotor);
-private final StatusSignal <AngularVelocity> m_velocitySignal1 = 
+private final StatusSignal <AngularVelocity> m_velocitySignal = 
 m_endEffector.getVelocity().clone();
-private final StatusSignal<Voltage> m_voltageSignal1 =
+private final StatusSignal<Voltage> m_voltageSignal =
 m_endEffector.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 =
+  private final StatusSignal<Current> m_currentSignal =
   m_endEffector.getTorqueCurrent().clone();
     private final TalonFXSimState m_endEffectorSim =
     m_endEffector.getSimState();
 private final DCMotorSim m_endEffectorsim = 
 new DCMotorSim(
   LinearSystemId.createDCMotorSystem(
-    ENDEFFECTOR.endeffectorGearbox, ENDEFFECTOR.endEffectorGearRatio, ENDEFFECTOR.Inertia
-  ), ENDEFFECTOR.endeffectorGearbox
+    ENDEFFECTOR.gearbox, ENDEFFECTOR.gearRatio, ENDEFFECTOR.kInertia
+  ), ENDEFFECTOR.gearbox
 );
 
   /** Creates a new EndEffector. */
@@ -49,7 +49,7 @@ new DCMotorSim(
     m_endEffectorMotorconfig.Slot0.kI = ENDEFFECTOR.kI;
     m_endEffectorMotorconfig.Slot0.kD = ENDEFFECTOR.kD;
     m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.endEffectorGearRatio;
+    m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
     CtreUtils.configureTalonFx(m_endEffector, m_endEffectorMotorconfig);
 
   }
@@ -58,14 +58,11 @@ new DCMotorSim(
     m_endEffector.set(output);
   }
   public void updateLogger() {
-    SmartDashboard.putNumber("Endeffector Intake/Motor", m_velocitySignal1.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector Intake/Motor", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Endeffector/Motor1 Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("EndEffector Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
+        "EndEffector/Motor1 Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("EndEffector Intake/Motor1 Current", m_currentSignal.getValueAsDouble());
   }
-  
-
-  public void updatelogger() {}
 
   
   @Override
@@ -78,9 +75,9 @@ new DCMotorSim(
         m_endEffectorsim.update(0.02); // TODO update this later maybe?
 
         m_endEffectorSim.setRawRotorPosition(
-          m_endEffectorsim.getAngularPositionRotations() * ENDEFFECTOR.endEffectorGearRatio);
+          m_endEffectorsim.getAngularPositionRotations() * ENDEFFECTOR.gearRatio);
           m_endEffectorSim.setRotorVelocity(
-            m_endEffectorsim.getAngularVelocityRPM() * ENDEFFECTOR.endEffectorGearRatio / 60.0);
+            m_endEffectorsim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
   }
 
   

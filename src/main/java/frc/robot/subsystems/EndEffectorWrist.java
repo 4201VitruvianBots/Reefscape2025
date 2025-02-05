@@ -50,7 +50,7 @@ public class EndEffectorWrist extends SubsystemBase {
     configuration.Slot0.kI = ENDEFFECTOR.kI;
     configuration.Slot0.kD = ENDEFFECTOR.kD;
     configuration.MotorOutput.NeutralMode = m_neutralMode;
-    configuration.Feedback.RotorToSensorRatio = ENDEFFECTOR.endEffectorPivotGearRatio;
+    configuration.Feedback.RotorToSensorRatio = ENDEFFECTOR.pivotGearRatio;
   }
 
   public void setState(boolean state) {
