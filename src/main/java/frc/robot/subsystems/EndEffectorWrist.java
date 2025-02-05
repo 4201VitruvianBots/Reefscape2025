@@ -13,23 +13,23 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ROBOT;
-import frc.robot.constants.V2CAN;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class EndEffectorWrist extends SubsystemBase {
 
-  private final TalonFX m_pivotMotor = new TalonFX(V2CAN.endEffectorPivotMotor);
-  private final CANcoder m_pivotEncoder = new CANcoder(V2CAN.endEffecotrPivotCanCoder);
+  private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
+  private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getCurrentRotation());
+  private final MotionMagicTorqueCurrentFOC m_request =
+      new MotionMagicTorqueCurrentFOC(getCurrentRotation());
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
@@ -39,7 +39,7 @@ public class EndEffectorWrist extends SubsystemBase {
   private boolean m_limitJoystickInput;
   private boolean m_enforceLimits;
   private boolean m_userSetpoint;
-  
+
   private Angle m_desiredRotations;
   private boolean m_pivotState;
 
@@ -63,10 +63,11 @@ public class EndEffectorWrist extends SubsystemBase {
 
   public void setPosition(Angle rotations) {
     m_desiredRotations =
-        Degrees.of(MathUtil.clamp(
-          rotations.in(Degrees),
-          ENDEFFECTOR.minAngle.in(Degrees),
-          ENDEFFECTOR.maxAngle.in(Degrees)));
+        Degrees.of(
+            MathUtil.clamp(
+                rotations.in(Degrees),
+                ENDEFFECTOR.minAngle.in(Degrees),
+                ENDEFFECTOR.maxAngle.in(Degrees)));
   }
 
   public Angle getPosition() {
@@ -86,6 +87,10 @@ public class EndEffectorWrist extends SubsystemBase {
     return m_positionSignal.getValue();
   }
 
+  public double getCANcoderAngle() {
+    return m_pivotEncoder.getAbsolutePosition().getValueAsDouble() * 360;
+  }
+
   public void resetMotionMagicState() {
     m_desiredRotations = getCurrentRotation();
     m_pivotMotor.setControl(m_request.withPosition(m_desiredRotations));
@@ -100,11 +105,11 @@ public class EndEffectorWrist extends SubsystemBase {
     resetMotionMagicState();
   }
 
-  public void setControlLoop(CONTROL_MODE mode) {
+  public void setControlMode(CONTROL_MODE mode) {
     m_controlMode = mode;
   }
 
-  public CONTROL_MODE getControlLoop() {
+  public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
 
@@ -112,7 +117,7 @@ public class EndEffectorWrist extends SubsystemBase {
     m_limitJoystickInput = limit;
   }
 
-  public void setJoystick(double m_joystickY) {
+  public void setJoystickY(double m_joystickY) {
     m_joystickInput = m_joystickY;
   }
 

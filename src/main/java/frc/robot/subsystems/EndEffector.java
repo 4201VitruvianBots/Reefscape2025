@@ -6,11 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -21,8 +19,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
-import frc.robot.constants.V2CAN;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
@@ -51,12 +49,12 @@ new DCMotorSim(
     m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
     CtreUtils.configureTalonFx(m_endEffector, m_endEffectorMotorconfig);
-
   }
 
   public void setPercentOutput(double output) {
-    m_endEffector.set(output);
+    m_endEffectorMotor.set(output);
   }
+
   public void updateLogger() {
     SmartDashboard.putNumber("EndEffector Intake/Motor", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
@@ -80,9 +78,6 @@ new DCMotorSim(
             m_endEffectorsim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
   }
 
-  
-
-  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -2,23 +2,23 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.alphabot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.alphabot.AlgaeIntake;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RunEndEffectorIntake extends Command {
+public class RunAlgaeIntake extends Command {
 
-  private final EndEffector m_EndEffector;
+  private final AlgaeIntake m_algaeIntake;
   private final double m_speed;
 
-  /** Creates a new RunEndEffectorIntake. */
-  public RunEndEffectorIntake(EndEffector endeffector, double speed) {
-    m_EndEffector = endeffector;
+  /** Creates a new SetAlgaeIntakeSpeed. */
+  public RunAlgaeIntake(AlgaeIntake algae, double speed) {
+    m_algaeIntake = algae;
     m_speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_EndEffector);
+    addRequirements(m_algaeIntake);
   }
 
   // Called when the command is initially scheduled.
@@ -28,13 +28,13 @@ public class RunEndEffectorIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_EndEffector.setPercentOutput(m_speed);
+    m_algaeIntake.setPercentOutput(m_speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_EndEffector.setPercentOutput(0);
+    m_algaeIntake.setPercentOutput(0);
   }
 
   // Returns true when the command should end.
