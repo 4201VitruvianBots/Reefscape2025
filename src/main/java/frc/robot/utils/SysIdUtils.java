@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.utils.ModuleMap.MODULE_POSITION;
+import org.team4201.codex.utils.ModuleMap.MODULE_POSITION;
 
 public class SysIdUtils {
   private static SysIdRoutine swerveDriveRoutine;

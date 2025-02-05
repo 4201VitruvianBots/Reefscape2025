@@ -21,8 +21,11 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.elevator.RunElevatorJoystick;
+import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -35,6 +38,7 @@ import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -193,6 +197,9 @@ public class RobotContainer {
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     m_driverController.a().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+    m_driverController.x().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+    m_driverController.y().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+    m_driverController.b().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
   }
 
   /**

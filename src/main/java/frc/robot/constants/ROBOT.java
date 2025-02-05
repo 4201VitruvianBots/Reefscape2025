@@ -56,6 +56,11 @@ public class ROBOT {
 
   public static void initForte() {}
 
+  public static void initAlphaBot() {
+    robotID = ROBOT_ID.ALPHABOT;
+    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
+  }
+
   public static void initV2() {
     robotID = ROBOT_ID.V2;
   } // V2 drivetrain is already the default
