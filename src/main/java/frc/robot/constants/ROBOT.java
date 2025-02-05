@@ -54,21 +54,6 @@ public class ROBOT {
     }
   }
 
-  public enum SETPOINT {
-    // Units are in Radians
-    STOWED(Units.degreesToRadians(0.0));
-
-    private final double value;
-
-    SETPOINT(final double value) {
-      this.value = value;
-    }
-
-    public double get() {
-      return value;
-    }
-  }
-
   public static void initAlphaBot() {
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
     robotID = ROBOT_ID.ALPHABOT;
