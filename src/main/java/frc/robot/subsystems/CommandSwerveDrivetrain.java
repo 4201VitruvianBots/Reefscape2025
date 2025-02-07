@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -25,8 +28,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
+import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
+import org.team4201.codex.utils.ModuleMap;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -136,22 +141,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // configureAutoBuilder();
+    configureAutoBuilder();
   }
 
-  // public void initDriveSysid() {
-  //   for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
-  //     var driveMotor = getModule(i.ordinal()).getDriveMotor();
-  //     var turnMotor = getModule(i.ordinal()).getSteerMotor();
-  //     TunerConstants.configureTalonFx(driveMotor, new TalonFXConfiguration());
-  //     TunerConstants.configureTalonFx(turnMotor, TunerConstants.generateTurnMotorConfig());
-  //     driveMotor.setNeutralMode(NeutralModeValue.Brake);
-  //     BaseStatusSignal.setUpdateFrequencyForAll(
-  //         250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
+  public void initDriveSysid() {
+    for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
+      var driveMotor = getModule(i.ordinal()).getDriveMotor();
+      var turnMotor = getModule(i.ordinal()).getSteerMotor();
+      CtreUtils.configureTalonFx(driveMotor, new TalonFXConfiguration());
+      CtreUtils.configureTalonFx(
+          turnMotor,
+          new TalonFXConfiguration() /* was previously CtreUtils.generateTurnMotorConfig() TODO: get that method working again*/);
+      driveMotor.setNeutralMode(NeutralModeValue.Brake);
+      BaseStatusSignal.setUpdateFrequencyForAll(
+          250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
 
-  //     driveMotor.optimizeBusUtilization();
-  //   }
-  // }
+      driveMotor.optimizeBusUtilization();
+    }
+  }
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -171,7 +179,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // configureAutoBuilder();
+    configureAutoBuilder();
   }
 
   /**
@@ -204,13 +212,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // configureAutoBuilder();
+    configureAutoBuilder();
   }
 
   // TODO: Re-implement
-  //  public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
-  //    return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
-  //  }
+  //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
+  //      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
+  //   }
 
   /**
    * Second-Order Kinematics <a

@@ -8,77 +8,69 @@ import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryy
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
-import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
-public class Elevator extends SubsystemBase {
+public class Climber extends SubsystemBase {
 
-  /** Creates a new Elevator */
-  private final TalonFX[] elevatorMotors = {
-    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
-  };
+  /** Creates a new climber */
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
 
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          ELEVATOR.gearbox,
-          ELEVATOR.kElevatorGearing,
-          ELEVATOR.kCarriageMassPounds,
-          ELEVATOR.kElevatorDrumRadius,
-          ELEVATOR.upperLimitMeters,
-          ELEVATOR.lowerLimitMeters,
-          true,
-          0,
-          0.01,
-          0.0);
-  private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
-  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
+  //   // Simulation classes help us simulate what's going on, including gravity.
+  //     // Simulation classes help us simulate what's going on, including gravity.
+  // private final ElevatorSim m_climberSim =
+  // new eleSim(
+  //     climber.gearbox,
+  //     climber.kclimberGearing,
+  //     climber.kCarriageMassPounds,
+  //     climber.kclimberDrumRadius,
+  //     climber.upperLimitMeters,
+  //     climber.lowerLimitMeters,
+  //     true,
+  //     0,
+  //     0.01,
+  //     0.0);
+  private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
+  private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
   private double m_desiredPositionMeters;
-  private boolean m_elevatorInitialized;
+  private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-  private final TalonFXSimState m_motorSimState = elevatorMotors[0].getSimState();
+  private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
 
-  public Elevator() {
-    TalonFXConfiguration configElevator = new TalonFXConfiguration();
-    configElevator.Slot0.kP = ELEVATOR.kP;
-    configElevator.Slot0.kI = ELEVATOR.kI;
-    configElevator.Slot0.kD = ELEVATOR.kD;
-    configElevator.Slot0.kA = ELEVATOR.kA;
-    configElevator.Slot0.kV = ELEVATOR.kV;
-    CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
-    CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
+  public Climber() {
+    TalonFXConfiguration configclimber = new TalonFXConfiguration();
+    configclimber.Slot0.kP = CLIMBER.kP;
+    configclimber.Slot0.kI = CLIMBER.kI;
+    configclimber.Slot0.kD = CLIMBER.kD;
+    CtreUtils.configureTalonFx(climberMotor, configclimber);
 
-    configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
-    configElevator.MotionMagic.MotionMagicAcceleration = 200;
-    elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
+    configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
+    configclimber.MotionMagic.MotionMagicAcceleration = 200;
   }
 
-  public void holdElevator() {
+  public void holdclimber() {
     setDesiredPosition(getHeightMeters());
   }
 
   public void setPercentOutput(double output) {
-    elevatorMotors[0].set(output);
+    climberMotor.set(output);
   }
 
   public double getPercentOutputMotor() {
-    return elevatorMotors[0].get();
+    return climberMotor.get();
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -120,10 +112,10 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getHeightMeters() {
-    return getMotorRotations() * ELEVATOR.sprocketRotationsToMeters;
+    return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
   }
 
-  // Sets the control state of the elevator
+  // Sets the control state of the climber
   public void setClosedLoopControlMode(CONTROL_MODE mode) {
     m_controlMode = mode;
   }
@@ -135,7 +127,7 @@ public class Elevator extends SubsystemBase {
   public void setClimberNeutralMode(NeutralModeValue mode) {
     if (mode == m_neutralMode) return;
     m_neutralMode = mode;
-    elevatorMotors[0].setNeutralMode(mode);
+    climberMotor.setNeutralMode(mode);
   }
 
   @Override
@@ -143,11 +135,11 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case CLOSED_LOOP:
-        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));
+        climberMotor.setControl(m_request.withPosition(m_desiredPositionMeters));
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * ELEVATOR.kPercentOutputMultiplier;
+        double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
         setPercentOutput(percentOutput);
         break;
     }
@@ -156,18 +148,9 @@ public class Elevator extends SubsystemBase {
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_elevatorSim.update(0.020);
+    // m_climberSim.update(0.020);
 
-    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    // m_climberSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
 
-    m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.sprocketRotationsToMeters);
-    m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.sprocketRotationsToMeters);
   }
 }

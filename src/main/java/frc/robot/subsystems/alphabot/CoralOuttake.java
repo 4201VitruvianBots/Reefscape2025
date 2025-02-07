@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.alphabot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,6 +14,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -23,16 +25,16 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CAN;
-import frc.robot.constants.CORALOUTTAKE;
+import frc.robot.constants.alphabot.CAN;
+import frc.robot.constants.alphabot.CORALOUTTAKE;
 import frc.robot.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
-  private LinearSystem outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
+  private LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   private final DCMotorSim outtakeMotorSim =
-      new DCMotorSim(outtakePlant, CORALOUTTAKE.Gearbox); // TODO implement sim code
+      new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); // TODO implement sim code
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
@@ -143,5 +145,10 @@ public class CoralOuttake extends SubsystemBase {
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("CoralOuttake/DesiredPercentOutput", m_desiredPercentOutput);
     SmartDashboard.putNumber("CoralOuttake/rpmSetpoint", m_rpmSetpoint);
+  }
+
+  @Override
+  public void periodic() {
+    updateSmartDashboard();
   }
 }
