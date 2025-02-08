@@ -29,6 +29,9 @@ public final class FIELD {
   public static final double tapeWidth = Units.inchesToMeters(2.0);
   public static final double aprilTagWidth = Units.inchesToMeters(6.5);
 
+  public static final Translation2d redReef = new Translation2d(13.0585500068, 4.025999949);
+  public static final Translation2d blueReef = new Translation2d(4.48945, 4.025999949);
+
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
    * default, all translations and poses in {@link FIELD} are stored with the origin at the

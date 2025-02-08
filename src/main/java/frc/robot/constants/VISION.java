@@ -126,11 +126,8 @@ public final class VISION {
     }
   }
 
-  //   public enum TRACKING_STATE {
-  //     NONE,
-  //     SPEAKER,
-  //     NOTE,
-  //     PASSING_NEAR,
-  //     PASSING_MID
-  //   }
+    public enum TRACKING_STATE {
+      NONE,
+      REEF
+    }
 }

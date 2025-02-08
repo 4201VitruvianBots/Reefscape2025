@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 // import frc.robot.simulation.FieldSim;
@@ -33,7 +34,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
-
+  //TODO: Integrate fieldsim
   // private FieldSim m_fieldSim;
   private Translation2d m_goal = new Translation2d();
 
@@ -55,14 +56,16 @@ public class Vision extends SubsystemBase {
           VISION.robotToAprilTagLimelightCameraB);
   private Matrix<N3, N1> curStdDevs;
   private VisionSystemSim visionSim;
-  // private PhotonCameraSim aprilTagLimelightCameraASim;
+  private PhotonCameraSim aprilTagLimelightCameraASim;
   private PhotonCameraSim aprilTagLimelightCameraBSim;
 
-  // private Pose2d cameraAEstimatedPose = new Pose2d();
+  private Pose2d cameraAEstimatedPose = new Pose2d();
   private Pose2d cameraBEstimatedPose = new Pose2d();
-  private double /*cameraATimestamp,*/ cameraBTimestamp;
+  private double cameraATimestamp, cameraBTimestamp;
   private boolean cameraAHasPose, cameraBHasPose, poseAgreement;
   private boolean m_localized;
+
+  private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
   // Networktables publisher setup
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -74,7 +77,7 @@ public class Vision extends SubsystemBase {
 
   public Vision() {
 
-    // ?
+    // TODO: Decide if this is necessary
     // // Port Forwarding to access limelight on USB Ethernet
     // for (int port = 5800; port <= 5807; port++) {
     //   PortForwarder.add(port, VISION.CAMERA_SERVER.INTAKE.toString(), port);
@@ -98,10 +101,10 @@ public class Vision extends SubsystemBase {
       cameraProp.setLatencyStdDevMs(15);
       // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
       // targets.
-      // aprilTagLimelightCameraASim = new PhotonCameraSim(aprilTagLimelightCameraA, cameraProp);
+      aprilTagLimelightCameraASim = new PhotonCameraSim(aprilTagLimelightCameraA, cameraProp);
       aprilTagLimelightCameraBSim = new PhotonCameraSim(aprilTagLimelightCameraB, cameraProp);
       // Add the simulated camera to view the targets on this simulated field.
-      // visionSim.addCamera(aprilTagLimelightCameraASim, VISION.robotToAprilTagLimelightCameraA);
+      visionSim.addCamera(aprilTagLimelightCameraASim, VISION.robotToAprilTagLimelightCameraA);
       visionSim.addCamera(aprilTagLimelightCameraBSim, VISION.robotToAprilTagLimelightCameraB);
 
       // aprilTagLimelightCameraASim.enableDrawWireframe(false);
@@ -188,12 +191,12 @@ public class Vision extends SubsystemBase {
   public Matrix<N3, N1> getEstimationStdDevs() {
     return curStdDevs;
   }
-
+  //TODO: Integrate fieldsim
   // public void registerFieldSim(FieldSim fieldSim) {
   //   m_fieldSim = fieldSim;
   // }
 
-  // ?
+  //TODO: find out if this can be used for multi camera pose estimation
   // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
   //   var poseDelta = a.minus(b);
 
@@ -239,32 +242,45 @@ public class Vision extends SubsystemBase {
     return String.join(" ", targets.stream().map(PhotonTrackedTarget::toString).toList());
   }
 
-  // ?
-  // public boolean hasGamePieceTarget() {
-  //   NetworkTableEntry tv = NoteDetectionLimelight.getEntry("tv");
-  //   return tv.getDouble(0.0) == 1;
-  // }
-
-  // ?
-  // public double getRobotToGamePieceDegrees() {
-  //   double degreesRotation = 0.0;
-  //   if (hasGamePieceTarget()) {
-  //     NetworkTableEntry tx = NoteDetectionLimelight.getEntry("tx");
-  //     degreesRotation = tx.getDouble(0.0);
-  //   }
-  //   return degreesRotation;
-  // }
-
-  // ?
-  // public Rotation2d getRobotToGamePieceRotation() {
-  //   return Rotation2d.fromDegrees(getRobotToGamePieceDegrees());
-  // }
-
   public int getTargetAmount(PhotonCamera camera) {
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     return targets.size();
   }
+
+// private void updateAngleToReef() {
+//     if (m_swerveDriveTrain != null) {
+//       if (DriverStation.isTeleop()) {
+//         m_goal = Controls.isRedAlliance() ? FIELD.redReef : FIELD.blueReef;
+        
+//         // SOTM stuff
+//         double PositionY = m_swerveDriveTrain.getState().Pose.getY();
+//         double PositionX = m_swerveDriveTrain.getState().Pose.getX();
+//         double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
+//         double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
+//         double AccelerationX = m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
+//         double AccelerationY = m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
+//         double virtualGoalX = m_goal.getX() - VISION.velocityShoot * (VelocityX + AccelerationX);
+//         double virtualGoalY = m_goal.getY() - VISION.velocityShoot * (VelocityY + AccelerationY);
+//         Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+//         Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
+//         double newDist = movingGoalLocation.minus(currentPose).getDistance(new Translation2d());
+      
+//         m_swerveDriveTrain.setAngleToPassing(
+//             m_swerveDriveTrain
+//                 .getState()
+//                 .Pose
+//                 .getTranslation()
+//                 .minus(m_goal)
+//                 .getAngle()
+//                 .plus(
+//                     Rotation2d.fromRadians(
+//                         Math.asin(
+//                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
+//                                 / (newDist * 5)))));
+//       }
+//     }
+//   }
 
   public boolean getInitialLocalization() {
     return m_localized;
@@ -338,7 +354,14 @@ public class Vision extends SubsystemBase {
       // }
     }
 
-    // updateAngleToNote();
+    switch (trackingState) {
+      case REEF:
+        break;
+      default:
+      case NONE:
+        break;
+  }
+
     // This method will be called once per scheduler run
     updateSmartDashboard();
     if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.NORMAL.get()) updateLog();
