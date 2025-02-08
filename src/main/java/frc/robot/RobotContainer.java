@@ -16,24 +16,23 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
+import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.EndEffector;
-import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.alphabot.AlgaeIntake;
-import frc.robot.subsystems.alphabot.CoralOuttake;
+import frc.robot.subsystems.*;
+import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
@@ -55,6 +54,8 @@ public class RobotContainer {
   // V2 subsystems
   private Elevator m_elevator;
   private EndEffector m_endEffector;
+  private ClimberIntake m_climberIntake;
+  private Climber m_climber;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -96,6 +97,8 @@ public class RobotContainer {
     } else {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
+      m_climberIntake = new ClimberIntake();
+      m_climber = new Climber();
     }
 
     m_swerveDrive.setDefaultCommand(
@@ -178,8 +181,6 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
     m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
     m_driverController
         .rightBumper()
@@ -192,6 +193,8 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
+    m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
   }
 
   /**
