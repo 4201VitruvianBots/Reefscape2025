@@ -23,6 +23,8 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
+import frc.robot.commands.ground.GroundPivotControlMode;
+import frc.robot.commands.ground.GroundPivotJoystick;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
@@ -31,6 +33,7 @@ import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
+import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.SysIdUtils;
@@ -52,11 +55,14 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2 subsystems
-  private Elevator m_elevator;
-  private EndEffector m_endEffector;
-  private ClimberIntake m_climberIntake;
-  private Climber m_climber;
-
+  //   private Elevator m_elevator;
+  //   private EndEffector m_endEffector;
+  //   private ClimberIntake m_climberIntake;
+  //   private Climber m_climber;
+  
+  private GroundPivot m_groundPivot;
+  private GroundIntake m_groundIntake;
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -66,7 +72,7 @@ public class RobotContainer {
       new CommandXboxController(USB.xBoxController);
 
   private double MaxSpeed =
-      AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(SWERVE.kMaxRotationRadiansPerSecond)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -95,10 +101,14 @@ public class RobotContainer {
       m_coralOuttake = new CoralOuttake();
       m_algaeIntake = new AlgaeIntake();
     } else {
-      m_elevator = new Elevator();
-      m_endEffector = new EndEffector();
-      m_climberIntake = new ClimberIntake();
-      m_climber = new Climber();
+    //   m_elevator = new Elevator();
+    //   m_endEffector = new EndEffector();
+    //   m_climberIntake = new ClimberIntake();
+    //   m_climber = new Climber();
+      m_groundIntake = new GroundIntake();
+      m_groundPivot = new GroundPivot();
+      
+      m_groundPivot.setDefaultCommand(new GroundPivotJoystick(m_groundPivot, () -> m_driverController.getLeftY())); // For testing purposes
     }
 
     m_swerveDrive.setDefaultCommand(
@@ -190,11 +200,14 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
-    m_driverController
-        .leftTrigger()
-        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-    m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
-    m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+    // m_driverController
+    //     .leftTrigger()
+    //     .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    // m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
+    // m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+    
+    m_driverController.back().onTrue(new GroundPivotControlMode(m_groundPivot));
+    m_driverController.
   }
 
   /**
@@ -205,10 +218,22 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
   }
+  
+  public void autonomousInit() {
+    m_groundPivot.autonomousInit();
+  }
+  
+  public void teleopInit() {
+    m_groundPivot.teleopInit();
+  }
 
   public void testInit() {
     try {
       if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testInit();
+      else {
+        m_groundPivot.testInit();
+        m_groundIntake.testInit();
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -217,6 +242,10 @@ public class RobotContainer {
   public void testPeriodic() {
     try {
       if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
+      else {
+        m_groundPivot.testPeriodic();
+        m_groundIntake.testPeriodic();
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }

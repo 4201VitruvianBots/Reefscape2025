@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 public class GROUND {
   public class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
+    
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
     The unit for this constant is dependent on the control mode,
@@ -72,17 +73,17 @@ public class GROUND {
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
     // TODO update all of these
-    public static final double gearRatio = 180.0 / 1.0;
+    public static final double gearRatio = 51.0 / 1.0;
 
     public static final double jointLength = Units.inchesToMeters(5);
     public static final double pivotVisualizerLength = Units.inchesToMeters(17);
     public static final double pivotLength = Units.inchesToMeters(21.5);
 
-    public static final double mass = Units.lbsToKilograms(7.0);
+    public static final double mass = Units.lbsToKilograms(8.0);
 
-    public static final Angle minAngle = Degrees.of(-40);
+    public static final Angle minAngle = Degrees.of(0);
 
-    public static final Angle maxAngle = Degrees.of(150);
+    public static final Angle maxAngle = Degrees.of(180);
 
     public static final Angle startingAngle = minAngle;
 
@@ -90,7 +91,7 @@ public class GROUND {
 
     public static final double maxOutput = 0.6;
 
-    public static final double joystickMultiplier = maxOutput;
+    public static final double joystickMultiplier = 0.3; // For testing
 
     public static final boolean limitOpenLoop = false;
   }

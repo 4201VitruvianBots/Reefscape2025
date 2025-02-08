@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -12,6 +14,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -21,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND;
+import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.utils.CtreUtils;
 
 public class GroundIntake extends SubsystemBase {
@@ -38,6 +45,14 @@ public class GroundIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               GROUND.INTAKE.gearbox, GROUND.INTAKE.gearRatio, GROUND.INTAKE.kInertia),
           GROUND.INTAKE.gearbox);
+  
+  // Test mode setup
+  private DoubleSubscriber m_kP_subscriber,
+      m_kI_subscriber,
+      m_kD_subscriber,
+      m_output_subscriber;
+  private final NetworkTable m_groundIntakeTab =
+      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("GroundIntake");
 
   public GroundIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -59,6 +74,32 @@ public class GroundIntake extends SubsystemBase {
     SmartDashboard.putNumber(
         "Ground Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("Ground Intake/Motor Current", m_currentSignal.getValueAsDouble());
+  }
+  
+  public void testInit() {
+    m_groundIntakeTab.getDoubleTopic("kP").publish().set(GROUND.INTAKE.kP);
+    m_groundIntakeTab.getDoubleTopic("kI").publish().set(GROUND.INTAKE.kI);
+    m_groundIntakeTab.getDoubleTopic("kD").publish().set(GROUND.INTAKE.kD);
+
+    m_groundIntakeTab.getDoubleTopic("kOutput").publish().set(m_groundIntakeMotor.get());
+    
+    m_kP_subscriber = m_groundIntakeTab.getDoubleTopic("kP").subscribe(GROUND.INTAKE.kP);
+    m_kI_subscriber = m_groundIntakeTab.getDoubleTopic("kI").subscribe(GROUND.INTAKE.kI);
+    m_kD_subscriber = m_groundIntakeTab.getDoubleTopic("kD").subscribe(GROUND.INTAKE.kD);
+
+    m_output_subscriber =
+        m_groundIntakeTab.getDoubleTopic("kOutput").subscribe(m_groundIntakeMotor.get());
+  }
+
+  public void testPeriodic() {
+    Slot0Configs slot0Configs = new Slot0Configs();
+    slot0Configs.kP = m_kP_subscriber.get(PIVOT.kP);
+    slot0Configs.kI = m_kI_subscriber.get(PIVOT.kI);
+    slot0Configs.kD = m_kD_subscriber.get(PIVOT.kD);
+
+    m_groundIntakeMotor.getConfigurator().apply(slot0Configs);
+
+    m_groundIntakeMotor.set(m_output_subscriber.get(m_groundIntakeMotor.get()));
   }
 
   @Override
