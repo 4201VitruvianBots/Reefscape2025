@@ -33,7 +33,7 @@ public class ENDEFFECTOR {
 
   public static final double joystickMultiplier = maxOutput;
 
-  public enum WRIST_SETPOINT {
+  public enum PIVOT_SETPOINT {
     INTAKE_ALGAE(Degrees.of(0.0)),
     STOWED(Degrees.of(30.0)),
     L3_L2(Degrees.of(45.0)),
@@ -42,7 +42,7 @@ public class ENDEFFECTOR {
 
     private final Angle angle;
 
-    WRIST_SETPOINT(final Angle angle) {
+    PIVOT_SETPOINT(final Angle angle) {
       this.angle = angle;
     }
 

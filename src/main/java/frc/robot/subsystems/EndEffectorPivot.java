@@ -21,7 +21,7 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 
-public class EndEffectorWrist extends SubsystemBase {
+public class EndEffectorPivot extends SubsystemBase {
 
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
@@ -43,8 +43,8 @@ public class EndEffectorWrist extends SubsystemBase {
   private Angle m_desiredRotations;
   private boolean m_pivotState;
 
-  /** Creates a nepw EndEffectorWrist. */
-  public EndEffectorWrist() {
+  /** Creates a nepw EndEffectorPivot. */
+  public EndEffectorPivot() {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     configuration.Slot0.kP = ENDEFFECTOR.kP;
     configuration.Slot0.kI = ENDEFFECTOR.kI;
