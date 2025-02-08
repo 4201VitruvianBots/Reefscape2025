@@ -6,23 +6,23 @@ package frc.robot.commands.ground;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.subsystems.GroundDropdown;
+import frc.robot.subsystems.GroundPivot;
 
-public class GroundDropdownControlMode extends InstantCommand {
-  private final GroundDropdown m_groundDropdown;
+public class GroundPivotControlMode extends InstantCommand {
+  private final GroundPivot m_groundPivot;
   private CONTROL_MODE m_controlMode;
 
   /** Set control mode directly */
-  public GroundDropdownControlMode(GroundDropdown groundDropdown, CONTROL_MODE controlMode) {
-    m_groundDropdown = groundDropdown;
+  public GroundPivotControlMode(GroundPivot groundPivot, CONTROL_MODE controlMode) {
+    m_groundPivot = groundPivot;
     m_controlMode = controlMode;
   }
 
   /** Toggle control mode */
-  public GroundDropdownControlMode(GroundDropdown groundDropdown) {
+  public GroundPivotControlMode(GroundPivot groundPivot) {
     this(
-        groundDropdown,
-        groundDropdown.getControlMode() == CONTROL_MODE.CLOSED_LOOP
+        groundPivot,
+        groundPivot.getControlMode() == CONTROL_MODE.CLOSED_LOOP
             ? CONTROL_MODE.OPEN_LOOP
             : CONTROL_MODE.CLOSED_LOOP);
   }
@@ -30,7 +30,7 @@ public class GroundDropdownControlMode extends InstantCommand {
   /** Called when the command is initially scheduled. */
   @Override
   public void initialize() {
-    m_groundDropdown.setControlMode(m_controlMode);
+    m_groundPivot.setControlMode(m_controlMode);
   }
 
   @Override
