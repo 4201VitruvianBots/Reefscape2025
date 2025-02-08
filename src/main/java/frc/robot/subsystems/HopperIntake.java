@@ -22,18 +22,18 @@ import frc.robot.utils.CtreUtils;
 public class HopperIntake extends SubsystemBase {
 
   private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal1 =
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_hopperIntakeMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 =
+  private final StatusSignal<Voltage> m_voltageSignal =
       m_hopperIntakeMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 =
+  private final StatusSignal<Current> m_currentSignal =
       m_hopperIntakeMotor.getTorqueCurrent().clone();
   private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              HOPPERINTAKE.hopperintakeGearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.Inertia),
-          HOPPERINTAKE.hopperintakeGearbox);
+              HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
+          HOPPERINTAKE.gearbox);
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -51,10 +51,10 @@ public class HopperIntake extends SubsystemBase {
   }
 
   public void updateLogger() {
-    SmartDashboard.putNumber("Hopper Intake/Motor", m_velocitySignal1.getValueAsDouble());
+    SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Hopper Intake/Motor1 Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
+        "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override
