@@ -33,6 +33,7 @@ import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.alphabot.*;
+import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
@@ -56,6 +57,8 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
+
+  private final Robot2d m_robot2d = new Robot2d();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -82,6 +85,10 @@ public class RobotContainer {
     m_swerveDrive = SWERVE.selectedDrivetrain;
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
+
+    m_robot2d.registerSubsystem(m_elevator);
+    m_robot2d.registerSubsystem(m_endEffector);
+
     initSmartDashboard();
     initializeSubSystems();
 
@@ -220,5 +227,9 @@ public class RobotContainer {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public void robotPeriodic() {
+    m_robot2d.updateRobot2d();
   }
 }

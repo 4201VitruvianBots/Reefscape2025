@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
@@ -61,6 +62,7 @@ public class Elevator extends SubsystemBase {
     configElevator.Slot0.kD = ELEVATOR.kD;
     configElevator.Slot0.kA = ELEVATOR.kA;
     configElevator.Slot0.kV = ELEVATOR.kV;
+    configElevator.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     CtreUtils.configureTalonFx(elevatorMotors[0], configElevator);
     CtreUtils.configureTalonFx(elevatorMotors[1], configElevator);
 
