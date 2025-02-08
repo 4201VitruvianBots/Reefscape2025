@@ -29,8 +29,7 @@ public final class VISION {
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraAOffsetInRadiansPitch =
       Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraAOffsetInRadiansYaw =
-      Units.degreesToRadians(0);
+  public static final double aprilTagLimelightCameraAOffsetInRadiansYaw = Units.degreesToRadians(0);
 
   public static final double aprilTagLimelightCameraBDistanceFromCenterX = Units.inchesToMeters(14);
   public static final double aprilTagLimelightCameraBDistanceFromCenterY =
@@ -41,8 +40,7 @@ public final class VISION {
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
       Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraBOffsetInRadiansYaw =
-      Units.degreesToRadians(0);
+  public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
 
   public static final double noteDetectionLimelightCameraDistanceFromCenterX =
       Units.inchesToMeters(12.125);

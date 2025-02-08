@@ -1,7 +1,7 @@
-package frc.robot.commands;
+package frc.robot.commands.alphabot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralOuttake;
+import frc.robot.subsystems.alphabot.CoralOuttake;
 
 public class RunCoralOuttake extends Command {
   private final CoralOuttake m_coralOuttake;
