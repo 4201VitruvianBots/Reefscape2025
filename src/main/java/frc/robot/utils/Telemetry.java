@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.SWERVE;
 
 public class Telemetry {
@@ -68,6 +69,7 @@ public class Telemetry {
   /* Accept the swerve drive state and telemeterize it to SmartDashboard */
   public void telemeterize(SwerveDriveState state) {
     /* Telemeterize the swerve drive state */
+    DriverStation.reportWarning("Telemetry::telemeterize() called!", false);
     drivePose.set(state.Pose);
     driveSpeeds.set(state.Speeds);
     driveModuleStates.set(state.ModuleStates);

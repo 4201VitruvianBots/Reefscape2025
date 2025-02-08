@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 
 public class GROUND {
-  public class DROPDOWN {
+  public class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
@@ -52,14 +52,14 @@ public class GROUND {
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
 
-    public enum DROPDOWN_SETPOINT {
+    public enum PIVOT_SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
       ALGAE(Degrees.of(30.0)),
       GROUND_INTAKE(Degrees.of(60.0));
 
       private final Angle angle;
 
-      DROPDOWN_SETPOINT(final Angle angle) {
+      PIVOT_SETPOINT(final Angle angle) {
         // this.sucks = taxes;
         this.angle = angle;
       }
@@ -75,8 +75,8 @@ public class GROUND {
     public static final double gearRatio = 180.0 / 1.0;
 
     public static final double jointLength = Units.inchesToMeters(5);
-    public static final double dropdownVisualizerLength = Units.inchesToMeters(17);
-    public static final double dropdownLength = Units.inchesToMeters(21.5);
+    public static final double pivotVisualizerLength = Units.inchesToMeters(17);
+    public static final double pivotLength = Units.inchesToMeters(21.5);
 
     public static final double mass = Units.lbsToKilograms(7.0);
 
@@ -95,5 +95,5 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
   }
 
-  public class ROLLERS {}
+  public class INTAKE {}
 }

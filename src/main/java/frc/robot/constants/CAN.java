@@ -36,9 +36,9 @@ public class CAN {
 
   // L1/Ground
   public static final int groundRollerMotor = 40;
-  public static final int groundDropdownMotor = 41;
+  public static final int groundPivotMotor = 41;
 
-  public static final int groundDropdownCANcoder = 42;
+  public static final int groundPivotCANcoder = 42;
 
   // Climber
   public static final int cageMotor = 50;
