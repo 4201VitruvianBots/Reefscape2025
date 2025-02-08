@@ -1,8 +1,8 @@
 package frc.robot.utils;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,24 +22,49 @@ public class Robot2d {
    * The width/height of the Mechanism2d is scaled based on the window in Glass/SmartDashboard). For
    * consistency, we should just use Inches.
    */
-  Mechanism2d m_robot = new Mechanism2d(Inches.of(30).in(Inches), Inches.of(30).in(Inches));
+
+  // Image dimensions 657/830
+  // 29 pixels/2 inches
+  double pixelsPerInch = 29.0 / 2.0;
+
+  Distance robotCanvasX = Inches.of(45.31034);
+  Distance robotCanvasY = Inches.of(57.24138);
+
+  Mechanism2d m_robot = new Mechanism2d(robotCanvasX.magnitude(), robotCanvasY.magnitude());
 
   /** Declare a single point from the main Mechanism2d to attach the chassis */
-  MechanismRoot2d m_chassisRoot = m_robot.getRoot("chassisRoot", 0, 0);
+  MechanismRoot2d m_chassisRoot =
+      m_robot.getRoot("chassisRoot", Inches.of(11).magnitude(), Inches.of(3.75).magnitude());
 
-  MechanismLigament2d m_robotChassis = new MechanismLigament2d("chassis2d", 0, 0);
+  // LineWidth is in pixels
+  MechanismLigament2d m_robotChassis =
+      new MechanismLigament2d(
+          "chassis2d",
+          SWERVE.kWheelBase.in(Inches),
+          0,
+          Inches.of(2).magnitude() * pixelsPerInch,
+          new Color8Bit(0, 127, 0));
 
   /** Declare a single point from the main Mechanism2d to attach the Elevator2d */
-  MechanismRoot2d m_elevatorRoot = m_robot.getRoot("ElevatorRoot", 0, 0);
+  MechanismRoot2d m_elevatorRoot =
+      m_robot.getRoot("ElevatorRoot", Inches.of(18.25).magnitude(), Inches.of(6).magnitude());
 
   /** Create an Elevator2d to represent an elevator, and then attach it to the m_elevatorRoot */
   Elevator2d m_elevator =
       new Elevator2d(
-          new Elevator2dConfig("Elevator2d", new Color8Bit(), Inches.of(0)), m_elevatorRoot);
+          new Elevator2dConfig("Elevator2d", new Color8Bit(0, 0, 255), Inches.of(1), Degrees.of(90))
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+          m_elevatorRoot);
 
   Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   public Robot2d() {
+    System.out.println("Canvas Size X: " + robotCanvasX.magnitude());
+    System.out.println("Canvas Size Y: " + robotCanvasY.magnitude());
+    System.out.println("Chassis Thickness: " + Inches.of(2).magnitude());
+    System.out.println("Y Ratio: " + Inches.of(2).div(robotCanvasY).magnitude());
+    System.out.println("Y Pixels: " + Inches.of(2).div(robotCanvasY).magnitude() * 830.0);
+
     // Attach the robotChassis to the chassisRoot
     m_chassisRoot.append(m_robotChassis);
 

@@ -95,6 +95,7 @@ public class RobotContainer {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
 
+    m_telemetry.registerFieldSim(m_fieldSim);
     // TODO: Enable this when subsystems are implemented
     //    m_robot2d.registerSubsystem(m_elevator);
     //    m_robot2d.registerSubsystem(m_endEffector);

@@ -22,7 +22,7 @@ public class FIELD {
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
-  //    public static final AprilTagFieldLayout practiceFieldAprilTagLayout;
+  // public static final AprilTagFieldLayout practiceFieldAprilTagLayout;
 
   public static AprilTagFieldLayout aprilTagFieldLayout = wpilibAprilTagLayout;
 
@@ -41,6 +41,9 @@ public class FIELD {
   public static final Distance BARGE_HEIGHT = Inches.of(70.75 + APRILTAG_SIZE.in(Inches) / 2.0);
   public static final Distance REEF_HEIGHT = Inches.of(8.75 + APRILTAG_SIZE.in(Inches) / 2.0);
 
+  /** Enum describing all AprilTags on the field by ID and their Pose3d positions.
+   *
+   */
   public enum APRIL_TAG {
     RED_CORAL_STATION_LEFT(1),
     RED_CORAL_STATION_RIGHT(2),
@@ -107,6 +110,7 @@ public class FIELD {
     }
   }
 
+  // TODO: Is this still needed?
   //  public enum APRIL_TAG_OFFSETS {
   //    RED_REEF_NEAR_LEFT(6),
   //    RED_REEF_NEAR_CENTER(7),
@@ -132,7 +136,7 @@ public class FIELD {
   //  static Distance baseReefDepth = Inches.of(24); // CAD Measurement to base
   static Distance baseReefDepth = Inches.of(2); // CAD Measurement L4 CC distance
 
-  /** Left/right translation of the reef poles from the center of the AprilTag's Pose2d. */
+  /** Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d. */
   static Distance baseReefTranslation = Inches.of(6.469);
 
   static Translation2d leftReefOffset =
@@ -140,6 +144,9 @@ public class FIELD {
   static Translation2d rightReefOffset =
       new Translation2d(-baseReefDepth.in(Meters), -baseReefTranslation.in(Meters));
 
+  /** Location of all Reef Branches based on their position relative to their nearest AprilTag.
+   *  Includes the ability to add a left/right offset in inches to account for field differences
+   */
   public enum REEF_BRANCHES {
     RED_REEF_NEAR_LEFT_LEFT(6, true, Inches.of(0)),
     RED_REEF_NEAR_LEFT_RIGHT(6, false, Inches.of(0)),
@@ -189,16 +196,19 @@ public class FIELD {
       pose = newPose;
     }
 
+    /** Return the selected branch's position as a Pose2d */
     public Pose2d getPose2d() {
       return pose;
     }
 
+    /** 2d array of all branches */
     public static Pose2d[] getAllPose2d() {
       return Arrays.stream(REEF_BRANCHES.values())
           .map(REEF_BRANCHES::getPose2d)
           .toArray(Pose2d[]::new);
     }
 
+    /** 2d array of branches by Alliance color */
     public static Pose2d[] getAlliancePose2d(DriverStation.Alliance alliance) {
       if (alliance == DriverStation.Alliance.Red) {
         return Arrays.stream(getAllPose2d()).limit(12).toArray(Pose2d[]::new);
@@ -208,21 +218,33 @@ public class FIELD {
     }
   }
 
+  /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
   public static Pose2d[] RED_BRANCHES = REEF_BRANCHES.getAlliancePose2d(DriverStation.Alliance.Red);
+
+  /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
   public static Pose2d[] BLUE_BRANCHES =
       REEF_BRANCHES.getAlliancePose2d(DriverStation.Alliance.Blue);
 
+  /** Position of each reef center */
+  static Translation2d redReefCenter =
+          new Translation2d(LENGTH.minus(Inches.of(176.746)).in(Meters), Inches.of(158.501).in(Meters));
+  static Translation2d blueReefCenter =
+          new Translation2d(Inches.of(176.746).in(Meters), Inches.of(158.501).in(Meters));
+
+  /** Calculation of Reef Zones */
   static Distance reefZoneDepth = Inches.of(120);
   static Distance reefZoneWidth = Inches.of(120);
   static Translation2d reefZoneCornerA =
       new Translation2d(reefZoneDepth.in(Meters), -reefZoneWidth.in(Meters) / 2.0);
   static Translation2d reefZoneCornerB =
       new Translation2d(reefZoneDepth.in(Meters), reefZoneWidth.in(Meters) / 2.0);
-  static Translation2d redReefCenter =
-      new Translation2d(LENGTH.minus(Inches.of(176.746)).in(Meters), Inches.of(158.501).in(Meters));
-  static Translation2d blueReefCenter =
-      new Translation2d(Inches.of(176.746).in(Meters), Inches.of(158.501).in(Meters));
 
+  /** Zones are polygons defined by Pose2d points.
+   *  Reef Zones are defined as a triangle with three points starting from the center of a reef,
+   *  an point projected from the center of the reef perpendicular to a reef face by the distance reefZoneDepth,
+   *  and a third point projected 90 degrees by half the distance defined by reefZoneWidth
+   *  (left/right defines if this projection is positive/negative from the second point)
+   */
   public enum ZONES {
     RED_REEF_NEAR_LEFT_LEFT(6, true),
     RED_REEF_NEAR_LEFT_RIGHT(6, false),
@@ -264,14 +286,17 @@ public class FIELD {
           };
     }
 
+    /** Return an array of Pose2d of the defined Zone */
     public Pose2d[] getZone() {
       return corners;
     }
 
+    /** 2d array of all defined zones */
     public static Pose2d[][] getAllZones() {
       return Arrays.stream(ZONES.values()).map(ZONES::getZone).toArray(Pose2d[][]::new);
     }
 
+    /** 2d array of zones by Alliance color */
     public static Pose2d[][] getAllianceZones(DriverStation.Alliance alliance) {
       if (alliance == DriverStation.Alliance.Red) {
         return Arrays.stream(getAllZones()).limit(12).toArray(Pose2d[][]::new);
@@ -281,10 +306,13 @@ public class FIELD {
     }
   }
 
+  /** Static array of all Red Alliance Zones to avoid constantly generating it */
   public static Pose2d[] RED_ZONES =
       Arrays.stream(ZONES.getAllianceZones(DriverStation.Alliance.Red))
           .flatMap(Stream::of)
           .toArray(Pose2d[]::new);
+
+  /** Static array of all Blue Alliance Zones to avoid constantly generating it */
   public static Pose2d[] BLUE_ZONES =
       Arrays.stream(ZONES.getAllianceZones(DriverStation.Alliance.Blue))
           .flatMap(Stream::of)
