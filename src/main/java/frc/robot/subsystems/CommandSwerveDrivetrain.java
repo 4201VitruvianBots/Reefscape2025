@@ -54,6 +54,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private Twist2d m_twistFromPose = new Twist2d();
   private ChassisSpeeds m_newChassisSpeeds = new ChassisSpeeds();
 
+  // // The robot pose estimator for tracking swerve odometry and applying vision corrections.
+  // private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+  //   getKinematics(),
+  //     kBlueAlliancePerspectiveRotation,
+  //     null,
+  //     m_futurePose
+  //   );
+
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
       new SwerveRequest.ApplyRobotSpeeds();
@@ -359,6 +367,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
+    // poseEstimator.update(getPigeon2().getRotation2d(), getModulePositions());
   }
 
   private void startSimThread() {
@@ -376,5 +385,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               updateSimState(deltaTime, RobotController.getBatteryVoltage());
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  @Override
+  public void addVisionMeasurement(Pose2d pose, double timestampSeconds) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  @Override
+  public void addVisionMeasurement(
+      Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
   }
 }

@@ -31,6 +31,7 @@ import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.SysIdUtils;
@@ -45,6 +46,7 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
+  private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
@@ -78,7 +80,7 @@ public class RobotContainer {
   public RobotContainer() {
     m_swerveDrive = SWERVE.selectedDrivetrain;
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-
+    m_vision.registerSwerveDrive(m_swerveDrive);
     initSmartDashboard();
     initializeSubSystems();
 
