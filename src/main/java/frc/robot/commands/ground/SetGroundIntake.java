@@ -5,27 +5,34 @@
 package frc.robot.commands.ground;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.GROUND.INTAKE.INTAKE_SPEED;
+import frc.robot.subsystems.GroundIntake;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RunGroundIntake extends Command {
-  /** Creates a new RunGroundIntake. */
-  public RunGroundIntake() {
-    // Use addRequirements() here to declare subsystem dependencies.
+public class SetGroundIntake extends Command {
+
+  private final GroundIntake m_groundIntake;
+  private final INTAKE_SPEED m_speed;
+
+  public SetGroundIntake(GroundIntake ground, INTAKE_SPEED speed) {
+    m_groundIntake = ground;
+    m_speed = speed;
+    addRequirements(m_groundIntake);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_groundIntake.setPercentOutput(m_speed.get());
+  }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_groundIntake.setPercentOutput(0);
+  }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
