@@ -195,7 +195,15 @@ public class RobotContainer {
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
-  }
+  
+    /* Do this for every button assignment */
+    m_driverController.leftTrigger().whileTrue(); // Ground Intake (GroundIntake, GroundPivot)
+    m_driverController.rightTrigger().whileTrue(); // score coral / algae outtake (end effector)
+    m_driverController.leftBumper().whileTrue(); // algae toggle (???)
+    m_driverController.rightBumper().whileTrue(); // outtake everything/spit (hopper intake, end effector, ground intake)
+    
+
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
