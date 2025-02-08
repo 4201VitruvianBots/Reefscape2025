@@ -16,11 +16,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.subsystems.alphabot.*;
-import frc.robot.constants.ROBOT;
-import frc.robot.constants.SWERVE;
-import frc.robot.constants.SWERVE.ROUTINE_TYPE;
-import frc.robot.constants.USB;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
@@ -31,8 +26,13 @@ import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.ROBOT;
+import frc.robot.constants.SWERVE;
+import frc.robot.constants.SWERVE.ROUTINE_TYPE;
+import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
@@ -56,7 +56,7 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
-  
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();

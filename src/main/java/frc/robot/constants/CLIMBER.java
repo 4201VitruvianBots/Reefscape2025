@@ -14,6 +14,7 @@ public class CLIMBER {
   public static final double kClimberGearing = 1.0 / 16.0;
   // public static final double kCarriageMassPounds = 15;
   public static final double gearRatio = 1.0 / 16.0;
+
   // public static final double kElevatorDrumRadius = Units.inchesToMeters(0.25);
   // public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
 
@@ -32,6 +33,7 @@ public class CLIMBER {
       return setpointMeters;
     }
   }
+
   public class INTAKE {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
