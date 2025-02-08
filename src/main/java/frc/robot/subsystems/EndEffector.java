@@ -6,13 +6,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -26,21 +23,19 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
-private final StatusSignal <AngularVelocity> m_velocitySignal = 
-m_endEffectorMotor.getVelocity().clone();
-private final StatusSignal<Voltage> m_voltageSignal =
-m_endEffectorMotor.getMotorVoltage().clone();
+  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
+      m_endEffectorMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal =
+      m_endEffectorMotor.getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal =
-  m_endEffectorMotor.getTorqueCurrent().clone();
-    private final TalonFXSimState m_simState =
-    m_endEffectorMotor.getSimState();
-private final DCMotorSim m_endEffectorSim = 
-new DCMotorSim(
-  LinearSystemId.createDCMotorSystem(
-    ENDEFFECTOR.gearbox, ENDEFFECTOR.gearRatio, ENDEFFECTOR.kInertia
-  ), ENDEFFECTOR.gearbox
-);
+      m_endEffectorMotor.getTorqueCurrent().clone();
+  private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
+  private final DCMotorSim m_endEffectorSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              ENDEFFECTOR.gearbox, ENDEFFECTOR.gearRatio, ENDEFFECTOR.kInertia),
+          ENDEFFECTOR.gearbox);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
@@ -56,29 +51,29 @@ new DCMotorSim(
   public void setPercentOutput(double output) {
     m_endEffectorMotor.set(output);
   }
-  
+
   public void updateLogger() {
-    SmartDashboard.putNumber("EndEffector Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("EndEffector Intake/Motor Current", m_currentSignal.getValueAsDouble());
+        "EndEffector Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber(
+        "EndEffector Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
-  
+
   @Override
   public void simulationPeriodic() {
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(
-        MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
 
-        m_endEffectorSim.update(0.02); // TODO update this later maybe?
+    m_endEffectorSim.update(0.02); // TODO update this later maybe?
 
-        m_simState.setRawRotorPosition(
-          m_endEffectorSim.getAngularPositionRotations() * ENDEFFECTOR.gearRatio);
-          m_simState.setRotorVelocity(
-            m_endEffectorSim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
+    m_simState.setRawRotorPosition(
+        m_endEffectorSim.getAngularPositionRotations() * ENDEFFECTOR.gearRatio);
+    m_simState.setRotorVelocity(
+        m_endEffectorSim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
