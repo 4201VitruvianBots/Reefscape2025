@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
-
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
@@ -15,9 +15,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,13 +52,16 @@ public class Elevator extends SubsystemBase {
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
-  private boolean m_elevatorInitialized;
+  // private boolean m_elevatorInitialized; I think this is for LEDs so have fun with that :)  
   private double m_joystickInput;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
   private final TalonFXSimState m_motorSimState;
-
+    private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber, m_kASubscriber, m_kVSubscriber, m_velocitySubscriber, m_accelerationSubscriber, m_jerkSubscriber;
+  private final NetworkTable elevatorTab =
+      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
 
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -64,12 +69,11 @@ public class Elevator extends SubsystemBase {
     config.Slot0.kI = ELEVATOR.kI;
     config.Slot0.kD = ELEVATOR.kD;
     config.Slot0.kA = ELEVATOR.kA;
-    config.Slot0.kV = ELEVATOR.kV;
-
-
-    config.MotionMagic.MotionMagicCruiseVelocity = 100;
-    config.MotionMagic.MotionMagicAcceleration = 200;
-    config.MotionMagic.MotionMagicJerk = 1000;
+    config.Slot0.kV = ELEVATOR.kV;    
+    //config.Slot0.kG = ELEVATOR.kG;
+    config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
+    config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
+    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
     m_motorSimState = elevatorMotors[0].getSimState();
@@ -91,6 +95,10 @@ public class Elevator extends SubsystemBase {
 
   public void setDesiredPosition(double desiredPosition) {
     m_desiredPositionMeters = desiredPosition;
+  }
+
+  public void setDesiredAcceleration(double desiredAccel) {
+    m_requestVelocity.Acceleration = desiredAccel;
   }
 
   public void setJoystickInput(double joystickInput) {
@@ -146,6 +154,40 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].setNeutralMode(mode);
   }
 
+  public void testInit(){
+    elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);
+    elevatorTab.getDoubleTopic("kI").publish().set(ELEVATOR.kI);
+    elevatorTab.getDoubleTopic("kD").publish().set(ELEVATOR.kD);
+    elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
+    elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
+    elevatorTab.getDoubleTopic("MotionMagicCruiseVelocity").publish().set(ELEVATOR.motionMagicCruiseVelocity);
+    elevatorTab.getDoubleTopic("MotionMagicAcceleration").publish().set(ELEVATOR.motionMagicAcceleration);
+    elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
+    m_kP_subscriber = elevatorTab.getDoubleTopic("kP").subscribe(ELEVATOR.kP);
+    m_kI_subscriber = elevatorTab.getDoubleTopic("kI").subscribe(ELEVATOR.kI);
+    m_kD_subscriber = elevatorTab.getDoubleTopic("kD").subscribe(ELEVATOR.kD);
+    m_kASubscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
+    m_kVSubscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
+    m_velocitySubscriber = elevatorTab.getDoubleTopic("MotionMagicCruiseVelocity").subscribe(ELEVATOR.motionMagicCruiseVelocity);
+    m_accelerationSubscriber = elevatorTab.getDoubleTopic("MotionMagicAcceleration").subscribe(ELEVATOR.motionMagicAcceleration);
+    m_jerkSubscriber = elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
+  }
+
+  public void testPeriodic(){
+    Slot0Configs slot0Configs = new Slot0Configs();
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
+    slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
+    slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
+    slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
+    slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
+    
+    // Who on earth knows if this part works, I was guessing that it would.
+    motionMagicConfigs.MotionMagicCruiseVelocity = m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
+    motionMagicConfigs.MotionMagicAcceleration = m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
+    motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
+  }
+
   public void teleopInit() {
     holdElevator();
     setDesiredPosition(getHeightMeters());
@@ -177,6 +219,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Motor Rotations", getMotorRotations());
     SmartDashboard.putNumber("Joystick Input", m_joystickInput);
     SmartDashboard.putBoolean("isClosedLoop", isClosedLoopControl());
+    SmartDashboard.putNumber("Elevator Velocity", m_requestVelocity.Velocity);
+
   }
 
   @Override
@@ -184,7 +228,8 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case CLOSED_LOOP_NET:
-        // elevatorMotors[0].setControl(m_request.Acceleration = 100); // Placeholder text it'll be different from CLOSED_LOOP elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters)); 
+        // m_requestVelocity.Acceleration = 100; TODO: figure out where to put this.
+        elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
         break;
       case CLOSED_LOOP:
         elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));

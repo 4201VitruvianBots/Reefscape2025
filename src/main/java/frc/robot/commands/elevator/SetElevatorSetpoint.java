@@ -20,7 +20,7 @@ public class SetElevatorSetpoint extends Command {
   @Override
   public void initialize() {
     m_elevator.setClosedLoopControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_elevator.setDesiredPosition(m_setpoint.getSetpointMeters()/ELEVATOR.sprocketRotationsToMeters);
+    m_elevator.setDesiredPosition((m_setpoint.getSetpointMeters())/ELEVATOR.sprocketRotationsToMeters);
   }
 
   @Override
@@ -28,8 +28,8 @@ public class SetElevatorSetpoint extends Command {
 
   @Override
   public void end(boolean interruped) {
-    m_elevator.setClosedLoopControlMode(CONTROL_MODE.OPEN_LOOP);
     m_elevator.holdElevator();
+    m_elevator.setClosedLoopControlMode(CONTROL_MODE.OPEN_LOOP);
   }
 
   @Override

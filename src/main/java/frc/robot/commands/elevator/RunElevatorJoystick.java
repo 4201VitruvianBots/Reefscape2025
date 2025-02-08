@@ -18,7 +18,8 @@ public class RunElevatorJoystick extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   @Override
   public void execute() {
@@ -41,7 +42,9 @@ public class RunElevatorJoystick extends Command {
 
   @Override
   public void end(boolean interruped) {
+
   }
+
 
   public boolean isFinished() {
     return false;
