@@ -15,10 +15,12 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,6 +30,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.VISION;
+import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
@@ -38,6 +42,7 @@ import org.team4201.codex.utils.ModuleMap;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+  private Vision m_vision;
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -126,6 +131,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+  private final PIDController m_pidController =
+      new PIDController(11.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = new Rotation2d();
+  private Rotation2d m_angleToReef = new Rotation2d();
+  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
+  private SwerveDriveKinematics m_kinematics;
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -315,6 +326,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
+  public ChassisSpeeds getChassisSpeed() {
+    return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  }
+
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
@@ -323,6 +338,42 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    */
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  public void setAngleToReef(Rotation2d angle) {
+    m_angleToReef = angle;
+  }
+
+  public void setTrackingState(VISION.TRACKING_STATE state) {
+    if (m_trackingState != state) {
+      m_pidController.reset();
+      m_trackingState = state;
+    }
+  }
+
+  private double calculateRotationToTarget() {
+    return m_pidController.calculate(
+        getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
+  }
+
+  private void updateTargetAngle() {
+    switch (m_trackingState) {
+      case REEF:
+        m_targetAngle = m_angleToReef;
+        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
+        break;
+      default:
+      case NONE:
+        break;
+    }
+  }
+
+  public boolean isTrackingState() {
+    if (m_trackingState == TRACKING_STATE.REEF) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -349,6 +400,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   @Override
   public void periodic() {
+    updateTargetAngle();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

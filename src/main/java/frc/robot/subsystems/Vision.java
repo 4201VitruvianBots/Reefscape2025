@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 // import frc.robot.simulation.FieldSim;
@@ -226,6 +227,10 @@ public class Vision extends SubsystemBase {
 
   //   return true;
   // }
+  
+  public void setTrackingState(VISION.TRACKING_STATE state) {
+    trackingState = state;
+  }
 
   public boolean isCameraConnected(PhotonCamera camera) {
     return camera.isConnected();
@@ -248,44 +253,38 @@ public class Vision extends SubsystemBase {
     return targets.size();
   }
 
-  // private void updateAngleToReef() {
-  //     if (m_swerveDriveTrain != null) {
-  //       if (DriverStation.isTeleop()) {
-  //         m_goal = Controls.isRedAlliance() ? FIELD.redReef : FIELD.blueReef;
+  private void updateAngleToReef() {
+      if (m_swerveDriveTrain != null) {
+        if (DriverStation.isTeleop()) {
+          m_goal = Controls.isRedAlliance() ? FIELD.redReef : FIELD.blueReef;
 
-  //         // SOTM stuff
-  //         double PositionY = m_swerveDriveTrain.getState().Pose.getY();
-  //         double PositionX = m_swerveDriveTrain.getState().Pose.getX();
-  //         double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
-  //         double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
-  //         double AccelerationX =
-  // m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
-  //         double AccelerationY =
-  // m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
-  //         double virtualGoalX = m_goal.getX() - VISION.velocityShoot * (VelocityX +
-  // AccelerationX);
-  //         double virtualGoalY = m_goal.getY() - VISION.velocityShoot * (VelocityY +
-  // AccelerationY);
-  //         Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
-  //         Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
-  //         double newDist = movingGoalLocation.minus(currentPose).getDistance(new
-  // Translation2d());
+          double PositionY = m_swerveDriveTrain.getState().Pose.getY();
+          double PositionX = m_swerveDriveTrain.getState().Pose.getX();
+          double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
+          double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
+          double AccelerationX = m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
+          double AccelerationY = m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
+          double virtualGoalX = m_goal.getX() - VISION.velocityShoot * (VelocityX + AccelerationX); // TODO: velocityShoot needs to be checked
+          double virtualGoalY = m_goal.getY() - VISION.velocityShoot * (VelocityY + AccelerationY);
+          Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+          Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
+          double newDist = movingGoalLocation.minus(currentPose).getDistance(new Translation2d());
 
-  //         m_swerveDriveTrain.setAngleToPassing(
-  //             m_swerveDriveTrain
-  //                 .getState()
-  //                 .Pose
-  //                 .getTranslation()
-  //                 .minus(m_goal)
-  //                 .getAngle()
-  //                 .plus(
-  //                     Rotation2d.fromRadians(
-  //                         Math.asin(
-  //                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
-  //                                 / (newDist * 5)))));
-  //       }
-  //     }
-  //   }
+          m_swerveDriveTrain.setAngleToReef(
+              m_swerveDriveTrain
+                  .getState()
+                  .Pose
+                  .getTranslation()
+                  .minus(m_goal)
+                  .getAngle()
+                  .plus(
+                      Rotation2d.fromRadians(
+                          Math.asin(
+                              (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
+                                  / (newDist * 5)))));
+        }
+      }
+    }
 
   public boolean getInitialLocalization() {
     return m_localized;
@@ -295,9 +294,7 @@ public class Vision extends SubsystemBase {
     m_localized = false;
   }
 
-  private void updateSmartDashboard() {
-    // SmartDashboard.putData("Estimated Pose",
-  }
+  private void updateSmartDashboard() {}
 
   private void updateLog() {}
 
@@ -307,23 +304,21 @@ public class Vision extends SubsystemBase {
       if (cameraBHasPose) m_localized = true;
     }
     if (m_swerveDriveTrain != null) {
-      // limelightPhotonPoseEstimatorA.setReferencePose(m_swerveDriveTrain.getState().Pose);
-      // var visionEstLimelightA = getEstimatedGlobalPose();
-      // visionEstLimelightA.ifPresent(
-      //     est -> {
-      //       DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
+      limelightPhotonPoseEstimatorA.setReferencePose(m_swerveDriveTrain.getState().Pose);
+      var visionEstLimelightA = getEstimatedGlobalPose();
+      visionEstLimelightA.ifPresent(
+          est -> {
+            DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
 
-      //       visionEstPose.set(est.estimatedPose);
-      //       visionEstPoseTimestamp.set(est.timestampSeconds);
+            visionEstPose.set(est.estimatedPose);
+            visionEstPoseTimestamp.set(est.timestampSeconds);
 
-      //       // Change our trust in the measurement based on the tags we can see
-      //       var estStdDevs = getEstimationStdDevs();
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = getEstimationStdDevs();
 
-      //       m_swerveDriveTrain.addVisionMeasurement(
-      //           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-      //             // DriverStation.reportWarning("Drivetrain called addVisionMeasurement()!",
-      // false);
-      //     });
+            m_swerveDriveTrain.addVisionMeasurement(
+                est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+          });
 
       // Correct pose estimate with vision measurements
       limelightPhotonPoseEstimatorB.setReferencePose(m_swerveDriveTrain.getState().Pose);
@@ -340,7 +335,6 @@ public class Vision extends SubsystemBase {
 
             m_swerveDriveTrain.addVisionMeasurement(
                 est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-            // DriverStation.reportWarning("Drivetrain called addVisionMeasurement()!", false);
           });
 
       // if (cameraAHasPose && cameraBHasPose) {
@@ -361,6 +355,7 @@ public class Vision extends SubsystemBase {
 
     switch (trackingState) {
       case REEF:
+        updateAngleToReef();
         break;
       default:
       case NONE:
