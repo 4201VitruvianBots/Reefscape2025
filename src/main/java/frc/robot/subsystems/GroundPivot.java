@@ -214,8 +214,7 @@ public class GroundPivot extends SubsystemBase {
     SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
     SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
     SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
-    SmartDashboard.putNumber(
-        "GroundPivot/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
+    SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
   }
 
   public void testInit() {
@@ -240,8 +239,7 @@ public class GroundPivot extends SubsystemBase {
     m_kD_subscriber = m_pivotTab.getDoubleTopic("kD").subscribe(PIVOT.kD);
 
     m_kAccel_subscriber = m_pivotTab.getDoubleTopic("kAccel").subscribe(PIVOT.kAccel);
-    m_kCruiseVel_subscriber =
-        m_pivotTab.getDoubleTopic("kCruiseVel").subscribe(PIVOT.kCruiseVel);
+    m_kCruiseVel_subscriber = m_pivotTab.getDoubleTopic("kCruiseVel").subscribe(PIVOT.kCruiseVel);
     m_kJerk_subscriber = m_pivotTab.getDoubleTopic("kJerk").subscribe(PIVOT.kJerk);
 
     m_kSetpoint_subscriber =
@@ -317,10 +315,8 @@ public class GroundPivot extends SubsystemBase {
     m_simState.setRotorVelocity(
         Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()) * PIVOT.gearRatio);
 
-    m_pivotEncoderSimState.setRawPosition(
-        Units.radiansToRotations(m_pivotSim.getAngleRads()));
-    m_pivotEncoderSimState.setVelocity(
-        Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()));
+    m_pivotEncoderSimState.setRawPosition(Units.radiansToRotations(m_pivotSim.getAngleRads()));
+    m_pivotEncoderSimState.setVelocity(Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()));
 
     SmartDashboard.putNumber(
         "GroundPivot/Model Angle", Units.radiansToDegrees(m_pivotSim.getAngleRads()));

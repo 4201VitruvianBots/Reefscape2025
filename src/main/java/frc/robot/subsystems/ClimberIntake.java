@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CLIMBER;
 import frc.robot.constants.CAN;
+import frc.robot.constants.CLIMBER;
 import frc.robot.utils.CtreUtils;
 
 public class ClimberIntake extends SubsystemBase {
