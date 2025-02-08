@@ -8,7 +8,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -86,8 +88,9 @@ public class RobotContainer {
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
 
-    m_robot2d.registerSubsystem(m_elevator);
-    m_robot2d.registerSubsystem(m_endEffector);
+    // TODO: Enable this when subsystems are implemented
+//    m_robot2d.registerSubsystem(m_elevator);
+//    m_robot2d.registerSubsystem(m_endEffector);
 
     initSmartDashboard();
     initializeSubSystems();
@@ -95,6 +98,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
+
+    if(RobotBase.isSimulation()) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
   }
 
   private void initializeSubSystems() {

@@ -50,11 +50,6 @@ public class Telemetry {
   private final DoublePublisher driveOdometryFrequency =
       driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
-  /* Robot pose for field positioning */
-  private final NetworkTable table = inst.getTable("Pose");
-  private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-  private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
-
   private final double[] m_poseArray = new double[3];
   private final double[] m_moduleStatesArray = new double[8];
   private final double[] m_moduleTargetsArray = new double[8];
@@ -69,7 +64,6 @@ public class Telemetry {
   /* Accept the swerve drive state and telemeterize it to SmartDashboard */
   public void telemeterize(SwerveDriveState state) {
     /* Telemeterize the swerve drive state */
-    DriverStation.reportWarning("Telemetry::telemeterize() called!", false);
     drivePose.set(state.Pose);
     driveSpeeds.set(state.Speeds);
     driveModuleStates.set(state.ModuleStates);
@@ -93,10 +87,6 @@ public class Telemetry {
     SignalLogger.writeDoubleArray("DriveState/ModuleStates", m_moduleStatesArray);
     SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
     SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
-
-    /* Telemeterize the pose to a Field2d */
-    fieldTypePub.set("Field2d");
-    fieldPub.set(m_poseArray);
 
     // TODO: Re-impelement
     //        if (m_fieldSim != null) {

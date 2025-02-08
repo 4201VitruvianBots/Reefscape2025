@@ -69,6 +69,8 @@ public class Elevator extends SubsystemBase {
     configElevator.MotionMagic.MotionMagicCruiseVelocity = 100;
     configElevator.MotionMagic.MotionMagicAcceleration = 200;
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), false));
+
+    setName("Elevator");
   }
 
   public void holdElevator() {

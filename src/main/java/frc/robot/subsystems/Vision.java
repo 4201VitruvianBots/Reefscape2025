@@ -232,17 +232,20 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isAprilTagDetected(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     return result.hasTargets();
   }
 
   public String getTargets(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     return String.join(" ", targets.stream().map(PhotonTrackedTarget::toString).toList());
   }
 
   public int getTargetAmount(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     return targets.size();
@@ -330,8 +333,6 @@ public class Vision extends SubsystemBase {
       var visionEstLimelightB = getEstimatedGlobalPose();
       visionEstLimelightB.ifPresent(
           est -> {
-            DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
-
             visionEstPose.set(est.estimatedPose);
             visionEstPoseTimestamp.set(est.timestampSeconds);
 
@@ -362,8 +363,8 @@ public class Vision extends SubsystemBase {
     switch (trackingState) {
       case REEF:
         break;
-      default:
       case NONE:
+      default:
         break;
     }
 
