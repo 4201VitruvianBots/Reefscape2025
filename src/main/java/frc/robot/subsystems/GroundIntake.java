@@ -22,40 +22,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND;
-import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.utils.CtreUtils;
 
 public class GroundIntake extends SubsystemBase {
 
-  /** Creates a new GroundIntake. */
-  public GroundIntake() {}
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-}{
-
-  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal1 =
-      m_hopperIntakeMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 =
-      m_hopperIntakeMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 =
-      m_hopperIntakeMotor.getTorqueCurrent().clone();
-  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
-  private final DCMotorSim m_hopperIntakeMotorSim =
+  private final TalonFX m_groundIntakeMotor = new TalonFX(CAN.groundRollerMotor);
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
+      m_groundIntakeMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal =
+      m_groundIntakeMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal =
+      m_groundIntakeMotor.getTorqueCurrent().clone();
+  private final TalonFXSimState m_groundIntakeMotorSimState = m_groundIntakeMotor.getSimState();
+  private final DCMotorSim m_groundIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              GROUNDINTAKE.hopperintakeGearbox, GROUNDINTAKE.gearRatio, GROUNDINTAKE.Inertia),
-          GROUNDINTAKE.hopperintakeGearbox);
+              GROUND.INTAKE.gearbox, GROUND.INTAKE.gearRatio, GROUND.INTAKE.kInertia),
+          GROUND.INTAKE.gearbox);
 
   public GroundIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Slot0.kP = GROUNDINTAKE.kP;
-    config.Slot0.kI = GROUNDINTAKE.kI;
-    config.Slot0.kD = GROUNDINTAKE.kD;
-    config.Feedback.SensorToMechanismRatio = GROUNDINTAKE.gearRatio;
+    config.Slot0.kP = GROUND.INTAKE.kP;
+    config.Slot0.kI = GROUND.INTAKE.kI;
+    config.Slot0.kD = GROUND.INTAKE.kD;
+    config.Feedback.SensorToMechanismRatio = GROUND.INTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     CtreUtils.configureTalonFx(m_groundIntakeMotor, config);
@@ -66,25 +56,25 @@ public class GroundIntake extends SubsystemBase {
   }
 
   public void updateLogger() {
-    SmartDashboard.putNumber("Hopper Intake/Motor", m_velocitySignal1.getValueAsDouble());
+    SmartDashboard.putNumber("Ground Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Hopper Intake/Motor1 Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
+        "Ground Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("Ground Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override
   public void simulationPeriodic() {
-    m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_hopperIntakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_hopperIntakeMotorSimState.getMotorVoltage(), -12, 12));
+    m_groundIntakeMotorSim.setInputVoltage(
+        MathUtil.clamp(m_groundIntakeMotorSimState.getMotorVoltage(), -12, 12));
 
-    m_hopperIntakeMotorSim.update(0.02); // TODO update this later maybe?
+    m_groundIntakeMotorSim.update(0.02); // TODO update this later maybe?
 
-    m_hopperIntakeMotorSimState.setRawRotorPosition(
-        m_hopperIntakeMotorSim.getAngularPositionRotations() * HOPPERINTAKE.gearRatio);
-    m_hopperIntakeMotorSimState.setRotorVelocity(
-        m_hopperIntakeMotorSim.getAngularVelocityRPM() * HOPPERINTAKE.gearRatio / 60.0);
+    m_groundIntakeMotorSimState.setRawRotorPosition(
+        m_groundIntakeMotorSim.getAngularPositionRotations() * GROUND.INTAKE.gearRatio);
+    m_groundIntakeMotorSimState.setRotorVelocity(
+        m_groundIntakeMotorSim.getAngularVelocityRPM() * GROUND.INTAKE.gearRatio / 60.0);
   }
 
   @Override

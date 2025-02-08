@@ -54,7 +54,7 @@ public class HopperIntake extends SubsystemBase {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override

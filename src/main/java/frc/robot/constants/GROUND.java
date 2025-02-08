@@ -95,5 +95,31 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
   }
 
-  public class INTAKE {}
+  public class INTAKE {
+
+      public static final double kP = 0.10; // change these
+      public static final double kI = 0.00;
+      public static final double kD = 0.00;
+      public static final double gearRatio = 1.0 / 1.0;
+      public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
+      public static final double kInertia = 0.001;
+    
+      public enum INTAKE_SPEED {
+        INTAKING(0.5),
+        HOLDING_CORAL(0.5), // TODO: update speeds later
+        OUTTAKING(0.5),
+        OUTTAKE_TO_END_EFFECTOR(0.5);
+    
+        private final double value;
+    
+        INTAKE_SPEED(final double value) {
+          this.value = value;
+        }
+    
+        public double get() {
+          return value;
+        }
+      }
+    
+  }
 }
