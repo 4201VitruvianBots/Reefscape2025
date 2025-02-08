@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+<<<<<<< Updated upstream
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {}
@@ -14,4 +15,14 @@ public class LEDSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+=======
+
+public class LEDSubsystem extends SubsystemBase {
+  //
+
+  public LEDSubsystem() {}
+
+  @Override
+  public void periodic() {}
+>>>>>>> Stashed changes
 }
