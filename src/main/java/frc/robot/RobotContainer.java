@@ -201,7 +201,19 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(); // score coral / algae outtake (end effector)
     m_driverController.leftBumper().whileTrue(); // algae toggle (???)
     m_driverController.rightBumper().whileTrue(); // outtake everything/spit (hopper intake, end effector, ground intake)
-    
+    m_driverController.leftStick().whileTrue(); // open loop elevator (elevator) 
+    m_driverController.rightStick().whileTrue(); // Open Loop End Effector Wrist (end effector pivot)
+    m_driverController.a().whileTrue(); // elevator L2 / low algae (elevator, end effector pivot)
+    m_driverController.b().whileTrue(); // elevator L3 / high algae (elevator, end effector pivot)
+    m_driverController.x().whileTrue(); // elevator L1 / processor (elevator, end effector pivot)
+    m_driverController.y().whileTrue(); // elevator L4 / barge (elevator, end effector pivot, end effector algae only)
+    m_driverController.start().whileTrue(); // deploy climber (climber arm)
+    m_driverController.povUp().whileTrue(); // ready hopper (hopper intake, end effector pivot, end effector)
+    m_driverController.povDown().whileTrue(); // score intake coral / algae (end effector)
+    m_driverController.povLeft().whileTrue(); // intake cage (cage intake)
+    m_driverController.povRight().whileTrue(); // climb (climber arm)
+
+
 
 }
 
