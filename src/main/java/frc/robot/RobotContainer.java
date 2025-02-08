@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -28,16 +29,21 @@ import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import java.util.Arrays;
+import org.team4201.codex.simulation.FieldSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,6 +54,7 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
+  private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
@@ -89,8 +96,8 @@ public class RobotContainer {
     m_vision.registerSwerveDrive(m_swerveDrive);
 
     // TODO: Enable this when subsystems are implemented
-//    m_robot2d.registerSubsystem(m_elevator);
-//    m_robot2d.registerSubsystem(m_endEffector);
+    //    m_robot2d.registerSubsystem(m_elevator);
+    //    m_robot2d.registerSubsystem(m_endEffector);
 
     initSmartDashboard();
     initializeSubSystems();
@@ -99,7 +106,7 @@ public class RobotContainer {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
 
-    if(RobotBase.isSimulation()) {
+    if (RobotBase.isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
   }
@@ -236,7 +243,54 @@ public class RobotContainer {
     }
   }
 
+  public void simulationInit() {
+    //    m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+    m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
+    m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT AprilTag", FIELD.APRIL_TAG.RED_REEF_NEAR_LEFT.getPose2d());
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT_LEFT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_LEFT.getPose2d());
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT_RIGHT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_RIGHT.getPose2d());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_RIGHT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_RIGHT.getZone());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER AprilTag",
+    // FIELD.APRIL_TAG.RED_REEF_NEAR_CENTER.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_LEFT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_LEFT.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_RIGHT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_RIGHT.getPose2d());
+  }
+
+  public void simulationPeriodic() {
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+            });
+  }
+
   public void robotPeriodic() {
     m_robot2d.updateRobot2d();
+    //    m_questNav.periodic();
   }
 }
