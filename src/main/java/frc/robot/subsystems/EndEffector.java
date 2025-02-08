@@ -6,10 +6,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -23,59 +26,62 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_endEffector = new TalonFX(CAN.endEffectorOuttakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal1 =
-      m_endEffector.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 = m_endEffector.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 = m_endEffector.getTorqueCurrent().clone();
-  private final TalonFXSimState m_endEffectorSim = m_endEffector.getSimState();
-  private final DCMotorSim m_endEffectorsim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              ENDEFFECTOR.EndEffectorGearbox, ENDEFFECTOR.GearRatio, ENDEFFECTOR.Inertia),
-          ENDEFFECTOR.EndEffectorGearbox);
+private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
+private final StatusSignal <AngularVelocity> m_velocitySignal = 
+m_endEffectorMotor.getVelocity().clone();
+private final StatusSignal<Voltage> m_voltageSignal =
+m_endEffectorMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal =
+  m_endEffectorMotor.getTorqueCurrent().clone();
+    private final TalonFXSimState m_simState =
+    m_endEffectorMotor.getSimState();
+private final DCMotorSim m_endEffectorSim = 
+new DCMotorSim(
+  LinearSystemId.createDCMotorSystem(
+    ENDEFFECTOR.gearbox, ENDEFFECTOR.gearRatio, ENDEFFECTOR.kInertia
+  ), ENDEFFECTOR.gearbox
+);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
-    TalonFXConfiguration m_endEffectorMotorconfig = new TalonFXConfiguration();
-    m_endEffectorMotorconfig.Slot0.kP = ENDEFFECTOR.kP;
-    m_endEffectorMotorconfig.Slot0.kI = ENDEFFECTOR.kI;
-    m_endEffectorMotorconfig.Slot0.kD = ENDEFFECTOR.kD;
-    m_endEffectorMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    m_endEffectorMotorconfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.GearRatio;
-    CtreUtils.configureTalonFx(m_endEffector, m_endEffectorMotorconfig);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = ENDEFFECTOR.kP;
+    config.Slot0.kI = ENDEFFECTOR.kI;
+    config.Slot0.kD = ENDEFFECTOR.kD;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
+    CtreUtils.configureTalonFx(m_endEffectorMotor, config);
   }
 
   public void setPercentOutput(double output) {
-    m_endEffector.set(output);
+    m_endEffectorMotor.set(output);
   }
-
+  
   public void updateLogger() {
-    SmartDashboard.putNumber("Endeffector Intake/Motor", m_velocitySignal1.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Endeffector/Motor1 Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber(
-        "EndEffector Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
+        "EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("EndEffector Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
-
-  public void updatelogger() {}
-
+  
   @Override
   public void simulationPeriodic() {
-    m_endEffectorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorsim.setInputVoltage(MathUtil.clamp(m_endEffectorSim.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(
+        MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
 
-    m_endEffectorsim.update(0.02); // TODO update this later maybe?
+        m_endEffectorSim.update(0.02); // TODO update this later maybe?
 
-    m_endEffectorSim.setRawRotorPosition(
-        m_endEffectorsim.getAngularPositionRotations() * ENDEFFECTOR.GearRatio);
-    m_endEffectorSim.setRotorVelocity(
-        m_endEffectorsim.getAngularVelocityRPM() * ENDEFFECTOR.GearRatio / 60.0);
+        m_simState.setRawRotorPosition(
+          m_endEffectorSim.getAngularPositionRotations() * ENDEFFECTOR.gearRatio);
+          m_simState.setRotorVelocity(
+            m_endEffectorSim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
   }
-
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateLogger();
   }
 }
