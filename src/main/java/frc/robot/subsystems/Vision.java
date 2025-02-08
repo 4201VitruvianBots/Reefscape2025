@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 // import frc.robot.simulation.FieldSim;
@@ -34,7 +33,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
-  //TODO: Integrate fieldsim
+  // TODO: Integrate fieldsim
   // private FieldSim m_fieldSim;
   private Translation2d m_goal = new Translation2d();
 
@@ -191,12 +190,13 @@ public class Vision extends SubsystemBase {
   public Matrix<N3, N1> getEstimationStdDevs() {
     return curStdDevs;
   }
-  //TODO: Integrate fieldsim
+
+  // TODO: Integrate fieldsim
   // public void registerFieldSim(FieldSim fieldSim) {
   //   m_fieldSim = fieldSim;
   // }
 
-  //TODO: find out if this can be used for multi camera pose estimation
+  // TODO: find out if this can be used for multi camera pose estimation
   // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
   //   var poseDelta = a.minus(b);
 
@@ -248,39 +248,44 @@ public class Vision extends SubsystemBase {
     return targets.size();
   }
 
-// private void updateAngleToReef() {
-//     if (m_swerveDriveTrain != null) {
-//       if (DriverStation.isTeleop()) {
-//         m_goal = Controls.isRedAlliance() ? FIELD.redReef : FIELD.blueReef;
-        
-//         // SOTM stuff
-//         double PositionY = m_swerveDriveTrain.getState().Pose.getY();
-//         double PositionX = m_swerveDriveTrain.getState().Pose.getX();
-//         double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
-//         double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
-//         double AccelerationX = m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
-//         double AccelerationY = m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
-//         double virtualGoalX = m_goal.getX() - VISION.velocityShoot * (VelocityX + AccelerationX);
-//         double virtualGoalY = m_goal.getY() - VISION.velocityShoot * (VelocityY + AccelerationY);
-//         Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
-//         Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
-//         double newDist = movingGoalLocation.minus(currentPose).getDistance(new Translation2d());
-      
-//         m_swerveDriveTrain.setAngleToPassing(
-//             m_swerveDriveTrain
-//                 .getState()
-//                 .Pose
-//                 .getTranslation()
-//                 .minus(m_goal)
-//                 .getAngle()
-//                 .plus(
-//                     Rotation2d.fromRadians(
-//                         Math.asin(
-//                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
-//                                 / (newDist * 5)))));
-//       }
-//     }
-//   }
+  // private void updateAngleToReef() {
+  //     if (m_swerveDriveTrain != null) {
+  //       if (DriverStation.isTeleop()) {
+  //         m_goal = Controls.isRedAlliance() ? FIELD.redReef : FIELD.blueReef;
+
+  //         // SOTM stuff
+  //         double PositionY = m_swerveDriveTrain.getState().Pose.getY();
+  //         double PositionX = m_swerveDriveTrain.getState().Pose.getX();
+  //         double VelocityY = m_swerveDriveTrain.getChassisSpeed().vyMetersPerSecond;
+  //         double VelocityX = m_swerveDriveTrain.getChassisSpeed().vxMetersPerSecond;
+  //         double AccelerationX =
+  // m_swerveDriveTrain.getPigeon2().getAccelerationX().getValueAsDouble();
+  //         double AccelerationY =
+  // m_swerveDriveTrain.getPigeon2().getAccelerationY().getValueAsDouble();
+  //         double virtualGoalX = m_goal.getX() - VISION.velocityShoot * (VelocityX +
+  // AccelerationX);
+  //         double virtualGoalY = m_goal.getY() - VISION.velocityShoot * (VelocityY +
+  // AccelerationY);
+  //         Translation2d movingGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+  //         Translation2d currentPose = m_swerveDriveTrain.getState().Pose.getTranslation();
+  //         double newDist = movingGoalLocation.minus(currentPose).getDistance(new
+  // Translation2d());
+
+  //         m_swerveDriveTrain.setAngleToPassing(
+  //             m_swerveDriveTrain
+  //                 .getState()
+  //                 .Pose
+  //                 .getTranslation()
+  //                 .minus(m_goal)
+  //                 .getAngle()
+  //                 .plus(
+  //                     Rotation2d.fromRadians(
+  //                         Math.asin(
+  //                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
+  //                                 / (newDist * 5)))));
+  //       }
+  //     }
+  //   }
 
   public boolean getInitialLocalization() {
     return m_localized;
@@ -360,7 +365,7 @@ public class Vision extends SubsystemBase {
       default:
       case NONE:
         break;
-  }
+    }
 
     // This method will be called once per scheduler run
     updateSmartDashboard();

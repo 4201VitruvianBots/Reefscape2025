@@ -124,8 +124,8 @@ public final class VISION {
     }
   }
 
-    public enum TRACKING_STATE {
-      NONE,
-      REEF
-    }
+  public enum TRACKING_STATE {
+    NONE,
+    REEF
+  }
 }
