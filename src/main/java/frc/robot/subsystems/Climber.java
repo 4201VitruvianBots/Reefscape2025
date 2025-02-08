@@ -63,7 +63,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void holdclimber() {
-    setDesiredPosition(getHeightMeters());
+    setDesiredPosition(getPullyLengthMeters());
   }
 
   public void setPercentOutput(double output) {
@@ -76,10 +76,6 @@ public class Climber extends SubsystemBase {
 
   public void setDesiredPosition(double desiredPosition) {
     m_desiredPositionMeters = desiredPosition;
-  }
-
-  public void setJoystickInput(double joystickInput) {
-    m_joystickInput = joystickInput;
   }
 
   public void setControlMode(CONTROL_MODE controlMode) {
@@ -108,7 +104,7 @@ public class Climber extends SubsystemBase {
     return m_voltageSignal.getValueAsDouble();
   }
 
-  public double getHeightMeters() {
+  public double getPullyLengthMeters() {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
   }
 
