@@ -2,6 +2,9 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
+
+import static edu.wpi.first.units.Units.Inches;
 
 public class ELEVATOR {
 
@@ -11,6 +14,7 @@ public class ELEVATOR {
 
   public static final double upperLimitMeters = Units.inchesToMeters(21.50);
   public static final double lowerLimitMeters = Units.inchesToMeters(0.0);
+  public static final Distance superStructureHeight = Inches.of(36.25);
 
   // TODO: figure this out
   // public static final double kMaxVel = Units.inchesToMeters(10);

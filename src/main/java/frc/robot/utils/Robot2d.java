@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 public class Robot2d {
 
   /**
-   * Image dimensions 657/830, which ends up being29 pixels/2 inches Use this to scale the lineWidth
+   * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the lineWidth
    * of MechanismLigament2d appropriately
    */
   double pixelsPerInch = 29.0 / 2.0;
@@ -49,13 +50,15 @@ public class Robot2d {
 
   /** Declare a single point from the main Mechanism2d to attach the Elevator2d */
   MechanismRoot2d m_elevatorRoot =
-      m_robot.getRoot("ElevatorRoot", Inches.of(18.25).magnitude(), Inches.of(6).magnitude());
+      m_robot.getRoot("ElevatorRoot", Inches.of(18.25).magnitude(), Inches.of(3).magnitude());
 
   /** Create an Elevator2d to represent an elevator, and then attach it to the m_elevatorRoot */
   Elevator2d m_elevator =
       new Elevator2d(
-          new Elevator2dConfig("Elevator2d", new Color8Bit(0, 0, 255), Inches.of(1), Degrees.of(90))
-              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+          new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
+                  .withSuperStructureOffset(ELEVATOR.superStructureHeight)
+                  .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
   /** Map of subsystems for Robot2d to update */
