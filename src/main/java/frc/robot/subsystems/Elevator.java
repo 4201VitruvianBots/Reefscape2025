@@ -45,7 +45,7 @@ public class Elevator extends SubsystemBase {
           ELEVATOR.kElevatorDrumRadius,
           ELEVATOR.lowerLimitMeters,
           ELEVATOR.upperLimitMeters,
-          false,
+          true,
           0,
           0.0,
           0.0);
@@ -70,7 +70,6 @@ public class Elevator extends SubsystemBase {
     config.Slot0.kD = ELEVATOR.kD;
     config.Slot0.kA = ELEVATOR.kA;
     config.Slot0.kV = ELEVATOR.kV;    
-    //config.Slot0.kG = ELEVATOR.kG;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
@@ -113,10 +112,6 @@ public class Elevator extends SubsystemBase {
     return m_controlMode;
   }
 
-  public NeutralModeValue getNeutralMode() {
-    return m_neutralMode;
-  }
-
   public Double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
@@ -148,11 +143,16 @@ public class Elevator extends SubsystemBase {
     return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
 
-  public void setClimberNeutralMode(NeutralModeValue mode) {
+  public void setElevatorNeutralMode(NeutralModeValue mode) {
     if (mode == m_neutralMode) return;
     m_neutralMode = mode;
     elevatorMotors[0].setNeutralMode(mode);
   }
+
+  public NeutralModeValue getNeutralMode() {
+    return m_neutralMode;
+  }
+
 
   public void testInit(){
     elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);
@@ -181,7 +181,6 @@ public class Elevator extends SubsystemBase {
     slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
     slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
     slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
-    
     // Who on earth knows if this part works, I was guessing that it would.
     motionMagicConfigs.MotionMagicCruiseVelocity = m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
     motionMagicConfigs.MotionMagicAcceleration = m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
@@ -236,7 +235,7 @@ public class Elevator extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * ELEVATOR.kPercentOutputMultiplier;
+        double percentOutput = m_joystickInput * ELEVATOR.kPercentOutputMultiplier + ELEVATOR.offset; 
         setPercentOutput(percentOutput); 
         break;
     }

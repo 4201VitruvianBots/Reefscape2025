@@ -26,6 +26,9 @@ public class ELEVATOR {
   public static final double kD = 0.0;
   public static final double kA = 0.2;
   public static final double kV = 0.1;
+  public static final double kG = 500.0;
+  public static final double kS = 0.7;
+  public static final double offset = 0.05565;
   public static final double motionMagicCruiseVelocity = 100;
   public static final double motionMagicAcceleration = 200;
   public static final double motionMagicJerk = 4000;
