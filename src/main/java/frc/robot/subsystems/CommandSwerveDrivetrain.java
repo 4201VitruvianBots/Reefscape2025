@@ -54,6 +54,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private Twist2d m_twistFromPose = new Twist2d();
   private ChassisSpeeds m_newChassisSpeeds = new ChassisSpeeds();
 
+  private String name;
+
+  public String getName() {
+    return name;
+  }  
+
+  public void setName(String name) {
+    this.name = name;
+  }
   // // The robot pose estimator for tracking swerve odometry and applying vision corrections.
   // private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
   //   getKinematics(),

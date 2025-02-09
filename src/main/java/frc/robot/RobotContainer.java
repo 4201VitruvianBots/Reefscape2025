@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,9 +25,11 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
+import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -46,14 +50,16 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
   private final Vision m_vision = new Vision();
+  private final Controls m_controls = new Controls();
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
+  private EndEffector m_endEffector;
+  private EndEffectorPivot m_endEffectorPivot;
 
   // V2 subsystems
   private Elevator m_elevator;
-  private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
 
@@ -80,6 +86,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive = SWERVE.selectedDrivetrain;
+    DriverStation.reportWarning("SwerveDrive Name: " + m_swerveDrive.getName(), false);
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
     initSmartDashboard();
@@ -94,9 +101,10 @@ public class RobotContainer {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       m_coralOuttake = new CoralOuttake();
       m_algaeIntake = new AlgaeIntake();
+      m_endEffector = new EndEffector();
+      m_endEffectorPivot = new EndEffectorPivot();
     } else {
       m_elevator = new Elevator();
-      m_endEffector = new EndEffector();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
     }
@@ -187,13 +195,15 @@ public class RobotContainer {
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
     m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
-  }
-
-  private void configureV2Bindings() {
+    m_driverController.a().whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-    m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
+   
+  }
+
+  private void configureV2Bindings() {
+     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
   }
 

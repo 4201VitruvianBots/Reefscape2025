@@ -241,8 +241,15 @@ public class AlphaBotConstants {
    * program,.
    */
   public static CommandSwerveDrivetrain createDrivetrain() {
-    return new CommandSwerveDrivetrain(
+    FrontLeft.withFeedbackSource(SteerFeedbackType.RemoteCANcoder);
+    FrontRight.withFeedbackSource(SteerFeedbackType.RemoteCANcoder);
+    BackLeft.withFeedbackSource(SteerFeedbackType.RemoteCANcoder);
+    BackRight.withFeedbackSource(SteerFeedbackType.RemoteCANcoder);
+    var swerve = new CommandSwerveDrivetrain(
         DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+    
+    swerve.setName("Alphabot Swerve");
+    return swerve;
   }
 
   /** Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types. */

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -29,7 +30,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private final MotionMagicTorqueCurrentFOC m_request =
-      new MotionMagicTorqueCurrentFOC(getCurrentRotation());
+      new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
@@ -40,7 +41,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private boolean m_enforceLimits;
   private boolean m_userSetpoint;
 
-  private Angle m_desiredRotations;
+  private Angle m_desiredRotations = Degrees.of(0);
   private boolean m_pivotState;
 
   /** Creates a nepw EndEffectorPivot. */
@@ -83,8 +84,12 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public Angle getCurrentRotation() {
-    m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    try { 
+      m_positionSignal.refresh();
+      return m_positionSignal.getValue();
+    } catch(Exception e) {
+      return Rotations.of(0);
+    }
   }
 
   public double getCANcoderAngle() {

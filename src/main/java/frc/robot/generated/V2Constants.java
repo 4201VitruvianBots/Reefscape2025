@@ -240,8 +240,11 @@ public class V2Constants {
    * program,.
    */
   public static CommandSwerveDrivetrain createDrivetrain() {
-    return new CommandSwerveDrivetrain(
-        DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+        var swerve = new CommandSwerveDrivetrain(
+            DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+        
+        swerve.setName("V2 Swerve");
+        return swerve;
   }
 
   /** Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types. */
