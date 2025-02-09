@@ -147,6 +147,8 @@ public class GroundPivot extends SubsystemBase {
         Degrees.of(
             MathUtil.clamp(
                 angle.in(Degrees), PIVOT.minAngle.in(Degrees), PIVOT.maxAngle.in(Degrees)));
+    // Print a stack trace
+    System.out.println("Setting desired setpoint to " + Math.round(angle.in(Degrees)) + " degrees");
   }
 
   public Angle getDesiredSetpoint() {

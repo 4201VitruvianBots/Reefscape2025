@@ -34,8 +34,8 @@ public class ROBOT {
 
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
-    V2("32398ed"), // 23-2 Rio 2.0
-    // 23-1 Rio 2.0 - 32381fb
+    V2("32381fb"), // 23-1 Rio 2.0
+    // 23-2 Rio 2.0 - 32398ed
 
     SIM("");
 

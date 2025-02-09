@@ -25,9 +25,13 @@ import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.ground.GroundPivotControlMode;
 import frc.robot.commands.ground.GroundPivotJoystick;
+import frc.robot.commands.ground.GroundPivotSetpoint;
+import frc.robot.commands.ground.SetGroundIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.GROUND.INTAKE.INTAKE_SPEED;
+import frc.robot.constants.GROUND.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -57,8 +61,8 @@ public class RobotContainer {
   // V2 subsystems
   //   private Elevator m_elevator;
   //   private EndEffector m_endEffector;
-  //   private ClimberIntake m_climberIntake;
-  //   private Climber m_climber;
+  private ClimberIntake m_climberIntake;
+  private Climber m_climber;
   
   private GroundPivot m_groundPivot;
   private GroundIntake m_groundIntake;
@@ -103,8 +107,8 @@ public class RobotContainer {
     } else {
     //   m_elevator = new Elevator();
     //   m_endEffector = new EndEffector();
-    //   m_climberIntake = new ClimberIntake();
-    //   m_climber = new Climber();
+      m_climberIntake = new ClimberIntake();
+      m_climber = new Climber();
       m_groundIntake = new GroundIntake();
       m_groundPivot = new GroundPivot();
       
@@ -207,7 +211,17 @@ public class RobotContainer {
     // m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
     
     m_driverController.back().onTrue(new GroundPivotControlMode(m_groundPivot));
-    m_driverController.
+    
+    m_driverController.leftTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.INTAKING));
+    m_driverController.rightTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKING));
+    m_driverController.leftBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.HOLDING_CORAL));
+    m_driverController.rightBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKE_TO_END_EFFECTOR));
+    
+    m_driverController.a().whileTrue(new GroundPivotSetpoint(m_groundPivot, PIVOT_SETPOINT.STOWED));
+    m_driverController.b().whileTrue(new GroundPivotSetpoint(m_groundPivot, PIVOT_SETPOINT.ALGAE));
+    m_driverController.x().whileTrue(new GroundPivotSetpoint(m_groundPivot, PIVOT_SETPOINT.GROUND_INTAKE));
+    
+    m_driverController.povUp().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
   }
 
   /**
