@@ -41,9 +41,7 @@ public class FIELD {
   public static final Distance BARGE_HEIGHT = Inches.of(70.75 + APRILTAG_SIZE.in(Inches) / 2.0);
   public static final Distance REEF_HEIGHT = Inches.of(8.75 + APRILTAG_SIZE.in(Inches) / 2.0);
 
-  /** Enum describing all AprilTags on the field by ID and their Pose3d positions.
-   *
-   */
+  /** Enum describing all AprilTags on the field by ID and their Pose3d positions. */
   public enum APRIL_TAG {
     RED_CORAL_STATION_LEFT(1),
     RED_CORAL_STATION_RIGHT(2),
@@ -136,7 +134,9 @@ public class FIELD {
   //  static Distance baseReefDepth = Inches.of(24); // CAD Measurement to base
   static Distance baseReefDepth = Inches.of(2); // CAD Measurement L4 CC distance
 
-  /** Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d. */
+  /**
+   * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
+   */
   static Distance baseReefTranslation = Inches.of(6.469);
 
   static Translation2d leftReefOffset =
@@ -144,8 +144,9 @@ public class FIELD {
   static Translation2d rightReefOffset =
       new Translation2d(-baseReefDepth.in(Meters), -baseReefTranslation.in(Meters));
 
-  /** Location of all Reef Branches based on their position relative to their nearest AprilTag.
-   *  Includes the ability to add a left/right offset in inches to account for field differences
+  /**
+   * Location of all Reef Branches based on their position relative to their nearest AprilTag.
+   * Includes the ability to add a left/right offset in inches to account for field differences
    */
   public enum REEF_BRANCHES {
     RED_REEF_NEAR_LEFT_LEFT(6, true, Inches.of(0)),
@@ -227,23 +228,26 @@ public class FIELD {
 
   /** Position of each reef center */
   static Translation2d redReefCenter =
-          new Translation2d(LENGTH.minus(Inches.of(176.746)).in(Meters), Inches.of(158.501).in(Meters));
+      new Translation2d(LENGTH.minus(Inches.of(176.746)).in(Meters), Inches.of(158.501).in(Meters));
+
   static Translation2d blueReefCenter =
-          new Translation2d(Inches.of(176.746).in(Meters), Inches.of(158.501).in(Meters));
+      new Translation2d(Inches.of(176.746).in(Meters), Inches.of(158.501).in(Meters));
 
   /** Calculation of Reef Zones */
   static Distance reefZoneDepth = Inches.of(120);
+
   static Distance reefZoneWidth = Inches.of(120);
   static Translation2d reefZoneCornerA =
       new Translation2d(reefZoneDepth.in(Meters), -reefZoneWidth.in(Meters) / 2.0);
   static Translation2d reefZoneCornerB =
       new Translation2d(reefZoneDepth.in(Meters), reefZoneWidth.in(Meters) / 2.0);
 
-  /** Zones are polygons defined by Pose2d points.
-   *  Reef Zones are defined as a triangle with three points starting from the center of a reef,
-   *  an point projected from the center of the reef perpendicular to a reef face by the distance reefZoneDepth,
-   *  and a third point projected 90 degrees by half the distance defined by reefZoneWidth
-   *  (left/right defines if this projection is positive/negative from the second point)
+  /**
+   * Zones are polygons defined by Pose2d points. Reef Zones are defined as a triangle with three
+   * points starting from the center of a reef, an point projected from the center of the reef
+   * perpendicular to a reef face by the distance reefZoneDepth, and a third point projected 90
+   * degrees by half the distance defined by reefZoneWidth (left/right defines if this projection is
+   * positive/negative from the second point)
    */
   public enum ZONES {
     RED_REEF_NEAR_LEFT_LEFT(6, true),

@@ -17,14 +17,16 @@ import java.util.Map;
 import org.team4201.codex.simulation.visualization.Elevator2d;
 import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 
+/**
+ * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
+ * the window in Glass/SmartDashboard). For consistency, we should just use Inches.
+ */
 public class Robot2d {
-  /**
-   * The width/height of the Mechanism2d is scaled based on the window in Glass/SmartDashboard). For
-   * consistency, we should just use Inches.
-   */
 
-  // Image dimensions 657/830
-  // 29 pixels/2 inches
+  /**
+   * Image dimensions 657/830, which ends up being29 pixels/2 inches Use this to scale the lineWidth
+   * of MechanismLigament2d appropriately
+   */
   double pixelsPerInch = 29.0 / 2.0;
 
   Distance robotCanvasX = Inches.of(45.31034);
@@ -36,7 +38,7 @@ public class Robot2d {
   MechanismRoot2d m_chassisRoot =
       m_robot.getRoot("chassisRoot", Inches.of(11).magnitude(), Inches.of(3.75).magnitude());
 
-  // LineWidth is in pixels
+  /** Use a line (MechanismLigament2d) to represent the robot chassis */
   MechanismLigament2d m_robotChassis =
       new MechanismLigament2d(
           "chassis2d",
@@ -56,30 +58,20 @@ public class Robot2d {
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
           m_elevatorRoot);
 
+  /** Map of subsystems for Robot2d to update */
   Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   public Robot2d() {
-    System.out.println("Canvas Size X: " + robotCanvasX.magnitude());
-    System.out.println("Canvas Size Y: " + robotCanvasY.magnitude());
-    System.out.println("Chassis Thickness: " + Inches.of(2).magnitude());
-    System.out.println("Y Ratio: " + Inches.of(2).div(robotCanvasY).magnitude());
-    System.out.println("Y Pixels: " + Inches.of(2).div(robotCanvasY).magnitude() * 830.0);
-
     // Attach the robotChassis to the chassisRoot
     m_chassisRoot.append(m_robotChassis);
 
+    // Publish Robot2d to SmartDashboard
     SmartDashboard.putData("Robot2d", m_robot);
 
-    // For simulation, send the sub-mechanisms to the dashboard.
+    // For simulation, create a sub-mechanism display for each mechanism.
     // Avoid doing this with the real robot to reduce bandwidth usage.
-    // TODO: Just move this logic into Codex
     if (RobotBase.isSimulation()) {
-      Mechanism2d m_subElevator2d =
-          new Mechanism2d(Inches.of(30).in(Inches), Inches.of(30).in(Inches));
-      m_subElevator2d
-          .getRoot("subElevator2d", Inches.of(15).in(Inches), Inches.of(0).in(Inches))
-          .append(m_elevator.getSubElevator().getLigament());
-      SmartDashboard.putData("SubElevator", m_subElevator2d);
+      m_elevator.generateSubDisplay();
     }
   }
 
@@ -87,12 +79,13 @@ public class Robot2d {
     m_subsystemMap.put(subsystem.getName(), subsystem);
   }
 
+  /** Function to update all mechanisms on Robot2d. This should be called periodically. */
   public void updateRobot2d() {
     if (m_subsystemMap.containsKey("Elevator")) {
       var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
       m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()));
       // TODO: Add LinearVelocity function in elevator
-      //      m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
+      //   m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
     }
 
     if (m_subsystemMap.containsKey("EndEffectorPivot")) {
