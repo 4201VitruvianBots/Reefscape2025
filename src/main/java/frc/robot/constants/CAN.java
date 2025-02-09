@@ -11,14 +11,22 @@ public class CAN {
   public static final int backLeftCanCoder = 12;
   public static final int backRightCanCoder = 13;
 
-  public static final int frontLeftDriveMotor = 20;
-  public static final int frontLeftTurnMotor = 21;
-  public static final int frontRightDriveMotor = 22;
-  public static final int frontRightTurnMotor = 23;
-  public static final int backLeftDriveMotor = 24;
-  public static final int backLeftTurnMotor = 25;
-  public static final int backRightDriveMotor = 26;
-  public static final int backRightTurnMotor = 27;
+  // public static final int frontLeftDriveMotor = 20;
+  // public static final int frontLeftTurnMotor = 21;
+  // public static final int frontRightDriveMotor = 22;
+  // public static final int frontRightTurnMotor = 23;
+  // public static final int backLeftDriveMotor = 24;
+  // public static final int backLeftTurnMotor = 25;
+  // public static final int backRightDriveMotor = 26;
+  // public static final int backRightTurnMotor = 27;
+  public static final int frontLeftDriveMotor = 50;
+  public static final int frontLeftTurnMotor = 51;
+  public static final int frontRightDriveMotor = 52;
+  public static final int frontRightTurnMotor = 53;
+  public static final int backLeftDriveMotor = 54;
+  public static final int backLeftTurnMotor = 55;
+  public static final int backRightDriveMotor = 56;
+  public static final int backRightTurnMotor = 57;
 
   public static final int hopperIntakeMotor =
       30; // 31 is just gone. it used to be the second motor, but phong removed that because of matt

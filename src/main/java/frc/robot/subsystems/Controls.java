@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,9 +39,9 @@ public class Controls extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    if(DriverStation.isDisabled()) {
+    if (DriverStation.isDisabled()) {
       var allianceCheck = DriverStation.getAlliance();
-      allianceCheck.ifPresent(a-> m_allianceColor = a);
+      allianceCheck.ifPresent(a -> m_allianceColor = a);
     }
   }
 }

@@ -1,7 +1,6 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.util.Units;
-import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class SWERVE {
