@@ -16,12 +16,12 @@ public class SetHopperIntake extends Command {
   }
 
   @Override
-  public void initialize() {}
-
-  @Override
-  public void execute() {
+  public void initialize() {
     m_hopperIntake.setPercentOutput(m_speed.get());
   }
+
+  @Override
+  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
