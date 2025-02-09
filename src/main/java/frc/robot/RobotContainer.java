@@ -100,12 +100,13 @@ public class RobotContainer {
     m_vision.registerSwerveDrive(m_swerveDrive);
 
     m_telemetry.registerFieldSim(m_fieldSim);
-    // TODO: Enable this when subsystems are implemented
-    //    m_robot2d.registerSubsystem(m_elevator);
-    //    m_robot2d.registerSubsystem(m_endEffector);
 
     initSmartDashboard();
     initializeSubSystems();
+
+    // TODO: Enable this when subsystems are implemented
+    m_robot2d.registerSubsystem(m_elevator);
+    //    m_robot2d.registerSubsystem(m_endEffector);
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
