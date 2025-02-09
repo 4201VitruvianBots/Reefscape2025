@@ -104,8 +104,8 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-      m_coralOuttake = new CoralOuttake();
-      m_algaeIntake = new AlgaeIntake();
+//      m_coralOuttake = new CoralOuttake();
+//      m_algaeIntake = new AlgaeIntake();
       m_endEffectorPivot = new EndEffectorPivot();
       m_endEffector = new EndEffector();
     } else {

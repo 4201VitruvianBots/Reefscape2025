@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -23,6 +24,7 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 
+@Logged
 public class EndEffectorPivot extends SubsystemBase {
 
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
@@ -53,6 +55,8 @@ public class EndEffectorPivot extends SubsystemBase {
     configuration.Slot0.kD = ENDEFFECTOR.kD;
     configuration.MotorOutput.NeutralMode = m_neutralMode;
     configuration.Feedback.RotorToSensorRatio = ENDEFFECTOR.pivotGearRatio;
+
+    setName("EndEffectorPivot");
   }
 
   public void setState(boolean state) {
