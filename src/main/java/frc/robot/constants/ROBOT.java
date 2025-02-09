@@ -24,7 +24,6 @@ public class ROBOT {
     OPEN_LOOP,
     CLOSED_LOOP,
     CLOSED_LOOP_NET
-
   }
 
   public enum ROBOT_ID {

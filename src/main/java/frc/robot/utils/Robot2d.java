@@ -25,8 +25,8 @@ import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 public class Robot2d {
 
   /**
-   * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the lineWidth
-   * of MechanismLigament2d appropriately
+   * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the
+   * lineWidth of MechanismLigament2d appropriately
    */
   double pixelsPerInch = 29.0 / 2.0;
 
@@ -57,9 +57,9 @@ public class Robot2d {
       new Elevator2d(
           new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
-                  .withSuperStructureOffset(ELEVATOR.superStructureHeight)
-                  .withStageMaxLengths(Meters.of(ELEVATOR.upperLimitMeters))
-                  .withStageColors(new Color8Bit(0, 0, 255)),
+              .withSuperStructureOffset(ELEVATOR.superStructureHeight)
+              .withStageMaxLengths(Meters.of(ELEVATOR.upperLimitMeters))
+              .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
   /** Map of subsystems for Robot2d to update */

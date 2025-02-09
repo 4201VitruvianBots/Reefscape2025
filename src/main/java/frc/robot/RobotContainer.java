@@ -25,13 +25,13 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
-import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
@@ -47,7 +47,6 @@ import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import java.util.Arrays;
 import org.team4201.codex.simulation.FieldSim;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -141,9 +140,9 @@ public class RobotContainer {
                     .withRotationalRate(
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
-
             ));
-    m_elevator.setDefaultCommand(new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+    m_elevator.setDefaultCommand(
+        new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
   }
 
   private void initAutoChooser() {
@@ -222,10 +221,18 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-    m_driverController.a().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
-    m_driverController.x().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
-    m_driverController.y().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
-    m_driverController.b().whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
+    m_driverController
+        .a()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+    m_driverController
+        .x()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+    m_driverController
+        .y()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+    m_driverController
+        .b()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
   }
