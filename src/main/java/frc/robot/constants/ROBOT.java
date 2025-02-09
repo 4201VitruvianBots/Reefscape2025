@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 import frc.robot.generated.AlphaBotConstants;
+import frc.robot.generated.V2Constants;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
@@ -60,6 +61,7 @@ public class ROBOT {
   }
 
   public static void initV2() {
+    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
     robotID = ROBOT_ID.V2;
   } // V2 drivetrain is already the default
 

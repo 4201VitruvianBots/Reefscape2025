@@ -7,8 +7,11 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,6 +47,7 @@ import frc.robot.utils.Telemetry;
  */
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
+  private final Controls m_controls = new Controls();
   private final Telemetry m_telemetry = new Telemetry();
   private final Vision m_vision = new Vision();
 
@@ -54,6 +58,7 @@ public class RobotContainer {
   // V2 subsystems
   private Elevator m_elevator;
   private EndEffector m_endEffector;
+  private EndEffectorPivot m_endEffectorPivot;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
 
@@ -88,15 +93,20 @@ public class RobotContainer {
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
+
+    if (RobotBase.isSimulation() || true) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
   }
 
   private void initializeSubSystems() {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-      m_coralOuttake = new CoralOuttake();
-      m_algaeIntake = new AlgaeIntake();
+//      m_coralOuttake = new CoralOuttake();
+//      m_algaeIntake = new AlgaeIntake();
+      m_endEffectorPivot = new EndEffectorPivot();
+//      m_endEffector = new EndEffector();
     } else {
       m_elevator = new Elevator();
-      m_endEffector = new EndEffector();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
     }
@@ -185,14 +195,19 @@ public class RobotContainer {
     m_driverController
         .rightBumper()
         .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-    m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+
+    if(m_algaeIntake != null) {
+      m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+      m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+    }
   }
 
   private void configureV2Bindings() {
-    m_driverController
-        .leftTrigger()
-        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    if (m_endEffector != null) {
+      m_driverController
+              .leftTrigger()
+              .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    }
     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
   }
@@ -204,6 +219,20 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
+  }
+
+  public void disabledInit() {
+    if (!DriverStation.isFMSAttached()) {
+      m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
+    }
+  }
+
+  public void autonomousInit() {
+    m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
+  }
+
+  public void teleopInit() {
+    m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
   }
 
   public void testInit() {

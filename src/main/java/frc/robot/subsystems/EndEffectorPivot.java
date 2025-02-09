@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
@@ -40,7 +41,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private boolean m_enforceLimits;
   private boolean m_userSetpoint;
 
-  private Angle m_desiredRotations;
+  private Angle m_desiredRotations = Degrees.of(0);
   private boolean m_pivotState;
 
   /** Creates a nepw EndEffectorPivot. */
@@ -83,8 +84,13 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public Angle getCurrentRotation() {
-    m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    try {
+      m_positionSignal.refresh();
+      return m_positionSignal.getValue();
+    } catch (Exception e) {
+      DriverStation.reportWarning("[EndEffectorPivot] Position signal is null!", false);
+      return Degrees.of(0);
+    }
   }
 
   public double getCANcoderAngle() {

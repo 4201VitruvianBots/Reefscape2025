@@ -5,6 +5,12 @@ import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class SWERVE {
+  public enum MOTOR_TYPE {
+    ALL,
+    DRIVE,
+    STEER;
+  };
+
   // TODO: Reimplement/add to team library
   //    public static final Map<MODULE_POSITION, Translation2d> kModuleTranslations =
   //            Map.of(
@@ -20,8 +26,7 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
-  public static CommandSwerveDrivetrain selectedDrivetrain =
-      V2Constants.createDrivetrain(); // V2 is the default
+  public static CommandSwerveDrivetrain selectedDrivetrain;
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =

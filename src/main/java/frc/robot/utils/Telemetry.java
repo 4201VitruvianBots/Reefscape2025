@@ -2,6 +2,8 @@ package frc.robot.utils;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import edu.wpi.first.epilogue.EpilogueConfiguration;
+import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -10,6 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.SWERVE;
+
+import java.util.logging.Logger;
 
 public class Telemetry {
   private final double m_maxSpeed = SWERVE.kMaxSpeedMetersPerSecond;
@@ -69,7 +73,7 @@ public class Telemetry {
   /* Accept the swerve drive state and telemeterize it to SmartDashboard */
   public void telemeterize(SwerveDriveState state) {
     /* Telemeterize the swerve drive state */
-    DriverStation.reportWarning("Telemetry::telemeterize() called!", false);
+
     drivePose.set(state.Pose);
     driveSpeeds.set(state.Speeds);
     driveModuleStates.set(state.ModuleStates);
