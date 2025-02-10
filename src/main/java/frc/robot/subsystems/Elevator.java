@@ -153,6 +153,7 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  @Override
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 

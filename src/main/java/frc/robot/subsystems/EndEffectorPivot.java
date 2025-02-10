@@ -4,8 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.ENDEFFECTOR.kPivotMotionMagicAcceleration;
 import static frc.robot.constants.ENDEFFECTOR.kPivotMotionMagicVelocity;
 
@@ -27,6 +26,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
@@ -40,8 +41,6 @@ public class EndEffectorPivot extends SubsystemBase {
   @NotLogged private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   @NotLogged private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
-  @NotLogged private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
-  @NotLogged private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   @NotLogged private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
@@ -60,6 +59,22 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private Angle m_desiredRotation = Degrees.of(0);
   private boolean m_pivotState;
+
+  // Simulation Code
+  private final SingleJointedArmSim m_endEffectorSim =
+      new SingleJointedArmSim(
+          ENDEFFECTOR.pivotGearBox,
+          ENDEFFECTOR.pivotGearRatio,
+          SingleJointedArmSim.estimateMOI(
+              ENDEFFECTOR.length.in(Meters), ENDEFFECTOR.mass.in(Kilograms)),
+          ENDEFFECTOR.length.in(Meters),
+          ENDEFFECTOR.minAngle.in(Radians),
+          ENDEFFECTOR.maxAngle.in(Radians),
+          false,
+          ENDEFFECTOR.startingAngle.in(Radians));
+
+  @NotLogged private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
+  @NotLogged private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
@@ -192,5 +207,21 @@ public class EndEffectorPivot extends SubsystemBase {
     }
   }
 
-  public void simulationPeriodic() {}
+  @Override
+  public void simulationPeriodic() {
+    m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    m_endEffectorSim.setInputVoltage(
+        MathUtil.clamp(m_pivotMotorSimState.getMotorVoltage(), -12, 12));
+
+    m_endEffectorSim.update(0.020);
+
+    m_pivotMotorSimState.setRawRotorPosition(
+        Radians.of(m_endEffectorSim.getAngleRads() * ENDEFFECTOR.pivotGearRatio));
+    m_pivotMotorSimState.setRotorVelocity(
+        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec() * ENDEFFECTOR.pivotGearRatio));
+    m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));
+    m_pivotEncoderSimState.setVelocity(
+        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
+  }
 }

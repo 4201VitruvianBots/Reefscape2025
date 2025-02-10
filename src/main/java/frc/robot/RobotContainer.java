@@ -212,21 +212,23 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    if(m_coralOuttake != null) {
-      m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
+    if (m_coralOuttake != null) {
       m_driverController
-              .rightBumper()
-              .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
+          .leftBumper()
+          .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
+      m_driverController
+          .rightBumper()
+          .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
     if (m_endEffectorPivot != null) {
       m_driverController
-              .a()
-              .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+          .a()
+          .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
     if (m_endEffector != null) {
       m_driverController
-              .leftTrigger()
-              .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+          .leftTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     }
 
     if (m_algaeIntake != null) {
