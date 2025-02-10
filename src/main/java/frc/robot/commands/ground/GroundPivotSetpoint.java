@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.GROUND.PIVOT.PIVOT_SETPOINT;
 import frc.robot.subsystems.GroundPivot;
+import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class GroundPivotSetpoint extends Command {
   private final GroundPivot m_groundPivot;
@@ -28,6 +29,7 @@ public class GroundPivotSetpoint extends Command {
   @Override
   public void initialize() {
     m_groundPivot.setDesiredSetpoint(m_setpoint.get());
+    m_groundPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +41,7 @@ public class GroundPivotSetpoint extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (!m_auto) m_groundPivot.setDesiredSetpoint(PIVOT.PIVOT_SETPOINT.STOWED.get());
+    m_groundPivot.setControlMode(CONTROL_MODE.OPEN_LOOP);
   }
 
   // Returns true when the command should end.

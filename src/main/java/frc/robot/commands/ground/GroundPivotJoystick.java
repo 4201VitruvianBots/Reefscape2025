@@ -4,15 +4,14 @@ the WPILib BSD license file in the root directory of this project. */
 
 package frc.robot.commands.ground;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.GroundPivot;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotations;
-
 import java.util.function.DoubleSupplier;
 
 public class GroundPivotJoystick extends Command {

@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 public class GROUND {
   public class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
-    
+
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
     The unit for this constant is dependent on the control mode,
@@ -38,10 +38,10 @@ public class GROUND {
 
     /* A higher P value means you will put more effort into correcting the measured error,
     but it means you can overshoot your target and then the response will look like an oscillating graph. */
-    public static final double kP = 100.0;
+    public static final double kP = 1.0;
 
     /* I value is generally used to correct steady-state error
-    (e.g. your goal is 100, but you are at 99, so the sum of error
+    (e.g. your goal is 100, but you a re at 99, so the sum of error
     over time will let it correct for that final error). */
     public static final double kI = 0.0;
 
@@ -55,7 +55,7 @@ public class GROUND {
 
     public enum PIVOT_SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      ALGAE(Degrees.of(30.0)),
+      ALGAE(Degrees.of(71.0)),
       GROUND_INTAKE(Degrees.of(60.0));
 
       private final Angle angle;

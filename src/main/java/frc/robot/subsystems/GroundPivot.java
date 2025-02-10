@@ -6,7 +6,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -39,13 +39,13 @@ public class GroundPivot extends SubsystemBase {
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
-
+  private final StatusSignal<Voltage> m_voltageSignal = m_pivotMotor.getMotorVoltage().clone();
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private Angle m_desiredAngle = PIVOT.PIVOT_SETPOINT.STOWED.get();
 
-  private final MotionMagicTorqueCurrentFOC m_request =
-      new MotionMagicTorqueCurrentFOC(getCurrentAngle());
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -87,8 +87,8 @@ public class GroundPivot extends SubsystemBase {
     config.Slot0.kI = PIVOT.kI;
     config.Slot0.kD = PIVOT.kD;
     config.ClosedLoopGeneral.ContinuousWrap = false;
-    config.MotorOutput.PeakForwardDutyCycle = PIVOT.maxOutput;
-    config.MotorOutput.PeakReverseDutyCycle = -PIVOT.maxOutput;
+    // config.MotorOutput.PeakForwardDutyCycle = PIVOT.maxOutput;
+    // config.MotorOutput.PeakReverseDutyCycle = -PIVOT.maxOutput;
 
     config.MotionMagic.MotionMagicAcceleration = PIVOT.kAccel;
     config.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kCruiseVel;
@@ -113,7 +113,9 @@ public class GroundPivot extends SubsystemBase {
             MathUtil.clamp(
                 angle.in(Degrees), PIVOT.minAngle.in(Degrees), PIVOT.maxAngle.in(Degrees)));
     // Print a stack trace
-    new Throwable("Setting desired setpoint to " + Math.round(angle.in(Degrees)) + " degrees").printStackTrace();
+    new Throwable("Setting desired setpoint to " + Math.round(angle.in(Degrees)) + " degrees")
+        .printStackTrace();
+
   }
 
   public Angle getDesiredSetpoint() {
@@ -132,8 +134,8 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public void setControlMode(ROBOT.CONTROL_MODE mode) {
-    if (mode == ROBOT.CONTROL_MODE.CLOSED_LOOP && m_controlMode == ROBOT.CONTROL_MODE.OPEN_LOOP)
-      resetMotionMagicState();
+    // if (mode == ROBOT.CONTROL_MODE.CLOSED_LOOP && m_controlMode == ROBOT.CONTROL_MODE.OPEN_LOOP)
+    //   resetMotionMagicState();
     m_controlMode = mode;
   }
 
@@ -177,6 +179,7 @@ public class GroundPivot extends SubsystemBase {
     SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
     SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
     SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
+    SmartDashboard.putString("Pivot Motor Control Mode", m_pivotMotor.getAppliedControl().getControlInfo().toString());
   }
 
   public void testInit() {
@@ -230,18 +233,16 @@ public class GroundPivot extends SubsystemBase {
     // Angle m_oldSetpoint = m_desiredAngle;
     // m_desiredAngle = Degrees.of(m_kSetpoint_subscriber.get(m_desiredAngle.in(Degrees)));
     // if (m_desiredAngle.equals(m_oldSetpoint)) setDesiredSetpoint(m_desiredAngle);
-    
-    setDesiredSetpoint(Degrees.of(m_kSetpoint_subscriber.get(m_desiredAngle.in(Degrees))));
+
+    // setDesiredSetpoint(Degrees.of(m_kSetpoint_subscriber.get(m_desiredAngle.in(Degrees))));
   }
 
   public void autonomousInit() {
     resetMotionMagicState();
-    setDesiredSetpoint(getCurrentAngle());
   }
 
   public void teleopInit() {
     resetMotionMagicState();
-    setDesiredSetpoint(getCurrentAngle());
   }
 
   @Override
@@ -255,8 +256,7 @@ public class GroundPivot extends SubsystemBase {
         break;
       default:
       case OPEN_LOOP:
-        if (DriverStation.isDisabled()) 
-          setPercentOutput(0.0);
+        if (DriverStation.isDisabled()) setPercentOutput(0.0);
         break;
     }
 
