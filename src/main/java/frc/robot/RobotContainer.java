@@ -11,7 +11,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -37,8 +36,8 @@ import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
-import frc.robot.constants.FIELD;
 import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -127,7 +126,8 @@ public class RobotContainer {
 
     // TODO: Enable this when subsystems are implemented
     m_robot2d.registerSubsystem(m_elevator);
-    //    m_robot2d.registerSubsystem(m_endEffector);
+    m_robot2d.registerSubsystem(m_endEffectorPivot);
+    m_robot2d.registerSubsystem(m_endEffector);
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
@@ -149,8 +149,11 @@ public class RobotContainer {
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      m_elevator = new Elevator();
       m_endEffectorPivot = new EndEffectorPivot();
       m_endEffector = new EndEffector();
+      m_climber = new Climber();
+      m_climberIntake = new ClimberIntake();
     }
 
     m_swerveDrive.setDefaultCommand(
@@ -167,8 +170,11 @@ public class RobotContainer {
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
-    m_elevator.setDefaultCommand(
-        new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+    if(m_elevator != null) {
+      m_elevator.setDefaultCommand(
+              new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+
+    }
   }
 
   private void initAutoChooser() {
@@ -243,6 +249,7 @@ public class RobotContainer {
           .rightBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
+
     if (m_endEffectorPivot != null) {
       m_driverController
           .a()
@@ -261,24 +268,33 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
+    if(m_elevator != null) {
+      m_driverController
+              .a()
+              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+      m_driverController
+              .x()
+              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+      m_driverController
+              .y()
+              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+      m_driverController
+              .b()
+              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
+      m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
+    }
+
+    if (m_endEffectorPivot != null) {
+      m_driverController
+              .a()
+              .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+    }
+
     if (m_endEffector != null) {
       m_driverController
-          .leftTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+              .leftTrigger()
+              .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     }
-    m_driverController
-        .a()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
-    m_driverController
-        .x()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
-    m_driverController
-        .y()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
-    m_driverController
-        .b()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
-    m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
 
     if (m_climber != null) {
       m_driverController

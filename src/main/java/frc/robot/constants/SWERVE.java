@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.util.Map;
 import org.team4201.codex.utils.ModuleMap.MODULE_POSITION;
@@ -17,7 +16,6 @@ public class SWERVE {
     DRIVE,
     STEER;
   };
-
 
   public static Distance kWheelBase = Inches.of(23.75);
   public static Distance kTrackWidth = Inches.of(23.75);

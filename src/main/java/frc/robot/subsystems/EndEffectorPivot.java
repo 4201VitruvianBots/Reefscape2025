@@ -18,6 +18,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -80,12 +82,13 @@ public class EndEffectorPivot extends SubsystemBase {
   public EndEffectorPivot() {
     // Configure the CANcoder
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    encoderConfig.MagnetSensor.MagnetOffset = ENDEFFECTOR.encoderOffset.magnitude();
+    if(RobotBase.isReal()) {
+      encoderConfig.MagnetSensor.MagnetOffset = ENDEFFECTOR.encoderOffset.magnitude();
+    }
     CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
-    motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     motorConfig.Slot0.kP = ENDEFFECTOR.kPivotP;
     motorConfig.Slot0.kI = ENDEFFECTOR.kPivotI;
     motorConfig.Slot0.kD = ENDEFFECTOR.kPivotD;
