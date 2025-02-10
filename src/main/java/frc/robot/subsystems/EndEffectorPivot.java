@@ -90,7 +90,7 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.MotionMagic.MotionMagicAcceleration = kPivotMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = m_neutralMode;
     motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    if(motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
+    if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
       motorConfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.pivotGearRatio;
     } else {
@@ -101,7 +101,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Configure the CANcoder
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    if(RobotBase.isReal()) {
+    if (RobotBase.isReal()) {
       encoderConfig.MagnetSensor.MagnetOffset = ENDEFFECTOR.encoderOffset.magnitude();
       encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     }

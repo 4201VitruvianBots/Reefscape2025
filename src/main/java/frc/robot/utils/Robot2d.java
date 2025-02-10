@@ -2,7 +2,6 @@ package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -75,10 +74,11 @@ public class Robot2d {
   Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
-              "EndEffector2d",
-              new Color8Bit(0, 255, 255),
-              ENDEFFECTOR.startingAngle,
-              ENDEFFECTOR.length).withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+                  "EndEffector2d",
+                  new Color8Bit(0, 255, 255),
+                  ENDEFFECTOR.startingAngle,
+                  ENDEFFECTOR.length)
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
           m_endEffectorRoot);
 
   /** Map of subsystems for Robot2d to update */
@@ -117,7 +117,8 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("EndEffectorPivot")) {
       var endEffectorPivotSubsystem = (EndEffectorPivot) m_subsystemMap.get("EndEffectorPivot");
-      // Visually, this will go opposite of the actual angle, so we just negate it here so it looks correct
+      // Visually, this will go opposite of the actual angle, so we just negate it here so it looks
+      // correct
       m_endEffector.update(endEffectorPivotSubsystem.getCANcoderAngle().unaryMinus());
     }
 

@@ -1,12 +1,9 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
-import frc.robot.generated.AlphaBotConstants;
-import frc.robot.generated.V2Constants;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
@@ -14,12 +11,9 @@ public class ROBOT {
   public static final boolean disableVisualization = false;
   public static final boolean useSysID = false;
   public static final boolean useReplayLogs = false;
+  // TODO: Change LOG_MODE to Logged.Importance
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
   public static ROBOT_ID robotID = ROBOT_ID.SIM;
-
-  public static final double driveBaseWidth = Units.inchesToMeters(29);
-  public static final double driveBaseLength = Units.inchesToMeters(29);
-  public static final double robotHeight = Units.inchesToMeters(42);
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
@@ -60,16 +54,13 @@ public class ROBOT {
 
   public static void initAlphaBot() {
     robotID = ROBOT_ID.ALPHABOT;
-    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
   }
 
   public static void initV2() {
-    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
     robotID = ROBOT_ID.V2;
-  } // V2 drivetrain is already the default
+  }
 
-  public static void initSim() { // V2 drivetrain is the default
-    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
+  public static void initSim() {
     logMode = LOG_MODE.DEBUG;
     robotID = ROBOT_ID.SIM;
 

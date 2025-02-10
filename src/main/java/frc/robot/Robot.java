@@ -31,6 +31,8 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
+    // Disable LiveWindow, since we don't use it
+    LiveWindow.disableAllTelemetry();
     ROBOT.initConstants();
     Epilogue.configure(
         config -> {
@@ -42,7 +44,6 @@ public class Robot extends TimedRobot {
 
           config.minimumImportance = Logged.Importance.DEBUG;
         });
-    LiveWindow.disableAllTelemetry();
     Epilogue.bind(this);
   }
 

@@ -14,7 +14,6 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +42,7 @@ import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
+import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.EndEffector;
@@ -61,7 +61,7 @@ import org.team4201.codex.simulation.FieldSim;
  */
 @Logged
 public class RobotContainer {
-  private final CommandSwerveDrivetrain m_swerveDrive;
+  private CommandSwerveDrivetrain m_swerveDrive;
 
   @Logged(name = "Controls")
   private final Controls m_controls = new Controls();
@@ -115,47 +115,56 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_swerveDrive = SWERVE.selectedDrivetrain;
+    initSmartDashboard();
+    initializeSubSystems();
+
+    // Configure the trigger bindings
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
+    else configureV2Bindings();
+
+    // Only keep joystick warnings when FMS is attached
+    if (!DriverStation.isFMSAttached()) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
+  }
+
+  private void initializeSubSystems() {
+    // Initialize Subsystem classes
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+      m_swerveDrive = V2Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_climberIntake = new ClimberIntake();
+      m_climber = new Climber();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
+      m_swerveDrive = AlphaBotConstants.createDrivetrain();
+      // m_coralOuttake = new CoralOuttake();
+      // m_algaeIntake = new AlgaeIntake();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_endEffector = new EndEffector();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      m_swerveDrive = V2Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_endEffector = new EndEffector();
+      m_climber = new Climber();
+      m_climberIntake = new ClimberIntake();
+    } else {
+      // Most likely, the code will crash later on if you get here
+      DriverStation.reportError(
+          "[RobotContainer] Unhandled initSubsystem for RobotID " + ROBOT.robotID.getName(), false);
+    }
+    // Register subsystems for cross-subsystem communication
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
 
     m_telemetry.registerFieldSim(m_fieldSim);
-
-    initSmartDashboard();
-    initializeSubSystems();
 
     // TODO: Enable this when subsystems are implemented
     m_robot2d.registerSubsystem(m_elevator);
     m_robot2d.registerSubsystem(m_endEffectorPivot);
     m_robot2d.registerSubsystem(m_endEffector);
 
-    // Configure the trigger bindings
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
-    else configureV2Bindings();
-
-    if (RobotBase.isSimulation() || true) {
-      DriverStation.silenceJoystickConnectionWarning(true);
-    }
-  }
-
-  private void initializeSubSystems() {
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-      //      m_coralOuttake = new CoralOuttake();
-      //      m_algaeIntake = new AlgaeIntake();
-      m_endEffectorPivot = new EndEffectorPivot();
-      m_endEffector = new EndEffector();
-    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
-      m_elevator = new Elevator();
-      m_climberIntake = new ClimberIntake();
-      m_climber = new Climber();
-    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
-      m_elevator = new Elevator();
-      m_endEffectorPivot = new EndEffectorPivot();
-      m_endEffector = new EndEffector();
-      m_climber = new Climber();
-      m_climberIntake = new ClimberIntake();
-    }
-
+    // Set Subsystem DefaultCommands
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
@@ -170,10 +179,9 @@ public class RobotContainer {
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
-    if(m_elevator != null) {
+    if (m_elevator != null) {
       m_elevator.setDefaultCommand(
-              new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
-
+          new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
     }
   }
 
@@ -242,6 +250,7 @@ public class RobotContainer {
 
   private void configureAlphaBotBindings() {
     if (m_coralOuttake != null) {
+      // TODO: Make speeds into enum setpoints
       m_driverController
           .leftBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
@@ -256,47 +265,49 @@ public class RobotContainer {
           .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
     if (m_endEffector != null) {
+      // TODO: Make speeds into enum setpoints
       m_driverController
           .leftTrigger()
           .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
       m_driverController
-              .rightTrigger()
-              .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
+          .rightTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
     }
 
     if (m_algaeIntake != null) {
+      // TODO: Make speeds into enum setpoints
       m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
       m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     }
   }
 
   private void configureV2Bindings() {
-    if(m_elevator != null) {
+    if (m_elevator != null) {
       m_driverController
-              .a()
-              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+          .a()
+          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
       m_driverController
-              .x()
-              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+          .x()
+          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
       m_driverController
-              .y()
-              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+          .y()
+          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
       m_driverController
-              .b()
-              .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
+          .b()
+          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }
 
     if (m_endEffectorPivot != null) {
       m_driverController
-              .a()
-              .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+          .a()
+          .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
 
     if (m_endEffector != null) {
       m_driverController
-              .leftTrigger()
-              .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+          .leftTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     }
 
     if (m_climber != null) {

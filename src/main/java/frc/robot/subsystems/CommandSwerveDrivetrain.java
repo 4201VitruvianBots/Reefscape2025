@@ -152,9 +152,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
       var driveMotor = getModule(i.ordinal()).getDriveMotor();
       var turnMotor = getModule(i.ordinal()).getSteerMotor();
       CtreUtils.configureTalonFx(driveMotor, new TalonFXConfiguration());
-      CtreUtils.configureTalonFx(
-          turnMotor,
-          new TalonFXConfiguration() /* was previously CtreUtils.generateTurnMotorConfig() TODO: get that method working again*/);
+      CtreUtils.configureTalonFx(turnMotor, new TalonFXConfiguration());
       driveMotor.setNeutralMode(NeutralModeValue.Brake);
       BaseStatusSignal.setUpdateFrequencyForAll(
           250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
