@@ -82,7 +82,11 @@ public class EndEffectorPivot extends SubsystemBase {
   public EndEffectorPivot() {
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
-    motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    if(RobotBase.isReal()) {
+      motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    } else {
+      motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    }
     motorConfig.Slot0.kP = ENDEFFECTOR.kPivotP;
     motorConfig.Slot0.kI = ENDEFFECTOR.kPivotI;
     motorConfig.Slot0.kD = ENDEFFECTOR.kPivotD;
@@ -94,6 +98,7 @@ public class EndEffectorPivot extends SubsystemBase {
       // For internal TalonFX Sensor
       motorConfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.pivotGearRatio;
     } else {
+      // For RemoteCAnCoder/SyncCANcoder/FusedCANcoder
       motorConfig.Feedback.RotorToSensorRatio = ENDEFFECTOR.pivotGearRatio;
       motorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
     }
@@ -232,10 +237,13 @@ public class EndEffectorPivot extends SubsystemBase {
 
     m_endEffectorSim.update(0.020);
 
+    // Update the pivotMotor simState
     m_pivotMotorSimState.setRawRotorPosition(
         Radians.of(m_endEffectorSim.getAngleRads() * ENDEFFECTOR.pivotGearRatio));
     m_pivotMotorSimState.setRotorVelocity(
         RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec() * ENDEFFECTOR.pivotGearRatio));
+
+    // Update the pivotEncoder simState
     m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));
     m_pivotEncoderSimState.setVelocity(
         RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));

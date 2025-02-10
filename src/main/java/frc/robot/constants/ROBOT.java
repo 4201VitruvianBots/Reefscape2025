@@ -10,7 +10,6 @@ public class ROBOT {
   public static String robotName = "";
   public static final boolean disableVisualization = false;
   public static final boolean useSysID = false;
-  public static final boolean useReplayLogs = false;
   // TODO: Change LOG_MODE to Logged.Importance
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
   public static ROBOT_ID robotID = ROBOT_ID.SIM;
@@ -63,8 +62,6 @@ public class ROBOT {
   public static void initSim() {
     logMode = LOG_MODE.DEBUG;
     robotID = ROBOT_ID.SIM;
-
-    // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */
   }
 
   public static void initConstants() {

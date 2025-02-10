@@ -115,8 +115,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    initSmartDashboard();
     initializeSubSystems();
+    initSmartDashboard();
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
