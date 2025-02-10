@@ -82,7 +82,7 @@ public class GroundPivot extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = PIVOT.gearRatio;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.Slot0.kS = PIVOT.kS;
-    config.Slot0.kV = PIVOT.kV;
+    //config.Slot0.kV = PIVOT.kV;
     config.Slot0.kP = PIVOT.kP;
     config.Slot0.kI = PIVOT.kI;
     config.Slot0.kD = PIVOT.kD;
@@ -92,7 +92,7 @@ public class GroundPivot extends SubsystemBase {
 
     config.MotionMagic.MotionMagicAcceleration = PIVOT.kAccel;
     config.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kCruiseVel;
-    config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
+    //config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
     CtreUtils.configureTalonFx(m_pivotMotor, config);
 
     SmartDashboard.putData(this);

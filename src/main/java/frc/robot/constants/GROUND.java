@@ -18,7 +18,7 @@ public class GROUND {
     This is added to the closed loop output. The sign is determined by target velocity.
     The unit for this constant is dependent on the control mode,
     typically fractional duty cycle, voltage, or torque current */
-    public static final double kS = 0;
+    public static final double kS = 0.05;
 
     /* Velocity Feedforward Gain
     The units for this gain is dependent on the control mode.
@@ -38,7 +38,7 @@ public class GROUND {
 
     /* A higher P value means you will put more effort into correcting the measured error,
     but it means you can overshoot your target and then the response will look like an oscillating graph. */
-    public static final double kP = 1.0;
+    public static final double kP = 10.0;
 
     /* I value is generally used to correct steady-state error
     (e.g. your goal is 100, but you a re at 99, so the sum of error
@@ -47,10 +47,10 @@ public class GROUND {
 
     /* D is generally used to 'predict' the next output using the slope of the error,
     so it is usually used with P to get a fast, but accurate response. */
-    public static final double kD = 30.0;
+    public static final double kD = 0.0;
 
-    public static final double kAccel = 480;
-    public static final double kCruiseVel = 90;
+    public static final double kAccel = 50;
+    public static final double kCruiseVel = 15;
     public static final double kJerk = 0;
 
     public enum PIVOT_SETPOINT {
