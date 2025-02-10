@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.ROBOT;
@@ -14,9 +19,11 @@ import frc.robot.constants.ROBOT;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
+@Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  @Logged(name = "RobotContainer")
   private RobotContainer m_robotContainer;
 
   /**
@@ -25,6 +32,18 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     ROBOT.initConstants();
+    Epilogue.configure(
+        config -> {
+          // config.backend = new FileBackend(DataLogManager.getLog());
+
+          if (RobotBase.isSimulation()) {
+            config.errorHandler = ErrorHandler.crashOnError();
+          }
+
+          config.minimumImportance = Logged.Importance.DEBUG;
+        });
+    LiveWindow.disableAllTelemetry();
+    Epilogue.bind(this);
   }
 
   @Override

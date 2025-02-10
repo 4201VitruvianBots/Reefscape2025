@@ -66,6 +66,7 @@ public class ROBOT {
   } // V2 drivetrain is already the default
 
   public static void initSim() { // V2 drivetrain is the default
+    SWERVE.selectedDrivetrain = V2Constants.createDrivetrain();
     logMode = LOG_MODE.DEBUG;
     robotID = ROBOT_ID.SIM;
 

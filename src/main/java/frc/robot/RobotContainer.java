@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -47,17 +49,25 @@ import frc.robot.utils.Telemetry;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
+
+  @Logged(name = "Controls")
   private final Controls m_controls = new Controls();
+
   private final Telemetry m_telemetry = new Telemetry();
   private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
-  private EndEffector m_endEffector;
+
+  @Logged(name = "EndEffectorPivot")
   private EndEffectorPivot m_endEffectorPivot;
+
+  @Logged(name = "EndEffector")
+  private EndEffector m_endEffector;
 
   // V2 subsystems
   private Elevator m_elevator;
@@ -66,14 +76,20 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
-  private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+  @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+
+  @Logged(name = "AutoChooser")
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
   private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
 
+  @NotLogged
   private double MaxSpeed =
       AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+
+  @NotLogged
   private double MaxAngularRate =
       RotationsPerSecond.of(SWERVE.kMaxRotationRadiansPerSecond)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -87,7 +103,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swerveDrive = SWERVE.selectedDrivetrain;
-    DriverStation.reportWarning("SwerveDrive Name: " + m_swerveDrive.getName(), false);
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
     initSmartDashboard();
@@ -104,14 +119,17 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-//      m_coralOuttake = new CoralOuttake();
-//      m_algaeIntake = new AlgaeIntake();
+      //      m_coralOuttake = new CoralOuttake();
+      //      m_algaeIntake = new AlgaeIntake();
       m_endEffectorPivot = new EndEffectorPivot();
       m_endEffector = new EndEffector();
-    } else {
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       m_elevator = new Elevator();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_endEffector = new EndEffector();
     }
 
     m_swerveDrive.setDefaultCommand(
@@ -194,16 +212,22 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
-    m_driverController
-        .rightBumper()
-        .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController
-        .a()
-        .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
-    m_driverController
-        .leftTrigger()
-        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    if(m_coralOuttake != null) {
+      m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
+      m_driverController
+              .rightBumper()
+              .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
+    }
+    if (m_endEffectorPivot != null) {
+      m_driverController
+              .a()
+              .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+    }
+    if (m_endEffector != null) {
+      m_driverController
+              .leftTrigger()
+              .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    }
 
     if (m_algaeIntake != null) {
       m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
@@ -218,7 +242,12 @@ public class RobotContainer {
           .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
     }
     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
-    m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+
+    if (m_climber != null) {
+      m_driverController
+          .povRight()
+          .onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+    }
   }
 
   /**

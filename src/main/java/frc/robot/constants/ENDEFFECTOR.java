@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
@@ -14,9 +15,11 @@ public class ENDEFFECTOR {
   public static final double kInertia = 0.001;
 
   // Pivot motor stuff
-  public static final double kPivotP = 0.0;
+  public static final double kPivotP = 1.0;
   public static final double kPivotI = 0.0;
   public static final double kPivotD = 0.0;
+  public static final double kPivotMotionMagicVelocity = 10;
+  public static final double kPivotMotionMagicAcceleration = 10;
 
   public static final double pivotGearRatio = 70.0 / 1.0;
 
@@ -26,6 +29,7 @@ public class ENDEFFECTOR {
   public static final Angle minAngle = Degrees.of(0.0);
   public static final Angle maxAngle = Degrees.of(151.0);
   public static final Angle startingAngle = minAngle;
+  public static final Angle encoderOffset = Rotations.of(-0.4892578125);
 
   public static final boolean limitOpenLoop = false;
 
