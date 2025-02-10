@@ -80,25 +80,34 @@ public class EndEffectorPivot extends SubsystemBase {
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
-    // Configure the CANcoder
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    if(RobotBase.isReal()) {
-      encoderConfig.MagnetSensor.MagnetOffset = ENDEFFECTOR.encoderOffset.magnitude();
-    }
-    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
-
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
+    motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     motorConfig.Slot0.kP = ENDEFFECTOR.kPivotP;
     motorConfig.Slot0.kI = ENDEFFECTOR.kPivotI;
     motorConfig.Slot0.kD = ENDEFFECTOR.kPivotD;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = kPivotMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = kPivotMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = m_neutralMode;
-    motorConfig.Feedback.RotorToSensorRatio = ENDEFFECTOR.pivotGearRatio;
     motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    motorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
+    if(motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
+      // For internal TalonFX Sensor
+      motorConfig.Feedback.SensorToMechanismRatio = ENDEFFECTOR.pivotGearRatio;
+    } else {
+      motorConfig.Feedback.RotorToSensorRatio = ENDEFFECTOR.pivotGearRatio;
+      motorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
+    }
     CtreUtils.configureTalonFx(m_pivotMotor, motorConfig);
+
+    // Configure the CANcoder
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    if(RobotBase.isReal()) {
+      encoderConfig.MagnetSensor.MagnetOffset = ENDEFFECTOR.encoderOffset.magnitude();
+      encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    }
+    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
+
+    m_pivotMotor.setPosition(getCANcoderAngle());
 
     setName("EndEffectorPivot");
     SmartDashboard.putData(this);
@@ -154,6 +163,10 @@ public class EndEffectorPivot extends SubsystemBase {
       DriverStation.reportWarning("[EndEffectorPivot] Position signal is null!", false);
       return Degrees.of(0);
     }
+  }
+
+  public Angle getMotorAngle() {
+    return m_pivotMotor.getPosition().getValue();
   }
 
   // Base unit from CANcoder is in Radians

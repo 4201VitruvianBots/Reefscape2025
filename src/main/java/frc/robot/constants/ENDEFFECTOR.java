@@ -16,7 +16,7 @@ public class ENDEFFECTOR {
   public static final double kInertia = 0.001;
 
   // Pivot motor stuff
-  public static final double kPivotP = 10.0;
+  public static final double kPivotP = 15.0;
   public static final double kPivotI = 0.0;
   public static final double kPivotD = 0.0;
   public static final double kPivotMotionMagicVelocity = 10;
@@ -24,6 +24,7 @@ public class ENDEFFECTOR {
 
   public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
   public static final double pivotGearRatio = 70.0 / 1.0;
+  // The values for Distance and Mass are made up
   public static final Distance length = Inches.of(8);
   public static final Mass mass = Pounds.of(5);
 
@@ -33,7 +34,7 @@ public class ENDEFFECTOR {
   public static final Angle minAngle = Degrees.of(0.0);
   public static final Angle maxAngle = Degrees.of(151.0);
   public static final Angle startingAngle = minAngle;
-  public static final Angle encoderOffset = Rotations.of(-0.4892578125);
+  public static final Angle encoderOffset = Rotations.of(-0.47607421875);
 
   public static final boolean limitOpenLoop = false;
 

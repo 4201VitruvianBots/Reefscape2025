@@ -259,6 +259,9 @@ public class RobotContainer {
       m_driverController
           .leftTrigger()
           .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+      m_driverController
+              .rightTrigger()
+              .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
     }
 
     if (m_algaeIntake != null) {
