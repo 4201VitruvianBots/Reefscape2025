@@ -212,10 +212,10 @@ public class RobotContainer {
     
     m_driverController.back().onTrue(new GroundPivotControlMode(m_groundPivot));
     
-    m_driverController.leftTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.INTAKING));
-    m_driverController.rightTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKING));
-    m_driverController.leftBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.HOLDING_CORAL));
-    m_driverController.rightBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKE_TO_END_EFFECTOR));
+    m_driverController.leftTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.HOLDING_CORAL));
+    m_driverController.rightTrigger().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKE_TO_END_EFFECTOR));
+    m_driverController.leftBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.INTAKING));
+    m_driverController.rightBumper().whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.OUTTAKING));
     
     m_driverController.a().whileTrue(new GroundPivotSetpoint(m_groundPivot, PIVOT_SETPOINT.STOWED));
     m_driverController.b().whileTrue(new GroundPivotSetpoint(m_groundPivot, PIVOT_SETPOINT.ALGAE));

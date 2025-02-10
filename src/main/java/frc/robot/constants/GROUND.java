@@ -83,7 +83,7 @@ public class GROUND {
 
     public static final Angle minAngle = Degrees.of(0);
 
-    public static final Angle maxAngle = Degrees.of(180);
+    public static final Angle maxAngle = Degrees.of(200);
 
     public static final Angle startingAngle = minAngle;
 
@@ -108,7 +108,7 @@ public class GROUND {
     public enum INTAKE_SPEED {
       INTAKING(0.5),
       HOLDING_CORAL(0.5), // TODO: update speeds later
-      OUTTAKING(0.5),
+      OUTTAKING(-0.5),
       OUTTAKE_TO_END_EFFECTOR(0.5);
 
       private final double value;

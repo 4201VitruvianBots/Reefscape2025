@@ -61,7 +61,7 @@ public class GroundIntake extends SubsystemBase {
     config.Slot0.kD = GROUND.INTAKE.kD;
     config.Feedback.SensorToMechanismRatio = GROUND.INTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     CtreUtils.configureTalonFx(m_groundIntakeMotor, config);
   }
 
@@ -69,7 +69,7 @@ public class GroundIntake extends SubsystemBase {
     m_groundIntakeMotor.set(speed);
   }
 
-  public void updateLogger() {
+  public void updateSmartDashboard() {
     SmartDashboard.putNumber("Ground Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Ground Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
@@ -118,5 +118,7 @@ public class GroundIntake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateSmartDashboard();
+  }
 }
