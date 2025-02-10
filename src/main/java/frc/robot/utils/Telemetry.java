@@ -9,18 +9,18 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 import frc.robot.constants.SWERVE;
+import org.team4201.codex.simulation.FieldSim;
 
 public class Telemetry {
   private final double m_maxSpeed = SWERVE.kMaxSpeedMetersPerSecond;
 
+  private FieldSim m_fieldSim;
   // TODO: Re-implement
-  //    private FieldSim m_fieldSim;
   //    private final SwerveModuleVisualizer[] m_moduleVisualizer = {
-  //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.FRONT_LEFT.name(), m_maxSpeed),
-  //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.FRONT_RIGHT.name(),
-  // m_maxSpeed),
-  //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.BACK_LEFT.name(), m_maxSpeed),
-  //            new SwerveModuleVisualizer(ModuleMap.MODULE_POSITION.BACK_RIGHT.name(), m_maxSpeed)
+  //            new SwerveModuleVisualizer(MODULE_POSITION.FRONT_LEFT.name(), m_maxSpeed),
+  //            new SwerveModuleVisualizer(MODULE_POSITION.FRONT_RIGHT.name(), m_maxSpeed),
+  //            new SwerveModuleVisualizer(MODULE_POSITION.BACK_LEFT.name(), m_maxSpeed),
+  //            new SwerveModuleVisualizer(MODULE_POSITION.BACK_RIGHT.name(), m_maxSpeed)
   //    };
 
   private final Pose2d[] m_swerveModulePoses = {
@@ -49,11 +49,6 @@ public class Telemetry {
   private final DoublePublisher driveOdometryFrequency =
       driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
-  /* Robot pose for field positioning */
-  private final NetworkTable table = inst.getTable("Pose");
-  private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-  private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
-
   private final double[] m_poseArray = new double[3];
   private final double[] m_moduleStatesArray = new double[8];
   private final double[] m_moduleTargetsArray = new double[8];
@@ -61,14 +56,13 @@ public class Telemetry {
   /** Construct a telemetry object */
   public Telemetry() {}
 
-  //    public void registerFieldSim(FieldSim fieldSim) {
-  //        m_fieldSim = fieldSim;
-  //    }
+  public void registerFieldSim(FieldSim fieldSim) {
+    m_fieldSim = fieldSim;
+  }
 
   /* Accept the swerve drive state and telemeterize it to SmartDashboard */
   public void telemeterize(SwerveDriveState state) {
     /* Telemeterize the swerve drive state */
-
     drivePose.set(state.Pose);
     driveSpeeds.set(state.Speeds);
     driveModuleStates.set(state.ModuleStates);
@@ -93,24 +87,20 @@ public class Telemetry {
     SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
     SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-    /* Telemeterize the pose to a Field2d */
-    fieldTypePub.set("Field2d");
-    fieldPub.set(m_poseArray);
-
-    // TODO: Re-impelement
-    //        if (m_fieldSim != null) {
-    //            for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
-    //                m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
-    //                m_moduleTransforms[i.ordinal()] =
-    //                        new Transform2d(
-    //                                SWERVE.DRIVE.kModuleTranslations.get(i),
-    // state.ModuleStates[i.ordinal()].angle);
-    //                m_swerveModulePoses[i.ordinal()] =
-    // pose.transformBy(m_moduleTransforms[i.ordinal()]);
-    //            }
-    //
-    //            m_fieldSim.updateRobotPose(pose);
-    //            m_fieldSim.updateSwervePoses(m_swerveModulePoses);
-    //        }
+    if (m_fieldSim != null) {
+      // TODO: Re-impelement
+      //            for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
+      //                m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
+      //                m_moduleTransforms[i.ordinal()] =
+      //                        new Transform2d(
+      //                                SWERVE.DRIVE.kModuleTranslations.get(i),
+      // state.ModuleStates[i.ordinal()].angle);
+      //                m_swerveModulePoses[i.ordinal()] =
+      // pose.transformBy(m_moduleTransforms[i.ordinal()]);
+      //            }
+      //
+      m_fieldSim.addPoses("robotPose", state.Pose);
+      // m_fieldSim.updateSwervePoses(m_swerveModulePoses);
+    }
   }
 }
