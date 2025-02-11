@@ -22,7 +22,8 @@ public class ROBOT {
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
-    CLOSED_LOOP
+    CLOSED_LOOP,
+    CLOSED_LOOP_NET
   }
 
   public enum ROBOT_ID {
@@ -54,9 +55,11 @@ public class ROBOT {
     }
   }
 
+  public static void initForte() {}
+
   public static void initAlphaBot() {
-    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
     robotID = ROBOT_ID.ALPHABOT;
+    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
   }
 
   public static void initV2() {

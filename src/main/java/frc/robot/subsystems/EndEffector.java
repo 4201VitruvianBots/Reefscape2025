@@ -46,6 +46,8 @@ public class EndEffector extends SubsystemBase {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
+
+    setName("EndEffector");
   }
 
   public void setPercentOutput(double output) {

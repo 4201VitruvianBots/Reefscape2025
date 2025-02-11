@@ -8,7 +8,10 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,18 +26,27 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
+import frc.robot.commands.elevator.RunElevatorJoystick;
+import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.alphabot.*;
+import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import java.util.Arrays;
+import org.team4201.codex.simulation.FieldSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,6 +57,7 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
+  private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
@@ -56,6 +69,8 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
+
+  private final Robot2d m_robot2d = new Robot2d();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -82,12 +97,23 @@ public class RobotContainer {
     m_swerveDrive = SWERVE.selectedDrivetrain;
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
+
+    m_telemetry.registerFieldSim(m_fieldSim);
+
     initSmartDashboard();
     initializeSubSystems();
+
+    // TODO: Enable this when subsystems are implemented
+    m_robot2d.registerSubsystem(m_elevator);
+    //    m_robot2d.registerSubsystem(m_endEffector);
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
+
+    if (RobotBase.isSimulation()) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
   }
 
   private void initializeSubSystems() {
@@ -115,6 +141,8 @@ public class RobotContainer {
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
+    m_elevator.setDefaultCommand(
+        new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
   }
 
   private void initAutoChooser() {
@@ -193,6 +221,18 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    m_driverController
+        .a()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+    m_driverController
+        .x()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+    m_driverController
+        .y()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+    m_driverController
+        .b()
+        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
     m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
   }
@@ -220,5 +260,56 @@ public class RobotContainer {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public void simulationInit() {
+    //    m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+    m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
+    m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT AprilTag", FIELD.APRIL_TAG.RED_REEF_NEAR_LEFT.getPose2d());
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT_LEFT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_LEFT.getPose2d());
+    //    m_fieldSim.initializePoses(
+    //        "RED_REEF_NEAR_LEFT_RIGHT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_RIGHT.getPose2d());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.RED_REEF_NEAR_LEFT_RIGHT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_LEFT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_LEFT.getZone());
+    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_RIGHT_ZONE",
+    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_RIGHT.getZone());
+
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER AprilTag",
+    // FIELD.APRIL_TAG.RED_REEF_NEAR_CENTER.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_LEFT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_LEFT.getPose2d());
+    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_RIGHT",
+    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_RIGHT.getPose2d());
+  }
+
+  public void simulationPeriodic() {
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+            });
+  }
+
+  public void robotPeriodic() {
+    m_robot2d.updateRobot2d();
+    // m_questNav.periodic();
   }
 }
