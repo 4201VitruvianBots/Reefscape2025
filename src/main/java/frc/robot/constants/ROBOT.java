@@ -54,9 +54,7 @@ public class ROBOT {
       return name();
     }
   }
-
-  public static void initForte() {}
-
+  
   public static void initAlphaBot() {
     robotID = ROBOT_ID.ALPHABOT;
     SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
