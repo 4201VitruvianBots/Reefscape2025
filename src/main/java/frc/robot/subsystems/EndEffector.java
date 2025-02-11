@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,12 +23,16 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
+@Logged
 public class EndEffector extends SubsystemBase {
-  private final TalonFX m_motor = new TalonFX(CAN.endEffectorOuttakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal = m_motor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal = m_motor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal = m_motor.getTorqueCurrent().clone();
-  private final TalonFXSimState m_simState = m_motor.getSimState();
+  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
+      m_endEffectorMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal =
+      m_endEffectorMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal =
+      m_endEffectorMotor.getTorqueCurrent().clone();
+  private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
@@ -42,19 +47,21 @@ public class EndEffector extends SubsystemBase {
     config.Slot0.kD = ENDEFFECTOR.kD;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
-    CtreUtils.configureTalonFx(m_motor, config);
+    CtreUtils.configureTalonFx(m_endEffectorMotor, config);
+
+    setName("EndEffector");
   }
 
   public void setPercentOutput(double output) {
-    m_motor.set(output);
+    m_endEffectorMotor.set(output);
   }
 
   public void updateLogger() {
-    SmartDashboard.putNumber("EndEffector Intake/Motor", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "EndEffector/Motor1 Output", m_voltageSignal.getValueAsDouble() / 12.0);
+        "EndEffector Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber(
-        "EndEffector Intake/Motor1 Current", m_currentSignal.getValueAsDouble());
+        "EndEffector Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override
@@ -74,5 +81,6 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateLogger();
   }
 }

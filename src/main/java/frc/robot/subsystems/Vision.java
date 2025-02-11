@@ -31,11 +31,11 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
-  // TODO: Integrate fieldsim
-  // private FieldSim m_fieldSim;
+  private FieldSim m_fieldSim;
   private Translation2d m_goal = new Translation2d();
 
   private final NetworkTable NoteDetectionLimelight =
@@ -192,10 +192,9 @@ public class Vision extends SubsystemBase {
     return curStdDevs;
   }
 
-  // TODO: Integrate fieldsim
-  // public void registerFieldSim(FieldSim fieldSim) {
-  //   m_fieldSim = fieldSim;
-  // }
+  public void registerFieldSim(FieldSim fieldSim) {
+    m_fieldSim = fieldSim;
+  }
 
   // TODO: find out if this can be used for multi camera pose estimation
   // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
@@ -237,17 +236,20 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isAprilTagDetected(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     return result.hasTargets();
   }
 
   public String getTargets(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     return String.join(" ", targets.stream().map(PhotonTrackedTarget::toString).toList());
   }
 
   public int getTargetAmount(PhotonCamera camera) {
+    // TODO: PhotonCamera.getLatestResult() is depreciated
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     return targets.size();
@@ -325,8 +327,6 @@ public class Vision extends SubsystemBase {
       var visionEstLimelightB = getEstimatedGlobalPose();
       visionEstLimelightB.ifPresent(
           est -> {
-            DriverStation.reportWarning("PhotonVision Adding vision measurement!", false);
-
             visionEstPose.set(est.estimatedPose);
             visionEstPoseTimestamp.set(est.timestampSeconds);
 
@@ -357,8 +357,8 @@ public class Vision extends SubsystemBase {
       case REEF:
         updateAngleToReef();
         break;
-      default:
       case NONE:
+      default:
         break;
     }
 
@@ -366,10 +366,10 @@ public class Vision extends SubsystemBase {
     updateSmartDashboard();
     if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.NORMAL.get()) updateLog();
 
-    // if (m_fieldSim != null) {
-    //   // m_fieldSim.updateVisionAPose(cameraAEstimatedPose);
-    //   m_fieldSim.updateVisionBPose(cameraBEstimatedPose);
-    // }
+    if (m_fieldSim != null) {
+      m_fieldSim.addPoses("CameraAEstimatedPose", cameraAEstimatedPose);
+      m_fieldSim.addPoses("CameraBEstimatedPose", cameraBEstimatedPose);
+    }
   }
 
   @Override
