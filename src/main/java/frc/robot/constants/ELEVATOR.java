@@ -68,7 +68,8 @@ public class ELEVATOR {
   public enum ELEVATOR_ACCEL_SETPOINT {
     NONE(RotationsPerSecondPerSecond.of(0), RotationsPerSecond.of(0)),
     NETSCORE(
-        RotationsPerSecondPerSecond.of(0.5), RotationsPerSecond.of(5)); // TODO: Change these later my guy
+        RotationsPerSecondPerSecond.of(0.5),
+        RotationsPerSecond.of(5)); // TODO: Change these later my guy
 
     private final AngularAcceleration acceleration;
     private final AngularVelocity velocity;
