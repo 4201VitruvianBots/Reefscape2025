@@ -4,18 +4,18 @@
 
 package frc.robot.commands;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.ROBOT;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ToggleGamePiece extends InstantCommand {
   private Supplier<ROBOT.GAME_PIECE> m_getGamePiece;
   private Consumer<ROBOT.GAME_PIECE> m_toggleGamePiece;
-  
+
   /** Creates a new ToggleGamePiece. */
-  public ToggleGamePiece(Supplier<ROBOT.GAME_PIECE> getGamePiece, Consumer<ROBOT.GAME_PIECE> toggleGamePiece) {
+  public ToggleGamePiece(
+      Supplier<ROBOT.GAME_PIECE> getGamePiece, Consumer<ROBOT.GAME_PIECE> toggleGamePiece) {
     m_getGamePiece = getGamePiece;
     m_toggleGamePiece = toggleGamePiece;
   }

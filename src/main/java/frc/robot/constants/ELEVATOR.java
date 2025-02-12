@@ -2,13 +2,14 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.ROBOT.GAME_PIECE;
+import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 
 public class ELEVATOR {
 
@@ -45,7 +46,7 @@ public class ELEVATOR {
   public static final double gearRatio = 1.0 / 1.0; // TODO: Change values after CAD done
   public static final double kElevatorDrumRadius = Units.inchesToMeters(1);
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
-  
+
   public enum ELEVATOR_SETPOINT {
     START_POSITION(Units.inchesToMeters(0.0), SUPERSTRUCTURE_STATES.STOWED),
     ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(15), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
@@ -55,17 +56,18 @@ public class ELEVATOR {
     LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
     LEVEL_4(Units.inchesToMeters(59.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
     NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
-    
+
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;
     private final GAME_PIECE gamePiece;
 
-    ELEVATOR_SETPOINT(double setpointMeters, SUPERSTRUCTURE_STATES superstructureState, GAME_PIECE gamePiece) {
+    ELEVATOR_SETPOINT(
+        double setpointMeters, SUPERSTRUCTURE_STATES superstructureState, GAME_PIECE gamePiece) {
       this.setpointMeters = setpointMeters;
       this.superstructureState = superstructureState;
       this.gamePiece = gamePiece;
     }
-    
+
     ELEVATOR_SETPOINT(double setpointMeters, SUPERSTRUCTURE_STATES superstructureState) {
       this(setpointMeters, superstructureState, GAME_PIECE.NONE);
     }
@@ -73,11 +75,11 @@ public class ELEVATOR {
     public double getSetpointMeters() {
       return setpointMeters;
     }
-    
+
     public SUPERSTRUCTURE_STATES getSuperstructureState() {
       return superstructureState;
     }
-    
+
     public GAME_PIECE getGamePiece() {
       return gamePiece;
     }
