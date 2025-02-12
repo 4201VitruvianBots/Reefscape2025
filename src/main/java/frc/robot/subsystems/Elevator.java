@@ -52,14 +52,21 @@ public class Elevator extends SubsystemBase {
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private double m_desiredPositionMeters;
-  // private boolean m_elevatorInitialized; I think this is for LEDs so have fun with that :)  
+  // private boolean m_elevatorInitialized; I think this is for LEDs so have fun with that :)
   private double m_joystickInput;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
   private final TalonFXSimState m_motorSimState;
-    private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber, m_kASubscriber, m_kVSubscriber, m_velocitySubscriber, m_accelerationSubscriber, m_jerkSubscriber;
+  private DoubleSubscriber m_kP_subscriber,
+      m_kI_subscriber,
+      m_kD_subscriber,
+      m_kASubscriber,
+      m_kVSubscriber,
+      m_velocitySubscriber,
+      m_accelerationSubscriber,
+      m_jerkSubscriber;
   private final NetworkTable elevatorTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
 
@@ -160,20 +167,33 @@ public class Elevator extends SubsystemBase {
     elevatorTab.getDoubleTopic("kD").publish().set(ELEVATOR.kD);
     elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
     elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
-    elevatorTab.getDoubleTopic("MotionMagicCruiseVelocity").publish().set(ELEVATOR.motionMagicCruiseVelocity);
-    elevatorTab.getDoubleTopic("MotionMagicAcceleration").publish().set(ELEVATOR.motionMagicAcceleration);
+    elevatorTab
+        .getDoubleTopic("MotionMagicCruiseVelocity")
+        .publish()
+        .set(ELEVATOR.motionMagicCruiseVelocity);
+    elevatorTab
+        .getDoubleTopic("MotionMagicAcceleration")
+        .publish()
+        .set(ELEVATOR.motionMagicAcceleration);
     elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
     m_kP_subscriber = elevatorTab.getDoubleTopic("kP").subscribe(ELEVATOR.kP);
     m_kI_subscriber = elevatorTab.getDoubleTopic("kI").subscribe(ELEVATOR.kI);
     m_kD_subscriber = elevatorTab.getDoubleTopic("kD").subscribe(ELEVATOR.kD);
     m_kASubscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
     m_kVSubscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
-    m_velocitySubscriber = elevatorTab.getDoubleTopic("MotionMagicCruiseVelocity").subscribe(ELEVATOR.motionMagicCruiseVelocity);
-    m_accelerationSubscriber = elevatorTab.getDoubleTopic("MotionMagicAcceleration").subscribe(ELEVATOR.motionMagicAcceleration);
-    m_jerkSubscriber = elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
+    m_velocitySubscriber =
+        elevatorTab
+            .getDoubleTopic("MotionMagicCruiseVelocity")
+            .subscribe(ELEVATOR.motionMagicCruiseVelocity);
+    m_accelerationSubscriber =
+        elevatorTab
+            .getDoubleTopic("MotionMagicAcceleration")
+            .subscribe(ELEVATOR.motionMagicAcceleration);
+    m_jerkSubscriber =
+        elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
   }
 
-  public void testPeriodic(){
+  public void testPeriodic() {
     Slot0Configs slot0Configs = new Slot0Configs();
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
     slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
@@ -182,8 +202,10 @@ public class Elevator extends SubsystemBase {
     slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
     slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
     // Who on earth knows if this part works, I was guessing that it would.
-    motionMagicConfigs.MotionMagicCruiseVelocity = m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
-    motionMagicConfigs.MotionMagicAcceleration = m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
+    motionMagicConfigs.MotionMagicCruiseVelocity =
+        m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
+    motionMagicConfigs.MotionMagicAcceleration =
+        m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
     motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
   }
 
@@ -219,7 +241,6 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Joystick Input", m_joystickInput);
     SmartDashboard.putBoolean("isClosedLoop", isClosedLoopControl());
     SmartDashboard.putNumber("Elevator Velocity", m_requestVelocity.Velocity);
-
   }
 
   @Override

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.CAN;
 
-// TODO: This class is also a mess
 public final class CtreUtils {
   /**
    * Initialize Phoenix Server by creating a dummy device. We do this so that the CANCoders don't
@@ -30,70 +29,6 @@ public final class CtreUtils {
     }
     alert.setText("Phoenix Server finished Init at: " + Timer.getFPGATimestamp());
   }
-
-  //   public static TalonFXConfiguration generateTurnMotorConfig() {
-  //     TalonFXConfiguration turnMotorConfig = new TalonFXConfiguration();
-
-  //     turnMotorConfig.CustomParams.CustomParam0 = 1; // Identify the config
-
-  //     turnMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-  //     turnMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-  //     turnMotorConfig.Slot0 = SWERVE.MODULE.turnGains;
-  //     turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 25;
-  //     turnMotorConfig.CurrentLimits.SupplyCurrentThreshold = 40;
-  //     turnMotorConfig.CurrentLimits.SupplyTimeThreshold = 0.1;
-  //     turnMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
-  //     turnMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
-  //         100.0 / SWERVE.MODULE.kTurnMotorGearRatio;
-  //     turnMotorConfig.MotionMagic.MotionMagicAcceleration =
-  //         turnMotorConfig.MotionMagic.MotionMagicCruiseVelocity / 0.100;
-  //     turnMotorConfig.MotionMagic.MotionMagicExpo_kV = 0.12 * SWERVE.MODULE.kTurnMotorGearRatio;
-  //     turnMotorConfig.MotionMagic.MotionMagicExpo_kA = 0.1;
-
-  //     turnMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
-  //     //    turnMotorConfig.Feedback.FeedbackSensorSource =
-  // FeedbackSensorSourceValue.RotorSensor;
-  //     turnMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-  //     //    turnMotorConfig.Feedback.SensorToMechanismRatio = SWERVE.MODULE.kTurnMotorGearRatio;
-  //     turnMotorConfig.Feedback.RotorToSensorRatio = SWERVE.MODULE.kTurnMotorGearRatio;
-  //     //    turnMotorConfig.Feedback.FeedbackRemoteSensorID = 0;
-
-  //     return turnMotorConfig;
-  //   }
-
-  //   public static TalonFXConfiguration generateDriveMotorConfig() {
-  //     TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
-
-  //     driveMotorConfig.CustomParams.CustomParam0 = 2; // Identify the config
-
-  //     driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-  //     driveMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-
-  //     driveMotorConfig.Slot0 = SWERVE.MODULE.driveGains;
-  //     driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = SWERVE.MODULE.kSlipCurrent;
-  //     driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -SWERVE.MODULE.kSlipCurrent;
-  //     driveMotorConfig.CurrentLimits.StatorCurrentLimit = SWERVE.MODULE.kSlipCurrent;
-  //     driveMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-  //     driveMotorConfig.CurrentLimits.SupplyCurrentLimit = 35;
-  //     driveMotorConfig.CurrentLimits.SupplyCurrentThreshold = 60;
-  //     driveMotorConfig.CurrentLimits.SupplyTimeThreshold = 0.1;
-  //     driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
-  //     driveMotorConfig.Feedback.SensorToMechanismRatio = SWERVE.MODULE.kDriveMotorGearRatio;
-
-  //     driveMotorConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.25; // TODO adjust this
-  // later
-  //     driveMotorConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.25; // TODO adjust this later
-
-  //     driveMotorConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.1; // TODO adjust this
-  // later
-  //     driveMotorConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.1; // TODO Adjust this
-  // later
-
-  //     return driveMotorConfig;
-  //   }
 
   public static boolean configureTalonFx(TalonFX motor, TalonFXConfiguration config) {
     if (20 <= motor.getDeviceID() || motor.getDeviceID() <= 27) {

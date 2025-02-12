@@ -1,30 +1,37 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
-import frc.robot.generated.AlphaBotConstants;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
   public static String robotName = "";
   public static final boolean disableVisualization = false;
   public static final boolean useSysID = false;
-  public static final boolean useReplayLogs = false;
+  // TODO: Change LOG_MODE to Logged.Importance
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
   public static ROBOT_ID robotID = ROBOT_ID.SIM;
-
-  public static final double driveBaseWidth = Units.inchesToMeters(29);
-  public static final double driveBaseLength = Units.inchesToMeters(29);
-  public static final double robotHeight = Units.inchesToMeters(42);
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
     CLOSED_LOOP,
     CLOSED_LOOP_NET
-
+  }
+  
+  public enum SUPERSTRUCTURE_STATES {
+    STOWED,
+    L1,
+    L2,
+    L3,
+    L4, LEVEL_2
+  }
+  
+  public enum GAME_PIECE {
+    CORAL,
+    ALGAE,
+    NONE
   }
 
   public enum ROBOT_ID {
@@ -60,18 +67,15 @@ public class ROBOT {
 
   public static void initAlphaBot() {
     robotID = ROBOT_ID.ALPHABOT;
-    SWERVE.selectedDrivetrain = AlphaBotConstants.createDrivetrain();
   }
 
   public static void initV2() {
     robotID = ROBOT_ID.V2;
-  } // V2 drivetrain is already the default
+  }
 
-  public static void initSim() { // V2 drivetrain is the default
+  public static void initSim() {
     logMode = LOG_MODE.DEBUG;
     robotID = ROBOT_ID.SIM;
-
-    // ARM.gearRatio = 1.0; /* Different gear ratios seem to break SimpleJointedArmSim */
   }
 
   public static void initConstants() {
