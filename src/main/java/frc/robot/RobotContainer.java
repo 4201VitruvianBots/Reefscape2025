@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
@@ -36,6 +37,7 @@ import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
+import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
@@ -86,6 +88,8 @@ public class RobotContainer {
   private Climber m_climber;
 
   private final Robot2d m_robot2d = new Robot2d();
+  
+  private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -282,19 +286,22 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
+    // Algae Toggle
+    m_driverController.leftBumper().onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
+    
     if (m_elevator != null) {
       m_driverController
           .a()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+          .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece));
       m_driverController
           .x()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+          .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
       m_driverController
           .y()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+          .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece));
       m_driverController
           .b()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
+          .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }
 
