@@ -81,6 +81,7 @@ public class Elevator extends SubsystemBase {
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    config.CurrentLimits.StatorCurrentLimit = 80;
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
     m_motorSimState = elevatorMotors[0].getSimState();

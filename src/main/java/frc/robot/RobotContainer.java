@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -292,7 +293,8 @@ public class RobotContainer {
     if (m_elevator != null) {
       m_driverController
           .a()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece));
+          .whileTrue(new ParallelCommandGroup(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece), new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2))
+            );
       m_driverController
           .x()
           .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
@@ -303,12 +305,6 @@ public class RobotContainer {
           .b()
           .whileTrue(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
-    }
-
-    if (m_endEffectorPivot != null) {
-      m_driverController
-          .a()
-          .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
 
     if (m_endEffector != null) {
