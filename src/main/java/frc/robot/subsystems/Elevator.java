@@ -75,13 +75,13 @@ public class Elevator extends SubsystemBase {
     config.Slot0.kP = ELEVATOR.kP;
     config.Slot0.kI = ELEVATOR.kI;
     config.Slot0.kD = ELEVATOR.kD;
-    config.Slot0.kA = ELEVATOR.kA;
-    config.Slot0.kV = ELEVATOR.kV;    
+    // config.Slot0.kA = ELEVATOR.kA;
+    // config.Slot0.kV = ELEVATOR.kV;    
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
-    config.CurrentLimits.StatorCurrentLimit = 80;
+    config.CurrentLimits.StatorCurrentLimit = 40;
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
     m_motorSimState = elevatorMotors[0].getSimState();

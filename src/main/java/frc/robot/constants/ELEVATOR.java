@@ -24,12 +24,12 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
-  public static final double kP = 10.0; // these are extremely loosely tuned so tune them later
+  public static final double kP = 5.0; // these are extremely loosely tuned so tune them later
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kA = 0.2;
   public static final double kV = 0.1;
-  public static final double offset = 0.0556640624;
+  public static final double offset = 0.02;
   public static final double motionMagicCruiseVelocity = 100;
   public static final double motionMagicAcceleration = 200;
   public static final double motionMagicJerk = 4000;
@@ -48,14 +48,14 @@ public class ELEVATOR {
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
   
   public enum ELEVATOR_SETPOINT {
-    START_POSITION(Units.inchesToMeters(0.0), SUPERSTRUCTURE_STATES.STOWED),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(13.5), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(28), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
-    PROCESSOR(Units.inchesToMeters(10), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
-    LEVEL_2(Units.inchesToMeters(13), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
-    LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
-    LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
-    NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+    START_POSITION(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.STOWED),
+    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(64.5), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
+    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(50), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
+    PROCESSOR(Units.inchesToMeters(68), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
+    LEVEL_2(Units.inchesToMeters(65), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
+    LEVEL_3(Units.inchesToMeters(41), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
+    LEVEL_4(Units.inchesToMeters(21.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
+    NET(Units.inchesToMeters(0), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
     
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;

@@ -293,7 +293,7 @@ public class RobotContainer {
     if (m_elevator != null) {
       m_driverController
           .a()
-          .whileTrue(new ParallelCommandGroup(new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece), new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2))
+          .whileTrue(new ParallelCommandGroup(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2), new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece))
             );
       m_driverController
           .x()
