@@ -4,11 +4,6 @@
 
 package frc.robot.commands.autos;
 
-import java.lang.reflect.Field;
-import java.nio.file.Path;
-
-import org.team4201.codex.simulation.FieldSim;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -21,9 +16,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class TestAuto1 extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public TestAuto1(CommandSwerveDrivetrain swerveDrive,FieldSim fieldSim) {
+  public TestAuto1(CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */) {
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("Test1");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("4PeiceL");
 
       var m_ppCommand = AutoBuilder.followPath(path);
 
@@ -37,7 +32,6 @@ public class TestAuto1 extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
-        new PlotAutoPath(swerveDrive,fieldSim, "Test1",path),
           new InstantCommand( // Reset the pose of the robot to the starting pose of the path
               () -> swerveDrive.resetPose(starting_pose)),
           new InstantCommand(
@@ -46,7 +40,7 @@ public class TestAuto1 extends SequentialCommandGroup {
               .alongWith(new WaitCommand(1)),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load path for Test1", e.getStackTrace());
+      DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
       addCommands(new WaitCommand(0));
     }
   }
