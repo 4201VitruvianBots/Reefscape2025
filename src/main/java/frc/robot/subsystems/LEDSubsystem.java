@@ -4,10 +4,16 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.led.CANdle;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
+  private final CANdle m_candle = new CANdle(CAN.CANdle);
+
+
   public LEDSubsystem() {}
 
   @Override
