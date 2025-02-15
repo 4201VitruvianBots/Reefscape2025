@@ -18,11 +18,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
@@ -34,10 +36,10 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
-import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
+import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
@@ -75,19 +77,22 @@ public class RobotContainer {
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
 
-  @Logged(name = "EndEffectorPivot")
-  private EndEffectorPivot m_endEffectorPivot;
+  // V2 subsystems
+  private Climber m_climber;
+  private ClimberIntake m_climberIntake;
+  private Elevator m_elevator;
 
   @Logged(name = "EndEffector")
   private EndEffector m_endEffector;
 
-  // V2 subsystems
-  private Elevator m_elevator;
-  private ClimberIntake m_climberIntake;
-  private Climber m_climber;
+  @Logged(name = "EndEffectorPivot")
+  private EndEffectorPivot m_endEffectorPivot;
+
   private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
+
+  private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
@@ -284,26 +289,35 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
-    if (m_elevator != null) {
+    // Algae Toggle
+    m_driverController
+        .leftBumper()
+        .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
+
+    if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
           .a()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2),
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece)));
       m_driverController
           .x()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
       m_driverController
           .y()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece));
       m_driverController
           .b()
-          .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
-    }
-
-    if (m_endEffectorPivot != null) {
-      m_driverController
-          .a()
-          .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
 
     if (m_endEffector != null) {
