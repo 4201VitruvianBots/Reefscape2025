@@ -6,6 +6,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MusicTone;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -22,6 +24,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -42,6 +45,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+
+  public TalonFX[] m_driveMotors = {
+    getModule(0).getDriveMotor(),
+    getModule(1).getDriveMotor(),
+    getModule(2).getDriveMotor(),
+    getModule(3).getDriveMotor()
+  };
+
+  public TalonFX[] m_steerMotors = {
+    getModule(0).getSteerMotor(),
+    getModule(1).getSteerMotor(),
+    getModule(2).getSteerMotor(),
+    getModule(3).getSteerMotor()
+  };
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -288,6 +305,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   public void resetGyro(double angle) {
     getPigeon2().setYaw(angle);
+  }
+
+  public void setMotorBeep(Frequency frequency) {
+    for (var motor : m_driveMotors) {
+      motor.setControl(new MusicTone(frequency));
+    }
+    for (var motor : m_steerMotors) {
+      motor.setControl(new MusicTone(frequency));
+    }
   }
 
   private void configureAutoBuilder() {

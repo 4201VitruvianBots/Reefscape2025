@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
@@ -244,6 +242,24 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
+  }
+
+  public void autonomousInit() {
+    if (!DriverStation.isFMSAttached()) {
+      CommandScheduler.getInstance()
+          .schedule(
+              new RunCommand(() -> m_swerveDrive.setMotorBeep(Hertz.of(1000)), m_swerveDrive)
+                  .withTimeout(Seconds.of(0.1)));
+    }
+  }
+
+  public void teleopInit() {
+    if (!DriverStation.isFMSAttached()) {
+      CommandScheduler.getInstance()
+          .schedule(
+              new RunCommand(() -> m_swerveDrive.setMotorBeep(Hertz.of(1000)), m_swerveDrive)
+                  .withTimeout(Seconds.of(0.1)));
+    }
   }
 
   public void testInit() {
