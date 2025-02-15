@@ -33,6 +33,7 @@ import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralOuttake;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.HopperIntake;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final CoralOuttake m_coralOuttake = new CoralOuttake();
   private final AlgaeIntake m_algaeIntake = new AlgaeIntake();
   private final EndEffector m_endEffector = new EndEffector();
+  private final HopperIntake m_HopperIntake = new HopperIntake();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();

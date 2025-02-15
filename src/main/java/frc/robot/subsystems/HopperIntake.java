@@ -8,9 +8,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +37,11 @@ public class HopperIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.hopperintakeGearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.Inertia),
           HOPPERINTAKE.hopperintakeGearbox);
+  private final NetworkTable hopperIntakeTab =
+      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("HopperIntake");
+  private final DigitalInput input = new DigitalInput(0);
+  
+
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -46,15 +54,23 @@ public class HopperIntake extends SubsystemBase {
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
   }
 
+
+
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
 
+  public boolean getHasCoral() {
+    return !input.get();
+  } 
+
+
   public void updateLogger() {
     SmartDashboard.putNumber("Hopper Intake/Motor", m_velocitySignal1.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Hopper Intake/Motor1 Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor1 Current", m_currentSignal1.getValueAsDouble());
+        "Hopper Intake/Motor1Output", m_voltageSignal1.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("Hopper Intake/Motor1Current", m_currentSignal1.getValueAsDouble());
+    SmartDashboard.putBoolean("Hopper Intake/HasCoral", getHasCoral());
   }
 
   @Override
@@ -73,5 +89,7 @@ public class HopperIntake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateLogger();
+  }
 }
