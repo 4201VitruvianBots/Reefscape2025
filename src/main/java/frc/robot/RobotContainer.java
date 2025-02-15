@@ -41,6 +41,7 @@ import frc.robot.generated.AlphaBotConstants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.HopperIntake;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
@@ -69,6 +70,7 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
+  private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
 
@@ -125,6 +127,7 @@ public class RobotContainer {
       m_endEffector = new EndEffector();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
     }
 
     m_swerveDrive.setDefaultCommand(

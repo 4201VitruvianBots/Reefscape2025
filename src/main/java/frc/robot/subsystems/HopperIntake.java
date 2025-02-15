@@ -11,6 +11,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +35,7 @@ public class HopperIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
           HOPPERINTAKE.gearbox);
+  private final DigitalInput input = new DigitalInput(0);
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -50,11 +52,16 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotor.set(speed);
   }
 
-  public void updateLogger() {
+  public boolean getHasCoral() {
+    return !input.get();
+  }
+
+  public void updateSmartDashboard() {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putBoolean("Hopper Intake/Has Coral", getHasCoral());
   }
 
   @Override
@@ -73,5 +80,7 @@ public class HopperIntake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateSmartDashboard();
+  }
 }
