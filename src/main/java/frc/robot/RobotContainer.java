@@ -6,8 +6,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.team4201.codex.utils.TrajectoryUtils;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,7 +50,7 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Telemetry m_telemetry = new Telemetry();
-  private final Vision m_vision = new Vision();
+  // private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
@@ -81,7 +86,7 @@ public class RobotContainer {
   public RobotContainer() {
     m_swerveDrive = SWERVE.selectedDrivetrain;
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-    m_vision.registerSwerveDrive(m_swerveDrive);
+    // m_vision.registerSwerveDrive(m_swerveDrive);
     initSmartDashboard();
     initializeSubSystems();
 

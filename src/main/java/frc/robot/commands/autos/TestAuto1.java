@@ -28,6 +28,7 @@ public class TestAuto1 extends SequentialCommandGroup {
       // Will throw an exception if the starting pose is not present
       var starting_pose = path.getStartingHolonomicPose().orElseThrow();
 
+    
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
