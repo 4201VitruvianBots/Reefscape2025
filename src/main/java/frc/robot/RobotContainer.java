@@ -81,10 +81,13 @@ public class RobotContainer {
   private Climber m_climber;
   private ClimberIntake m_climberIntake;
   private Elevator m_elevator;
+
   @Logged(name = "EndEffector")
   private EndEffector m_endEffector;
+
   @Logged(name = "EndEffectorPivot")
   private EndEffectorPivot m_endEffectorPivot;
+
   private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
