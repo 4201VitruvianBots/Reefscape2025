@@ -23,7 +23,7 @@ public class PlotAutoPath extends Command {
   private ArrayList<Trajectory.State> m_pathPoints;
   private final String m_pathName;
 
-  public PlotAutoPath(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim, String pathName) {
+  public PlotAutoPath(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim, String pathName, PathPlannerPath path) {
     m_swerveDrive = swerveDrive;
     m_fieldSim = fieldSim;
     m_pathName = pathName;

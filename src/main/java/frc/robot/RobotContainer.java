@@ -6,6 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.reflect.Field;
+
+import org.team4201.codex.simulation.FieldSim;
 import org.team4201.codex.utils.TrajectoryUtils;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -61,7 +64,7 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
-
+private FieldSim m_fieldSim;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -127,7 +130,7 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
-    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive,m_fieldSim));
   }
 
   private void initSmartDashboard() {
