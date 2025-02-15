@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,6 +23,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.utils.CtreUtils;
 
+@Logged
 public class EndEffector extends SubsystemBase {
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal =

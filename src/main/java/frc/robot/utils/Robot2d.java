@@ -3,6 +3,7 @@ package frc.robot.utils;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -11,11 +12,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.team4201.codex.simulation.visualization.Arm2d;
 import org.team4201.codex.simulation.visualization.Elevator2d;
+import org.team4201.codex.simulation.visualization.configs.Arm2dConfig;
 import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 
 /**
@@ -62,6 +66,21 @@ public class Robot2d {
               .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
+  /** Declare a single point from the main Mechanism2d to attach the Arm2d */
+  MechanismRoot2d m_endEffectorRoot =
+      m_robot.getRoot("EndEffectorRoot", Inches.of(11.625).magnitude(), Inches.of(39).magnitude());
+
+  /** Create an Arm2d to represent the endEffector */
+  Arm2d m_endEffector =
+      new Arm2d(
+          new Arm2dConfig(
+                  "EndEffector2d",
+                  new Color8Bit(0, 255, 255),
+                  ENDEFFECTOR.startingAngle,
+                  ENDEFFECTOR.length)
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+          m_endEffectorRoot);
+
   /** Map of subsystems for Robot2d to update */
   Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
@@ -80,7 +99,11 @@ public class Robot2d {
   }
 
   public void registerSubsystem(Subsystem subsystem) {
-    m_subsystemMap.put(subsystem.getName(), subsystem);
+    if (subsystem != null) {
+      m_subsystemMap.put(subsystem.getName(), subsystem);
+    } else {
+      DriverStation.reportWarning("[Robot2d] Attempting to register null subsystem!", true);
+    }
   }
 
   /** Function to update all mechanisms on Robot2d. This should be called periodically. */
@@ -94,6 +117,9 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("EndEffectorPivot")) {
       var endEffectorPivotSubsystem = (EndEffectorPivot) m_subsystemMap.get("EndEffectorPivot");
+      // Visually, this will go opposite of the actual angle, so we just negate it here so it looks
+      // correct
+      m_endEffector.update(endEffectorPivotSubsystem.getCANcoderAngle().unaryMinus());
     }
 
     if (m_subsystemMap.containsKey("EndEffector")) {

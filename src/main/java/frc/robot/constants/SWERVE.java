@@ -6,12 +6,16 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.util.Map;
 import org.team4201.codex.utils.ModuleMap.MODULE_POSITION;
 
 public class SWERVE {
+  public enum MOTOR_TYPE {
+    ALL,
+    DRIVE,
+    STEER;
+  };
 
   public static Distance kWheelBase = Inches.of(23.75);
   public static Distance kTrackWidth = Inches.of(23.75);
@@ -31,8 +35,7 @@ public class SWERVE {
   //    public static final SwerveDriveKinematics kSwerveKinematics =
   //            new SwerveDriveKinematics(
   //                    ModuleMap.orderedValues(kModuleTranslations, new Translation2d[0]));
-  public static CommandSwerveDrivetrain selectedDrivetrain =
-      V2Constants.createDrivetrain(); // V2 is the default
+  public static CommandSwerveDrivetrain selectedDrivetrain;
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =
