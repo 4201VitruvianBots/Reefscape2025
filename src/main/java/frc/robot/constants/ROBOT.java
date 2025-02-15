@@ -19,15 +19,16 @@ public class ROBOT {
     CLOSED_LOOP,
     CLOSED_LOOP_NET
   }
-  
+
   public enum SUPERSTRUCTURE_STATES {
     STOWED,
     L1,
     L2,
     L3,
-    L4, LEVEL_2
+    L4,
+    LEVEL_2
   }
-  
+
   public enum GAME_PIECE {
     CORAL,
     ALGAE,
