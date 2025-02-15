@@ -161,7 +161,7 @@ public class Elevator extends SubsystemBase {
     return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
 
-  public void setElevatorNeutralMode(NeutralModeValue mode) {
+  public void setNeutralMode(NeutralModeValue mode) {
     if (mode == m_neutralMode) return;
     m_neutralMode = mode;
     elevatorMotors[0].setNeutralMode(mode);

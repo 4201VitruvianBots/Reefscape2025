@@ -77,16 +77,14 @@ public class RobotContainer {
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
 
-  @Logged(name = "EndEffectorPivot")
-  private EndEffectorPivot m_endEffectorPivot;
-
+  // V2 subsystems
+  private Climber m_climber;
+  private ClimberIntake m_climberIntake;
+  private Elevator m_elevator;
   @Logged(name = "EndEffector")
   private EndEffector m_endEffector;
-
-  // V2 subsystems
-  private Elevator m_elevator;
-  private ClimberIntake m_climberIntake;
-  private Climber m_climber;
+  @Logged(name = "EndEffectorPivot")
+  private EndEffectorPivot m_endEffectorPivot;
   private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
@@ -293,7 +291,7 @@ public class RobotContainer {
         .leftBumper()
         .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
 
-    if (m_elevator != null) {
+    if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
           .a()
           .whileTrue(

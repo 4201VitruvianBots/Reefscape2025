@@ -29,7 +29,7 @@ public class SetElevatorSetpoint extends Command {
   public void initialize() {
     m_elevator.setClosedLoopControlMode(CONTROL_MODE.CLOSED_LOOP);
 
-    /* If we want to be able to algae toggle in the middle of a outtake cycle, we need to put this in execute().
+    /* If we want to be able to algae toggle in the middle of an outtake cycle, we need to put this in execute().
     No idea why would you want to do that though */
     switch (m_stage) {
       case STOWED:

@@ -26,7 +26,6 @@ public class ROBOT {
     L2,
     L3,
     L4,
-    LEVEL_2
   }
 
   public enum GAME_PIECE {
