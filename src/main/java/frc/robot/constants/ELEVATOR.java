@@ -29,22 +29,19 @@ public class ELEVATOR {
   public static final double kD = 0.0;
   public static final double kA = 0.2;
   public static final double kV = 0.1;
-  public static final double offset = 0.02;
+  public static final double offset = 0.03;
   public static final double motionMagicCruiseVelocity = 100;
   public static final double motionMagicAcceleration = 200;
   public static final double motionMagicJerk = 4000;
   public static final double kPercentOutputMultiplier = 1.0;
   public static final double kLimitedPercentOutputMultiplier = 0.5;
-  public static final double sprocketRadiusMeters = Units.inchesToMeters(1.432) / 2.0;
-  public static final double sprocketRotationsToMeters =
-      sprocketRadiusMeters
-          * 2
-          * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
-  // meters
-  public static final double kElevatorGearing = 48.0 / 10;
-  public static final double kCarriageMassPounds = 15; // TODO: Change values after CAD done
-  public static final double gearRatio = 1.0 / 1.0; // TODO: Change values after CAD done
-  public static final double kElevatorDrumRadius = Units.inchesToMeters(1);
+  public static final double kElevatorDrumDiameter = Units.inchesToMeters(2.2557);
+  public static final double drumRotationsToMeters =
+      kElevatorDrumDiameter
+         * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
+  public static final double kCarriageMassPounds = 15.0; // TODO: Change values after CAD done
+  public static final double gearRatio = 48.0 / 10.0; // TODO: Change values after CAD done
+
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
   
   public enum ELEVATOR_SETPOINT {
@@ -56,7 +53,6 @@ public class ELEVATOR {
     LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
     LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
     NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
-
     
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;

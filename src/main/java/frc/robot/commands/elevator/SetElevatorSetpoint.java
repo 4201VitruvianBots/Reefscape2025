@@ -31,32 +31,32 @@ public class SetElevatorSetpoint extends Command {
        No idea why would you want to do that though */
     switch(m_stage) {
         case STOWED:
-            m_elevator.setDesiredPosition(ELEVATOR.ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+            m_elevator.setDesiredPosition(ELEVATOR.ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             break;
         case L1:
             if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE)
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.PROCESSOR.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.PROCESSOR.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             // No L1 elevator setpoint right now
             break;
         case L2:
             if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             } else {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_2.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_2.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             }
             break;
         case L3:
             if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             } else {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_3.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_3.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             }
             break;
         case L4:
             if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.NET.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.NET.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             } else {
-                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_4.getSetpointMeters() / ELEVATOR.sprocketRotationsToMeters);
+                m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_4.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
             }
             break;
         default:
