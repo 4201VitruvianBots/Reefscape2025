@@ -43,7 +43,7 @@ public class LEDSubsystem extends SubsystemBase {
   private int m_white = 0; // we have a seperate bulb in our LED strips for white
   private double m_brightness = 0;
   private double m_speed = 0;
-  // private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED; //TODO: I'll fix this later once I have the GetSubsystemStates class done
+  private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED; 
   private boolean setSolid; // this stops the animation
   private Animation m_toAnimate = null;
 
@@ -139,6 +139,45 @@ public class LEDSubsystem extends SubsystemBase {
         break;
     }
   }
+
+  // will set LEDs a coordinated color for an action
+  public void expressState(SUBSYSTEM_STATES state) {
+    if (state != currentRobotState) {
+      switch (state) {
+        case CORAL:
+          setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid);
+          break;
+        case CORAL_OWNED:
+          setPattern(LED.yellow, 125, 0.5, ANIMATION_TYPE.ColorFlow);
+          break;
+        case INTAKED:
+          setPattern(LED.orange, 0, 0, ANIMATION_TYPE.Solid);
+          break;
+        case INTAKING:
+          setPattern(LED.orange, 0, 0, ANIMATION_TYPE.Strobe);
+          break;
+        case ENABLED:
+          setPattern(LED.green, 0, 0, ANIMATION_TYPE.Strobe); // Solid Green
+          break;
+        case CLIMBING:
+          setPattern(LED.purple, 0, 0, ANIMATION_TYPE.Rainbow);
+          break;
+        case SETUP_READY:
+          setPattern(LED.green, 0, 0, ANIMATION_TYPE.Solid);
+          break;
+        case SETUP_LOCALIZED:
+          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Solid);
+          break;
+        case DISABLED:
+          setPattern(LED.red, 0, 0.125, ANIMATION_TYPE.ColorFlowLong); // Solid Red
+          break;
+        default:
+          break;
+      }
+      currentRobotState = state;
+    }
+  }
+
 
   @Override
   public void periodic() {
