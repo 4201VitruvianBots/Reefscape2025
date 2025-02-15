@@ -35,10 +35,8 @@ public class HopperIntake extends SubsystemBase {
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              HOPPERINTAKE.hopperintakeGearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.Inertia),
-          HOPPERINTAKE.hopperintakeGearbox);
-  private final NetworkTable hopperIntakeTab =
-      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("HopperIntake");
+              HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
+          HOPPERINTAKE.gearbox);
   private final DigitalInput input = new DigitalInput(0);
 
   public HopperIntake() {
@@ -52,8 +50,6 @@ public class HopperIntake extends SubsystemBase {
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
   }
 
-
-
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
@@ -61,9 +57,8 @@ public class HopperIntake extends SubsystemBase {
   public boolean getHasCoral() {
     return !input.get();
   } 
-
-
-  public void updateLogger() {
+  
+  public void updateSmartDashboard() {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
@@ -88,6 +83,6 @@ public class HopperIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateLogger();
+    updateSmartDashboard();
   }
 }
