@@ -49,6 +49,7 @@ import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.HopperIntake;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
@@ -87,6 +88,7 @@ public class RobotContainer {
   private Elevator m_elevator;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
+  private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
   

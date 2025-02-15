@@ -42,7 +42,7 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
+    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
 
   // Simulation classes help us simulate what's going on, including gravity.
@@ -249,7 +249,7 @@ public class Elevator extends SubsystemBase {
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("Elevator/Elevator Height", getHeightMeters());
     SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
-    SmartDashboard.putNumber("Elevator/Elevator Velocity", m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
+    SmartDashboard.putNumber("Elevator/Elevator Velocity m/s", m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
     SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
     SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
     SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);

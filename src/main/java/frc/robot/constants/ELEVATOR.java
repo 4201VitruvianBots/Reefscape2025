@@ -53,7 +53,7 @@ public class ELEVATOR {
     LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
     LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
     NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
-    
+
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;
     private final GAME_PIECE gamePiece;
@@ -84,7 +84,8 @@ public class ELEVATOR {
   public enum ELEVATOR_ACCEL_SETPOINT {
     NONE(RotationsPerSecondPerSecond.of(0), RotationsPerSecond.of(0)),
     NETSCORE(
-        RotationsPerSecondPerSecond.of(0.5), RotationsPerSecond.of(5)); // Change these later my guy
+        RotationsPerSecondPerSecond.of(0.5),
+        RotationsPerSecond.of(5)); // TODO: Change these later my guy
 
     private final AngularAcceleration acceleration;
     private final AngularVelocity velocity;
