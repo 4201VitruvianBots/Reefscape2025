@@ -18,18 +18,18 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
-import frc.robot.constants.V2CAN;
 import frc.robot.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
 
-  private final TalonFX m_hopperIntakeMotor = new TalonFX(V2CAN.hopperIntakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal1 =
+  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_hopperIntakeMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal1 =
+  private final StatusSignal<Voltage> m_voltageSignal =
       m_hopperIntakeMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal1 =
+  private final StatusSignal<Current> m_currentSignal =
       m_hopperIntakeMotor.getTorqueCurrent().clone();
   private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
   private final DCMotorSim m_hopperIntakeMotorSim =
@@ -40,8 +40,6 @@ public class HopperIntake extends SubsystemBase {
   private final NetworkTable hopperIntakeTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("HopperIntake");
   private final DigitalInput input = new DigitalInput(0);
-  
-
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -66,11 +64,11 @@ public class HopperIntake extends SubsystemBase {
 
 
   public void updateLogger() {
-    SmartDashboard.putNumber("Hopper Intake/Motor", m_velocitySignal1.getValueAsDouble());
+    SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
-        "Hopper Intake/Motor1Output", m_voltageSignal1.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor1Current", m_currentSignal1.getValueAsDouble());
-    SmartDashboard.putBoolean("Hopper Intake/HasCoral", getHasCoral());
+        "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putBoolean("Hopper Intake/Has Coral", getHasCoral());
   }
 
   @Override

@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,18 +27,18 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
-import frc.robot.utils.ModuleMap;
 import java.util.function.Supplier;
+import org.team4201.codex.subsystems.SwerveSubsystem;
+import org.team4201.codex.utils.ModuleMap;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
  * be used in command-based projects.
  */
-public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -53,6 +54,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private Pose2d m_futurePose = new Pose2d();
   private Twist2d m_twistFromPose = new Twist2d();
   private ChassisSpeeds m_newChassisSpeeds = new ChassisSpeeds();
+
+  // // The robot pose estimator for tracking swerve odometry and applying vision corrections.
+  // private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+  //   getKinematics(),
+  //     kBlueAlliancePerspectiveRotation,
+  //     null,
+  //     m_futurePose
+  //   );
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -207,6 +216,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     configureAutoBuilder();
   }
 
+  // TODO: fix
+  public void setChassisSpeedsAuto(
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
+
   // TODO: Re-implement
   //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
   //      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
@@ -359,6 +372,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
+    // poseEstimator.update(getPigeon2().getRotation2d(), getModulePositions());
   }
 
   private void startSimThread() {
@@ -376,5 +390,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               updateSimState(deltaTime, RobotController.getBatteryVoltage());
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  @Override
+  public void addVisionMeasurement(Pose2d pose, double timestampSeconds) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  @Override
+  public void addVisionMeasurement(
+      Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
+    super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
   }
 }

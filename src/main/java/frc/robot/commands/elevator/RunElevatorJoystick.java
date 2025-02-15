@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.elevator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +29,9 @@ public class RunElevatorJoystick extends Command {
       //           joystickYDeadbandOutput *= CLIMBER.kLimitedPercentOutputMultiplier;
       m_elevator.setJoystickY(joystickYDeadbandOutput);
 
-      if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
+      if (joystickYDeadbandOutput == 0) {
+        m_elevator.holdElevator();
+      }
     } else if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP) {
       m_elevator.setDesiredPosition(m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
 

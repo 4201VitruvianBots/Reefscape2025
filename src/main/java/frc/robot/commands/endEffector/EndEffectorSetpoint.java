@@ -2,45 +2,49 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.endEffector;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Controls;
+import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
+import frc.robot.subsystems.EndEffectorPivot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ResetGyro extends Command {
-  /** Creates a new ResetGyro. */
-  private final CommandSwerveDrivetrain m_swerveDrive;
+public class EndEffectorSetpoint extends Command {
+  private final EndEffectorPivot m_endEffectorPivot;
+  private PIVOT_SETPOINT m_setpoint;
+  private boolean m_auto;
 
-  public ResetGyro(CommandSwerveDrivetrain swervedrive) {
-    m_swerveDrive = swervedrive;
+  /** Creates a new EndEffectorSetpoint. */
+  public EndEffectorSetpoint(EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
-
-    addRequirements(m_swerveDrive);
+    m_endEffectorPivot = endEffectorPivot;
+    m_setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (Controls.isRedAlliance()) {
-      m_swerveDrive.resetGyro(0);
-    } else {
-      m_swerveDrive.resetGyro(180);
-    }
+    m_endEffectorPivot.setPosition(m_setpoint.get());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_auto = DriverStation.isAutonomous();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    if (!m_auto) {
+      m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
+    }
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
