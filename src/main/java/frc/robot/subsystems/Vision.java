@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 // import frc.robot.simulation.FieldSim;
@@ -43,14 +44,14 @@ public class Vision extends SubsystemBase {
   public static final PhotonCamera aprilTagLimelightCameraA = new PhotonCamera("LimelightA");
   PhotonPoseEstimator limelightPhotonPoseEstimatorA =
       new PhotonPoseEstimator(
-          VISION.aprilTagFieldLayout,
+          FIELD.aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VISION.robotToAprilTagLimelightCameraA);
 
   public static final PhotonCamera aprilTagLimelightCameraB = new PhotonCamera("LimelightB");
   PhotonPoseEstimator limelightPhotonPoseEstimatorB =
       new PhotonPoseEstimator(
-          VISION.aprilTagFieldLayout,
+          FIELD.aprilTagFieldLayout,
           PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           VISION.robotToAprilTagLimelightCameraB);
   private Matrix<N3, N1> curStdDevs;
@@ -90,7 +91,7 @@ public class Vision extends SubsystemBase {
       // Create the vision system simulation which handles cameras and targets on the field.
       visionSim = new VisionSystemSim("main");
       // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
-      visionSim.addAprilTags(VISION.aprilTagFieldLayout);
+      visionSim.addAprilTags(FIELD.aprilTagFieldLayout);
       // Create simulated camera properties. These can be set to mimic your actual camera.
       var cameraProp = new SimCameraProperties();
       cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(VISION.kLimelightDFOV));

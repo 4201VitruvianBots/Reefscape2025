@@ -33,7 +33,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
+import java.io.IOException;
 import java.util.function.Supplier;
+import org.json.simple.parser.ParseException;
 import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
 
@@ -233,7 +235,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
   }
 
+  @Override
+  public RobotConfig getAutoRobotConfig() {
+    try {
+      return RobotConfig.fromGUISettings();
+    } catch (IOException | ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public PIDConstants getAutoTranslationPIDConstants() {
+    return new PIDConstants(10, 0, 0);
+  }
+
+  @Override
+  public PIDConstants getAutoRotationPIDConstants() {
+    return new PIDConstants(7, 0, 0);
+  }
+
   // TODO: fix
+  @Override
   public void setChassisSpeedsAuto(
       ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
 

@@ -20,9 +20,10 @@ public class FIELD {
    * <p>Note: Values are using ideal values from WPILib TODO: Create layout from practice field.
    */
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-  // public static final AprilTagFieldLayout practiceFieldAprilTagLayout;
+  public static final AprilTagFieldLayout practiceFieldAprilTagLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
   public static AprilTagFieldLayout aprilTagFieldLayout = wpilibAprilTagLayout;
 
