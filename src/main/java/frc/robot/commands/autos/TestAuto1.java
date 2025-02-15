@@ -13,10 +13,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import org.team4201.codex.simulation.FieldSim;
 
 public class TestAuto1 extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
-  public TestAuto1(CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */) {
+  /**
+   * Creates a new DriveForward.
+   *
+   * @param m_fieldSim
+   */
+  public TestAuto1(
+      CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */, FieldSim m_fieldSim) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("4PeiceL");
 
@@ -28,7 +34,6 @@ public class TestAuto1 extends SequentialCommandGroup {
       // Will throw an exception if the starting pose is not present
       var starting_pose = path.getStartingHolonomicPose().orElseThrow();
 
-    
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(

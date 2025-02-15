@@ -6,16 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.reflect.Field;
-
-import org.team4201.codex.simulation.FieldSim;
-import org.team4201.codex.utils.TrajectoryUtils;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +35,7 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import org.team4201.codex.simulation.FieldSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -64,7 +57,7 @@ public class RobotContainer {
   private EndEffector m_endEffector;
   private ClimberIntake m_climberIntake;
   private Climber m_climber;
-private FieldSim m_fieldSim;
+  private FieldSim m_fieldSim;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -129,8 +122,8 @@ private FieldSim m_fieldSim;
     SmartDashboard.putData("Auto Mode", m_chooser);
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
-    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
-    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive,m_fieldSim));
+    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
   }
 
   private void initSmartDashboard() {

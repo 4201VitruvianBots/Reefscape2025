@@ -15,7 +15,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,12 +27,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
-
 import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
@@ -80,7 +77,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
- 
+
   /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
   private final SysIdRoutine m_sysIdRoutineTranslation =
       new SysIdRoutine(
@@ -151,13 +148,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
 
     try {
-      m_trajectoryUtils = new TrajectoryUtils(this, 
-          RobotConfig.fromGUISettings(), 
-          new PIDConstants(10, 0, 0), 
-          new PIDConstants(7, 0, 0)); 
+      m_trajectoryUtils =
+          new TrajectoryUtils(
+              this,
+              RobotConfig.fromGUISettings(),
+              new PIDConstants(10, 0, 0),
+              new PIDConstants(7, 0, 0));
     } catch (Exception ex) {
       DriverStation.reportError("Failed to configure TrajectoryUtils", false);
-    } 
+    }
   }
 
   public void initDriveSysid() {
@@ -301,13 +300,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     getPigeon2().setYaw(angle);
   }
 
-  
   @Override
   public void setChassisSpeedsAuto(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setChassisSpeedsAuto'");
   }
-  
+
   private void configureAutoBuilder() {
     try {
       var config = RobotConfig.fromGUISettings();

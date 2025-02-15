@@ -139,7 +139,8 @@
 //   public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
 //   /**
-//    * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
+//    * Calculates new standard deviations This algorithm is a heuristic that creates dynamic
+// standard
 //    * deviations based on number of tags, estimation strategy, and distance from the tags.
 //    *
 //    * @param estimatedPose The estimated pose to guess standard deviations for.
@@ -159,7 +160,8 @@
 
 //       // Precalculation - see how many tags we found, and calculate an average-distance metric
 //       for (var tgt : targets) {
-//         var tagPose = limelightPhotonPoseEstimatorB.getFieldTags().getTagPose(tgt.getFiducialId());
+//         var tagPose =
+// limelightPhotonPoseEstimatorB.getFieldTags().getTagPose(tgt.getFiducialId());
 //         if (tagPose.isEmpty()) continue;
 //         numTags++;
 //         avgDist +=
@@ -281,7 +283,8 @@
 //   //                 .plus(
 //   //                     Rotation2d.fromRadians(
 //   //                         Math.asin(
-//   //                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) * PositionY))
+//   //                             (((VelocityY * 0.85) * PositionX + (VelocityX * 0.2) *
+// PositionY))
 //   //                                 / (newDist * 5)))));
 //   //       }
 //   //     }
