@@ -33,7 +33,7 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2) // These are just placeholders
+    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
 
   // Simulation classes help us simulate what's going on, including gravity.
@@ -235,13 +235,13 @@ public class Elevator extends SubsystemBase {
   }
 
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Elevator Height", getHeightMeters());
-    SmartDashboard.putNumber("Elevator Desired Height", m_desiredPositionMeters);
-    SmartDashboard.putNumber("Motor Voltage", getMotorVoltage());
-    SmartDashboard.putNumber("Motor Rotations", getMotorRotations());
-    SmartDashboard.putNumber("Joystick Input", m_joystickInput);
-    SmartDashboard.putBoolean("isClosedLoop", isClosedLoopControl());
-    SmartDashboard.putNumber("Elevator Velocity", m_requestVelocity.Velocity);
+    SmartDashboard.putNumber("Elevator/Elevator Height", getHeightMeters());
+    SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
+    SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
+    SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
+    SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
+    SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
+    SmartDashboard.putNumber("Elevator/Elevator Velocity", m_requestVelocity.Velocity);
   }
 
   @Override

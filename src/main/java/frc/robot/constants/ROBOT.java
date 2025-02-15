@@ -49,8 +49,6 @@ public class ROBOT {
     }
   }
 
-  public static void initForte() {}
-
   public static void initAlphaBot() {
     robotID = ROBOT_ID.ALPHABOT;
   }

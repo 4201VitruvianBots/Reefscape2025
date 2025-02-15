@@ -47,12 +47,12 @@ public class ELEVATOR {
 
   public enum ELEVATOR_SETPOINT {
     START_POSITION(Units.inchesToMeters(0.0)),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(15)),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(30)),
+    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(13.5)),
+    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(28)),
     PROCESSOR(Units.inchesToMeters(10)),
     LEVEL_2(Units.inchesToMeters(13)),
     LEVEL_3(Units.inchesToMeters(27)),
-    LEVEL_4(Units.inchesToMeters(59.5)),
+    LEVEL_4(Units.inchesToMeters(56.5)),
     NET(Units.inchesToMeters(78));
     private final double setpointMeters;
 
@@ -68,7 +68,8 @@ public class ELEVATOR {
   public enum ELEVATOR_ACCEL_SETPOINT {
     NONE(RotationsPerSecondPerSecond.of(0), RotationsPerSecond.of(0)),
     NETSCORE(
-        RotationsPerSecondPerSecond.of(0.5), RotationsPerSecond.of(5)); // Change these later my guy
+        RotationsPerSecondPerSecond.of(0.5),
+        RotationsPerSecond.of(5)); // TODO: Change these later my guy
 
     private final AngularAcceleration acceleration;
     private final AngularVelocity velocity;
