@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -85,6 +87,7 @@ public class Elevator extends SubsystemBase {
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
     m_motorSimState = elevatorMotors[0].getSimState();
+    elevatorMotors[0].setPosition(Rotations.of(0));
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
     SmartDashboard.putData(this);
   }

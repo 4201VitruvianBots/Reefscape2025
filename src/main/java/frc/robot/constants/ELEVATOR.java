@@ -1,7 +1,7 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
@@ -48,14 +48,15 @@ public class ELEVATOR {
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
   
   public enum ELEVATOR_SETPOINT {
-    START_POSITION(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.STOWED),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(64.5), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(50), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
-    PROCESSOR(Units.inchesToMeters(68), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
-    LEVEL_2(Units.inchesToMeters(65), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
-    LEVEL_3(Units.inchesToMeters(41), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
-    LEVEL_4(Units.inchesToMeters(21.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
-    NET(Units.inchesToMeters(0), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+    START_POSITION(Units.inchesToMeters(0.0), SUPERSTRUCTURE_STATES.STOWED),
+    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(13.5), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
+    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(28), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
+    PROCESSOR(Units.inchesToMeters(10), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
+    LEVEL_2(Units.inchesToMeters(13), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
+    LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
+    LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
+    NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+
     
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;
