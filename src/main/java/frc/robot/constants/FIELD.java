@@ -22,6 +22,7 @@ public class FIELD {
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
+  // TODO: Replace with WPIcal values
   public static final AprilTagFieldLayout practiceFieldAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
