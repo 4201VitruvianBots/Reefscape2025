@@ -25,8 +25,9 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -48,7 +49,14 @@ public class EndEffectorPivot extends SubsystemBase {
   @NotLogged private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
 
   @NotLogged
-  private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
+  private final StatusSignal<Angle> m_motorPositionSignal = m_pivotMotor.getPosition().clone();
+
+  @NotLogged
+  private final StatusSignal<AngularVelocity> m_motorVelocitySignal =
+      m_pivotMotor.getVelocity().clone();
+
+  @NotLogged
+  private final StatusSignal<Voltage> m_voltageSignal = m_pivotMotor.getMotorVoltage().clone();
 
   @NotLogged
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
@@ -59,11 +67,15 @@ public class EndEffectorPivot extends SubsystemBase {
   private boolean m_enforceLimits = true;
   private boolean m_userSetpoint;
 
-  private Angle m_desiredRotation = Degrees.of(0);
-  private boolean m_pivotState;
+  private Angle m_desiredAngle = Degrees.of(0);
+  private boolean m_state;
 
   // Simulation Code
-  private final SingleJointedArmSim m_endEffectorSim =
+  @NotLogged private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
+  @NotLogged private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
+
+  @NotLogged
+  private final SingleJointedArmSim m_endEffectorPivotModel =
       new SingleJointedArmSim(
           ENDEFFECTOR.pivotGearBox,
           ENDEFFECTOR.pivotGearRatio,
@@ -74,9 +86,6 @@ public class EndEffectorPivot extends SubsystemBase {
           ENDEFFECTOR.maxAngle.in(Radians),
           false,
           ENDEFFECTOR.startingAngle.in(Radians));
-
-  @NotLogged private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
-  @NotLogged private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
@@ -119,76 +128,89 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public void setState(boolean state) {
-    m_pivotState = state;
+    m_state = state;
   }
 
   public boolean getState() {
-    return m_pivotState;
+    return m_state;
   }
 
-  public void setPosition(Angle rotations) {
+  public void setAngle(Angle angle) {
     if (m_enforceLimits) {
-      m_desiredRotation =
+      m_desiredAngle =
           Degrees.of(
               MathUtil.clamp(
-                  rotations.in(Degrees),
+                  angle.in(Degrees),
                   ENDEFFECTOR.minAngle.in(Degrees),
                   ENDEFFECTOR.maxAngle.in(Degrees)));
 
     } else {
-      m_desiredRotation = rotations;
+      m_desiredAngle = angle;
     }
   }
 
-  public Angle getDesiredRotation() {
-    return m_desiredRotation;
+  @Logged(name = "Setpoint")
+  public Angle getDesiredAngle() {
+    return m_desiredAngle;
   }
 
   public void setPercentOutput(double speed) {
     m_pivotMotor.set(speed);
   }
 
+  @Logged(name = "PercentOutput")
   public double getPercentOutput() {
     return m_pivotMotor.get();
   }
 
-  public ControlRequest getCurrentControlRequest() {
+  @Logged(name = "Current")
+  public Current getCurrent() {
+    return m_currentSignal.getValue();
+  }
+
+  @Logged(name = "Voltage")
+  public Voltage getVoltage() {
+    return m_voltageSignal.getValue();
+  }
+
+  @NotLogged
+  public ControlRequest getControlRequest() {
     return m_pivotMotor.getAppliedControl();
   }
 
-  public String getCurrentControlRequestString() {
-    return getCurrentControlRequest().toString();
+  // TODO: Format string
+  @Logged(name = "ControlRequest")
+  public String getControlRequestString() {
+    return getControlRequest().toString();
   }
 
-  public Angle getCurrentRotation() {
-    try {
-      m_positionSignal.refresh();
-      return m_positionSignal.getValue();
-    } catch (Exception e) {
-      DriverStation.reportWarning("[EndEffectorPivot] Position signal is null!", false);
-      return Degrees.of(0);
-    }
+  @Logged(name = "Angle")
+  public Angle getAngle() {
+    return m_motorPositionSignal.getValue();
   }
 
-  public Angle getMotorAngle() {
-    return m_pivotMotor.getPosition().getValue();
+  @Logged(name = "AngularVelocity")
+  public AngularVelocity getAngularVelocity() {
+    return m_motorVelocitySignal.getValue();
   }
 
   // Base unit from CANcoder is in Radians
+  @Logged(name = "CANcoderAngle")
   public Angle getCANcoderAngle() {
     return m_pivotEncoder.getAbsolutePosition().getValue();
   }
 
-  public double getCANcoderAngleDegrees() {
+  @Logged(name = "CANcoderDegrees")
+  public double getCANcoderDegrees() {
     return getCANcoderAngle().in(Degrees);
   }
 
   public void resetMotionMagicState() {
-    m_desiredRotation = getCurrentRotation();
-    m_pivotMotor.setControl(m_request.withPosition(m_desiredRotation));
+    m_desiredAngle = getAngle();
+    m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
   }
 
-  public void zeroEncoderPosition() {
+  public void zeroPosition() {
     resetEncoderPosition(ENDEFFECTOR.startingAngle);
   }
 
@@ -218,7 +240,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case CLOSED_LOOP:
-        m_pivotMotor.setControl(m_request.withPosition(m_desiredRotation));
+        m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
       case OPEN_LOOP:
       default:
@@ -232,20 +254,21 @@ public class EndEffectorPivot extends SubsystemBase {
   public void simulationPeriodic() {
     m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(
+    m_endEffectorPivotModel.setInputVoltage(
         MathUtil.clamp(m_pivotMotorSimState.getMotorVoltage(), -12, 12));
 
-    m_endEffectorSim.update(0.020);
+    m_endEffectorPivotModel.update(0.020);
 
     // Update the pivotMotor simState
     m_pivotMotorSimState.setRawRotorPosition(
-        Radians.of(m_endEffectorSim.getAngleRads() * ENDEFFECTOR.pivotGearRatio));
+        Radians.of(m_endEffectorPivotModel.getAngleRads() * ENDEFFECTOR.pivotGearRatio));
     m_pivotMotorSimState.setRotorVelocity(
-        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec() * ENDEFFECTOR.pivotGearRatio));
+        RadiansPerSecond.of(
+            m_endEffectorPivotModel.getVelocityRadPerSec() * ENDEFFECTOR.pivotGearRatio));
 
     // Update the pivotEncoder simState
-    m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));
+    m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorPivotModel.getAngleRads()));
     m_pivotEncoderSimState.setVelocity(
-        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
+        RadiansPerSecond.of(m_endEffectorPivotModel.getVelocityRadPerSec()));
   }
 }

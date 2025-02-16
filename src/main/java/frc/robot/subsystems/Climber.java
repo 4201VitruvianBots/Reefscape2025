@@ -23,24 +23,9 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
 public class Climber extends SubsystemBase {
-
   /** Creates a new climber */
   private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
 
-  //   // Simulation classes help us simulate what's going on, including gravity.
-  //     // Simulation classes help us simulate what's going on, including gravity.
-  // private final ElevatorSim m_climberSim =
-  // new ElevatorSim(
-  //     CLIMBER.gearbox,
-  //     climber.kclimberGearing,
-  //     climber.kCarriageMassPounds,
-  //     climber.kclimberDrumRadius,
-  //     climber.upperLimitMeters,
-  //     climber.lowerLimitMeters,
-  //     true,
-  //     0,
-  //     0.01,
-  //     0.0);
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
   private double m_desiredPositionMeters;
@@ -49,6 +34,8 @@ public class Climber extends SubsystemBase {
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
+  // Simulation Code
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
 
   public Climber() {
@@ -62,7 +49,7 @@ public class Climber extends SubsystemBase {
     configclimber.MotionMagic.MotionMagicAcceleration = 200;
   }
 
-  public void holdclimber() {
+  public void holdClimber() {
     setDesiredPosition(getPullyLengthMeters());
   }
 
@@ -91,7 +78,6 @@ public class Climber extends SubsystemBase {
   }
 
   public Double getMotorRotations() {
-    m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
 
@@ -100,7 +86,6 @@ public class Climber extends SubsystemBase {
   }
 
   public Double getMotorVoltage() {
-    m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }
 
@@ -138,12 +123,8 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  @Override
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    // m_climberSim.update(0.020);
-
-    // m_climberSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-
   }
 }

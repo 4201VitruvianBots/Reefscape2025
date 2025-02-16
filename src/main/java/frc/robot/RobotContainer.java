@@ -61,12 +61,13 @@ import org.team4201.codex.simulation.FieldSim;
  */
 @Logged
 public class RobotContainer {
+  @Logged(name = "SwerveDrive")
   private CommandSwerveDrivetrain m_swerveDrive;
 
   @Logged(name = "Controls")
   private final Controls m_controls = new Controls();
 
-  private final Telemetry m_telemetry = new Telemetry();
+  @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
 
@@ -87,18 +88,20 @@ public class RobotContainer {
 
   private HopperIntake m_hopperIntake;
 
-  private final Robot2d m_robot2d = new Robot2d();
+  @NotLogged private final Robot2d m_robot2d = new Robot2d();
 
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
+  @NotLogged private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
 
   @Logged(name = "AutoChooser")
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
-  private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
+  @NotLogged private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
+
+  @NotLogged
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
 
@@ -112,6 +115,7 @@ public class RobotContainer {
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
+  @NotLogged
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)

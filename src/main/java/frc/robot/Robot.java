@@ -42,6 +42,8 @@ public class Robot extends TimedRobot {
             config.errorHandler = ErrorHandler.crashOnError();
           }
 
+          config.root = "RobotLogs";
+
           config.minimumImportance = Logged.Importance.DEBUG;
         });
     Epilogue.bind(this);

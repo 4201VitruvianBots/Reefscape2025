@@ -32,8 +32,11 @@ public class GroundIntake extends SubsystemBase {
       m_groundIntakeMotor.getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal =
       m_groundIntakeMotor.getTorqueCurrent().clone();
+
+  // Simulation Code
   private final TalonFXSimState m_groundIntakeMotorSimState = m_groundIntakeMotor.getSimState();
-  private final DCMotorSim m_groundIntakeMotorSim =
+
+  private final DCMotorSim m_groundIntakeModel =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
               GROUND.INTAKE.gearbox, GROUND.INTAKE.gearRatio, GROUND.INTAKE.kInertia),
@@ -62,20 +65,22 @@ public class GroundIntake extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_groundIntakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_groundIntakeMotorSimState.getMotorVoltage(), -12, 12));
-
-    m_groundIntakeMotorSim.update(0.02); // TODO update this later maybe?
-
-    m_groundIntakeMotorSimState.setRawRotorPosition(
-        m_groundIntakeMotorSim.getAngularPositionRotations() * GROUND.INTAKE.gearRatio);
-    m_groundIntakeMotorSimState.setRotorVelocity(
-        m_groundIntakeMotorSim.getAngularVelocityRPM() * GROUND.INTAKE.gearRatio / 60.0);
+  public void periodic() {
+    updateLogger();
   }
 
   @Override
-  public void periodic() {}
+  public void simulationPeriodic() {
+    m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    m_groundIntakeModel.setInputVoltage(
+        MathUtil.clamp(m_groundIntakeMotorSimState.getMotorVoltage(), -12, 12));
+
+    m_groundIntakeModel.update(0.02); // TODO update this later maybe?
+
+    m_groundIntakeMotorSimState.setRawRotorPosition(
+        m_groundIntakeModel.getAngularPositionRotations() * GROUND.INTAKE.gearRatio);
+    m_groundIntakeMotorSimState.setRotorVelocity(
+        m_groundIntakeModel.getAngularVelocityRPM() * GROUND.INTAKE.gearRatio / 60.0);
+  }
 }

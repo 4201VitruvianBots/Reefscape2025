@@ -26,7 +26,7 @@ public class EndEffectorSetpoint extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endEffectorPivot.setPosition(m_setpoint.get());
+    m_endEffectorPivot.setAngle(m_setpoint.get());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -37,7 +37,7 @@ public class EndEffectorSetpoint extends Command {
   @Override
   public void end(boolean interrupted) {
     if (!DriverStation.isAutonomous()) {
-      m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
+      m_endEffectorPivot.setAngle(PIVOT_SETPOINT.STOWED.get());
     }
   }
 

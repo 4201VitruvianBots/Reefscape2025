@@ -17,6 +17,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,25 +45,9 @@ import org.team4201.codex.utils.ModuleMap;
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
  * be used in command-based projects.
  */
+@Logged
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
-  private TalonFX[] driveMotors = {
-    getModule(0).getDriveMotor(),
-    getModule(1).getDriveMotor(),
-    getModule(2).getDriveMotor(),
-    getModule(3).getDriveMotor()
-  };
-
-  private TalonFX[] steerMotors = {
-    getModule(0).getDriveMotor(),
-    getModule(1).getDriveMotor(),
-    getModule(2).getDriveMotor(),
-    getModule(3).getDriveMotor()
-  };
-
-  private static final double kSimLoopPeriod = 0.005; // 5 ms
-  private Notifier m_simNotifier = null;
-  private double m_lastSimTime;
-
+  @NotLogged
   public TalonFX[] m_driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
@@ -69,12 +55,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     getModule(3).getDriveMotor()
   };
 
+  @NotLogged
   public TalonFX[] m_steerMotors = {
     getModule(0).getSteerMotor(),
     getModule(1).getSteerMotor(),
     getModule(2).getSteerMotor(),
     getModule(3).getSteerMotor()
   };
+
+  private static final double kSimLoopPeriod = 0.005; // 5 ms
+  @NotLogged private Notifier m_simNotifier = null;
+  private double m_lastSimTime;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -84,18 +75,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   private boolean m_hasAppliedOperatorPerspective = false;
 
   /** Swerve request to apply during robot-centric path following */
+  @NotLogged
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
       new SwerveRequest.ApplyRobotSpeeds();
 
   /* Swerve requests to apply during SysId characterization */
+  @NotLogged
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
       new SwerveRequest.SysIdSwerveTranslation();
+
+  @NotLogged
   private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization =
       new SwerveRequest.SysIdSwerveSteerGains();
+
+  @NotLogged
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
 
   /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+  @NotLogged
   private final SysIdRoutine m_sysIdRoutineTranslation =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -108,6 +106,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
               output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
 
   /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+  @NotLogged
   private final SysIdRoutine m_sysIdRoutineSteer =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -124,6 +123,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
    * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
    * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
    */
+  @NotLogged
   private final SysIdRoutine m_sysIdRoutineRotation =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -145,7 +145,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
               this));
 
   /* The SysId routine to test */
-  private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+  @NotLogged private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -234,6 +234,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
   }
 
+  @NotLogged
   @Override
   public RobotConfig getAutoRobotConfig() {
     try {
@@ -243,11 +244,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
+  @NotLogged
   @Override
   public PIDConstants getAutoTranslationPIDConstants() {
     return new PIDConstants(10, 0, 0);
   }
 
+  @NotLogged
   @Override
   public PIDConstants getAutoRotationPIDConstants() {
     return new PIDConstants(7, 0, 0);
@@ -331,18 +334,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   public void setNeutralMode(SWERVE.MOTOR_TYPE type, NeutralModeValue neutralModeValue) {
     switch (type) {
       case ALL -> {
-        for (int i = 0; i < driveMotors.length; i++) {
-          driveMotors[i].setNeutralMode(neutralModeValue);
-          steerMotors[i].setNeutralMode(neutralModeValue);
+        for (int i = 0; i < m_driveMotors.length; i++) {
+          m_driveMotors[i].setNeutralMode(neutralModeValue);
+          m_steerMotors[i].setNeutralMode(neutralModeValue);
         }
       }
       case DRIVE -> {
-        for (var motor : driveMotors) {
+        for (var motor : m_driveMotors) {
           motor.setNeutralMode(neutralModeValue);
         }
       }
       case STEER -> {
-        for (var motor : steerMotors) {
+        for (var motor : m_steerMotors) {
           motor.setNeutralMode(neutralModeValue);
         }
       }

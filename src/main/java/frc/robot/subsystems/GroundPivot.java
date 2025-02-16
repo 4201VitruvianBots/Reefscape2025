@@ -56,7 +56,7 @@ public class GroundPivot extends SubsystemBase {
       new MotionMagicTorqueCurrentFOC(getCurrentAngle());
 
   // Simulation setup
-  private final SingleJointedArmSim m_pivotSim =
+  private final SingleJointedArmSim m_groundPivotModel =
       new SingleJointedArmSim(
           PIVOT.gearBox,
           PIVOT.gearRatio,
@@ -130,6 +130,7 @@ public class GroundPivot extends SubsystemBase {
       CtreUtils.configureCANCoder(m_pivotEncoder, simCanCoderConfig);
     }
 
+    this.setName("GroundPivot");
     SmartDashboard.putData(this);
   }
 
@@ -192,29 +193,12 @@ public class GroundPivot extends SubsystemBase {
     m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
   }
 
-  public TalonFX getMotor() {
-    return m_pivotMotor;
-  }
-
-  public SingleJointedArmSim getSim() {
-    return m_pivotSim;
-  }
-
   public Voltage getInputVoltage() {
     return m_pivotMotor.getMotorVoltage().getValue();
   }
 
   public AngularVelocity getRotationalVelocity() {
     return m_pivotMotor.getVelocity().getValue();
-  }
-
-  private void updateLogger() {
-    SmartDashboard.putString("GroundPivot/ControlMode", m_controlMode.toString());
-    SmartDashboard.putNumber("GroundPivot/CurrentAngle", getCurrentAngle().in(Degrees));
-    SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
-    SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
-    SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
-    SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
   }
 
   public void testInit() {
@@ -280,6 +264,15 @@ public class GroundPivot extends SubsystemBase {
     setDesiredSetpoint(getCurrentAngle());
   }
 
+  private void updateLogger() {
+    SmartDashboard.putString("GroundPivot/ControlMode", m_controlMode.toString());
+    SmartDashboard.putNumber("GroundPivot/CurrentAngle", getCurrentAngle().in(Degrees));
+    SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
+    SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
+    SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
+  }
+
   @Override
   public void periodic() {
     switch (m_controlMode) {
@@ -289,8 +282,8 @@ public class GroundPivot extends SubsystemBase {
         if (DriverStation.isEnabled())
           m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
-      default:
       case OPEN_LOOP:
+      default:
         if (DriverStation.isDisabled()) {
           setPercentOutput(0.0);
         }
@@ -305,20 +298,19 @@ public class GroundPivot extends SubsystemBase {
     // Set supply voltage of pivot motor
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_pivotSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_groundPivotModel.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
 
-    m_pivotSim.update(0.020);
+    m_groundPivotModel.update(0.020);
 
     m_simState.setRawRotorPosition(
-        Units.radiansToRotations(m_pivotSim.getAngleRads()) * PIVOT.gearRatio);
+        Units.radiansToRotations(m_groundPivotModel.getAngleRads()) * PIVOT.gearRatio);
 
     m_simState.setRotorVelocity(
-        Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()) * PIVOT.gearRatio);
+        Units.radiansToRotations(m_groundPivotModel.getVelocityRadPerSec()) * PIVOT.gearRatio);
 
-    m_pivotEncoderSimState.setRawPosition(Units.radiansToRotations(m_pivotSim.getAngleRads()));
-    m_pivotEncoderSimState.setVelocity(Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()));
-
-    SmartDashboard.putNumber(
-        "GroundPivot/Model Angle", Units.radiansToDegrees(m_pivotSim.getAngleRads()));
+    m_pivotEncoderSimState.setRawPosition(
+        Units.radiansToRotations(m_groundPivotModel.getAngleRads()));
+    m_pivotEncoderSimState.setVelocity(
+        Units.radiansToRotations(m_groundPivotModel.getVelocityRadPerSec()));
   }
 }

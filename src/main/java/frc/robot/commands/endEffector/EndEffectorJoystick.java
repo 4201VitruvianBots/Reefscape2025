@@ -40,20 +40,18 @@ public class EndEffectorJoystick extends Command {
         var rotationSetpoint =
             Degrees.of(
                 MathUtil.clamp(
-                    m_joystickDeadband * 0.5 + m_endEffectorPivot.getCurrentRotation().in(Degrees),
+                    m_joystickDeadband * 0.5 + m_endEffectorPivot.getAngle().in(Degrees),
                     ENDEFFECTOR.minAngle.in(Degrees),
                     ENDEFFECTOR.maxAngle.in(Degrees)));
-        m_endEffectorPivot.setPosition(rotationSetpoint);
+        m_endEffectorPivot.setAngle(rotationSetpoint);
       } else if (m_endEffectorPivot.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP) {
         if (ENDEFFECTOR.limitOpenLoop) {
           // Upper limit
-          if (m_endEffectorPivot.getCurrentRotation().in(Degrees)
-              >= ENDEFFECTOR.maxAngle.in(Degrees) - 1)
+          if (m_endEffectorPivot.getAngle().in(Degrees) >= ENDEFFECTOR.maxAngle.in(Degrees) - 1)
             m_joystickDeadband = Math.min(m_joystickDeadband, 0);
 
           // Lower limit
-          if (m_endEffectorPivot.getCurrentRotation().in(Degrees)
-              <= ENDEFFECTOR.minAngle.in(Degrees) + 1)
+          if (m_endEffectorPivot.getAngle().in(Degrees) <= ENDEFFECTOR.minAngle.in(Degrees) + 1)
             m_joystickDeadband = Math.max(m_joystickDeadband, 0);
         }
         m_endEffectorPivot.setPercentOutput(m_joystickDeadband * ENDEFFECTOR.joystickMultiplier);
