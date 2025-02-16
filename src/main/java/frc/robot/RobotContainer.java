@@ -84,7 +84,7 @@ public class RobotContainer {
 
   @Logged(name = "EndEffector")
   private EndEffector m_endEffector;
-  
+
   @Logged(name = "EndEffectorPivot")
   private EndEffectorPivot m_endEffectorPivot;
 
