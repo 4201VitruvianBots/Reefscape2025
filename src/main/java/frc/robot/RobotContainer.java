@@ -35,6 +35,7 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
+import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
 import frc.robot.constants.FIELD;
@@ -190,6 +191,10 @@ public class RobotContainer {
       m_elevator.setDefaultCommand(
           new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
     }
+    if (m_endEffectorPivot != null) {
+      m_endEffectorPivot.setDefaultCommand(
+          new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+    }
   }
 
   private void initAutoChooser() {
@@ -298,10 +303,8 @@ public class RobotContainer {
       m_driverController
           .a()
           .whileTrue(
-              new ParallelCommandGroup(
-                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2),
-                  new SetElevatorSetpoint(
-                      m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece)));
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece));
       m_driverController
           .x()
           .whileTrue(

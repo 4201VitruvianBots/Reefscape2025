@@ -24,7 +24,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,6 +58,7 @@ public class Elevator extends SubsystemBase {
           0.0);
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
+  private final StatusSignal<Current> m_currentSignal = elevatorMotors[0].getTorqueCurrent().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
   private double m_desiredPositionMeters;
@@ -87,7 +90,7 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     config.CurrentLimits.StatorCurrentLimit = 40;
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
@@ -130,13 +133,19 @@ public class Elevator extends SubsystemBase {
     return m_controlMode;
   }
 
-  public Double getMotorRotations() {
+  public double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
-
-  public CONTROL_MODE getClosedLoopControlMode() {
-    return m_controlMode;
+  
+  public double getCurrent() {
+    m_currentSignal.refresh();
+    return m_currentSignal.getValueAsDouble();
+  }
+  
+  public double getVelocityMps() {
+    m_velocitySignal.refresh();
+    return m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters;
   }
 
   public Double getMotorVoltage() {
@@ -158,7 +167,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isClosedLoopControl() {
-    return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
+    return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
 
   public void setNeutralMode(NeutralModeValue mode) {
@@ -245,13 +254,15 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator/Elevator Height", getHeightMeters());
     SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
     SmartDashboard.putNumber(
-        "Elevator/Elevator Velocity m/s",
-        m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
+        "Elevator/Elevator Velocity Mps",
+        getVelocityMps());
     SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
-    SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
+    // SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
     SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
     SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
     SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
+    SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
+    SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
   }
 
   @Override

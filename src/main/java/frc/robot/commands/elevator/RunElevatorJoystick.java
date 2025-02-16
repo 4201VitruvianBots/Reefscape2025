@@ -24,7 +24,7 @@ public class RunElevatorJoystick extends Command {
   public void execute() {
     double joystickYDeadbandOutput = MathUtil.applyDeadband(m_joystickY.getAsDouble(), 0.2);
 
-    if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.OPEN_LOOP) {
+    if (m_elevator.getControlMode() == CONTROL_MODE.OPEN_LOOP) {
       //         if (joystickYDeadbandOutput < 0)
       //           joystickYDeadbandOutput *= CLIMBER.kLimitedPercentOutputMultiplier;
       m_elevator.setJoystickY(joystickYDeadbandOutput);
@@ -32,7 +32,7 @@ public class RunElevatorJoystick extends Command {
       if (joystickYDeadbandOutput == 0) {
         m_elevator.holdElevator();
       }
-    } else if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP) {
+    } else if (m_elevator.getControlMode() == CONTROL_MODE.CLOSED_LOOP) {
       m_elevator.setDesiredPosition(m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
 
       if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
