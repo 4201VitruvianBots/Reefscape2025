@@ -23,14 +23,11 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.LED;
 import frc.robot.constants.LED.*;
-import frc.robot.constants.ROBOT;
-
 
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
@@ -43,7 +40,7 @@ public class LEDSubsystem extends SubsystemBase {
   private int m_white = 0; // we have a seperate bulb in our LED strips for white
   private double m_brightness = 0;
   private double m_speed = 0;
-  private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED; 
+  private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED;
   private boolean setSolid; // this stops the animation
   private Animation m_toAnimate = null;
 
@@ -51,7 +48,7 @@ public class LEDSubsystem extends SubsystemBase {
     m_candle.configFactoryDefault();
     // sets up LED strip
     CANdleConfiguration configAll = new CANdleConfiguration();
-     configAll.statusLedOffWhenActive = true; // sets lights of when the LEDs are activated
+    configAll.statusLedOffWhenActive = true; // sets lights of when the LEDs are activated
     configAll.disableWhenLOS = false; // disables LEDs when there is no signal for control
     configAll.stripType = LEDStripType.GRB;
     configAll.brightnessScalar =
@@ -160,7 +157,7 @@ public class LEDSubsystem extends SubsystemBase {
           setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.ColorFlow); // Flashing Yellow
           break;
         case ALGAE:
-          setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); //Solid Cyan
+          setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); // Solid Cyan
           break;
         case ALGAE_OWNED:
           setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Rainbow); // Flashing Cyan
@@ -169,7 +166,7 @@ public class LEDSubsystem extends SubsystemBase {
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
         case ENDGAME:
-          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Rainbow); //Rainbow
+          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Rainbow); // Rainbow
           break;
         default:
           break;
@@ -177,7 +174,6 @@ public class LEDSubsystem extends SubsystemBase {
       currentRobotState = state;
     }
   }
-
 
   @Override
   public void periodic() {

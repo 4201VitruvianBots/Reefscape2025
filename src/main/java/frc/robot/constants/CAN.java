@@ -4,7 +4,7 @@ public class CAN {
   public static final String rioCanbus = "rio";
   public static String driveBaseCanbus = "drivebase";
 
-  public static final int CANdle = 8; //LED
+  public static final int CANdle = 8; // LED
   public static final int pigeon = 9;
 
   public static final int frontLeftCanCoder = 10;
