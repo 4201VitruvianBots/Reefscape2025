@@ -29,7 +29,9 @@ public class RunElevatorJoystick extends Command {
       //           joystickYDeadbandOutput *= CLIMBER.kLimitedPercentOutputMultiplier;
       m_elevator.setJoystickY(joystickYDeadbandOutput);
 
-      if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
+      if (joystickYDeadbandOutput == 0) {
+        m_elevator.holdElevator();
+      }
     } else if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP) {
       m_elevator.setDesiredPosition(m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
 
