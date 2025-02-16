@@ -7,11 +7,13 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
@@ -26,19 +29,23 @@ import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
+import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
-import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
+import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
+import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
+import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.HopperIntake;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
@@ -52,8 +59,13 @@ import org.team4201.codex.simulation.FieldSim;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged
 public class RobotContainer {
-  private final CommandSwerveDrivetrain m_swerveDrive;
+  private CommandSwerveDrivetrain m_swerveDrive;
+
+  @Logged(name = "Controls")
+  private final Controls m_controls = new Controls();
+
   private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
@@ -63,23 +75,38 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2 subsystems
-  private Elevator m_elevator;
-  private EndEffector m_endEffector;
-  private ClimberIntake m_climberIntake;
   private Climber m_climber;
+  private ClimberIntake m_climberIntake;
+  private Elevator m_elevator;
+
+  @Logged(name = "EndEffector")
+  private EndEffector m_endEffector;
+
+  @Logged(name = "EndEffectorPivot")
+  private EndEffectorPivot m_endEffectorPivot;
+
+  private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
 
+  private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
-  private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+  @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+
+  @Logged(name = "AutoChooser")
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
   private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
 
+  @NotLogged
   private double MaxSpeed =
       AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+
+  @NotLogged
   private double MaxAngularRate =
       RotationsPerSecond.of(SWERVE.kMaxRotationRadiansPerSecond)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -92,39 +119,56 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_swerveDrive = SWERVE.selectedDrivetrain;
-    m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
-    m_vision.registerSwerveDrive(m_swerveDrive);
-
-    m_telemetry.registerFieldSim(m_fieldSim);
-
-    initSmartDashboard();
     initializeSubSystems();
-
-    // TODO: Enable this when subsystems are implemented
-    m_robot2d.registerSubsystem(m_elevator);
-    //    m_robot2d.registerSubsystem(m_endEffector);
+    initSmartDashboard();
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
 
-    if (RobotBase.isSimulation()) {
+    // Only keep joystick warnings when FMS is attached
+    if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
   }
 
   private void initializeSubSystems() {
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-      m_coralOuttake = new CoralOuttake();
-      m_algaeIntake = new AlgaeIntake();
-    } else {
+    // Initialize Subsystem classes
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+      m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
-      m_endEffector = new EndEffector();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
+      m_swerveDrive = AlphaBotConstants.createDrivetrain();
+      // m_coralOuttake = new CoralOuttake();
+      // m_algaeIntake = new AlgaeIntake();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_endEffector = new EndEffector();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      m_swerveDrive = V2Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_endEffector = new EndEffector();
+      m_climber = new Climber();
+      m_climberIntake = new ClimberIntake();
+    } else {
+      // Most likely, the code will crash later on if you get here
+      DriverStation.reportError(
+          "[RobotContainer] Unhandled initSubsystem for RobotID " + ROBOT.robotID.getName(), false);
     }
+    // Register subsystems for cross-subsystem communication
+    m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
+    m_vision.registerSwerveDrive(m_swerveDrive);
 
+    m_telemetry.registerFieldSim(m_fieldSim);
+
+    // TODO: Enable this when subsystems are implemented
+    m_robot2d.registerSubsystem(m_elevator);
+    m_robot2d.registerSubsystem(m_endEffectorPivot);
+    m_robot2d.registerSubsystem(m_endEffector);
+
+    // Set Subsystem DefaultCommands
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
@@ -139,8 +183,10 @@ public class RobotContainer {
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
-    m_elevator.setDefaultCommand(
-        new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+    if (m_elevator != null) {
+      m_elevator.setDefaultCommand(
+          new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+    }
   }
 
   private void initAutoChooser() {
@@ -207,32 +253,81 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    m_driverController.leftBumper().whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
-    m_driverController
-        .rightBumper()
-        .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-    m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+    if (m_coralOuttake != null) {
+      // TODO: Make speeds into enum setpoints
+      m_driverController
+          .leftBumper()
+          .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
+      m_driverController
+          .rightBumper()
+          .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
+    }
+
+    if (m_endEffectorPivot != null) {
+      m_driverController
+          .a()
+          .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+    }
+    if (m_endEffector != null) {
+      // TODO: Make speeds into enum setpoints
+      m_driverController
+          .leftTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+      m_driverController
+          .rightTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
+    }
+
+    if (m_algaeIntake != null) {
+      // TODO: Make speeds into enum setpoints
+      m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+      m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+    }
   }
 
   private void configureV2Bindings() {
+    // Algae Toggle
     m_driverController
-        .leftTrigger()
-        .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-    m_driverController
-        .a()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_2));
-    m_driverController
-        .x()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR));
-    m_driverController
-        .y()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_4));
-    m_driverController
-        .b()
-        .whileTrue(new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.LEVEL_3));
-    m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
-    m_driverController.povRight().onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+        .leftBumper()
+        .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
+
+    if (m_elevator != null && m_endEffectorPivot != null) {
+      m_driverController
+          .a()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2),
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece)));
+      m_driverController
+          .x()
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
+      m_driverController
+          .y()
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece));
+      m_driverController
+          .b()
+          .whileTrue(
+              new SetElevatorSetpoint(
+                  m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
+      m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
+    }
+
+    if (m_endEffector != null) {
+      m_driverController
+          .leftTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    }
+
+    if (m_climber != null) {
+      m_driverController
+          .povRight()
+          .onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+    }
   }
 
   /**
@@ -244,8 +339,15 @@ public class RobotContainer {
     return m_chooser.getSelected();
   }
 
+  public void disabledInit() {
+    if (!DriverStation.isFMSAttached()) {
+      m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
+    }
+  }
+
   public void autonomousInit() {
     if (!DriverStation.isFMSAttached()) {
+      m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
       CommandScheduler.getInstance()
           .schedule(
               new RunCommand(() -> m_swerveDrive.setMotorBeep(Hertz.of(1000)), m_swerveDrive)
@@ -255,6 +357,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     if (!DriverStation.isFMSAttached()) {
+      m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
       CommandScheduler.getInstance()
           .schedule(
               new RunCommand(() -> m_swerveDrive.setMotorBeep(Hertz.of(1000)), m_swerveDrive)
