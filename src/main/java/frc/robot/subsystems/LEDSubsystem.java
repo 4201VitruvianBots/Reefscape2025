@@ -144,32 +144,32 @@ public class LEDSubsystem extends SubsystemBase {
   public void expressState(SUBSYSTEM_STATES state) {
     if (state != currentRobotState) {
       switch (state) {
-        case CORAL:
-          setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid);
-          break;
-        case CORAL_OWNED:
-          setPattern(LED.yellow, 125, 0.5, ANIMATION_TYPE.ColorFlow);
-          break;
-        case INTAKED:
-          setPattern(LED.orange, 0, 0, ANIMATION_TYPE.Solid);
-          break;
-        case INTAKING:
-          setPattern(LED.orange, 0, 0, ANIMATION_TYPE.Strobe);
-          break;
         case ENABLED:
-          setPattern(LED.green, 0, 0, ANIMATION_TYPE.Strobe); // Solid Green
-          break;
-        case CLIMBING:
-          setPattern(LED.purple, 0, 0, ANIMATION_TYPE.Rainbow);
-          break;
-        case SETUP_READY:
-          setPattern(LED.green, 0, 0, ANIMATION_TYPE.Solid);
-          break;
-        case SETUP_LOCALIZED:
-          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Solid);
+          setPattern(LED.green, 0, 0, ANIMATION_TYPE.Solid); // Solid Green
           break;
         case DISABLED:
-          setPattern(LED.red, 0, 0.125, ANIMATION_TYPE.ColorFlowLong); // Solid Red
+          setPattern(LED.red, 0, 0, ANIMATION_TYPE.Solid); // Solid Red
+          break;
+        case INTAKING:
+          setPattern(LED.pink, 0, 0, ANIMATION_TYPE.Strobe); // Unknown
+          break;
+        case CORAL:
+          setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid); // Solid Yellow
+          break;
+        case CORAL_OWNED:
+          setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.ColorFlow); // Flashing Yellow
+          break;
+        case ALGAE:
+          setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); //Solid Cyan
+          break;
+        case ALGAE_OWNED:
+          setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Rainbow); // Flashing Cyan
+          break;
+        case REEF_LINEUP:
+          setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
+          break;
+        case ENDGAME:
+          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Rainbow); //Rainbow
           break;
         default:
           break;

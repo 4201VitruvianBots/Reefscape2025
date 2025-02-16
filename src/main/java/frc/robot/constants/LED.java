@@ -46,8 +46,8 @@ public class LED {
     ENABLED, //
     INTAKING, //
     CORAL,
-    ALGAE,
     CORAL_OWNED,
+    ALGAE,
     ALGAE_OWNED,
     REEF_LINEUP,
     ENDGAME;
