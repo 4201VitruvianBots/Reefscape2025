@@ -86,6 +86,9 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kG = ELEVATOR.kG;
+    config.Slot0.kS = ELEVATOR.kS;
+    config.Slot0.kV = ELEVATOR.kV;
+    config.Slot0.kA = ELEVATOR.kA;
     config.Slot0.kP = ELEVATOR.kP;
     config.Slot0.kI = ELEVATOR.kI;
     config.Slot0.kD = ELEVATOR.kD;
@@ -237,7 +240,6 @@ public class Elevator extends SubsystemBase {
 
   public void teleopInit() {
     holdElevator();
-    setDesiredPosition(getHeightMeters());
   }
 
   @Override
@@ -286,9 +288,7 @@ public class Elevator extends SubsystemBase {
       case OPEN_LOOP:
       default:
         double percentOutput;
-        if (m_joystickInput == 0 && getHeightMeters() < 0.0254) {
-            percentOutput = 0;
-        } else if (m_joystickInput < 0) {
+        if (m_joystickInput < 0) {
             percentOutput =
                 m_joystickInput * ELEVATOR.kLimitedPercentOutputMultiplier + ELEVATOR.offset;
         } else {

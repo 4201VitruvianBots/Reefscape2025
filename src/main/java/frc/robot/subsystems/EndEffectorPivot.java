@@ -222,7 +222,7 @@ public class EndEffectorPivot extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * ENDEFFECTOR.kPercentOutputMultiplier;
+        double percentOutput = m_joystickInput * ENDEFFECTOR.kLimitedPercentOutputMultiplier;
         setPercentOutput(percentOutput);
         break;
     }
