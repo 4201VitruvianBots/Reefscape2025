@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
 public class LED {
-  public static final int LEDcount = 34; // TODO: change the amount od LEDs we have
+  public static final int LEDcount = 34; // TODO: change the amount of LEDs we have
 
   public static final double LEDstripLength = Units.inchesToMeters(7); // meters
 
@@ -43,9 +43,9 @@ public class LED {
   // instead.
 
   public enum SUBSYSTEM_STATES {
-    DISABLED, //
-    ENABLED, //
-    INTAKING, //
+    DISABLED, 
+    ENABLED, 
+    // INTAKING,
     CORAL,
     CORAL_OWNED,
     ALGAE,
