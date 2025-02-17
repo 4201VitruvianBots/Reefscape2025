@@ -82,7 +82,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public EndEffectorPivot() {
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
-    if(RobotBase.isReal()) {
+    if (RobotBase.isReal()) {
       motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     } else {
       motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;

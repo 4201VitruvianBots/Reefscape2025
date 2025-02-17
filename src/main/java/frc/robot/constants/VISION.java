@@ -19,6 +19,23 @@ public final class VISION {
   public static final double kLimelightVFOV = 49.54;
   public static final double kLimelightDFOV = 75.07;
 
+  public static final Transform3d[] LOCALIZER_CAMERA_POSITION = {
+    // Robot Center to Limelight Camera A
+    new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(-14),
+            Units.inchesToMeters(6.5),
+            Units.inchesToMeters(14.6875)),
+        new Rotation3d()),
+    // Robot Center to Limelight Camera B
+    new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(14),
+            Units.inchesToMeters(-6.5),
+            Units.inchesToMeters(14.6875)),
+        new Rotation3d()),
+  };
+
   public static final double aprilTagLimelightCameraADistanceFromCenterX =
       Units.inchesToMeters(-14);
   public static final double aprilTagLimelightCameraADistanceFromCenterY =
@@ -41,19 +58,6 @@ public final class VISION {
   public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
-
-  public static final double noteDetectionLimelightCameraDistanceFromCenterX =
-      Units.inchesToMeters(12.125);
-  public static final double noteDetectionLimelightCameraDistanceFromCenterY =
-      Units.inchesToMeters(0);
-  public static final double noteDetectionLimelightCameraDistanceFromGroundZ =
-      Units.inchesToMeters(7.040388);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesRoll =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesPitch =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesYaw =
-      Units.degreesToRadians(0);
 
   public static final AprilTagFieldLayout aprilTagFieldLayout =
       AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
@@ -108,9 +112,8 @@ public final class VISION {
   }
 
   public enum CAMERA_SERVER {
-    INTAKE("10.42.1.11"),
-    LIMELIGHTA("10.42.1.12"),
-    LIMELIGHTB("10.42.1.13"),
+    LIMELIGHTA("10.42.1.11"),
+    LIMELIGHTB("10.42.1.12"),
     ;
     private final String ip;
 
@@ -128,6 +131,7 @@ public final class VISION {
     NONE,
     REEF
   }
+
   // TODO: figure out what value this should be
   public static final double velocityShoot = 9.255586759; // Previously 11.1 m/s
 }

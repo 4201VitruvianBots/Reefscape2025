@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -24,19 +25,21 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.SWERVE;
 import frc.robot.constants.VISION;
 import frc.robot.constants.VISION.TRACKING_STATE;
-import frc.robot.constants.SWERVE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
-import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
 
 /**
@@ -134,12 +137,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-  private final PIDController m_pidController =
-      new PIDController(11.0, 0.0, 0.0);
+  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
   private Rotation2d m_targetAngle = new Rotation2d();
   private Rotation2d m_angleToReef = new Rotation2d();
   private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
   private SwerveDriveKinematics m_kinematics;
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *

@@ -139,8 +139,8 @@ public class RobotContainer {
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
-      m_endEffectorPivot = new EndEffectorPivot();
-      m_endEffector = new EndEffector();
+      // m_endEffectorPivot = new EndEffectorPivot();
+      // m_endEffector = new EndEffector();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
