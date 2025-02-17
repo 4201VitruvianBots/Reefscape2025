@@ -5,6 +5,7 @@
 package frc.robot.commands.endEffector;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static frc.robot.constants.ENDEFFECTOR.joystickMultiplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,9 +21,11 @@ public class EndEffectorJoystick extends Command {
 
   /** Creates a new EndEffectorJoystick. */
   public EndEffectorJoystick(EndEffectorPivot endEffectorPivot, DoubleSupplier joystickY) {
-    // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorPivot = endEffectorPivot;
     m_joystickY = joystickY;
+    
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_endEffectorPivot);
   }
 
   // Called when the command is initially scheduled.

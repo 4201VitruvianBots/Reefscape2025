@@ -27,30 +27,28 @@ public class SetElevatorSetpoint extends Command {
   /* This function is the main bulk of the algae toggle logic for elevator. */
   @Override
   public void initialize() {
-    m_elevator.setClosedLoopControlMode(CONTROL_MODE.CLOSED_LOOP);
+    m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);
 
     /* If we want to be able to algae toggle in the middle of an outtake cycle, we need to put this in execute().
     No idea why would you want to do that though */
     switch (m_stage) {
       case STOWED:
         m_elevator.setDesiredPosition(
-            ELEVATOR.ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters()
-                / ELEVATOR.drumRotationsToMeters);
+            ELEVATOR.ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
         break;
       case L1:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE)
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.PROCESSOR.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.PROCESSOR.getSetpointMeters());
         // No L1 elevator setpoint right now
         break;
       case L2:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER.getSetpointMeters()
-                  / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER.getSetpointMeters());
         } else {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.LEVEL_2.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.LEVEL_2.getSetpointMeters());
         }
         break;
       case L3:
@@ -60,16 +58,16 @@ public class SetElevatorSetpoint extends Command {
                   / ELEVATOR.drumRotationsToMeters);
         } else {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.LEVEL_3.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.LEVEL_3.getSetpointMeters());
         }
         break;
       case L4:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.NET.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.NET.getSetpointMeters());
         } else {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.LEVEL_4.getSetpointMeters() / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.LEVEL_4.getSetpointMeters());
         }
         break;
       default:
@@ -82,8 +80,7 @@ public class SetElevatorSetpoint extends Command {
 
   @Override
   public void end(boolean interruped) {
-    m_elevator.holdElevator();
-    m_elevator.setClosedLoopControlMode(CONTROL_MODE.OPEN_LOOP);
+    m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
   }
 
   @Override

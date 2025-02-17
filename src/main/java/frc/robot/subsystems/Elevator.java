@@ -37,7 +37,6 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
-
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
@@ -56,19 +55,23 @@ public class Elevator extends SubsystemBase {
           0,
           0.0,
           0.0);
+
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal = elevatorMotors[0].getTorqueCurrent().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
+  
   private double m_desiredPositionMeters;
-  // private boolean m_elevatorInitialized; I think this is for LEDs so have fun with that :)
   private double m_joystickInput;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
+  
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
   private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
+  
   private final TalonFXSimState m_motorSimState;
+  
   private DoubleSubscriber m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
@@ -82,22 +85,27 @@ public class Elevator extends SubsystemBase {
 
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kG = ELEVATOR.kG;
     config.Slot0.kP = ELEVATOR.kP;
     config.Slot0.kI = ELEVATOR.kI;
     config.Slot0.kD = ELEVATOR.kD;
-    // config.Slot0.kA = ELEVATOR.kA;
-    // config.Slot0.kV = ELEVATOR.kV;
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     config.CurrentLimits.StatorCurrentLimit = 40;
+    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
+    
     m_motorSimState = elevatorMotors[0].getSimState();
+    
     elevatorMotors[0].setPosition(Rotations.of(0));
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
+    
     SmartDashboard.putData(this);
   }
 
@@ -161,11 +169,6 @@ public class Elevator extends SubsystemBase {
     return getMotorRotations() * ELEVATOR.drumRotationsToMeters;
   }
 
-  // Sets the control state of the elevator
-  public void setClosedLoopControlMode(CONTROL_MODE mode) {
-    m_controlMode = mode;
-  }
-
   public boolean isClosedLoopControl() {
     return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
@@ -178,6 +181,10 @@ public class Elevator extends SubsystemBase {
 
   public NeutralModeValue getNeutralMode() {
     return m_neutralMode;
+  }
+  
+  public double getDesiredHeight() {
+    return m_desiredPositionMeters;
   }
 
   public void testInit() {
@@ -274,12 +281,20 @@ public class Elevator extends SubsystemBase {
         elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
         break;
       case CLOSED_LOOP:
-        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters));
+        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters / ELEVATOR.drumRotationsToMeters));
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput =
-            m_joystickInput * ELEVATOR.kPercentOutputMultiplier + ELEVATOR.offset;
+        double percentOutput;
+        if (m_joystickInput == 0 && getHeightMeters() < 0.0254) {
+            percentOutput = 0;
+        } else if (m_joystickInput < 0) {
+            percentOutput =
+                m_joystickInput * ELEVATOR.kLimitedPercentOutputMultiplier + ELEVATOR.offset;
+        } else {
+            percentOutput =
+                m_joystickInput * ELEVATOR.kPercentOutputMultiplier + ELEVATOR.offset;
+        }
         setPercentOutput(percentOutput);
         break;
     }

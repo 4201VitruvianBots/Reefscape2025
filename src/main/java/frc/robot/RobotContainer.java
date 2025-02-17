@@ -141,21 +141,23 @@ public class RobotContainer {
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
+      m_endEffector = new EndEffector();
+      m_endEffectorPivot = new EndEffectorPivot();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
-      m_endEffectorPivot = new EndEffectorPivot();
-      m_endEffector = new EndEffector();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
-      m_endEffectorPivot = new EndEffectorPivot();
       m_endEffector = new EndEffector();
-      m_climber = new Climber();
+      m_endEffectorPivot = new EndEffectorPivot();
       m_climberIntake = new ClimberIntake();
+      m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
     } else {
       // Most likely, the code will crash later on if you get here
       DriverStation.reportError(

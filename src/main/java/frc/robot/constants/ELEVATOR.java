@@ -24,24 +24,29 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
+  public static final double kG = 0.36;
+  public static final double kV = 0.1;
+  public static final double kA = 0.2;
   public static final double kP = 5.0; // these are extremely loosely tuned so tune them later
   public static final double kI = 0.0;
   public static final double kD = 0.0;
-  public static final double kA = 0.2;
-  public static final double kV = 0.1;
   public static final double offset = 0.03;
   public static final double motionMagicCruiseVelocity = 100;
   public static final double motionMagicAcceleration = 200;
   public static final double motionMagicJerk = 4000;
-  public static final double kPercentOutputMultiplier = 1.0;
-  public static final double kLimitedPercentOutputMultiplier = 0.5;
+  
+  public static final double kPercentOutputMultiplier = 1.0; // Upwards motion
+  public static final double kLimitedPercentOutputMultiplier = 0.65; // Downwards motion
+  
+  public static final double peakForwardOutput = 0.5; // Move up to 1.0 after testing
+  public static final double peakReverseOutput = -0.3; // Move up to -0.5-0.65 after testing
+  
   public static final double kElevatorDrumDiameter = Units.inchesToMeters(2.2557);
   public static final double drumRotationsToMeters =
       kElevatorDrumDiameter
           * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
-  public static final double kCarriageMassPounds = 15.0; // TODO: Change values after CAD done
-  public static final double gearRatio = 48.0 / 10.0; // TODO: Change values after CAD done
-
+  public static final double kCarriageMassPounds = 15.0;
+  public static final double gearRatio = 48.0 / 10.0;
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
 
   public enum ELEVATOR_SETPOINT {
