@@ -22,9 +22,10 @@ public class TestAuto1 extends SequentialCommandGroup {
    * @param m_fieldSim
    */
   public TestAuto1(
-      CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */, FieldSim m_fieldSim) {
+      CommandSwerveDrivetrain swerveDrive, FieldSim m_fieldSim) {
+    // TODO implement field sim
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("4PeiceL");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("4PieceL");
 
       var m_ppCommand = AutoBuilder.followPath(path);
 
