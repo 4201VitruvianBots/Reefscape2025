@@ -23,11 +23,14 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.LED;
 import frc.robot.constants.LED.*;
+import frc.robot.constants.ROBOT;
 
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
@@ -166,13 +169,8 @@ public class LEDSubsystem extends SubsystemBase {
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
         case ENDGAME:
-<<<<<<< HEAD
           setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); //Rainbow
           break; //TODO: Adjust rainbow speed.
-=======
-          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Rainbow); // Rainbow
-          break;
->>>>>>> origin/LEDCode
         default:
           break;
       }
@@ -180,7 +178,6 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-<<<<<<< HEAD
   public Color8Bit getColor() {
     return m_color;
   }
@@ -200,8 +197,6 @@ public class LEDSubsystem extends SubsystemBase {
   
 
 
-=======
->>>>>>> origin/LEDCode
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
