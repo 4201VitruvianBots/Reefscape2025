@@ -150,27 +150,27 @@ public class LEDSubsystem extends SubsystemBase {
         case DISABLED:
           setPattern(LED.red, 0, 0, ANIMATION_TYPE.Solid); // Solid Red
           break;
-        case INTAKING:
-          setPattern(LED.pink, 0, 0, ANIMATION_TYPE.Strobe); // Unknown
-          break;
+        // case INTAKING:
+        //   setPattern(LED.orange, 0, 0.5, ANIMATION_TYPE.Larson); // Unknown
+        //   break; // TODo:? Get the colour and possible animation for this LED? 
         case CORAL:
           setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid); // Solid Yellow
           break;
         case CORAL_OWNED:
-          setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.ColorFlow); // Flashing Yellow
-          break;
+          setPattern(LED.yellow, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Yellow
+          break; //TODO: Adjust flashing speed.
         case ALGAE:
           setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); //Solid Cyan
           break;
         case ALGAE_OWNED:
-          setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Rainbow); // Flashing Cyan
-          break;
+          setPattern(LED.cyan, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Cyan
+          break; //TODO: Adjust flashing speed.
         case REEF_LINEUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
         case ENDGAME:
-          setPattern(LED.white, 0, 0, ANIMATION_TYPE.Rainbow); //Rainbow
-          break;
+          setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); //Rainbow
+          break; //TODO: Adjust rainbow speed.
         default:
           break;
       }
@@ -178,9 +178,37 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public Color8Bit getColor() {
+    return m_color;
+  }
+
+  private void updateSmartDashboard() {
+    SmartDashboard.putString("LEDSubsystem/LED Mode", currentRobotState.toString());
+
+    if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.DEBUG.get()) {
+      SmartDashboard.putNumber("LEDSubsystem/LED RED", m_color.red);
+      SmartDashboard.putNumber("LEDSubsystem/LED GREEN", m_color.green);
+      SmartDashboard.putNumber("LEDSubsystem/LED BLUE", m_color.blue);
+      SmartDashboard.putNumber("LEDSubsystem/LED WHITE", m_white);
+      SmartDashboard.putNumber("LEDSubsystem/LED SPEED", m_speed);
+    }
+  }
+
+  
+
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (m_toAnimate == null && !setSolid) {
+      setSolid = true;
+      m_candle.setLEDs(m_red, m_green, m_blue, 0, 0, LED.LEDcount); // setting all LEDs to color
+    } else {
+      setSolid = false;
+      m_candle.animate(m_toAnimate); // setting the candle animation to m_animation if not null
+    }
+    SmartDashboard.putString("LED Mode", currentRobotState.toString());
+
+    if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.NORMAL.get()) updateSmartDashboard();
   }
 }
