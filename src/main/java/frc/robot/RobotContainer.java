@@ -77,7 +77,7 @@ public class RobotContainer {
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
 
-  // V2 subsystems
+  // V2/V3 subsystems
   private Climber m_climber;
   private ClimberIntake m_climberIntake;
   private Elevator m_elevator;
@@ -139,6 +139,11 @@ public class RobotContainer {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       m_swerveDrive = V2Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_climberIntake = new ClimberIntake();
+      m_climber = new Climber();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
+      //m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();

@@ -43,8 +43,8 @@ public class ROBOT {
 
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
-    V2("32398ed"), // 23-2 Rio 2.0
-    // 23-1 Rio 2.0 - 32381fb
+    V2("0382381FB"), // 23-1 Rio 2.0
+    V3("32398ed"), // 23-2 Rio 2.0 (TODO: verify serial number)
 
     SIM("");
 
@@ -70,6 +70,10 @@ public class ROBOT {
   public static void initV2() {
     robotID = ROBOT_ID.V2;
   }
+  
+  public static void initV3() {
+    robotID = ROBOT_ID.V3;
+  }
 
   public static void initSim() {
     logMode = LOG_MODE.DEBUG;
@@ -85,6 +89,9 @@ public class ROBOT {
     } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V2.getSerial())) {
       alert.setText("Setting Robot Constants for V2");
       initV2();
+    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V3.getSerial())) {
+      alert.setText("Setting Robot Constants for V3");
+      initV3();
     } else if (RobotController.getSerialNumber().equals(ROBOT_ID.SIM.getSerial())
         && Robot.isSimulation()) {
       alert.setText("Setting Robot Constants for Sim");
