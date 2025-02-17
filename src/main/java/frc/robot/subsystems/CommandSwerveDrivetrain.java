@@ -34,6 +34,7 @@ import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
 import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
+import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -64,6 +65,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean m_hasAppliedOperatorPerspective = false;
+
+  private TrajectoryUtils m_trajectoryUtils;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -145,6 +148,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
       startSimThread();
     }
     configureAutoBuilder();
+
+    try {
+      m_trajectoryUtils =
+          new TrajectoryUtils(
+              this,
+              RobotConfig.fromGUISettings(),
+              new PIDConstants(10, 0, 0),
+              new PIDConstants(7, 0, 0));
+    } catch (Exception ex) {
+      DriverStation.reportError("Failed to configure TrajectoryUtils", false);
+    }
   }
 
   public void initDriveSysid() {
@@ -339,6 +353,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
     }
+  }
+
+  public TrajectoryUtils getTrajectoryUtils() {
+    return m_trajectoryUtils;
   }
 
   /**

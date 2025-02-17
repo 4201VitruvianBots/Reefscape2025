@@ -196,8 +196,8 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", m_chooser);
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
-    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive));
-    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive));
+    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
+    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
   }
 
   private void initSmartDashboard() {
