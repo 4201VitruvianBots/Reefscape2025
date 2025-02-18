@@ -23,7 +23,6 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -150,27 +149,27 @@ public class LEDSubsystem extends SubsystemBase {
         case DISABLED:
           setPattern(LED.red, 0, 0, ANIMATION_TYPE.Solid); // Solid Red
           break;
-        // case INTAKING:
-        //   setPattern(LED.orange, 0, 0.5, ANIMATION_TYPE.Larson); // Unknown
-        //   break; // TODo:? Get the colour and possible animation for this LED? 
+          // case INTAKING:
+          //   setPattern(LED.orange, 0, 0.5, ANIMATION_TYPE.Larson); // Unknown
+          //   break; // TODo:? Get the colour and possible animation for this LED?
         case CORAL:
           setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid); // Solid Yellow
           break;
         case CORAL_OWNED:
           setPattern(LED.yellow, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Yellow
-          break; //TODO: Adjust flashing speed.
+          break; // TODO: Adjust flashing speed.
         case ALGAE:
           setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); // Solid Cyan
           break;
         case ALGAE_OWNED:
           setPattern(LED.cyan, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Cyan
-          break; //TODO: Adjust flashing speed.
+          break; // TODO: Adjust flashing speed.
         case REEF_LINEUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
         case ENDGAME:
-          setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); //Rainbow
-          break; //TODO: Adjust rainbow speed.
+          setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); // Rainbow
+          break; // TODO: Adjust rainbow speed.
         default:
           break;
       }
@@ -193,9 +192,6 @@ public class LEDSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("LEDSubsystem/LED SPEED", m_speed);
     }
   }
-
-  
-
 
   @Override
   public void periodic() {
