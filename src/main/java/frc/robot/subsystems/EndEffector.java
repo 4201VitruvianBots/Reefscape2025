@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
-import frc.robot.constants.ENDEFFECTOR;
+import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import frc.robot.utils.CtreUtils;
 
 @Logged
@@ -36,17 +36,17 @@ public class EndEffector extends SubsystemBase {
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              ENDEFFECTOR.gearbox, ENDEFFECTOR.gearRatio, ENDEFFECTOR.kInertia),
-          ENDEFFECTOR.gearbox);
+              ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
+          ROLLERS.gearbox);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Slot0.kP = ENDEFFECTOR.kP;
-    config.Slot0.kI = ENDEFFECTOR.kI;
-    config.Slot0.kD = ENDEFFECTOR.kD;
+    config.Slot0.kP = ROLLERS.kP;
+    config.Slot0.kI = ROLLERS.kI;
+    config.Slot0.kD = ROLLERS.kD;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.Feedback.SensorToMechanismRatio = ENDEFFECTOR.gearRatio;
+    config.Feedback.SensorToMechanismRatio = ROLLERS.gearRatio;
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");
@@ -73,9 +73,9 @@ public class EndEffector extends SubsystemBase {
     m_endEffectorSim.update(0.02); // TODO update this later maybe?
 
     m_simState.setRawRotorPosition(
-        m_endEffectorSim.getAngularPositionRotations() * ENDEFFECTOR.gearRatio);
+        m_endEffectorSim.getAngularPositionRotations() * ROLLERS.gearRatio);
     m_simState.setRotorVelocity(
-        m_endEffectorSim.getAngularVelocityRPM() * ENDEFFECTOR.gearRatio / 60.0);
+        m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
   }
 
   @Override

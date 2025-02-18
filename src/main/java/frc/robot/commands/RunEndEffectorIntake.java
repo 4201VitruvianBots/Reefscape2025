@@ -4,20 +4,18 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ENDEFFECTOR;
+import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunEndEffectorIntake extends Command {
 
   private final EndEffector m_endEffector;
-  private final ENDEFFECTOR.ROLLER_SPEED m_speed;
+  private final ROLLER_SPEED m_speed;
 
   /** Creates a new RunEndEffectorIntake. */
-  public RunEndEffectorIntake(EndEffector endEffector, ENDEFFECTOR.ROLLER_SPEED speed) {
+  public RunEndEffectorIntake(EndEffector endEffector, ROLLER_SPEED speed) {
     m_endEffector = endEffector;
     m_speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
