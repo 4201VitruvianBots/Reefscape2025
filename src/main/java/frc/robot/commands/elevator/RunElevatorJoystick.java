@@ -10,7 +10,7 @@ public class RunElevatorJoystick extends Command {
 
   private final Elevator m_elevator;
   private final DoubleSupplier m_joystickY;
-  
+
   private boolean m_elevatorHeld = false;
 
   public RunElevatorJoystick(Elevator elevator, DoubleSupplier joystickY) {

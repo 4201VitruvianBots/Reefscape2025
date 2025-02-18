@@ -32,10 +32,10 @@ import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
+import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
-import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -277,12 +277,12 @@ public class RobotContainer {
           .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
     if (m_endEffector != null) {
-    //   m_driverController
-    //       .leftTrigger()
-    //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-    //   m_driverController
-    //       .rightTrigger()
-    //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
+      //   m_driverController
+      //       .leftTrigger()
+      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+      //   m_driverController
+      //       .rightTrigger()
+      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
     }
 
     if (m_algaeIntake != null) {
@@ -302,9 +302,10 @@ public class RobotContainer {
       m_driverController
           .a()
           .whileTrue(
-              new ParallelCommandGroup(new SetElevatorSetpoint(
-                m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece), new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2))
-              );
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2)));
       m_driverController
           .x()
           .whileTrue(
@@ -312,25 +313,30 @@ public class RobotContainer {
                   m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
       m_driverController
           .y()
-          .whileTrue(new ParallelCommandGroup(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece), new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L4)));
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L4)));
       m_driverController
           .b()
-          .whileTrue(new ParallelCommandGroup(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece), new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2)));
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2)));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }
 
     if (m_endEffector != null) {
       m_driverController
           .leftTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL_HOPPER)); // intake
+          .whileTrue(
+              new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL_HOPPER)); // intake
       m_driverController
           .rightTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL_REEF)); // outtake
-      
+          .whileTrue(
+              new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL_REEF)); // outtake
     }
 
     if (m_climber != null) {

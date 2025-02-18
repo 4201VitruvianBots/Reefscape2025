@@ -15,29 +15,28 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
-    
+
     public enum ROLLER_SPEED {
-        // Coral
-        INTAKE_CORAL_HOPPER(-0.2),
-        OUTTAKE_CORAL_REEF(-0.2),
-        CORAL_REEF_REVERSE(0.2),
-        
-        // Algae
-        INTAKE_ALGAE_REEF(0.2),
-        INTAKE_ALGAE_GROUND(0.2),
-        OUTTAKE_ALGAE_BARGE(0.2);
-        
-        private final double speed;
-        
-        ROLLER_SPEED(final double speed) {
-          this.speed = speed;
-        }
-        
-        public double get() {
-          return speed;
-        }
+      // Coral
+      INTAKE_CORAL_HOPPER(-0.2),
+      OUTTAKE_CORAL_REEF(-0.2),
+      CORAL_REEF_REVERSE(0.2),
+
+      // Algae
+      INTAKE_ALGAE_REEF(0.2),
+      INTAKE_ALGAE_GROUND(0.2),
+      OUTTAKE_ALGAE_BARGE(0.2);
+
+      private final double speed;
+
+      ROLLER_SPEED(final double speed) {
+        this.speed = speed;
+      }
+
+      public double get() {
+        return speed;
+      }
     }
-    
   }
 
   public class PIVOT {
@@ -67,31 +66,30 @@ public class ENDEFFECTOR {
     public static final double maxOutput = 0.6;
 
     public static final double joystickMultiplier = maxOutput;
-    
+
     public static final boolean enforceLimits = true;
 
     public enum PIVOT_SETPOINT {
-        INTAKE_ALGAE(Degrees.of(0.0)),
-        STOWED(Degrees.of(30.0)),
-        L3_L2(Degrees.of(45.0)),
-        L4(Degrees.of(120.0)),
-        BARGE(Degrees.of(150.0));
+      INTAKE_ALGAE(Degrees.of(0.0)),
+      STOWED(Degrees.of(30.0)),
+      L3_L2(Degrees.of(45.0)),
+      L4(Degrees.of(120.0)),
+      BARGE(Degrees.of(150.0));
 
-        private final Angle angle;
+      private final Angle angle;
 
-        PIVOT_SETPOINT(final Angle angle) {
+      PIVOT_SETPOINT(final Angle angle) {
         this.angle = angle;
-        }
+      }
 
-        public Angle get() {
+      public Angle get() {
         return angle;
-        }
+      }
     }
   }
-  
+
   public enum STATE {
     STILL,
     MOVING
   }
-
 }

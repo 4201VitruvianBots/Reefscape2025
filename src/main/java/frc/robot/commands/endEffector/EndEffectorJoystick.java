@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ROBOT;
 import frc.robot.subsystems.EndEffectorPivot;
@@ -23,7 +22,7 @@ public class EndEffectorJoystick extends Command {
   public EndEffectorJoystick(EndEffectorPivot endEffectorPivot, DoubleSupplier joystickY) {
     m_endEffectorPivot = endEffectorPivot;
     m_joystickY = joystickY;
-    
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_endEffectorPivot);
   }
@@ -50,13 +49,11 @@ public class EndEffectorJoystick extends Command {
       } else if (m_endEffectorPivot.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP) {
         if (PIVOT.limitOpenLoop) {
           // Upper limit
-          if (m_endEffectorPivot.getCurrentRotation().in(Degrees)
-              >= PIVOT.maxAngle.in(Degrees) - 1)
+          if (m_endEffectorPivot.getCurrentRotation().in(Degrees) >= PIVOT.maxAngle.in(Degrees) - 1)
             m_joystickDeadband = Math.min(m_joystickDeadband, 0);
 
           // Lower limit
-          if (m_endEffectorPivot.getCurrentRotation().in(Degrees)
-              <= PIVOT.minAngle.in(Degrees) + 1)
+          if (m_endEffectorPivot.getCurrentRotation().in(Degrees) <= PIVOT.minAngle.in(Degrees) + 1)
             m_joystickDeadband = Math.max(m_joystickDeadband, 0);
         }
         m_endEffectorPivot.setPercentOutput(m_joystickDeadband * PIVOT.joystickMultiplier);

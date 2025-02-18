@@ -35,8 +35,7 @@ public class EndEffector extends SubsystemBase {
   private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
+          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
 
   /** Creates a new EndEffector. */
@@ -57,11 +56,9 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void updateLogger() {
-    SmartDashboard.putNumber(
-        "EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber(
-        "EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override

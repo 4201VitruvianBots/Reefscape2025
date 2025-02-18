@@ -74,10 +74,7 @@ public class Robot2d {
   Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
-                  "EndEffector2d",
-                  new Color8Bit(0, 255, 255),
-                  PIVOT.startingAngle,
-                  PIVOT.length)
+                  "EndEffector2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle, PIVOT.length)
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
           m_endEffectorRoot);
 

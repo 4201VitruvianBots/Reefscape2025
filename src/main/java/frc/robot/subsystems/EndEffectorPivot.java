@@ -64,8 +64,7 @@ public class EndEffectorPivot extends SubsystemBase {
       new SingleJointedArmSim(
           PIVOT.pivotGearBox,
           PIVOT.pivotGearRatio,
-          SingleJointedArmSim.estimateMOI(
-              PIVOT.length.in(Meters), PIVOT.mass.in(Kilograms)),
+          SingleJointedArmSim.estimateMOI(PIVOT.length.in(Meters), PIVOT.mass.in(Kilograms)),
           PIVOT.length.in(Meters),
           PIVOT.minAngle.in(Radians),
           PIVOT.maxAngle.in(Radians),
@@ -128,9 +127,7 @@ public class EndEffectorPivot extends SubsystemBase {
       m_desiredRotation =
           Degrees.of(
               MathUtil.clamp(
-                  rotations.in(Degrees),
-                  PIVOT.minAngle.in(Degrees),
-                  PIVOT.maxAngle.in(Degrees)));
+                  rotations.in(Degrees), PIVOT.minAngle.in(Degrees), PIVOT.maxAngle.in(Degrees)));
 
     } else {
       m_desiredRotation = rotations;
