@@ -12,7 +12,7 @@ public class GetSubsystemStates extends Command {
   private final LEDSubsystem m_led;
   private final Vision m_vision;
   private final Climber m_climber;
-  private final EndEffector m_endEffector; // Importing all the subsystems we'll need for this
+  private final EndEffector m_endEffector; // Importing all the subsystems we'll need for this don't worry we'll use this stuff.
 
   //TODO: Add states. Reference Crescendo code.
   
