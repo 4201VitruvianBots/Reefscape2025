@@ -59,6 +59,28 @@ public class ENDEFFECTOR {
       return angle;
     }
   }
+  
+  public enum ROLLER_SPEED {
+    // Coral
+    INTAKE_CORAL_HOPPER(-0.2),
+    OUTTAKE_CORAL_REEF(-0.2),
+    CORAL_REEF_REVERSE(0.2),
+    
+    // Algae
+    INTAKE_ALGAE_REEF(0.2),
+    INTAKE_ALGAE_GROUND(0.2),
+    OUTTAKE_ALGAE_BARGE(0.2);
+    
+    private final double speed;
+    
+    ROLLER_SPEED(final double speed) {
+      this.speed = speed;
+    }
+    
+    public double get() {
+      return speed;
+    }
+  }
 
   public enum STATE {
     STILL,

@@ -38,6 +38,7 @@ import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT_SETPOINT;
+import frc.robot.constants.ENDEFFECTOR.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
@@ -279,13 +280,12 @@ public class RobotContainer {
           .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
     if (m_endEffector != null) {
-      // TODO: Make speeds into enum setpoints
-      m_driverController
-          .leftTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-      m_driverController
-          .rightTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
+    //   m_driverController
+    //       .leftTrigger()
+    //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+    //   m_driverController
+    //       .rightTrigger()
+    //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
     }
 
     if (m_algaeIntake != null) {
@@ -302,33 +302,45 @@ public class RobotContainer {
         .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
+    //   m_driverController
+    //       .a()
+    //       .whileTrue(
+    //           new SetElevatorSetpoint(
+    //               m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece));
+    //   m_driverController
+    //       .x()
+    //       .whileTrue(
+    //           new SetElevatorSetpoint(
+    //               m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
+    //   m_driverController
+    //       .y()
+    //       .whileTrue(
+    //           new SetElevatorSetpoint(
+    //               m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece));
+    //   m_driverController
+    //       .b()
+    //       .whileTrue(
+    //           new SetElevatorSetpoint(
+    //               m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
       m_driverController
-          .a()
-          .whileTrue(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece));
+            .a()
+            .whileTrue(
+                new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
       m_driverController
-          .x()
-          .whileTrue(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece));
+            .y()
+            .whileTrue(
+                new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L4));
       m_driverController
-          .y()
-          .whileTrue(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece));
-      m_driverController
-          .b()
-          .whileTrue(
-              new SetElevatorSetpoint(
-                  m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece));
+            .b()
+            .whileTrue(
+                new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }
 
     if (m_endEffector != null) {
       m_driverController
           .leftTrigger()
-          .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL_REEF)); // intake
     }
 
     if (m_climber != null) {

@@ -58,10 +58,10 @@ public class EndEffector extends SubsystemBase {
 
   public void updateLogger() {
     SmartDashboard.putNumber(
-        "EndEffector Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
+        "EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber(
-        "EndEffector Intake/Motor Current", m_currentSignal.getValueAsDouble());
+        "EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
   @Override
