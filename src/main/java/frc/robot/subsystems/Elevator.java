@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
@@ -189,6 +190,11 @@ public class Elevator extends SubsystemBase {
   public double getDesiredHeight() {
     return m_desiredPositionMeters;
   }
+  
+  // Elevator is within 1 inch of its setpoint
+  public boolean atSetpoint() {
+    return Math.abs(m_desiredPositionMeters - getHeightMeters()) <= 0.0254;
+  }
 
   public void testInit() {
     elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);
@@ -283,7 +289,11 @@ public class Elevator extends SubsystemBase {
         elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
         break;
       case CLOSED_LOOP:
-        elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters / ELEVATOR.drumRotationsToMeters));
+        if (atSetpoint() && Math.abs(m_desiredPositionMeters - ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters()) <= 0.0254) {
+            elevatorMotors[0].set(0); // Don't move the elevator if already at stowed
+        } else {
+            elevatorMotors[0].setControl(m_request.withPosition(m_desiredPositionMeters / ELEVATOR.drumRotationsToMeters));
+        }
         break;
       case OPEN_LOOP:
       default:
