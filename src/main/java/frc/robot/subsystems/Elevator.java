@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -23,6 +24,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -62,6 +64,7 @@ public class Elevator extends SubsystemBase {
   private final StatusSignal<Current> m_currentSignal = elevatorMotors[0].getTorqueCurrent().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
+  private final StatusSignal<AngularAcceleration> m_accelSignal = elevatorMotors[0].getAcceleration().clone();
   
   private double m_desiredPositionMeters;
   private double m_joystickInput;
@@ -97,7 +100,7 @@ public class Elevator extends SubsystemBase {
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    //config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     config.CurrentLimits.StatorCurrentLimit = 40;
     config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
@@ -159,6 +162,11 @@ public class Elevator extends SubsystemBase {
     m_velocitySignal.refresh();
     return m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters;
   }
+  
+  public double getAccelMps() {
+    m_accelSignal.refresh();
+    return m_accelSignal.getValue().in(RotationsPerSecondPerSecond) * ELEVATOR.drumRotationsToMeters;
+  }
 
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
@@ -210,7 +218,7 @@ public class Elevator extends SubsystemBase {
         .getDoubleTopic("MotionMagicAcceleration")
         .publish()
         .set(ELEVATOR.motionMagicAcceleration);
-    elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
+    //elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
     m_kP_subscriber = elevatorTab.getDoubleTopic("kP").subscribe(ELEVATOR.kP);
     m_kI_subscriber = elevatorTab.getDoubleTopic("kI").subscribe(ELEVATOR.kI);
     m_kD_subscriber = elevatorTab.getDoubleTopic("kD").subscribe(ELEVATOR.kD);
@@ -224,24 +232,33 @@ public class Elevator extends SubsystemBase {
         elevatorTab
             .getDoubleTopic("MotionMagicAcceleration")
             .subscribe(ELEVATOR.motionMagicAcceleration);
-    m_jerkSubscriber =
-        elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
+    // m_jerkSubscriber =
+    //     elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
   }
 
   public void testPeriodic() {
     Slot0Configs slot0Configs = new Slot0Configs();
-    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    
     slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
     slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
     slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
     slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
     slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
+    
+    elevatorMotors[0].getConfigurator().apply(slot0Configs);
+    elevatorMotors[1].getConfigurator().apply(slot0Configs);
+    
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+    
     // Who on earth knows if this part works, I was guessing that it would.
     motionMagicConfigs.MotionMagicCruiseVelocity =
         m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
     motionMagicConfigs.MotionMagicAcceleration =
         m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
-    motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
+    //motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
+    
+    elevatorMotors[0].getConfigurator().apply(motionMagicConfigs);
+    elevatorMotors[1].getConfigurator().apply(motionMagicConfigs);
   }
 
   public void teleopInit() {
@@ -277,7 +294,8 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
     SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
     SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
-    SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
+    //SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
+    SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
   }
 
   @Override
