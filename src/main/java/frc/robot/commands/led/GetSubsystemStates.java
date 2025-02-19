@@ -30,10 +30,7 @@ public class GetSubsystemStates extends Command {
   // TODO: Add states. Reference Crescendo code.
 
   public GetSubsystemStates(
-      LEDSubsystem led, 
-      Vision vision, 
-      Climber climber, 
-      EndEffector endEffector) {
+      LEDSubsystem led, Vision vision, Climber climber, EndEffector endEffector) {
     m_led = led;
     m_vision = vision;
     m_climber = climber;
