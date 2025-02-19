@@ -21,11 +21,11 @@ public class ELEVATOR {
 
   public static final double kG = 0.36; // output to overcome gravity (output)
   public static final double kS = 0.0; // output to overcome static friction (output)
-  public static final double kV = 0.1; // output per unit of target velocity (output/rps)
+  public static final double kV = 0.6; // output per unit of target velocity (output/rps)
   public static final double kA = 0.2; // output per unit of target acceleration (output/(rps/s))
-  public static final double kP = 5.0; // output per unit of error in position (output/rotation)
+  public static final double kP = 18.25; // output per unit of error in position (output/rotation)
   public static final double kI = 0.0; // output per unit of integrated error in position (output/rotations*s))
-  public static final double kD = 0.0; // output per unit of error in velocity (output/rps)
+  public static final double kD = 0.1; // output per unit of error in velocity (output/rps)
   public static final double motionMagicCruiseVelocity = 100; // target cruise velocity of 100 rps
   public static final double motionMagicAcceleration = 200; // target acceleration of 200 rps/s
   public static final double motionMagicJerk = 4000; // Target jerk of 4000 rps/s/s

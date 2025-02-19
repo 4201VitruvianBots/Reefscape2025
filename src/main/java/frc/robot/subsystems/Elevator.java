@@ -141,6 +141,9 @@ public class Elevator extends SubsystemBase {
     m_controlMode = controlMode;
   }
 
+  public double getStatorCurrent(){
+    return elevatorMotors[0].getStatorCurrent().getValueAsDouble();
+  }
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
@@ -278,6 +281,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
     SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
     SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
+    SmartDashboard.putNumber("Elevator/Elevator Stator Current", getStatorCurrent());
   }
 
   @Override
