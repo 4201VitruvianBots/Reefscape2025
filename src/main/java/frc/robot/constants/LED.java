@@ -43,14 +43,13 @@ public class LED {
   // instead.
 
   public enum SUBSYSTEM_STATES {
-    DISABLED,
-    ENABLED,
-    // INTAKING,
-    CORAL,
-    CORAL_OWNED,
-    ALGAE,
-    ALGAE_OWNED,
+    ENDGAME,
     REEF_LINEUP,
-    ENDGAME;
+    CORAL_OWNED,
+    ALGAE_OWNED,
+    CORAL,
+    ALGAE,
+    ENABLED,
+    DISABLED;
   }
 }

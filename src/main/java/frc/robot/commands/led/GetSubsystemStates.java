@@ -5,6 +5,7 @@
 package frc.robot.commands.led;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.LED;
 import frc.robot.subsystems.*;
 
 public class GetSubsystemStates extends Command {
@@ -16,10 +17,22 @@ public class GetSubsystemStates extends Command {
 
   // stuff.
 
+  private boolean isEndgame;
+  private boolean isLinedUpToReef;
+  private boolean isHoldingCoral;
+  private boolean isHoldingAlgae;
+  private boolean isCoralMode;
+  private boolean isAlgaeMode;
+  private boolean isEnabled;
+  private boolean isDisabled;
+
   // TODO: Add states. Reference Crescendo code.
 
   public GetSubsystemStates(
-      LEDSubsystem led, Vision vision, Climber climber, EndEffector endEffector) {
+      LEDSubsystem led, 
+      Vision vision, 
+      Climber climber, 
+      EndEffector endEffector) {
     m_led = led;
     m_vision = vision;
     m_climber = climber;
@@ -40,7 +53,37 @@ public class GetSubsystemStates extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // TODO: Talk with Gavin about the different things.
+    // TODO: get/make the states.
+
+    isEndgame = false;
+    isLinedUpToReef = false;
+    isHoldingCoral = false;
+    isHoldingAlgae = false;
+    isCoralMode = false;
+    isAlgaeMode = false;
+    isEnabled = false;
+    isDisabled = false;
+
+    // the prioritized state to be expressed to the LEDs
+    // set in order of priority to be expressed from the least priority to the
+    // highest priority
+    if (isEndgame) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ENDGAME);
+    } else if (isLinedUpToReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LINEUP);
+    } else if (isHoldingCoral) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.CORAL_OWNED);
+    } else if (isHoldingAlgae) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ALGAE_OWNED);
+    } else if (isCoralMode) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.CORAL);
+    } else if (isAlgaeMode) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ALGAE);
+    } else if (isEnabled) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ENABLED);
+    } else if (isDisabled) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.DISABLED);
+    }
   }
 
   // Called once the command ends or is interrupted.
