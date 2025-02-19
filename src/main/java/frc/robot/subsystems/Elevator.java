@@ -98,6 +98,7 @@ public class Elevator extends SubsystemBase {
     config.Slot0.kP = ELEVATOR.kP;
     config.Slot0.kI = ELEVATOR.kI;
     config.Slot0.kD = ELEVATOR.kD;
+
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;

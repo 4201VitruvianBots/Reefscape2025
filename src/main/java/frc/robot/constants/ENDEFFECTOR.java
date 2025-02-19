@@ -2,6 +2,8 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -44,6 +46,9 @@ public class ENDEFFECTOR {
     public static final double kPivotP = 19.0;
     public static final double kPivotI = 0.0;
     public static final double kPivotD = 0.15;
+    public static final double kGPositive = 0.0;
+    public static final double kGNegative = 0.0;
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
     public static final double kPivotMotionMagicVelocity = 480;
     public static final double kPivotMotionMagicAcceleration = 90;
 

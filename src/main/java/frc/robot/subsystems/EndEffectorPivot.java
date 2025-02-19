@@ -86,6 +86,11 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.Slot0.kP = PIVOT.kPivotP;
     motorConfig.Slot0.kI = PIVOT.kPivotI;
     motorConfig.Slot0.kD = PIVOT.kPivotD;
+    motorConfig.Slot1.kP = PIVOT.kPivotP;
+    motorConfig.Slot1.kI = PIVOT.kPivotI;
+    motorConfig.Slot1.kD = PIVOT.kPivotD;
+    motorConfig.Slot1.kG = PIVOT.kGPositive;
+    motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;    
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kPivotMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kPivotMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = m_neutralMode;
@@ -207,6 +212,9 @@ public class EndEffectorPivot extends SubsystemBase {
     m_joystickInput = m_joystickY;
   }
 
+  private void updateSmartDashboard() {
+   SmartDashboard.putNumber("End Effector Pivot/End Effector Angle", getCANcoderAngleDegrees());
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -220,6 +228,7 @@ public class EndEffectorPivot extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
+    updateSmartDashboard();
   }
 
   @Override
