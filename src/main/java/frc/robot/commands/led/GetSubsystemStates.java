@@ -55,7 +55,7 @@ public class GetSubsystemStates extends Command {
   public void execute() {
     // TODO: get/make the states.
 
-    isEndgame = false;
+    isEndgame = m_climber.getClimbState();
     isLinedUpToReef = false;
     isHoldingCoral = false;
     isHoldingAlgae = false;

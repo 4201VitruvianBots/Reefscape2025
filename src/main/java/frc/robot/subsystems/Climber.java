@@ -50,6 +50,7 @@ public class Climber extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
+  private boolean m_isClimbing = false; // LED Code
 
   public Climber() {
     TalonFXConfiguration configclimber = new TalonFXConfiguration();
@@ -60,6 +61,10 @@ public class Climber extends SubsystemBase {
 
     configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
     configclimber.MotionMagic.MotionMagicAcceleration = 200;
+  }
+
+  public boolean getClimbState() { // LED Code
+    return m_isClimbing;
   }
 
   public void holdclimber() {
@@ -136,6 +141,7 @@ public class Climber extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
+    m_isClimbing = climberMotor.get() != 0; // LED Code temp fix.
   }
 
   public void simulationPeriodic() {
