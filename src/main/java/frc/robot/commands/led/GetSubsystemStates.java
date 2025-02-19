@@ -4,6 +4,7 @@
 
 package frc.robot.commands.led;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.LED;
 import frc.robot.subsystems.*;
@@ -61,8 +62,8 @@ public class GetSubsystemStates extends Command {
     isHoldingAlgae = false;
     isCoralMode = false;
     isAlgaeMode = false;
-    isEnabled = false;
-    isDisabled = false;
+    isEnabled = DriverStation.isEnabled();
+    isDisabled = DriverStation.isDisabled();
 
     // the prioritized state to be expressed to the LEDs
     // set in order of priority to be expressed from the least priority to the
