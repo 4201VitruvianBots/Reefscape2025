@@ -34,11 +34,14 @@ import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.ground.GroundPivotJoystick;
+import frc.robot.commands.ground.SetGroundIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
+import frc.robot.constants.GROUND.INTAKE.INTAKE_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
@@ -80,6 +83,9 @@ public class RobotContainer {
   private Climber m_climber;
   private ClimberIntake m_climberIntake;
   private Elevator m_elevator;
+  
+  private GroundIntake m_groundIntake;
+  private GroundPivot m_groundPivot;
 
   @Logged(name = "EndEffector")
   private EndEffector m_endEffector;
@@ -144,6 +150,8 @@ public class RobotContainer {
       m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
+      m_groundIntake = new GroundIntake();
+      m_groundPivot = new GroundPivot();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
@@ -191,9 +199,13 @@ public class RobotContainer {
       m_elevator.setDefaultCommand(
           new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
     }
-    if (m_endEffectorPivot != null) {
-      m_endEffectorPivot.setDefaultCommand(
-          new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+    // if (m_endEffectorPivot != null) {
+    //   m_endEffectorPivot.setDefaultCommand(
+    //       new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+    // }
+    if (m_groundPivot != null) {
+        m_groundPivot.setDefaultCommand(
+            new GroundPivotJoystick(m_groundPivot, () -> -m_driverController.getRightY())); // for ground intake testing
     }
   }
 
@@ -343,6 +355,12 @@ public class RobotContainer {
       m_driverController
           .povRight()
           .onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+    }
+    
+    if (m_groundIntake != null) {
+      m_driverController
+          .rightBumper()
+          .whileTrue(new SetGroundIntake(m_groundIntake, INTAKE_SPEED.INTAKING));
     }
   }
 
