@@ -13,10 +13,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import org.team4201.codex.simulation.FieldSim;
 
 public class DriveForward extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public DriveForward(CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */) {
+  public DriveForward(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
@@ -31,6 +32,7 @@ public class DriveForward extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
+          new PlotAutoPath(swerveDrive, fieldSim, path),
           new InstantCommand( // Reset the pose of the robot to the starting pose of the path
               () -> swerveDrive.resetPose(starting_pose)),
           new InstantCommand(

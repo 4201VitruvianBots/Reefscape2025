@@ -6,6 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -14,10 +15,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -26,18 +27,34 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.SWERVE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
 import java.util.function.Supplier;
+import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
+import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
  * be used in command-based projects.
  */
-public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
+  private TalonFX[] driveMotors = {
+    getModule(0).getDriveMotor(),
+    getModule(1).getDriveMotor(),
+    getModule(2).getDriveMotor(),
+    getModule(3).getDriveMotor()
+  };
+
+  private TalonFX[] steerMotors = {
+    getModule(0).getDriveMotor(),
+    getModule(1).getDriveMotor(),
+    getModule(2).getDriveMotor(),
+    getModule(3).getDriveMotor()
+  };
+
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -49,18 +66,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean m_hasAppliedOperatorPerspective = false;
 
-  // driving in open loop
-  private Pose2d m_futurePose = new Pose2d();
-  private Twist2d m_twistFromPose = new Twist2d();
-  private ChassisSpeeds m_newChassisSpeeds = new ChassisSpeeds();
-
-  // // The robot pose estimator for tracking swerve odometry and applying vision corrections.
-  // private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
-  //   getKinematics(),
-  //     kBlueAlliancePerspectiveRotation,
-  //     null,
-  //     m_futurePose
-  //   );
+  private TrajectoryUtils m_trajectoryUtils;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -142,6 +148,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+
+    try {
+      m_trajectoryUtils =
+          new TrajectoryUtils(
+              this,
+              RobotConfig.fromGUISettings(),
+              new PIDConstants(10, 0, 0),
+              new PIDConstants(7, 0, 0));
+    } catch (Exception ex) {
+      DriverStation.reportError("Failed to configure TrajectoryUtils", false);
+    }
   }
 
   public void initDriveSysid() {
@@ -149,9 +166,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       var driveMotor = getModule(i.ordinal()).getDriveMotor();
       var turnMotor = getModule(i.ordinal()).getSteerMotor();
       CtreUtils.configureTalonFx(driveMotor, new TalonFXConfiguration());
-      CtreUtils.configureTalonFx(
-          turnMotor,
-          new TalonFXConfiguration() /* was previously CtreUtils.generateTurnMotorConfig() TODO: get that method working again*/);
+      CtreUtils.configureTalonFx(turnMotor, new TalonFXConfiguration());
       driveMotor.setNeutralMode(NeutralModeValue.Brake);
       BaseStatusSignal.setUpdateFrequencyForAll(
           250, driveMotor.getPosition(), driveMotor.getVelocity(), driveMotor.getMotorVoltage());
@@ -214,6 +229,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     configureAutoBuilder();
   }
+
+  // TODO: fix
+  public void setChassisSpeedsAuto(
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
 
   // TODO: Re-implement
   //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
@@ -285,6 +304,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     getPigeon2().setYaw(angle);
   }
 
+  public void setNeutralMode(SWERVE.MOTOR_TYPE type, NeutralModeValue neutralModeValue) {
+    switch (type) {
+      case ALL -> {
+        for (int i = 0; i < driveMotors.length; i++) {
+          driveMotors[i].setNeutralMode(neutralModeValue);
+          steerMotors[i].setNeutralMode(neutralModeValue);
+        }
+      }
+      case DRIVE -> {
+        for (var motor : driveMotors) {
+          motor.setNeutralMode(neutralModeValue);
+        }
+      }
+      case STEER -> {
+        for (var motor : steerMotors) {
+          motor.setNeutralMode(neutralModeValue);
+        }
+      }
+    }
+  }
+
   private void configureAutoBuilder() {
     try {
       var config = RobotConfig.fromGUISettings();
@@ -313,6 +353,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
     }
+  }
+
+  public TrajectoryUtils getTrajectoryUtils() {
+    return m_trajectoryUtils;
   }
 
   /**
