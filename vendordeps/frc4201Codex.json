@@ -1,7 +1,7 @@
 {
     "fileName": "frc4201Codex.json",
     "name": "Codex-java",
-    "version": "2025.0.20",
+    "version": "2025.0.21",
     "frcYear": "2025",
     "uuid": "5db6a80c-246e-48c6-b629-798597b993e1",
     "mavenUrls": [
@@ -12,7 +12,7 @@
         {
             "groupId": "org.team4201",
             "artifactId": "Codex-java",
-            "version": "2025.0.20"
+            "version": "2025.0.21"
         }
     ],
     "requires": [

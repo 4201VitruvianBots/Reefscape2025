@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -31,12 +32,14 @@ public class DriveForward extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
+        new PrintCommand("path starting point"+path.getStartingHolonomicPose().toString()),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
               .withTimeout(0.1),
+              
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
