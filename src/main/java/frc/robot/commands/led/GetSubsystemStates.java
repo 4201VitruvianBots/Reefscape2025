@@ -14,9 +14,7 @@ public class GetSubsystemStates extends Command {
   private final Vision m_vision;
   private final Climber m_climber;
   private final EndEffector
-      m_endEffector; // Importing all the subsystems we'll need for this don't worry we'll use this
-
-  // stuff.
+      m_endEffector; // Importing all the subsystems we'll need for this don't worry we'll use this stuff. I hope
 
   private boolean isEndgame;
   private boolean isLinedUpToReef;
@@ -54,9 +52,9 @@ public class GetSubsystemStates extends Command {
     // TODO: get/make the states.
 
     isEndgame = m_climber.getClimbState();
-    isLinedUpToReef = false;
-    isHoldingCoral = false;
-    isHoldingAlgae = false;
+    isLinedUpToReef = false; //Later
+    isHoldingCoral = false; //ignore these for now
+    isHoldingAlgae = false; //
     isCoralMode = false;
     isAlgaeMode = false;
     isEnabled = DriverStation.isEnabled();
