@@ -90,8 +90,8 @@ public class V2Constants {
   // This may need to be tuned to your individual robot
   private static final double kCoupleRatio = 3.125;
 
-  private static final double kDriveGearRatio = 5.357142857142857;
-  private static final double kSteerGearRatio = 12.8;
+  private static final double kDriveGearRatio = 6.12;
+  private static final double kSteerGearRatio = 21.42857142857143;
   /* ---------------------------------- */
   private static final Distance kWheelRadius = Inches.of(2);
 
@@ -154,7 +154,7 @@ public class V2Constants {
   private static final int kFrontRightDriveMotorId = CAN.frontRightDriveMotor;
   private static final int kFrontRightSteerMotorId = CAN.frontRightTurnMotor;
   private static final int kFrontRightEncoderId = CAN.frontRightCanCoder;
-  private static final Angle kFrontRightEncoderOffset = Rotations.of(0.158203125);
+  private static final Angle kFrontRightEncoderOffset = Rotations.of(0.168212890625);
   private static final boolean kFrontRightSteerMotorInverted = true;
   private static final boolean kFrontRightEncoderInverted = false;
 
@@ -176,7 +176,7 @@ public class V2Constants {
   private static final int kBackRightDriveMotorId = CAN.backRightDriveMotor;
   private static final int kBackRightSteerMotorId = CAN.backRightTurnMotor;
   private static final int kBackRightEncoderId = CAN.backRightCanCoder;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.048095703125);
+  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.037841796875);
   private static final boolean kBackRightSteerMotorInverted = true;
   private static final boolean kBackRightEncoderInverted = false;
 

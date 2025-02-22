@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 
-import java.util.Map;
-
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
   public static String robotName = "";
@@ -90,7 +88,7 @@ public class ROBOT {
       return required;
     }
 
-    public boolean setRequired(boolean required) {
+    public void setRequired(boolean required) {
       this.required = required;
     }
   }
