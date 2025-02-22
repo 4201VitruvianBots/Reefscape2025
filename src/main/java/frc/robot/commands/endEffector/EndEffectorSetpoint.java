@@ -4,17 +4,13 @@
 
 package frc.robot.commands.endEffector;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ENDEFFECTOR;
-import frc.robot.constants.ROBOT;
-import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
+import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.subsystems.EndEffectorPivot;
+import java.util.function.Supplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorSetpoint extends Command {
@@ -23,7 +19,10 @@ public class EndEffectorSetpoint extends Command {
   private Supplier<ROBOT.GAME_PIECE> m_selectedGamePiece;
 
   /** Creates a new EndEffectorSetpoint. */
-  public EndEffectorSetpoint(EndEffectorPivot endEffectorPivot, SUPERSTRUCTURE_STATES stage, Supplier<ROBOT.GAME_PIECE> selectedGamePiece) {
+  public EndEffectorSetpoint(
+      EndEffectorPivot endEffectorPivot,
+      SUPERSTRUCTURE_STATES stage,
+      Supplier<ROBOT.GAME_PIECE> selectedGamePiece) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorPivot = endEffectorPivot;
     m_stage = stage;
@@ -36,27 +35,25 @@ public class EndEffectorSetpoint extends Command {
   @Override
   public void initialize() {
     m_endEffectorPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-    
+
     /* If we want to be able to algae toggle in the middle of an outtake cycle, we need to put this in execute().
     No idea why would you want to do that though */
     switch (m_stage) {
       case STOWED:
-        m_endEffectorPivot.setPosition(
-            PIVOT_SETPOINT.STOWED.get());
+        m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
         break;
       case L1:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-            m_endEffectorPivot.setPosition(PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR.get());
+          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR.get());
         } else {
-            m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
+          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
         }
         break;
       case L2:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-            m_endEffectorPivot.setPosition(PIVOT_SETPOINT.INTAKE_ALGAE_LOW.get());
+          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.INTAKE_ALGAE_LOW.get());
         } else {
-            m_endEffectorPivot.setPosition(
-                PIVOT_SETPOINT.L3_L2.get());
+          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.L3_L2.get());
         }
         break;
       case L3:

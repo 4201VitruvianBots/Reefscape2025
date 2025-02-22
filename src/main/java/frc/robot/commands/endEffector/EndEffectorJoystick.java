@@ -4,12 +4,9 @@
 
 package frc.robot.commands.endEffector;
 
-import static edu.wpi.first.units.Units.Degrees;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
-import frc.robot.constants.ROBOT;
 import frc.robot.subsystems.EndEffectorPivot;
 import java.util.function.DoubleSupplier;
 
@@ -42,21 +39,24 @@ public class EndEffectorJoystick extends Command {
     //     var rotationSetpoint =
     //         Degrees.of(
     //             MathUtil.clamp(
-    //                 m_joystickDeadband * 0.5 + m_endEffectorPivot.getCurrentRotation().in(Degrees),
+    //                 m_joystickDeadband * 0.5 +
+    // m_endEffectorPivot.getCurrentRotation().in(Degrees),
     //                 PIVOT.minAngle.in(Degrees),
     //                 PIVOT.maxAngle.in(Degrees)));
     //     m_endEffectorPivot.setPosition(rotationSetpoint);
     //   } else if (m_endEffectorPivot.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP) {
     //     if (PIVOT.limitOpenLoop) {
     //       // Upper limit
-    //       if (m_endEffectorPivot.getCurrentRotation().in(Degrees) >= PIVOT.maxAngle.in(Degrees) - 1)
+    //       if (m_endEffectorPivot.getCurrentRotation().in(Degrees) >= PIVOT.maxAngle.in(Degrees) -
+    // 1)
     //         m_joystickDeadband = Math.min(m_joystickDeadband, 0);
 
     //       // Lower limit
-    //       if (m_endEffectorPivot.getCurrentRotation().in(Degrees) <= PIVOT.minAngle.in(Degrees) + 1)
+    //       if (m_endEffectorPivot.getCurrentRotation().in(Degrees) <= PIVOT.minAngle.in(Degrees) +
+    // 1)
     //         m_joystickDeadband = Math.max(m_joystickDeadband, 0);
     //     }
-        m_endEffectorPivot.setPercentOutput(m_joystickDeadband * PIVOT.joystickMultiplier);
+    m_endEffectorPivot.setPercentOutput(m_joystickDeadband * PIVOT.joystickMultiplier);
     //   }
     // } else {
     //   if (m_endEffectorPivot.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP)

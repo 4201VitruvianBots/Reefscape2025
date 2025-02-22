@@ -38,8 +38,6 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
-import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
-import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
@@ -273,9 +271,9 @@ public class RobotContainer {
     }
 
     if (m_endEffectorPivot != null) {
-    //   m_driverController
-    //       .a()
-    //       .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
+      //   m_driverController
+      //       .a()
+      //       .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
     }
     if (m_endEffector != null) {
       //   m_driverController
@@ -294,16 +292,23 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
-    var stowAll = new ParallelCommandGroup(
-        new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece),
-        new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece)
-    ).withTimeout(1);
-    
-    var stowAllDelayed = new SequentialCommandGroup(
-        new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece).withTimeout(0.7),
-        new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece)
-    ).withTimeout(1);
-    
+    var stowAll =
+        new ParallelCommandGroup(
+                new EndEffectorSetpoint(
+                    m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece),
+                new SetElevatorSetpoint(
+                    m_elevator, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece))
+            .withTimeout(1);
+
+    var stowAllDelayed =
+        new SequentialCommandGroup(
+                new EndEffectorSetpoint(
+                        m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece)
+                    .withTimeout(0.7),
+                new SetElevatorSetpoint(
+                    m_elevator, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece))
+            .withTimeout(1);
+
     // Algae Toggle
     m_driverController
         .leftBumper()
@@ -314,33 +319,39 @@ public class RobotContainer {
           .a()
           .whileTrue(
               new ParallelCommandGroup(
-                  new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece),
-                  new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece))
-          )
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece),
+                  new EndEffectorSetpoint(
+                      m_endEffectorPivot, SUPERSTRUCTURE_STATES.L2, () -> m_selectedGamePiece)))
           .onFalse(stowAll);
       m_driverController
           .x()
           .whileTrue(
               new ParallelCommandGroup(
-                  new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece),
-                  new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece))
-          )
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece),
+                  new EndEffectorSetpoint(
+                      m_endEffectorPivot, SUPERSTRUCTURE_STATES.L1, () -> m_selectedGamePiece)))
           .onFalse(stowAll);
       m_driverController
           .y()
           .whileTrue(
-            new SequentialCommandGroup(
-                new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece).withTimeout(0.7),
-                new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece))
-        )
-        .onFalse(stowAllDelayed);
+              new SequentialCommandGroup(
+                  new SetElevatorSetpoint(
+                          m_elevator, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece)
+                      .withTimeout(0.7),
+                  new EndEffectorSetpoint(
+                      m_endEffectorPivot, SUPERSTRUCTURE_STATES.L4, () -> m_selectedGamePiece)))
+          .onFalse(stowAllDelayed);
       m_driverController
           .b()
           .whileTrue(
               new SequentialCommandGroup(
-                  new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece).withTimeout(0.5),
-                  new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece))
-          )
+                  new SetElevatorSetpoint(
+                          m_elevator, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece)
+                      .withTimeout(0.5),
+                  new EndEffectorSetpoint(
+                      m_endEffectorPivot, SUPERSTRUCTURE_STATES.L3, () -> m_selectedGamePiece)))
           .onFalse(stowAll);
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }

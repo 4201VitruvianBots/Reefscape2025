@@ -32,8 +32,7 @@ public class SetElevatorSetpoint extends Command {
     No idea why would you want to do that though */
     switch (m_stage) {
       case STOWED:
-        m_elevator.setDesiredPosition(
-            ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
+        m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
         break;
       case L1:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE)
