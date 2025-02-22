@@ -1,6 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,24 +10,42 @@ public class ROBOT {
   public static String robotName = "";
   public static final boolean disableVisualization = false;
   public static final boolean useSysID = false;
-  public static final boolean useReplayLogs = false;
+  // TODO: Change LOG_MODE to Logged.Importance
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
-
-  public static final double driveBaseWidth = Units.inchesToMeters(29);
-  public static final double driveBaseLength = Units.inchesToMeters(29);
-  public static final double robotHeight = Units.inchesToMeters(42);
+  public static ROBOT_ID robotID = ROBOT_ID.SIM;
 
   public enum CONTROL_MODE {
     OPEN_LOOP,
-    CLOSED_LOOP
+    CLOSED_LOOP,
+    CLOSED_LOOP_NET
+  }
+
+  public enum SUPERSTRUCTURE_STATES {
+    STOWED,
+    L1,
+    L2,
+    L3,
+    L4,
+  }
+
+  public enum GAME_PIECE {
+    CORAL,
+    ALGAE,
+    NONE
   }
 
   public enum ROBOT_ID {
-    // Robot Serial Numbers
-    FORTE("030cbc95"),
-    ALPHABOT("030cbcf0"),
-    GRIDLOCK("0306ce62"),
-    BOBOT("030e6a97"),
+    // Robot Serial Numbers (2023-2024)
+    // FORTE - 030cbc95
+    // ALPHABOT_OLD - 030cbcf0
+    // GRIDLOCK - 0306ce62
+    // BOBOT - 030e6a97
+
+    // Robot Serial Numbers (2025)
+    ALPHABOT("030cbc95"), // Rio 1.0
+    V2("32398ed"), // 23-2 Rio 2.0
+    // 23-1 Rio 2.0 - 32381fb
+
     SIM("");
 
     private final String value;
@@ -46,51 +63,28 @@ public class ROBOT {
     }
   }
 
-  public enum SETPOINT {
-    // Units are in Radians
-    STOWED(Units.degreesToRadians(0.0));
-
-    private final double value;
-
-    SETPOINT(final double value) {
-      this.value = value;
-    }
-
-    public double get() {
-      return value;
-    }
+  public static void initAlphaBot() {
+    robotID = ROBOT_ID.ALPHABOT;
   }
 
-  public static void initForte() {}
-
-  public static void initAlphaBot() {}
-
-  public static void initGridlock() {}
-
-  public static void initBobot() {}
+  public static void initV2() {
+    robotID = ROBOT_ID.V2;
+  }
 
   public static void initSim() {
     logMode = LOG_MODE.DEBUG;
-
-    // Different gear ratios seem to break SimpleJointedArmSim
-    //    ARM.gearRatio = 1.0;
+    robotID = ROBOT_ID.SIM;
   }
 
   public static void initConstants() {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
-    if (RobotController.getSerialNumber().equals(ROBOT_ID.FORTE.getSerial())) {
-      alert.setText("Setting Robot Constants for FORTE");
-      initForte();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
+    if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
       alert.setText("Setting Robot Constants for ALPHABOT");
       initAlphaBot();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.GRIDLOCK.getSerial())) {
-      alert.setText("Setting Robot Constants for Gridlock");
-      initGridlock();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.BOBOT.getSerial())) {
-      alert.setText("Setting Robot Constants for Bobot");
-      initBobot();
+    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V2.getSerial())) {
+      alert.setText("Setting Robot Constants for V2");
+      initV2();
     } else if (RobotController.getSerialNumber().equals(ROBOT_ID.SIM.getSerial())
         && Robot.isSimulation()) {
       alert.setText("Setting Robot Constants for Sim");

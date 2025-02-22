@@ -21,8 +21,10 @@ public class CAN {
   public static final int backRightDriveMotor = 26;
   public static final int backRightTurnMotor = 27;
 
-  public static final int hopperIntakeMotor =
-      30; // 31 is not here because everyone sucks and i hate everyone. I want to cry. it took me two hours to fix my VScode. 
+  public static final int hopperIntakeMotor1 = 30; 
+  public static final int hopperIntakeMotor2 = 31;
+  // 31 is back because manufacturing is stupid
+  // so i hate matt AND manufacturing.
 
   public static final int endEffectorPivotMotor = 32;
   public static final int endEffectorOuttakeMotor = 35;
