@@ -40,8 +40,8 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
-import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.FIELD;
+import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.SWERVE;
@@ -361,32 +361,37 @@ public class RobotContainer {
 
     // Ground intake on left trigger, TODO: implement
     // Ground intake algae on povDown, TODO: implement
-    
+
     // Ready hopper
-    if (m_hopperIntake != null && m_endEffectorPivot != null && m_endEffector != null && m_elevator != null) {
-        m_driverController
-            .povUp()
-            .whileTrue(
-                new ParallelCommandGroup(
-                    new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                    new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece),
-                    new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece),
-                    new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece)
-                    )
-                ).onFalse(stowAll);
+    if (m_hopperIntake != null
+        && m_endEffectorPivot != null
+        && m_endEffector != null
+        && m_elevator != null) {
+      m_driverController
+          .povUp()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                  new EndEffectorSetpoint(
+                      m_endEffectorPivot,
+                      SUPERSTRUCTURE_STATES.HOPPER_INTAKE,
+                      () -> m_selectedGamePiece),
+                  new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece),
+                  new SetElevatorSetpoint(
+                      m_elevator, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece)))
+          .onFalse(stowAll);
     }
-    
+
     if (m_endEffector != null) {
-        // Score Coral / Algae Intake
-        m_driverController
-            .rightTrigger()
-            .whileTrue(new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece));
-        // Coral Reverse / Algae Outtake
-        m_driverController
-            .rightBumper()
-            .whileTrue(new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece));
+      // Score Coral / Algae Intake
+      m_driverController
+          .rightTrigger()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece));
+      // Coral Reverse / Algae Outtake
+      m_driverController
+          .rightBumper()
+          .whileTrue(new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece));
     }
-    
 
     if (m_climber != null) {
       m_driverController
