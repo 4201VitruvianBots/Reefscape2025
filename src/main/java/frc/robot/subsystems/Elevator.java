@@ -107,6 +107,7 @@ public class Elevator extends SubsystemBase {
     config.CurrentLimits.StatorCurrentLimit = 40;
     config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);

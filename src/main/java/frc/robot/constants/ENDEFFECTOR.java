@@ -61,7 +61,7 @@ public class ENDEFFECTOR {
     public static final double kLimitedPercentOutputMultiplier = 0.5;
 
     public static final Angle minAngle = Degrees.of(0.0);
-    public static final Angle maxAngle = Degrees.of(151.0);
+    public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
     public static final Angle encoderOffset = Rotations.of(-0.47607421875);
 
@@ -74,7 +74,8 @@ public class ENDEFFECTOR {
     public static final boolean enforceLimits = true;
 
     public enum PIVOT_SETPOINT {
-      INTAKE_ALGAE(Degrees.of(18.0)),
+      INTAKE_ALGAE_LOW(Degrees.of(179.0)),
+      INTAKE_ALGAE_HIGH(Degrees.of(165)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
