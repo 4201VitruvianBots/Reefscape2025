@@ -74,7 +74,8 @@ public class Elevator extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity = new MotionMagicVelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private final TalonFXSimState m_motorSimState;
 

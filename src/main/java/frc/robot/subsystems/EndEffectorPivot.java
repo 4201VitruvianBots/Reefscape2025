@@ -11,7 +11,6 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -44,7 +43,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  @NotLogged private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(Rotations.of(0));
+  @NotLogged
+  private final MotionMagicTorqueCurrentFOC m_request =
+      new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
   @NotLogged
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
