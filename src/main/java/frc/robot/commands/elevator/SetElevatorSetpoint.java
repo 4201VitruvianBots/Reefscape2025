@@ -34,6 +34,9 @@ public class SetElevatorSetpoint extends Command {
       case STOWED:
         m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
         break;
+      case HOPPER_INTAKE: // This should only happen in coral mode but we won't stop Brandon from trying anyways
+        m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.INTAKE_HOPPER.getSetpointMeters());
+        break;
       case L1:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE)
           m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.PROCESSOR.getSetpointMeters());

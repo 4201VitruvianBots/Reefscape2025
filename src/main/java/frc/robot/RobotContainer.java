@@ -19,12 +19,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
+import frc.robot.commands.SetHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
@@ -38,6 +40,7 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
@@ -292,7 +295,7 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
-    var stowAll =
+    ParallelRaceGroup stowAll =
         new ParallelCommandGroup(
                 new EndEffectorSetpoint(
                     m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece),
@@ -300,7 +303,7 @@ public class RobotContainer {
                     m_elevator, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece))
             .withTimeout(1);
 
-    var stowAllDelayed =
+    ParallelRaceGroup stowAllDelayed =
         new SequentialCommandGroup(
                 new EndEffectorSetpoint(
                         m_endEffectorPivot, SUPERSTRUCTURE_STATES.STOWED, () -> m_selectedGamePiece)
@@ -356,16 +359,34 @@ public class RobotContainer {
       m_driverController.povLeft().whileTrue(new RunClimberIntake(m_climberIntake, 0.25));
     }
 
-    if (m_endEffector != null) {
-      m_driverController
-          .leftTrigger()
-          .whileTrue(
-              new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece)); // intake
-      m_driverController
-          .rightTrigger()
-          .whileTrue(
-              new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece)); // outtake
+    // Ground intake on left trigger, TODO: implement
+    // Ground intake algae on povDown, TODO: implement
+    
+    // Ready hopper
+    if (m_hopperIntake != null && m_endEffectorPivot != null && m_endEffector != null && m_elevator != null) {
+        m_driverController
+            .povUp()
+            .whileTrue(
+                new ParallelCommandGroup(
+                    new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                    new EndEffectorSetpoint(m_endEffectorPivot, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece),
+                    new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece),
+                    new SetElevatorSetpoint(m_elevator, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece)
+                    )
+                ).onFalse(stowAll);
     }
+    
+    if (m_endEffector != null) {
+        // Score Coral / Algae Intake
+        m_driverController
+            .rightTrigger()
+            .whileTrue(new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece));
+        // Coral Reverse / Algae Outtake
+        m_driverController
+            .rightBumper()
+            .whileTrue(new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece));
+    }
+    
 
     if (m_climber != null) {
       m_driverController
