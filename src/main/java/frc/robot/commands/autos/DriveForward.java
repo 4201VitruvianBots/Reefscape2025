@@ -5,7 +5,6 @@
 package frc.robot.commands.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +20,7 @@ public class DriveForward extends SequentialCommandGroup {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
-      var m_ppCommand = AutoBuilder.followPath(path);
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("DriveForward");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -33,12 +32,11 @@ public class DriveForward extends SequentialCommandGroup {
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
-          new InstantCommand( // Reset the pose of the robot to the starting pose of the path
-              () -> swerveDrive.resetPose(starting_pose)),
+          swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
-                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(new Rotation2d())),
+                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
-              .alongWith(new WaitCommand(1)),
+              .withTimeout(0.1),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());

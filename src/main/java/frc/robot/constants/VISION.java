@@ -56,7 +56,7 @@ public final class VISION {
       Units.degreesToRadians(0);
 
   public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
+      AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
 
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
   public static final Transform3d robotToAprilTagLimelightCameraA =
