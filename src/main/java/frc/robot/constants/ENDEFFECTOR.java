@@ -16,11 +16,13 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
+    public static final double peakForwardOutput = 0.2;
+    public static final double peakReverseOutput = -0.4;
 
     public enum ROLLER_SPEED {
       // Coral
-      INTAKE_CORAL_HOPPER(-0.2),
-      OUTTAKE_CORAL_REEF(-0.2),
+      OUTTAKE_CORAL_HOPPER(-0.2),
+      INTAKE_CORAL_REEF(-0.2),
       CORAL_REEF_REVERSE(0.2),
 
       // Algae
@@ -52,6 +54,7 @@ public class ENDEFFECTOR {
     public static final double kPivotMotionMagicVelocity = 480;
     public static final double kPivotMotionMagicAcceleration = 90;
 
+
     public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
     // The values for Distance and Mass are made up
@@ -77,7 +80,7 @@ public class ENDEFFECTOR {
     public enum PIVOT_SETPOINT {
       INTAKE_ALGAE_LOW(Degrees.of(170.0)),
       INTAKE_ALGAE_HIGH(Degrees.of(165)),
-      INTAKE_HOPPER(Degrees.of(20)),
+      INTAKE_HOPPER(Degrees.of(6.5)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),

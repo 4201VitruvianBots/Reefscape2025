@@ -31,18 +31,21 @@ public class RunEndEffectorIntake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
+    System.out.println("Intaking is set to " + m_intaking);
+
     switch (m_selectedGamePiece.get()) {
       case CORAL:
         if (m_intaking) {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.INTAKE_CORAL_HOPPER.get());
+          m_endEffector.setPercentOutput(ROLLER_SPEED.OUTTAKE_CORAL_HOPPER.get()); // intaking/outtaking coral
         } else {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.CORAL_REEF_REVERSE.get());
+          m_endEffector.setPercentOutput(ROLLER_SPEED.CORAL_REEF_REVERSE.get()); // reverse coral
         }
       case ALGAE:
         if (m_intaking) {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.INTAKE_ALGAE_REEF.get());
+          m_endEffector.setPercentOutput(ROLLER_SPEED.INTAKE_ALGAE_REEF.get()); // intaking algae
         } else {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR.get());
+          m_endEffector.setPercentOutput(ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR.get()); // outtaking algae
         }
       default:
         break;

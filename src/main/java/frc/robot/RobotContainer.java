@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -370,13 +371,15 @@ public class RobotContainer {
       m_driverController
           .povUp()
           .whileTrue(
+
+
               new ParallelCommandGroup(
                   new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new EndEffectorSetpoint(
                       m_endEffectorPivot,
                       SUPERSTRUCTURE_STATES.HOPPER_INTAKE,
                       () -> m_selectedGamePiece),
-                  new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece),
+                  new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece), // TODO Gavin fix this part pls
                   new SetElevatorSetpoint(
                       m_elevator, SUPERSTRUCTURE_STATES.HOPPER_INTAKE, () -> m_selectedGamePiece)))
           .onFalse(stowAll);
