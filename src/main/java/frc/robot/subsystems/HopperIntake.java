@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -21,14 +22,14 @@ import frc.robot.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
 
-  private final TalonFX m_hopperIntakeMotor = new TalonFX(V2CAN.hopperIntakeMotor);
+  private final TalonFX m_hopperIntakeMotors[] = {new TalonFX(V2CAN.hopperIntakeMotor1), new TalonFX(V2CAN.hopperIntakeMotor2)};
   private final StatusSignal<AngularVelocity> m_velocitySignal1 =
-      m_hopperIntakeMotor.getVelocity().clone();
+      m_hopperIntakeMotors[0].getVelocity().clone();
   private final StatusSignal<Voltage> m_voltageSignal1 =
-      m_hopperIntakeMotor.getMotorVoltage().clone();
+      m_hopperIntakeMotors[0].getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal1 =
-      m_hopperIntakeMotor.getTorqueCurrent().clone();
-  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+      m_hopperIntakeMotors[0].getTorqueCurrent().clone();
+  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotors[0].getSimState();
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
@@ -43,11 +44,13 @@ public class HopperIntake extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = HOPPERINTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
+    CtreUtils.configureTalonFx(m_hopperIntakeMotors[0], config);
+    CtreUtils.configureTalonFx(m_hopperIntakeMotors[1], config);
+    m_hopperIntakeMotors[1].setControl(new Follower(m_hopperIntakeMotors[0].getDeviceID(), false));
   }
 
   public void setPercentOutput(double speed) {
-    m_hopperIntakeMotor.set(speed);
+    m_hopperIntakeMotors[0].set(speed);
   }
 
   public void updateLogger() {

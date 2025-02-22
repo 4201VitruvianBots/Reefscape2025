@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -29,7 +27,7 @@ public class Elevator extends SubsystemBase {
   /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
     new TalonFX(V2CAN.elevatorMotor1),
-    new TalonFX(V2CAN.elevatorMotor2) // These are just placeholders
+    new TalonFX(V2CAN.elevatorMotor2) // These are no longer just placeholders
   };
 
   // Simulation classes help us simulate what's going on, including gravity.
