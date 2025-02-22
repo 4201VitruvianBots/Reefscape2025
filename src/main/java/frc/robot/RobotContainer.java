@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
@@ -36,7 +35,6 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
-import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
@@ -47,7 +45,6 @@ import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
-import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
@@ -296,10 +293,12 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
-    var targetPassingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    targetPassingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+    // Algae Toggle
+    m_driverController
+        .leftBumper()
+        .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
 
-    if (m_elevator != null) {
+    if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
           .a()
           .whileTrue(
@@ -430,7 +429,6 @@ public class RobotContainer {
                     robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDrive.setAngleToTarget(robotToBranch[1].getTranslation().getAngle());
             });
   }
 

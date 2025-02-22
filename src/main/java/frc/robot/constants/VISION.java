@@ -126,6 +126,6 @@ public final class VISION {
 
   public enum TRACKING_STATE {
     NONE,
-    BRANCH
+    REEF
   }
 }
