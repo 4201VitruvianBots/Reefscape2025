@@ -19,9 +19,9 @@ public class DriveForward extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
   public DriveForward(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("DriveForward");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score1");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
