@@ -45,8 +45,11 @@ public class EndEffectorSetpoint extends Command {
             PIVOT_SETPOINT.STOWED.get());
         break;
       case L1:
-        m_endEffectorPivot.setPosition(
-            PIVOT_SETPOINT.STOWED.get());
+        if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
+            m_endEffectorPivot.setPosition(PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR.get());
+        } else {
+            m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
+        }
         break;
       case L2:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {

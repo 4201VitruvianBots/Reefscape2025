@@ -349,11 +349,11 @@ public class RobotContainer {
       m_driverController
           .leftTrigger()
           .whileTrue(
-              new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL_HOPPER)); // intake
+              new RunEndEffectorIntake(m_endEffector, true, () -> m_selectedGamePiece)); // intake
       m_driverController
           .rightTrigger()
           .whileTrue(
-              new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REEF_REVERSE)); // outtake
+              new RunEndEffectorIntake(m_endEffector, false, () -> m_selectedGamePiece)); // outtake
     }
 
     if (m_climber != null) {
