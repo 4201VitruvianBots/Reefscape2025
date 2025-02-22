@@ -51,6 +51,7 @@ import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import java.util.Arrays;
+import java.util.Map;
 import org.team4201.codex.simulation.FieldSim;
 
 /**
@@ -67,7 +68,6 @@ public class RobotContainer {
   @Logged(name = "Controls")
   private final Controls m_controls = new Controls();
 
-  @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
 
@@ -88,6 +88,8 @@ public class RobotContainer {
 
   private HopperIntake m_hopperIntake;
 
+  // Utility classes
+  @NotLogged private final Telemetry m_telemetry = new Telemetry();
   @NotLogged private final Robot2d m_robot2d = new Robot2d();
 
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
@@ -107,7 +109,7 @@ public class RobotContainer {
 
   @NotLogged
   private double MaxSpeed =
-      AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
   @NotLogged
   private double MaxAngularRate =
@@ -129,11 +131,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
     else configureV2Bindings();
-
-    // Only keep joystick warnings when FMS is attached
-    if (!DriverStation.isFMSAttached()) {
-      DriverStation.silenceJoystickConnectionWarning(true);
-    }
   }
 
   private void initializeSubSystems() {

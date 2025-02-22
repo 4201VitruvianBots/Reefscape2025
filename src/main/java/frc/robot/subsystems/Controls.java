@@ -8,6 +8,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
@@ -42,6 +43,11 @@ public class Controls extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       var allianceCheck = DriverStation.getAlliance();
       allianceCheck.ifPresent(a -> m_allianceColor = a);
-    }
+
+      // Silence joystick warnings only if the FMS is not attached
+      DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
+
+//      for(CommandScheduler.getInstance().printWatchdogEpochs();
+    }l
   }
 }

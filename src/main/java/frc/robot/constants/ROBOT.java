@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
 
+import java.util.Map;
+
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
   public static String robotName = "";
@@ -60,6 +62,36 @@ public class ROBOT {
 
     public String getName() {
       return name();
+    }
+  }
+
+  // Enum
+  public enum SUBSYSTEMS {
+    SwerveDrive(true),
+    Controls(true),
+    FieldSim(true),
+    Vision(true),
+    Climber(true),
+    ClimberIntake(true),
+    Elevator(true),
+    EndEffector(true),
+    EndEffectorPivot(true),
+    HopperIntake(false),
+    CoralOuttake(false),
+    AlgaeIntake(false);
+
+    private boolean required;
+
+    SUBSYSTEMS(boolean required) {
+      this.required = required;
+    }
+
+    public boolean isRequired() {
+      return required;
+    }
+
+    public boolean setRequired(boolean required) {
+      this.required = required;
     }
   }
 

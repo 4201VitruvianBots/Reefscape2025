@@ -29,11 +29,11 @@ public class Telemetry {
   private final Transform2d[] m_moduleTransforms = new Transform2d[4];
   private final double[] m_moduleAngles = new double[4];
 
-  /* What to publish over networktables for telemetry */
+  /* What to publish over NetworkTables for telemetry */
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /* Robot swerve drive state */
-  private final NetworkTable driveStateTable = inst.getTable("DriveState");
+  private final NetworkTable driveStateTable = inst.getTable("Telemetry");
   private final StructPublisher<Pose2d> drivePose =
       driveStateTable.getStructTopic("Pose", Pose2d.struct).publish();
   private final StructPublisher<ChassisSpeeds> driveSpeeds =
@@ -89,18 +89,15 @@ public class Telemetry {
 
     if (m_fieldSim != null) {
       // TODO: Re-impelement
-      //            for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
-      //                m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
-      //                m_moduleTransforms[i.ordinal()] =
-      //                        new Transform2d(
-      //                                SWERVE.DRIVE.kModuleTranslations.get(i),
-      // state.ModuleStates[i.ordinal()].angle);
-      //                m_swerveModulePoses[i.ordinal()] =
-      // pose.transformBy(m_moduleTransforms[i.ordinal()]);
-      //            }
-      //
+      //  for (MODULE_POSITION i : MODULE_POSITION.values()) {
+      //    m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
+      //    m_moduleTransforms[i.ordinal()] = new Transform2d(SWERVE.kModuleTranslations.get(i),
+      //          state.ModuleStates[i.ordinal()].angle);
+      //    m_swerveModulePoses[i.ordinal()] = pose.transformBy(m_moduleTransforms[i.ordinal()]);
+      //  }
+
       m_fieldSim.addPoses("robotPose", state.Pose);
-      // m_fieldSim.updateSwervePoses(m_swerveModulePoses);
+      // m_fieldSim.addPoses("modulePoses", state.Pose);
     }
   }
 }
