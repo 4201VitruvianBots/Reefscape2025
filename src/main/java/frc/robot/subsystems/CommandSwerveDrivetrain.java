@@ -132,6 +132,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = new Rotation2d();
+  private Rotation2d m_angleToTarget = new Rotation2d();
+  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
+  private SwerveDriveKinematics m_kinematics;
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -367,6 +373,42 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
    */
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  public void setAngleToTarget(Rotation2d angle) {
+    m_angleToTarget = angle;
+  }
+
+  public void setTrackingState(VISION.TRACKING_STATE state) {
+    if (m_trackingState != state) {
+      m_pidController.reset();
+      m_trackingState = state;
+    }
+  }
+
+  private double calculateRotationToTarget() {
+    return m_pidController.calculate(
+        getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
+  }
+
+  private void updateTargetAngle() {
+    switch (m_trackingState) {
+      case BRANCH:
+        m_targetAngle = m_angleToTarget;
+        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
+        break;
+      default:
+      case NONE:
+        break;
+    }
+  }
+
+  public boolean isTrackingState() {
+    if (m_trackingState == TRACKING_STATE.BRANCH) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

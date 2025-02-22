@@ -18,8 +18,12 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
+
+import java.util.Arrays;
+// import frc.robot.simulation.FieldSim;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -70,8 +74,8 @@ public class Vision extends SubsystemBase {
   private final NetworkTable table = inst.getTable("VisionDebug");
   private final DoublePublisher visionEstPoseTimestamp =
       table.getDoubleTopic("EstPoseTimestamp").publish();
-  private final StructPublisher<Pose3d> visionEstPose =
-      table.getStructTopic("EstPose", Pose3d.struct).publish();
+  private final StructPublisher<Pose2d> visionEstPose =
+      table.getStructTopic("EstPose", Pose2d.struct).publish();
 
   public Vision() {
 
@@ -80,6 +84,10 @@ public class Vision extends SubsystemBase {
     // for (int port = 5800; port <= 5807; port++) {
     //   PortForwarder.add(port, VISION.CAMERA_SERVER.INTAKE.toString(), port);
     // }
+
+    for (int port = 5800; port <= 5807; port++) {
+      PortForwarder.add(port+10, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), port);
+    }
 
     PortForwarder.add(5800, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), 5800);
 
@@ -288,6 +296,22 @@ public class Vision extends SubsystemBase {
   //     }
   //   }
 
+  private void updateAngleToBranch() {
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDriveTrain.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+              m_swerveDriveTrain.setAngleToTarget(robotToBranch[1].getTranslation().getAngle());
+            });
+    }
+
   public boolean getInitialLocalization() {
     return m_localized;
   }
@@ -326,6 +350,46 @@ public class Vision extends SubsystemBase {
       // false);
       //     });
 
+      // LimelightHelpers.SetRobotOrientation("limelight-a", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2_limelightA = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
+      // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(mt2_limelightA.tagCount == 0)
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(!doRejectUpdate)
+      // {
+      //   visionEstPose.set(mt2_limelightA.pose);
+      //   visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
+      //   m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //   m_swerveDriveTrain.addVisionMeasurement(
+      //       mt2_limelightA.pose,
+      //       mt2_limelightA.timestampSeconds);
+      // }
+
+      // LimelightHelpers.SetRobotOrientation("limelight-b", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2_limelightB = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+      // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(mt2_limelightB.tagCount == 0)
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(!doRejectUpdate)
+      // {
+      //   visionEstPose.set(mt2_limelightA.pose);
+      //   visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
+      //   m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //   m_swerveDriveTrain.addVisionMeasurement(
+      //     mt2_limelightB.pose,
+      //     mt2_limelightB.timestampSeconds);
+      // }
+
       // Correct pose estimate with vision measurements
       limelightPhotonPoseEstimatorB.setReferencePose(m_swerveDriveTrain.getState().Pose);
       var visionEstLimelightB = getEstimatedGlobalPose();
@@ -359,7 +423,8 @@ public class Vision extends SubsystemBase {
     }
 
     switch (trackingState) {
-      case REEF:
+      case BRANCH:
+        updateAngleToBranch();
         break;
       case NONE:
       default:
@@ -378,10 +443,10 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    if (m_swerveDriveTrain != null) {
-      visionSim.update(m_swerveDriveTrain.getState().Pose);
-      visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
-    }
+    // if (m_swerveDriveTrain != null) {
+    //   visionSim.update(m_swerveDriveTrain.getState().Pose);
+    //   visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
+    // }
   }
 
   public Field2d getSimDebugField() {
