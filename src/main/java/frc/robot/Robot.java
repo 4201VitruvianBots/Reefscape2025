@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
           if (RobotBase.isSimulation()) {
             config.errorHandler = ErrorHandler.crashOnError();
           }
-
+          
           config.minimumImportance = Logged.Importance.DEBUG;
         });
     Epilogue.bind(this);

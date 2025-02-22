@@ -1,7 +1,6 @@
 package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
@@ -34,7 +33,7 @@ public class SetElevatorSetpoint extends Command {
     switch (m_stage) {
       case STOWED:
         m_elevator.setDesiredPosition(
-            ELEVATOR.ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
+            ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
         break;
       case L1:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE)
@@ -52,8 +51,7 @@ public class SetElevatorSetpoint extends Command {
       case L3:
         if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
           m_elevator.setDesiredPosition(
-              ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER.getSetpointMeters()
-                  / ELEVATOR.drumRotationsToMeters);
+              ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER.getSetpointMeters());
         } else {
           m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.LEVEL_3.getSetpointMeters());
         }
@@ -74,9 +72,7 @@ public class SetElevatorSetpoint extends Command {
   public void execute() {}
 
   @Override
-  public void end(boolean interruped) {
-    m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
-  }
+  public void end(boolean interruped) {}
 
   @Override
   public boolean isFinished() {

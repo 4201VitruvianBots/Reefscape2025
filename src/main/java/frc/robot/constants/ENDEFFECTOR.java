@@ -74,10 +74,10 @@ public class ENDEFFECTOR {
     public static final boolean enforceLimits = true;
 
     public enum PIVOT_SETPOINT {
-      INTAKE_ALGAE(Degrees.of(0.0)),
+      INTAKE_ALGAE(Degrees.of(18.0)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
-      L4(Degrees.of(120.0)),
+      L4(Degrees.of(60.0)),
       BARGE(Degrees.of(150.0));
 
       private final Angle angle;

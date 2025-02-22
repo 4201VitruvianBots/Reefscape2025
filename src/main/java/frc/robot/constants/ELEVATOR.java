@@ -11,7 +11,7 @@ import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 
 public class ELEVATOR {
-  public static final double upperLimitMeters = Units.inchesToMeters(78);
+  public static final double upperLimitMeters = Units.inchesToMeters(57.5);
   public static final double lowerLimitMeters = Units.inchesToMeters(0);
   public static final Distance superStructureHeight = Inches.of(36.25);
 
@@ -36,8 +36,8 @@ public class ELEVATOR {
   public static final double kPercentOutputMultiplier = 1.0; // Upwards motion
   public static final double kLimitedPercentOutputMultiplier = 0.65; // Downwards motion
 
-  public static final double peakForwardOutput = 0.5; // Move up to 1.0 after testing
-  public static final double peakReverseOutput = -0.3; // Move up to -0.5-0.65 after testing
+  public static final double peakForwardOutput = 0.65; // Move up to 1.0 after testing
+  public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
   public static final double kElevatorDrumDiameter = Units.inchesToMeters(2.2557);
   public static final double drumRotationsToMeters =
@@ -55,8 +55,8 @@ public class ELEVATOR {
     PROCESSOR(Units.inchesToMeters(10), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
     LEVEL_2(Units.inchesToMeters(13), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
     LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
-    LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
-    NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+    LEVEL_4(Units.inchesToMeters(57), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
+    NET(Units.inchesToMeters(57.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
 
     private final double setpointMeters;
     private final SUPERSTRUCTURE_STATES superstructureState;
