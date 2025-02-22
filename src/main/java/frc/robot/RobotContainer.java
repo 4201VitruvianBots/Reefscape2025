@@ -388,10 +388,10 @@ public class RobotContainer {
 
   public void simulationInit() {
     //    m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
-    m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
-    m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
-    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
-    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+    // m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
+    // m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+    // m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+    // m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
 
     //    m_fieldSim.initializePoses(
     //        "RED_REEF_NEAR_LEFT AprilTag", FIELD.APRIL_TAG.RED_REEF_NEAR_LEFT.getPose2d());
