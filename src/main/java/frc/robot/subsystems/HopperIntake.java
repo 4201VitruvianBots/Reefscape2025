@@ -46,13 +46,12 @@ public class HopperIntake extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = HOPPERINTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    CtreUtils.configureTalonFx(m_hopperIntakeMotors[0], config);
-    CtreUtils.configureTalonFx(m_hopperIntakeMotors[1], config);
-    m_hopperIntakeMotors[1].setControl(new Follower(m_hopperIntakeMotors[0].getDeviceID(), false));
+    CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
+    
   }
 
   public void setPercentOutput(double speed) {
-    m_hopperIntakeMotors[0].set(speed);
+    m_hopperIntakeMotor.set(speed);
   }
 
   public boolean getHasCoral() {
