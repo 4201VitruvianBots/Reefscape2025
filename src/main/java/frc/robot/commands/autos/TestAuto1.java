@@ -13,12 +13,18 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import org.team4201.codex.simulation.FieldSim;
 
 public class TestAuto1 extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
-  public TestAuto1(CommandSwerveDrivetrain swerveDrive /* TODO: Add field sim */) {
+  /**
+   * Creates a new DriveForward.
+   *
+   * @param m_fieldSim
+   */
+  public TestAuto1(CommandSwerveDrivetrain swerveDrive, FieldSim m_fieldSim) {
+    // TODO implement field sim
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("Test1");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("4PieceL");
 
       var m_ppCommand = AutoBuilder.followPath(path);
 
