@@ -54,7 +54,6 @@ public class ENDEFFECTOR {
     public static final double kPivotMotionMagicVelocity = 480;
     public static final double kPivotMotionMagicAcceleration = 90;
 
-
     public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
     // The values for Distance and Mass are made up

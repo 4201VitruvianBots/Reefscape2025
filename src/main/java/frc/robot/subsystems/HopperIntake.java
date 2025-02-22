@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
-import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.utils.CtreUtils;
 
@@ -47,7 +46,7 @@ public class HopperIntake extends SubsystemBase {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     config.MotorOutput.PeakReverseDutyCycle = HOPPERINTAKE.peakReverseOutput;
-    config.MotorOutput.PeakForwardDutyCycle = HOPPERINTAKE.peakForwardOutput;    
+    config.MotorOutput.PeakForwardDutyCycle = HOPPERINTAKE.peakForwardOutput;
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
   }
 

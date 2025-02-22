@@ -37,7 +37,8 @@ public class RunEndEffectorIntake extends Command {
     switch (m_selectedGamePiece.get()) {
       case CORAL:
         if (m_intaking) {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.OUTTAKE_CORAL_HOPPER.get()); // intaking/outtaking coral
+          m_endEffector.setPercentOutput(
+              ROLLER_SPEED.OUTTAKE_CORAL_HOPPER.get()); // intaking/outtaking coral
         } else {
           m_endEffector.setPercentOutput(ROLLER_SPEED.CORAL_REEF_REVERSE.get()); // reverse coral
         }
@@ -45,7 +46,8 @@ public class RunEndEffectorIntake extends Command {
         if (m_intaking) {
           m_endEffector.setPercentOutput(ROLLER_SPEED.INTAKE_ALGAE_REEF.get()); // intaking algae
         } else {
-          m_endEffector.setPercentOutput(ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR.get()); // outtaking algae
+          m_endEffector.setPercentOutput(
+              ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR.get()); // outtaking algae
         }
       default:
         break;
