@@ -29,7 +29,7 @@ public class V2Constants {
           .withKI(0)
           .withKD(0.5)
           .withKS(0.1)
-          .withKV(0)
+          .withKV(2.66)
           .withKA(0)
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
   // When using closed-loop control, the drive motor uses the control
@@ -88,10 +88,10 @@ public class V2Constants {
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
-  private static final double kCoupleRatio = 3.125;
+  private static final double kCoupleRatio = 3.5714285714285716;
 
-  private static final double kDriveGearRatio = 5.357142857142857;
-  private static final double kSteerGearRatio = 12.8;
+  private static final double kDriveGearRatio = 6.12;
+  private static final double kSteerGearRatio = 21.428571428571427;
   /* ---------------------------------- */
   private static final Distance kWheelRadius = Inches.of(2);
 
@@ -143,7 +143,7 @@ public class V2Constants {
   private static final int kFrontLeftDriveMotorId = CAN.frontLeftDriveMotor;
   private static final int kFrontLeftSteerMotorId = CAN.frontLeftTurnMotor;
   private static final int kFrontLeftEncoderId = CAN.frontLeftCanCoder;
-  private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.014892578125);
+  private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.022705078125);
   private static final boolean kFrontLeftSteerMotorInverted = true;
   private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -154,7 +154,7 @@ public class V2Constants {
   private static final int kFrontRightDriveMotorId = CAN.frontRightDriveMotor;
   private static final int kFrontRightSteerMotorId = CAN.frontRightTurnMotor;
   private static final int kFrontRightEncoderId = CAN.frontRightCanCoder;
-  private static final Angle kFrontRightEncoderOffset = Rotations.of(0.168212890625);
+  private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.3330078125);
   private static final boolean kFrontRightSteerMotorInverted = true;
   private static final boolean kFrontRightEncoderInverted = false;
 
@@ -165,7 +165,7 @@ public class V2Constants {
   private static final int kBackLeftDriveMotorId = CAN.backLeftDriveMotor;
   private static final int kBackLeftSteerMotorId = CAN.backLeftTurnMotor;
   private static final int kBackLeftEncoderId = CAN.backLeftCanCoder;
-  private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.17236328125);
+  private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.171142578125);
   private static final boolean kBackLeftSteerMotorInverted = true;
   private static final boolean kBackLeftEncoderInverted = false;
 
@@ -176,7 +176,7 @@ public class V2Constants {
   private static final int kBackRightDriveMotorId = CAN.backRightDriveMotor;
   private static final int kBackRightSteerMotorId = CAN.backRightTurnMotor;
   private static final int kBackRightEncoderId = CAN.backRightCanCoder;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.037841796875);
+  private static final Angle kBackRightEncoderOffset = Rotations.of(0.462646484375);
   private static final boolean kBackRightSteerMotorInverted = true;
   private static final boolean kBackRightEncoderInverted = false;
 
