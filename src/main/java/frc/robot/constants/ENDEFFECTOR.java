@@ -21,13 +21,13 @@ public class ENDEFFECTOR {
 
     public enum ROLLER_SPEED {
       // Coral
-      OUTTAKE_CORAL_HOPPER(-0.2),
-      INTAKE_CORAL_REEF(-0.2),
-      CORAL_REEF_REVERSE(0.2),
+      OUTTAKE_CORAL(-0.2),
+      INTAKE_CORAL(-0.1),
+      CORAL_REVERSE(0.2),
 
       // Algae
+      // INTAKE_ALGAE_GROUND(0.35),
       INTAKE_ALGAE_REEF(0.35),
-      INTAKE_ALGAE_GROUND(0.35),
       OUTTAKE_ALGAE_BARGE(0.35),
       OUTTAKE_ALGAE_PROCESSOR(-0.35);
 

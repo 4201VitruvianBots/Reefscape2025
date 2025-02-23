@@ -387,7 +387,7 @@ public class RobotContainer {
           .whileTrue(
               new ParallelCommandGroup(
                   new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL_HOPPER),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);
@@ -400,7 +400,7 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL_HOPPER),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
       // Coral Reverse / Algae Outtake
       m_driverController
@@ -408,7 +408,7 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REEF_REVERSE),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
