@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import frc.robot.utils.CtreUtils;
 
@@ -46,6 +47,8 @@ public class EndEffector extends SubsystemBase {
     config.Slot0.kD = ROLLERS.kD;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = ROLLERS.gearRatio;
+    config.MotorOutput.PeakForwardDutyCycle = ENDEFFECTOR.ROLLERS.peakForwardOutput;
+    config.MotorOutput.PeakReverseDutyCycle = ENDEFFECTOR.ROLLERS.peakReverseOutput;
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");
