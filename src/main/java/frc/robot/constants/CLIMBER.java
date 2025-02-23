@@ -1,6 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class CLIMBER {
@@ -33,6 +32,4 @@ public class CLIMBER {
       return setpointMeters;
     }
   }
-
-
 }
