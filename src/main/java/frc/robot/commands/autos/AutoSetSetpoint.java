@@ -4,6 +4,8 @@
 
 package frc.robot.commands.autos;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -43,6 +45,12 @@ public class AutoSetSetpoint extends SequentialCommandGroup {
                         Math.abs(
                                 m_elevator.getHeightMeters() - elevatorSetpoint.getSetpointMeters())
                             < Units.inchesToMeters(1)),
-            new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint)));
+            new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint)
+                .onlyWhile(
+                    () ->
+                        Math.abs(
+                                m_endEffectorPivot.getCurrentRotation().in(Degrees)
+                                    - pivotSetpoint.get().in(Degrees))
+                            < Units.degreesToRotations(0.5))));
   }
 }
