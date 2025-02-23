@@ -107,6 +107,7 @@ public class Elevator extends SubsystemBase {
     config.CurrentLimits.StatorCurrentLimit = 40;
     config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
@@ -292,9 +293,9 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocityMps());
     SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
     // SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
-    SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
+    // SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
     SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
-    SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
+    // SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
     SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
     // SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
     SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());

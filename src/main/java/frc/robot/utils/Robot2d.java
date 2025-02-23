@@ -76,7 +76,7 @@ public class Robot2d {
           new Arm2dConfig(
                   "EndEffector2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle, PIVOT.length)
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
-          m_endEffectorRoot);
+          m_elevator.getLastStageLigament());
 
   /** Map of subsystems for Robot2d to update */
   Map<String, Subsystem> m_subsystemMap = new HashMap<>();

@@ -44,7 +44,9 @@ public class HopperIntake extends SubsystemBase {
     config.Slot0.kD = HOPPERINTAKE.kD;
     config.Feedback.SensorToMechanismRatio = HOPPERINTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.PeakReverseDutyCycle = HOPPERINTAKE.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = HOPPERINTAKE.peakForwardOutput;
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
   }
 
