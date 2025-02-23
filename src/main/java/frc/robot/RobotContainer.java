@@ -28,6 +28,7 @@ import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
+import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
@@ -203,6 +204,7 @@ public class RobotContainer {
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
+    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive,m_fieldSim));
   }
 
   private void initSmartDashboard() {
