@@ -15,8 +15,7 @@ public class EndEffectorSetpoint extends Command {
   private final PIVOT_SETPOINT m_setpoint;
 
   /** Creates a new EndEffectorSetpoint. */
-  public EndEffectorSetpoint(
-      EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
+  public EndEffectorSetpoint(EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorPivot = endEffectorPivot;
     m_setpoint = setpoint;

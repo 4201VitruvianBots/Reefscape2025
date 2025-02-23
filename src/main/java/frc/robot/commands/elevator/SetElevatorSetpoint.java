@@ -10,9 +10,7 @@ public class SetElevatorSetpoint extends Command {
   private final Elevator m_elevator;
   private final ELEVATOR_SETPOINT m_setpoint;
 
-  public SetElevatorSetpoint(
-      Elevator elevator,
-      ELEVATOR_SETPOINT setpoint) {
+  public SetElevatorSetpoint(Elevator elevator, ELEVATOR_SETPOINT setpoint) {
     m_elevator = elevator;
     m_setpoint = setpoint;
     addRequirements(m_elevator);

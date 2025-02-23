@@ -7,8 +7,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.constants.ROBOT.GAME_PIECE;
-import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 
 public class ELEVATOR {
   public static final double upperLimitMeters = Units.inchesToMeters(57.5);

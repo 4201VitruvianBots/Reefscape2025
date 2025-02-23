@@ -14,8 +14,7 @@ public class RunEndEffectorIntake extends Command {
   private final ROLLER_SPEED m_speed;
 
   /** Creates a new RunEndEffectorIntake. */
-  public RunEndEffectorIntake(
-      EndEffector endEffector, ROLLER_SPEED speed) {
+  public RunEndEffectorIntake(EndEffector endEffector, ROLLER_SPEED speed) {
     m_endEffector = endEffector;
     m_speed = speed;
 
