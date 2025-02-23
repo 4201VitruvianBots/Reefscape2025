@@ -209,7 +209,7 @@ public class RobotContainer {
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
-    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive,m_fieldSim));
+    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive, m_fieldSim));
   }
 
   private void initSmartDashboard() {

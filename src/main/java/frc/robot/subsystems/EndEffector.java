@@ -15,6 +15,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +39,7 @@ public class EndEffector extends SubsystemBase {
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
+  private final DigitalInput input = new DigitalInput(0);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
@@ -62,6 +64,10 @@ public class EndEffector extends SubsystemBase {
     SmartDashboard.putNumber("EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
+  }
+
+  public boolean getHasCoral() {
+    return !input.get();
   }
 
   @Override
