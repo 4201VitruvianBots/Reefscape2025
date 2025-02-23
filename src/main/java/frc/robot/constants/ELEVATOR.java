@@ -49,41 +49,24 @@ public class ELEVATOR {
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
 
   public enum ELEVATOR_SETPOINT {
-    START_POSITION(Units.inchesToMeters(0.0), SUPERSTRUCTURE_STATES.STOWED),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(21), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(35), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
-    PROCESSOR(Units.inchesToMeters(7), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
-    INTAKE_HOPPER(Units.inchesToMeters(0), SUPERSTRUCTURE_STATES.HOPPER_INTAKE, GAME_PIECE.CORAL),
-    LEVEL_2(Units.inchesToMeters(13), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
-    LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
-    LEVEL_4(Units.inchesToMeters(57), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
-    NET(Units.inchesToMeters(57.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+    START_POSITION(Units.inchesToMeters(0.0)),
+    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(21)),
+    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(35)),
+    PROCESSOR(Units.inchesToMeters(7)),
+    INTAKE_HOPPER(Units.inchesToMeters(0)),
+    LEVEL_2(Units.inchesToMeters(13)),
+    LEVEL_3(Units.inchesToMeters(27)),
+    LEVEL_4(Units.inchesToMeters(57)),
+    NET(Units.inchesToMeters(57.5));
 
     private final double setpointMeters;
-    private final SUPERSTRUCTURE_STATES superstructureState;
-    private final GAME_PIECE gamePiece;
 
-    ELEVATOR_SETPOINT(
-        double setpointMeters, SUPERSTRUCTURE_STATES superstructureState, GAME_PIECE gamePiece) {
+    ELEVATOR_SETPOINT(double setpointMeters) {
       this.setpointMeters = setpointMeters;
-      this.superstructureState = superstructureState;
-      this.gamePiece = gamePiece;
-    }
-
-    ELEVATOR_SETPOINT(double setpointMeters, SUPERSTRUCTURE_STATES superstructureState) {
-      this(setpointMeters, superstructureState, GAME_PIECE.NONE);
     }
 
     public double getSetpointMeters() {
       return setpointMeters;
-    }
-
-    public SUPERSTRUCTURE_STATES getSuperstructureState() {
-      return superstructureState;
-    }
-
-    public GAME_PIECE getGamePiece() {
-      return gamePiece;
     }
   }
 

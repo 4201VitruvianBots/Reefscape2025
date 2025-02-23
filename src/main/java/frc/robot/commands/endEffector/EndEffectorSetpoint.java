@@ -6,27 +6,20 @@ package frc.robot.commands.endEffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
-import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
 import frc.robot.subsystems.EndEffectorPivot;
-import java.util.function.Supplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorSetpoint extends Command {
   private final EndEffectorPivot m_endEffectorPivot;
-  private SUPERSTRUCTURE_STATES m_stage;
-  private Supplier<ROBOT.GAME_PIECE> m_selectedGamePiece;
+  private final PIVOT_SETPOINT m_setpoint;
 
   /** Creates a new EndEffectorSetpoint. */
   public EndEffectorSetpoint(
-      EndEffectorPivot endEffectorPivot,
-      SUPERSTRUCTURE_STATES stage,
-      Supplier<ROBOT.GAME_PIECE> selectedGamePiece) {
+      EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_endEffectorPivot = endEffectorPivot;
-    m_stage = stage;
-    m_selectedGamePiece = selectedGamePiece;
+    m_setpoint = setpoint;
 
     addRequirements(endEffectorPivot);
   }
@@ -35,47 +28,7 @@ public class EndEffectorSetpoint extends Command {
   @Override
   public void initialize() {
     m_endEffectorPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-
-    /* If we want to be able to algae toggle in the middle of an outtake cycle, we need to put this in execute().
-    No idea why would you want to do that though */
-    switch (m_stage) {
-      case STOWED:
-        m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
-        break;
-      case HOPPER_INTAKE:
-        m_endEffectorPivot.setPosition(PIVOT_SETPOINT.INTAKE_HOPPER.get());
-        break;
-      case L1:
-        if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR.get());
-        } else {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
-        }
-        break;
-      case L2:
-        if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.INTAKE_ALGAE_LOW.get());
-        } else {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.L3_L2.get());
-        }
-        break;
-      case L3:
-        if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.INTAKE_ALGAE_HIGH.get());
-        } else {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.L3_L2.get());
-        }
-        break;
-      case L4:
-        if (m_selectedGamePiece.get() == ROBOT.GAME_PIECE.ALGAE) {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.BARGE.get());
-        } else {
-          m_endEffectorPivot.setPosition(PIVOT_SETPOINT.L4.get());
-        }
-        break;
-      default:
-        break;
-    }
+    m_endEffectorPivot.setPosition(m_setpoint.get());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
