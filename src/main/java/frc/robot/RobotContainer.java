@@ -386,9 +386,8 @@ public class RobotContainer {
           .whileTrue(
               new ParallelCommandGroup(
                   new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).withDeadline(
-                    new WaitUntilCommand(() -> m_endEffector.hasCoral()) // End effector stops running when coral is detected
-                  ),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
+                      .until(() -> m_endEffector.hasCoral()), // End effector stops running when coral is detected
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);

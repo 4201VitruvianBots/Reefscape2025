@@ -64,6 +64,7 @@ public class EndEffector extends SubsystemBase {
     SmartDashboard.putNumber("EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putBoolean("EndEffector/Has Coral", hasCoral());
   }
 
   public boolean hasCoral() {
