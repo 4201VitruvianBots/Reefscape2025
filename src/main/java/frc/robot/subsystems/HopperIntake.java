@@ -35,7 +35,7 @@ public class HopperIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
           HOPPERINTAKE.gearbox);
-  private final DigitalInput input = new DigitalInput(0);
+  // private final DigitalInput input = new DigitalInput(0);
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -54,16 +54,16 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotor.set(speed);
   }
 
-  public boolean getHasCoral() {
-    return !input.get();
-  }
+  // public boolean getHasCoral() {
+  //   return !input.get();
+  // }
 
   public void updateSmartDashboard() {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
-    SmartDashboard.putBoolean("Hopper Intake/Has Coral", getHasCoral());
+    // SmartDashboard.putBoolean("Hopper Intake/Has Coral", getHasCoral());
   }
 
   @Override

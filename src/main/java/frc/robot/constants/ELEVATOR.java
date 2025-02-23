@@ -51,7 +51,7 @@ public class ELEVATOR {
     ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(21)),
     ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(35)),
     PROCESSOR(Units.inchesToMeters(7)),
-    INTAKE_HOPPER(Units.inchesToMeters(0)),
+    INTAKE_HOPPER(Units.inchesToMeters(3.543)),
     LEVEL_2(Units.inchesToMeters(13)),
     LEVEL_3(Units.inchesToMeters(27)),
     LEVEL_4(Units.inchesToMeters(57)),

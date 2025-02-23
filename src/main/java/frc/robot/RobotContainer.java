@@ -408,7 +408,7 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
+                  new ParallelCommandGroup(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE), new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
