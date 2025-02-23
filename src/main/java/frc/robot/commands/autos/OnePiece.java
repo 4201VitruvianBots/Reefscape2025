@@ -13,11 +13,15 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.EndEffectorPivot;
+
 import org.team4201.codex.simulation.FieldSim;
 
 public class OnePiece extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public OnePiece(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
+  public OnePiece(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim,Elevator elevator,EndEffectorPivot endEffectorpivot) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
@@ -33,6 +37,7 @@ public class OnePiece extends SequentialCommandGroup {
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PrintCommand("path starting point" + path.getStartingHolonomicPose().toString()),
+          new AutoSetSetpoint(elevator, endEffectorpivot),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(

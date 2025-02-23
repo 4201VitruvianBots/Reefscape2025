@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.SetHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
@@ -210,7 +209,7 @@ public class RobotContainer {
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
-    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive, m_fieldSim));
+    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive, m_fieldSim,m_elevator,m_endEffectorPivot));
   }
 
   private void initSmartDashboard() {
@@ -386,9 +385,14 @@ public class RobotContainer {
           .whileTrue(
               new ParallelCommandGroup(
                   new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).withDeadline(
-                    new WaitUntilCommand(() -> m_endEffector.hasCoral()) // End effector stops running when coral is detected
-                  ),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
+                      .withDeadline(
+                          new WaitUntilCommand(
+                              () ->
+                                  m_endEffector
+                                      .hasCoral()) // End effector stops running when coral is
+                          // detected
+                          ),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);
@@ -409,7 +413,9 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
-                  new ParallelCommandGroup(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE), new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
+                  new ParallelCommandGroup(
+                      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
+                      new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
