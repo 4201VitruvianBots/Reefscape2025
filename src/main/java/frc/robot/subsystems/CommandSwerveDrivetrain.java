@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,8 +24,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -139,7 +136,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
   private Rotation2d m_targetAngle = new Rotation2d();
-  private Rotation2d m_angleToReef = new Rotation2d();
+  private Rotation2d m_angleToTarget = new Rotation2d();
   private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
   private SwerveDriveKinematics m_kinematics;
 
@@ -369,8 +366,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
-  public void setAngleToReef(Rotation2d angle) {
-    m_angleToReef = angle;
+  public void setAngleToTarget(Rotation2d angle) {
+    m_angleToTarget = angle;
   }
 
   public void setTrackingState(VISION.TRACKING_STATE state) {
@@ -380,15 +377,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
-  private double calculateRotationToTarget() {
+  public double calculateRotationToTarget() {
     return m_pidController.calculate(
         getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
   }
 
   private void updateTargetAngle() {
     switch (m_trackingState) {
-      case REEF:
-        m_targetAngle = m_angleToReef;
+      case BRANCH:
+        m_targetAngle = m_angleToTarget;
         if (m_vision != null) m_vision.setTrackingState(m_trackingState);
         break;
       default:
@@ -398,7 +395,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public boolean isTrackingState() {
-    if (m_trackingState == TRACKING_STATE.REEF) {
+    if (m_trackingState == TRACKING_STATE.BRANCH) {
       return true;
     } else {
       return false;

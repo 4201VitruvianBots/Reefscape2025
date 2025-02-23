@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -15,24 +14,17 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
+import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
-
+import java.util.Arrays;
 // import frc.robot.simulation.FieldSim;
-import java.util.List;
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
-import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
@@ -78,8 +70,8 @@ public class Vision extends SubsystemBase {
   private final NetworkTable table = inst.getTable("VisionDebug");
   private final DoublePublisher visionEstPoseTimestamp =
       table.getDoubleTopic("EstPoseTimestamp").publish();
-  private final StructPublisher<Pose3d> visionEstPose =
-      table.getStructTopic("EstPose", Pose3d.struct).publish();
+  private final StructPublisher<Pose2d> visionEstPose =
+      table.getStructTopic("EstPose", Pose2d.struct).publish();
 
   public Vision() {
     m_limeLightA = NetworkTableInstance.getDefault().getTable("limeLight-a");
@@ -88,6 +80,10 @@ public class Vision extends SubsystemBase {
     // Port Forwarding to access limelight on USB Ethernet
     for (int port = 5800; port <= 5807; port++) {
       PortForwarder.add(port, VISION.CAMERA_SERVER.LIMELIGHTA.toString(), port);
+    }
+
+    for (int port = 5800; port <= 5807; port++) {
+      PortForwarder.add(port + 10, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), port);
     }
 
     PortForwarder.add(5800, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), 5800);
@@ -103,7 +99,7 @@ public class Vision extends SubsystemBase {
             .getTable("lLocalizer")
             .getDoubleArrayTopic("camToRobotT3D")
             .publish();
-          
+
     // limelightPhotonPoseEstimatorA.setMultiTagFallbackStrategy(
     //   PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
     // limelightPhotonPoseEstimatorB.setMultiTagFallbackStrategy(
@@ -161,7 +157,8 @@ public class Vision extends SubsystemBase {
   public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
   // /**
-  //  * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
+  //  * Calculates new standard deviations This algorithm is a heuristic that creates dynamic
+  // standard
   //  * deviations based on number of tags, estimation strategy, and distance from the tags.
   //  *
   //  * @param estimatedPose The estimated pose to guess standard deviations for.
@@ -181,7 +178,8 @@ public class Vision extends SubsystemBase {
 
   //     // Precalculation - see how many tags we found, and calculate an average-distance metric
   //     for (var tgt : targets) {
-  //       var tagPose = limelightPhotonPoseEstimatorB.getFieldTags().getTagPose(tgt.getFiducialId());
+  //       var tagPose =
+  // limelightPhotonPoseEstimatorB.getFieldTags().getTagPose(tgt.getFiducialId());
   //       if (tagPose.isEmpty()) continue;
   //       numTags++;
   //       avgDist +=
@@ -314,6 +312,22 @@ public class Vision extends SubsystemBase {
   //     }
   //   }
 
+  private void updateAngleToBranch() {
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDriveTrain.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+              m_swerveDriveTrain.setAngleToTarget(m_swerveDriveTrain.getState().Pose.getTranslation().minus(robotToBranch[1].getTranslation()).getAngle().minus(Rotation2d.k180deg));
+            });
+  }
+
   public boolean getInitialLocalization() {
     return m_localized;
   }
@@ -346,23 +360,53 @@ public class Vision extends SubsystemBase {
       //           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
       //     });
 
-      LimelightHelpers.SetRobotOrientation("limelight-b", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
-      if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-      {
-        doRejectUpdate = true;
-      }
-      if(mt2.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-        m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-        m_swerveDriveTrain.addVisionMeasurement(
-            mt2.pose,
-            mt2.timestampSeconds);
-      }
+      // LimelightHelpers.SetRobotOrientation("limelight-a",
+      // m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2_limelightA =
+      // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
+      // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
+      // > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision
+      // updates
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(mt2_limelightA.tagCount == 0)
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(!doRejectUpdate)
+      // {
+      //   visionEstPose.set(mt2_limelightA.pose);
+      //   visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
+      //   m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //   m_swerveDriveTrain.addVisionMeasurement(
+      //       mt2_limelightA.pose,
+      //       mt2_limelightA.timestampSeconds);
+      // }
+
+      // LimelightHelpers.SetRobotOrientation("limelight-b",
+      // m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2_limelightB =
+      // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+      // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
+      // > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision
+      // updates
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(mt2_limelightB.tagCount == 0)
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // if(!doRejectUpdate)
+      // {
+      //   visionEstPose.set(mt2_limelightA.pose);
+      //   visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
+      //   m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //   m_swerveDriveTrain.addVisionMeasurement(
+      //     mt2_limelightB.pose,
+      //     mt2_limelightB.timestampSeconds);
+      // }
 
       // Correct pose estimate with vision measurements
       // limelightPhotonPoseEstimatorB.setReferencePose(m_swerveDriveTrain.getState().Pose);
@@ -396,8 +440,8 @@ public class Vision extends SubsystemBase {
     }
 
     switch (trackingState) {
-      case REEF:
-        // updateAngleToReef();
+      case BRANCH:
+        updateAngleToBranch();
         break;
       case NONE:
       default:
@@ -405,13 +449,13 @@ public class Vision extends SubsystemBase {
     }
 
     m_limelightAPositionPub.set(
-      new double[] {
-        VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getX(),
-        VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getY(),
-        VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getZ(),
-      });
+        new double[] {
+          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getX(),
+          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getY(),
+          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getZ(),
+        });
 
-      m_limelightBPositionPub.set(
+    m_limelightBPositionPub.set(
         new double[] {
           VISION.LOCALIZER_CAMERA_POSITION[1].getTranslation().getX(),
           VISION.LOCALIZER_CAMERA_POSITION[1].getTranslation().getY(),
@@ -430,10 +474,10 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    if (m_swerveDriveTrain != null) {
-      visionSim.update(m_swerveDriveTrain.getState().Pose);
-      visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
-    }
+    // if (m_swerveDriveTrain != null) {
+    //   visionSim.update(m_swerveDriveTrain.getState().Pose);
+    //   visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
+    // }
   }
 
   public Field2d getSimDebugField() {

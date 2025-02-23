@@ -23,16 +23,12 @@ public final class VISION {
     // Robot Center to Limelight Camera A
     new Transform3d(
         new Translation3d(
-            Units.inchesToMeters(-14),
-            Units.inchesToMeters(6.5),
-            Units.inchesToMeters(14.6875)),
+            Units.inchesToMeters(-14), Units.inchesToMeters(6.5), Units.inchesToMeters(14.6875)),
         new Rotation3d()),
     // Robot Center to Limelight Camera B
     new Transform3d(
         new Translation3d(
-            Units.inchesToMeters(14),
-            Units.inchesToMeters(-6.5),
-            Units.inchesToMeters(14.6875)),
+            Units.inchesToMeters(14), Units.inchesToMeters(-6.5), Units.inchesToMeters(14.6875)),
         new Rotation3d()),
   };
 
@@ -129,7 +125,7 @@ public final class VISION {
 
   public enum TRACKING_STATE {
     NONE,
-    REEF
+    BRANCH
   }
 
   // TODO: figure out what value this should be

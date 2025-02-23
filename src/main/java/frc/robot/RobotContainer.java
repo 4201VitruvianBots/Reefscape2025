@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
@@ -32,6 +34,7 @@ import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
+import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
@@ -41,11 +44,10 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
+import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
@@ -168,17 +170,22 @@ public class RobotContainer {
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        leftJoystick.getRawAxis(1)
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        rightJoystick.getRawAxis(0)
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+            () -> {
+              var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
+              // if heading target
+              if (m_swerveDrive.isTrackingState()) {
+                rotationRate = m_swerveDrive.calculateRotationToTarget();
+              }
+              drive
+                  .withVelocityX(
+                      leftJoystick.getRawAxis(1)
+                          * MaxSpeed) // Drive forward with negative Y (forward)
+                  .withVelocityY(
+                      leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                  .withRotationalRate(
+                      rotationRate); // Drive counterclockwise with negative X (left)
+              return drive;
+            }));
     if (m_elevator != null) {
       m_elevator.setDefaultCommand(
           new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
@@ -282,6 +289,9 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
+    var targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+
     if (m_elevator != null) {
       m_driverController
           .a()
@@ -399,6 +409,7 @@ public class RobotContainer {
                     robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+              m_swerveDrive.setAngleToTarget(m_swerveDrive.getState().Pose.getTranslation().minus(robotToBranch[1].getTranslation()).getAngle().minus(Rotation2d.k180deg));
             });
   }
 
