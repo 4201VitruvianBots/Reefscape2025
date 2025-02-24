@@ -170,7 +170,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     try {
       m_trajectoryUtils = new TrajectoryUtils(this);
     } catch (Exception ex) {
-      DriverStation.reportError("Failed to configure TrajectoryUtils", false);
+      DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
     }
   }
 
@@ -268,7 +268,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   // TODO: fix
   @Override
   public void setChassisSpeedsAuto(
-      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {
+    setControl(
+        m_pathApplyRobotSpeeds
+            .withSpeeds(chassisSpeeds)
+            .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+  }
 
   // TODO: Re-implement
   //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
@@ -486,5 +492,34 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   public void addVisionMeasurement(
       Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
     super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
+  }
+
+  @Override
+  public RobotConfig getAutoRobotConfig() {
+    // TODO Auto-generated method stub
+    try {
+      return RobotConfig.fromGUISettings();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public PIDConstants getAutoTranslationPIDConstants() {
+    // TODO Auto-generated method stub
+    return new PIDConstants(10, 0, 0);
+  }
+
+  @Override
+  public PIDConstants getAutoRotationPIDConstants() {
+    // TODO Auto-generated method stub
+    return new PIDConstants(7, 0, 0);
   }
 }

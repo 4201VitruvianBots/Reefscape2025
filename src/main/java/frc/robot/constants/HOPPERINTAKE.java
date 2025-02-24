@@ -9,16 +9,18 @@ import edu.wpi.first.math.system.plant.DCMotor;
 /** Add your docs here. */
 public class HOPPERINTAKE {
 
-  public static final double kP = 0.10; // change these
+  public static final double kP = 1.0; // change these
   public static final double kI = 0.00;
   public static final double kD = 0.00;
   public static final double gearRatio = 1.0 / 1.0;
   public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
   public static final double kInertia = 0.001;
+  public static final double peakForwardOutput = 0.6;
+  public static final double peakReverseOutput = -0.4;
 
   public enum INTAKE_SPEED {
-    INTAKING(0.5),
-    HOLDING_CORAL(0.5); // TODO: update speeds later
+    INTAKING(0.6),
+    FREEING_CORAL(-0.1); // TODO: update speeds later
 
     private final double value;
 

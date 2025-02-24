@@ -17,11 +17,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import frc.robot.utils.CtreUtils;
 
@@ -52,6 +54,7 @@ public class EndEffector extends SubsystemBase {
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
+  private final DigitalInput input = new DigitalInput(0);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
@@ -61,6 +64,8 @@ public class EndEffector extends SubsystemBase {
     config.Slot0.kD = ROLLERS.kD;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = ROLLERS.gearRatio;
+    config.MotorOutput.PeakForwardDutyCycle = ENDEFFECTOR.ROLLERS.peakForwardOutput;
+    config.MotorOutput.PeakReverseDutyCycle = ENDEFFECTOR.ROLLERS.peakReverseOutput;
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");
@@ -96,9 +101,14 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void updateLogger() {
-    SmartDashboard.putNumber("EndEffector Intake/Motor Velocity", getAngularVelocity().magnitude());
-    SmartDashboard.putNumber("EndEffector/Motor Output", getPercentOutput());
-    SmartDashboard.putNumber("EndEffector Intake/Motor Current", getCurrent().magnitude());
+    SmartDashboard.putNumber("EndEffector/Motor Velocity", m_velocitySignal.getValueAsDouble());
+    SmartDashboard.putNumber("EndEffector/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
+    SmartDashboard.putNumber("EndEffector/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putBoolean("EndEffector/Has Coral", hasCoral());
+  }
+
+  public boolean hasCoral() {
+    return !input.get();
   }
 
   @Override

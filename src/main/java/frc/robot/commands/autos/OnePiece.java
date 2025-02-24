@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import org.team4201.codex.simulation.FieldSim;
 
-public class DriveForward extends SequentialCommandGroup {
+public class OnePiece extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public DriveForward(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
+  public OnePiece(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("DriveForward");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score1");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -41,8 +41,8 @@ public class DriveForward extends SequentialCommandGroup {
               .withTimeout(0.1),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
-      addCommands(new WaitCommand(0).unti);
+      DriverStation.reportError("Failed to load path for Score1", e.getStackTrace());
+      addCommands(new WaitCommand(0));
     }
   }
 }

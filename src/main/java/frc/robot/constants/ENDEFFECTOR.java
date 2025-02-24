@@ -16,17 +16,20 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
+    public static final double peakForwardOutput = 0.2;
+    public static final double peakReverseOutput = -0.4;
 
     public enum ROLLER_SPEED {
       // Coral
-      INTAKE_CORAL_HOPPER(-0.2),
-      OUTTAKE_CORAL_REEF(-0.2),
-      CORAL_REEF_REVERSE(0.2),
+      OUTTAKE_CORAL(-0.2),
+      INTAKE_CORAL(-0.1),
+      CORAL_REVERSE(0.2),
 
       // Algae
-      INTAKE_ALGAE_REEF(0.2),
-      INTAKE_ALGAE_GROUND(0.2),
-      OUTTAKE_ALGAE_BARGE(0.2);
+      // INTAKE_ALGAE_GROUND(0.35),
+      INTAKE_ALGAE_REEF(0.35),
+      OUTTAKE_ALGAE_BARGE(0.35),
+      OUTTAKE_ALGAE_PROCESSOR(-0.35);
 
       private final double speed;
 
@@ -60,8 +63,8 @@ public class ENDEFFECTOR {
     public static final double kPercentOutputMultiplier = 1.0;
     public static final double kLimitedPercentOutputMultiplier = 0.5;
 
-    public static final Angle minAngle = Degrees.of(0.0);
-    public static final Angle maxAngle = Degrees.of(151.0);
+    public static final Angle minAngle = Degrees.of(-10.0);
+    public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
     public static final Angle encoderOffset = Rotations.of(-0.47607421875);
 
@@ -74,11 +77,17 @@ public class ENDEFFECTOR {
     public static final boolean enforceLimits = true;
 
     public enum PIVOT_SETPOINT {
-      INTAKE_ALGAE(Degrees.of(0.0)),
+      INTAKE_ALGAE_LOW(Degrees.of(170.0)),
+      INTAKE_ALGAE_HIGH(Degrees.of(165)),
+      INTAKE_HOPPER(Degrees.of(-3.0)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
-      L4(Degrees.of(120.0)),
-      BARGE(Degrees.of(150.0));
+      L4(Degrees.of(60.0)),
+      BARGE(Degrees.of(150.0)),
+      OUTTAKE_ALGAE_PROCESSOR(
+          Degrees.of(
+              -155.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint to make this angle not
+      // negative
 
       private final Angle angle;
 
