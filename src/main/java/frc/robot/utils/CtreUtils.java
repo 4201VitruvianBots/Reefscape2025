@@ -50,7 +50,7 @@ public final class CtreUtils {
                   + motorStatus,
               AlertType.kError);
       alert.set(true);
-    } else System.out.println("TalonFX ID: " + motor.getDeviceID() + " - Successfully configured!");
+    } else System.out.printf("TalonFX ID: %d - Successfully configured!\n", motor.getDeviceID());
 
     return motorStatus.isOK();
   }
@@ -86,7 +86,7 @@ public final class CtreUtils {
               AlertType.kError);
       alert.set(true);
     } else
-      System.out.println("CANCoder ID: " + cancoder.getDeviceID() + " - Successfully configured!");
+      System.out.printf("CANCoder ID: %d - Successfully configured!\n", cancoder.getDeviceID());
     return canCoderStatus.isOK();
   }
 }

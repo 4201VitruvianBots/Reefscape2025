@@ -24,7 +24,7 @@ import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 
 /**
  * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
- * the window in Glass/SmartDashboard). For consistency, we should just use Inches.
+ * the window in Glass/SmartDashboard. For consistency, we should just use Inches.
  */
 public class Robot2d {
 

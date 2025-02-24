@@ -6,19 +6,15 @@ package frc.robot.commands.autos;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.io.IOException;
-import java.util.ArrayList;
 import org.json.simple.parser.ParseException;
 import org.team4201.codex.simulation.FieldSim;
 
 public class PlotAutoPath extends Command {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final FieldSim m_fieldSim;
-  private final ArrayList<PathPlannerPath> m_paths = new ArrayList<>();
-  private ArrayList<Trajectory.State> m_pathPoints;
   private final PathPlannerPath m_path;
 
   public PlotAutoPath(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim, String pathName)
@@ -40,11 +36,10 @@ public class PlotAutoPath extends Command {
   @Override
   public void initialize() {
     try {
-
       var trajectory = m_swerveDrive.getTrajectoryUtils().getTrajectoryFromPathPlanner(m_path);
       m_fieldSim.addTrajectory(trajectory);
     } catch (Exception e) {
-      System.out.println("Could not plot auto path ");
+      System.out.printf("Could not plot auto path '%s'", m_path.name);
     }
   }
 

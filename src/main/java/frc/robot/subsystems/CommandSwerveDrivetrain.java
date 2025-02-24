@@ -75,7 +75,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean m_hasAppliedOperatorPerspective = false;
 
-  private TrajectoryUtils m_trajectoryUtils;
+  @NotLogged private TrajectoryUtils m_trajectoryUtils;
 
   /** Swerve request to apply during robot-centric path following */
   @NotLogged
@@ -316,18 +316,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   // rotationSpeed);
   //
   //              if (isRobotCentric) {
-  //                return m_driveReqeustRobotCentric
+  //                return m_driveRequestRobotCentric
   //                        .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
   //                        .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
   //                        .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
   //              } else {
   //                if (Controls.isRedAlliance()) {
-  //                  return m_driveReqeustFieldCentric
+  //                  return m_driveRequestFieldCentric
   //                          .withVelocityX(-m_newChassisSpeeds.vxMetersPerSecond)
   //                          .withVelocityY(-m_newChassisSpeeds.vyMetersPerSecond)
   //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
   //                } else {
-  //                  return m_driveReqeustFieldCentric
+  //                  return m_driveRequestFieldCentric
   //                          .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
   //                          .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
   //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
@@ -400,6 +400,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
+  @NotLogged
   public TrajectoryUtils getTrajectoryUtils() {
     return m_trajectoryUtils;
   }

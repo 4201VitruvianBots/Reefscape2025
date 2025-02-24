@@ -42,7 +42,7 @@ public class DriveForward extends SequentialCommandGroup {
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
-      addCommands(new WaitCommand(0));
+      addCommands(new WaitCommand(0).unti);
     }
   }
 }

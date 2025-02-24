@@ -156,7 +156,9 @@ public class RobotContainer {
     } else {
       // Most likely, the code will crash later on if you get here
       DriverStation.reportError(
-          "[RobotContainer] Unhandled initSubsystem for RobotID " + ROBOT.robotID.getName(), false);
+          String.format(
+              "[RobotContainer] Unhandled initSubsystem for RobotID %s", ROBOT.robotID.getName()),
+          false);
     }
     // Register subsystems for cross-subsystem communication
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);

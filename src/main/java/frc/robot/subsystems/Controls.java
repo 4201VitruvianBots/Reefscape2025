@@ -40,13 +40,10 @@ public class Controls extends SubsystemBase {
     // This method will be called once per scheduler run
 
     if (DriverStation.isDisabled()) {
-      var allianceCheck = DriverStation.getAlliance();
-      allianceCheck.ifPresent(a -> m_allianceColor = a);
+      DriverStation.getAlliance().ifPresent(a -> m_allianceColor = a);
 
       // Silence joystick warnings only if the FMS is not attached
       DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
-
-      //      for(CommandScheduler.getInstance().printWatchdogEpochs();
     }
   }
 }

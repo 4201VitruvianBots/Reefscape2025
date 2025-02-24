@@ -175,23 +175,20 @@ public class FIELD {
     BLUE_REEF_FAR_RIGHT_RIGHT(22, false, Inches.of(0));
 
     private final Pose2d pose;
+    private final Pose2d aprilTagPose2d;
 
     REEF_BRANCHES(final int aprilTagId, boolean isLeft, Distance offset) {
-      Pose2d newPose = new Pose2d();
-      var baseOffset = isLeft ? leftReefOffset : rightReefOffset;
-      baseOffset.plus(new Translation2d(0, offset.in(Meters)));
-      try {
-        newPose =
-            APRIL_TAG
-                .getTagById(aprilTagId)
-                .getPose2d()
-                .plus(new Transform2d(baseOffset, Rotation2d.kZero));
+      aprilTagPose2d = APRIL_TAG.getTagById(aprilTagId).getPose2d();
 
+      Pose2d newPose = new Pose2d();
+      try {
+        var baseOffset = isLeft ? leftReefOffset : rightReefOffset;
+        baseOffset.plus(new Translation2d(0, offset.in(Meters)));
+        newPose = aprilTagPose2d.plus(new Transform2d(baseOffset, Rotation2d.kZero));
       } catch (Exception e) {
-        System.out.println(
-            "Could not generate offset for reef at AprilTag "
-                + aprilTagId
-                + (isLeft ? " Left" : " Right"));
+        System.out.printf(
+            "Could not generate offset for reef at AprilTag %d %s\n",
+            aprilTagId, (isLeft ? " Left" : " Right"));
       }
 
       pose = newPose;
@@ -200,6 +197,10 @@ public class FIELD {
     /** Return the selected branch's position as a Pose2d */
     public Pose2d getPose2d() {
       return pose;
+    }
+
+    public Pose2d getAprilTagPose2d() {
+      return aprilTagPose2d;
     }
 
     /** 2d array of all branches */

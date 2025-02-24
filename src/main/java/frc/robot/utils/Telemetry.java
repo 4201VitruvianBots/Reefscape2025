@@ -88,7 +88,7 @@ public class Telemetry {
     SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
     if (m_fieldSim != null) {
-      // TODO: Re-impelement
+      // TODO: Re-implement
       //  for (MODULE_POSITION i : MODULE_POSITION.values()) {
       //    m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
       //    m_moduleTransforms[i.ordinal()] = new Transform2d(SWERVE.kModuleTranslations.get(i),

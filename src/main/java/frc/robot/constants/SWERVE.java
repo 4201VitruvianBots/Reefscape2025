@@ -14,8 +14,8 @@ public class SWERVE {
   public enum MOTOR_TYPE {
     ALL,
     DRIVE,
-    STEER;
-  };
+    STEER
+  }
 
   public static Distance kWheelBase = Inches.of(23.75);
   public static Distance kTrackWidth = Inches.of(23.75);
