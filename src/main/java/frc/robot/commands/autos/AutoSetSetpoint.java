@@ -21,7 +21,6 @@ import frc.robot.subsystems.EndEffectorPivot;
 public class AutoSetSetpoint extends SequentialCommandGroup {
   /** Creates a new AutoSeSetpoint. */
   private final Elevator m_elevator;
-
   private final EndEffectorPivot m_endEffectorPivot;
 
   @SuppressWarnings("static-access")
@@ -37,20 +36,7 @@ public class AutoSetSetpoint extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new SequentialCommandGroup(
-            new SetElevatorSetpoint(m_elevator, elevatorSetpoint)
-                .withTimeout(0.7)
-                .onlyWhile(
-                    () ->
-                        Math.abs(
-                                m_elevator.getHeightMeters() - elevatorSetpoint.getSetpointMeters())
-                            < Units.inchesToMeters(1)),
-            new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint)
-                .onlyWhile(
-                    () ->
-                        Math.abs(
-                                m_endEffectorPivot.getCurrentRotation().in(Degrees)
-                                    - pivotSetpoint.get().in(Degrees))
-                            < Units.degreesToRotations(0.5))));
+            new SetElevatorSetpoint(m_elevator, elevatorSetpoint),
+            new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 }

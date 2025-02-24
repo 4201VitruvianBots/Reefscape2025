@@ -27,7 +27,7 @@ public class EndEffectorSetpoint extends Command {
   @Override
   public void initialize() {
     m_endEffectorPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_endEffectorPivot.setPosition(m_setpoint.get());
+    m_endEffectorPivot.setSetpoint(m_setpoint.get());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
