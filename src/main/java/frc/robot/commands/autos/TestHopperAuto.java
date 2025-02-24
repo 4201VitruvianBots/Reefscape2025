@@ -19,24 +19,27 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
+import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class OnePiece extends SequentialCommandGroup {
+public class TestHopperAuto extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
-  public OnePiece(
+  public TestHopperAuto(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
-      EndEffectorPivot endEffectorpivot,
-      EndEffector endEffector) {
+      EndEffector endEffector,
+      EndEffectorPivot endEffectorPivot,
+      HopperIntake hopperIntake) {
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score1");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("DriveForward");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -50,17 +53,11 @@ public class OnePiece extends SequentialCommandGroup {
           new PrintCommand("path starting point" + path.getStartingHolonomicPose().toString()),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           new ParallelCommandGroup(
-                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                      .until(elevator::atSetpoint),
-                  new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
-                      .until(endEffectorpivot::atSetpoint))
-              .withTimeout(1),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
-          new ParallelCommandGroup(
-              new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
-                  .until(elevator::atSetpoint),
-              new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED)
-                  .until(endEffectorpivot::atSetpoint)),
+                  new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                  new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
+              .until(() -> endEffector.hasCoral()),
           swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
@@ -68,7 +65,7 @@ public class OnePiece extends SequentialCommandGroup {
               .withTimeout(0.1),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load path for Score1", e.getStackTrace());
+      DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
       addCommands(new WaitCommand(0));
     }
   }

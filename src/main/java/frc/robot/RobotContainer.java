@@ -33,6 +33,7 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.autos.TestHopperAuto;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -211,13 +212,17 @@ public class RobotContainer {
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
         "OnePiece",
-        new OnePiece(
+        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
+
+    m_chooser.addOption(
+        "HopperTest",
+        new TestHopperAuto(
             m_swerveDrive,
             m_fieldSim,
             m_elevator,
-            m_endEffectorPivot,
             m_endEffector,
-            ROLLER_SPEED.OUTTAKE_CORAL));
+            m_endEffectorPivot,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {
