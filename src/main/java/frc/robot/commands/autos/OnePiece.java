@@ -54,6 +54,9 @@ public class OnePiece extends SequentialCommandGroup {
             new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4).until(elevator::atSetpoint),
             new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4).until(endEffectorpivot::atSetpoint)).withTimeout(1),
           new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+          new ParallelCommandGroup(
+            new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION).until(elevator::atSetpoint),
+            new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).until(endEffectorpivot::atSetpoint)),
           swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
