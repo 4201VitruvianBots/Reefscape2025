@@ -10,7 +10,6 @@ import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunEndEffectorIntake extends Command {
-
   private final EndEffector m_endEffector;
   private final ROLLER_SPEED m_speed;
 
@@ -18,6 +17,7 @@ public class RunEndEffectorIntake extends Command {
   public RunEndEffectorIntake(EndEffector endEffector, ROLLER_SPEED speed) {
     m_endEffector = endEffector;
     m_speed = speed;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_endEffector);
   }

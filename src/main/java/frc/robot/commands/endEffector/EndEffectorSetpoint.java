@@ -4,7 +4,6 @@
 
 package frc.robot.commands.endEffector;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
@@ -13,7 +12,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class EndEffectorSetpoint extends Command {
   private final EndEffectorPivot m_endEffectorPivot;
-  private PIVOT_SETPOINT m_setpoint;
+  private final PIVOT_SETPOINT m_setpoint;
 
   /** Creates a new EndEffectorSetpoint. */
   public EndEffectorSetpoint(EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
@@ -37,11 +36,7 @@ public class EndEffectorSetpoint extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    if (!DriverStation.isAutonomous()) {
-      m_endEffectorPivot.setPosition(PIVOT_SETPOINT.STOWED.get());
-    }
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
