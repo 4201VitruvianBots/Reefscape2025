@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.RunClimberIntake;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.SetHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
@@ -85,7 +84,6 @@ public class RobotContainer {
 
   // V2 subsystems
   private Climber m_climber;
-  private ClimberIntake m_climberIntake;
   private Elevator m_elevator;
 
   @Logged(name = "EndEffector")
@@ -148,7 +146,6 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
@@ -160,7 +157,6 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climberIntake = new ClimberIntake();
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else {
