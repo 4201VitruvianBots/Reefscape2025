@@ -107,7 +107,7 @@ public class Robot2d {
   public void updateRobot2d() {
     if (m_subsystemMap.containsKey("Elevator")) {
       var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
-      m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()));
+      m_elevator.update(elevatorSubsystem.getHeight());
       // TODO: Add LinearVelocity function in elevator
       //   m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
     }

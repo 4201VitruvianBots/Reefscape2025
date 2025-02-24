@@ -41,6 +41,7 @@ public class EndEffectorPivot extends SubsystemBase {
   @NotLogged private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   @NotLogged private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
+  @Logged(name="Neutral Mode")
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   @NotLogged private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
@@ -51,7 +52,9 @@ public class EndEffectorPivot extends SubsystemBase {
   @NotLogged
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
 
-  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
+  @Logged(name="Control Mode")
+  ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
+  
   private double m_joystickInput;
   private boolean m_limitJoystickInput;
   private boolean m_userSetpoint;
@@ -178,6 +181,7 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_pivotEncoder.getAbsolutePosition().getValue();
   }
 
+  @Logged(name="End Effector Angle")
   public double getCANcoderAngleDegrees() {
     return getCANcoderAngle().in(Degrees);
   }
@@ -212,10 +216,6 @@ public class EndEffectorPivot extends SubsystemBase {
     m_joystickInput = m_joystickY;
   }
 
-  private void updateSmartDashboard() {
-    SmartDashboard.putNumber("End Effector Pivot/End Effector Angle", getCANcoderAngleDegrees());
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -229,7 +229,6 @@ public class EndEffectorPivot extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
-    updateSmartDashboard();
   }
 
   @Override
