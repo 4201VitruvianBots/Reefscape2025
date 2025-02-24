@@ -53,7 +53,7 @@ public class EndEffectorPivot extends SubsystemBase {
   @NotLogged
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
 
-  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.OPEN_LOOP;
+  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
   private double m_joystickInput;
   private boolean m_limitJoystickInput;
   private boolean m_userSetpoint;
