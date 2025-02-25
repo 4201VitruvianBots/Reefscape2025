@@ -1,6 +1,7 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.CLIMBER;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.subsystems.Climber;
 
@@ -18,6 +19,7 @@ public class SetClimberSetpoint extends Command {
   @Override
   public void initialize() {
     m_climber.setDesiredPosition(m_setpoint.getSetpointMeters());
+    m_climber.setHopperServoAngle(CLIMBER.hopperServoAngle);
   }
 
   @Override
