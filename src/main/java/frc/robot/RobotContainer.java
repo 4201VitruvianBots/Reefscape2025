@@ -59,6 +59,8 @@ import frc.robot.subsystems.alphabot.*;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+
+import java.nio.charset.CoderResult;
 import java.util.Arrays;
 import org.team4201.codex.simulation.FieldSim;
 
@@ -122,8 +124,8 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
+          .withDeadband(MaxSpeed * 0.03)
+          .withRotationalDeadband(MaxAngularRate * 0.03); // Add a 3% deadband
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -186,10 +188,10 @@ public class RobotContainer {
                         leftJoystick.getRawAxis(1)
                             * MaxSpeed * m_swerveDrive.getDrivingReduction()) // Drive forward with negative Y (forward)
                     .withVelocityY(
-                        leftJoystick.getRawAxis(0) * MaxSpeed* m_swerveDrive.getDrivingReduction()) // Drive left with negative X (left)
+                        leftJoystick.getRawAxis(0) * MaxSpeed * m_swerveDrive.getDrivingReduction()) // Drive left with negative X (left)
                     .withRotationalRate(
                         rightJoystick.getRawAxis(0)
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                            * MaxAngularRate * m_swerveDrive.getDrivingReduction()) // Drive counterclockwise with negative X (left)
             ));
     if (m_elevator != null) {
       m_elevator.setDefaultCommand(
@@ -322,7 +324,7 @@ public class RobotContainer {
             .withTimeout(1);
     
     Trigger slowDrivingButton = new Trigger(() -> rightJoystick.getRawButton(1));
-    slowDrivingButton.whileTrue(Commands.startEnd(() -> m_swerveDrive.setDrivingReduction(0.5), () -> m_swerveDrive.setDrivingReduction(1.0), m_swerveDrive));
+    slowDrivingButton.whileTrue(Commands.startEnd(() -> m_swerveDrive.setDrivingReduction(0.5), () -> m_swerveDrive.setDrivingReduction(1.0)));
     
     // Algae Toggle
     m_driverController

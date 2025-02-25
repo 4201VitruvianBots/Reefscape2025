@@ -39,7 +39,7 @@ public class SWERVE {
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =
-      Math.PI * 0.3; // temporary to reduce speed (original value 2.0) TODO: change back
+      Math.PI * 2.0;
 
   public enum ROUTINE_TYPE {
     DRIVE_DYNAMIC(2),
