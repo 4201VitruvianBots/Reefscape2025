@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.SetHopperIntake;
@@ -96,7 +98,7 @@ public class RobotContainer {
   private final Robot2d m_robot2d = new Robot2d();
 
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
-
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
   @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
@@ -182,9 +184,9 @@ public class RobotContainer {
                 drive
                     .withVelocityX(
                         leftJoystick.getRawAxis(1)
-                            * MaxSpeed) // Drive forward with negative Y (forward)
+                            * MaxSpeed * m_swerveDrive.getDrivingReduction()) // Drive forward with negative Y (forward)
                     .withVelocityY(
-                        leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                        leftJoystick.getRawAxis(0) * MaxSpeed* m_swerveDrive.getDrivingReduction()) // Drive left with negative X (left)
                     .withRotationalRate(
                         rightJoystick.getRawAxis(0)
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
@@ -318,7 +320,9 @@ public class RobotContainer {
                 new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
                 new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
             .withTimeout(1);
-
+    
+    Trigger slowDrivingTrigger = new Trigger(() -> leftJoystick.getRawButton(0));
+    slowDrivingTrigger.whileTrue(Commands.startEnd(() -> m_swerveDrive.setDrivingReduction(0.5), () -> m_swerveDrive.setDrivingReduction(1.0), m_swerveDrive));
     // Algae Toggle
     m_driverController
         .leftBumper()

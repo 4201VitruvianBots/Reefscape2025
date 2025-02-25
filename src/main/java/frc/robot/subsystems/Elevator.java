@@ -148,6 +148,10 @@ public class Elevator extends SubsystemBase {
     m_controlMode = controlMode;
   }
 
+  public double getStatorCurrent() {
+    return elevatorMotors[0].getStatorCurrent().getValueAsDouble();
+  }
+
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
