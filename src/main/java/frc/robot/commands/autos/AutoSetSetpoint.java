@@ -4,9 +4,6 @@
 
 package frc.robot.commands.autos;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -21,6 +18,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 public class AutoSetSetpoint extends SequentialCommandGroup {
   /** Creates a new AutoSeSetpoint. */
   private final Elevator m_elevator;
+
   private final EndEffectorPivot m_endEffectorPivot;
 
   @SuppressWarnings("static-access")
@@ -36,7 +34,7 @@ public class AutoSetSetpoint extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-            new SetElevatorSetpoint(m_elevator, elevatorSetpoint),
-            new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
+        new SetElevatorSetpoint(m_elevator, elevatorSetpoint),
+        new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 }

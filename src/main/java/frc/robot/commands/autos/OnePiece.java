@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -48,13 +47,14 @@ public class OnePiece extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
-          new PrintCommand("path starting point" + path.getStartingHolonomicPose().toString()),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           new ParallelCommandGroup(
-            new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4).until(elevator::atSetpoint),
-            new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4).until(endEffectorpivot::atSetpoint)).withTimeout(1),
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
+                      .until(elevator::atSetpoint),
+                  new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
+                      .until(endEffectorpivot::atSetpoint))
+              .withTimeout(1),
           new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
-          swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
