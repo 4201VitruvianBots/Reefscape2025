@@ -105,7 +105,7 @@ public class Climber extends SubsystemBase {
     return m_controlMode;
   }
 
-  public Double getMotorVoltage() {
+  public double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }

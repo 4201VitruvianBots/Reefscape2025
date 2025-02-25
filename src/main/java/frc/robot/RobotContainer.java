@@ -112,7 +112,7 @@ public class RobotContainer {
 
   @NotLogged
   private double MaxSpeed =
-      AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
   @NotLogged
   private double MaxAngularRate =
@@ -321,8 +321,9 @@ public class RobotContainer {
                 new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
             .withTimeout(1);
     
-    Trigger slowDrivingTrigger = new Trigger(() -> leftJoystick.getRawButton(0));
-    slowDrivingTrigger.whileTrue(Commands.startEnd(() -> m_swerveDrive.setDrivingReduction(0.5), () -> m_swerveDrive.setDrivingReduction(1.0), m_swerveDrive));
+    Trigger slowDrivingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    slowDrivingButton.whileTrue(Commands.startEnd(() -> m_swerveDrive.setDrivingReduction(0.5), () -> m_swerveDrive.setDrivingReduction(1.0), m_swerveDrive));
+    
     // Algae Toggle
     m_driverController
         .leftBumper()
