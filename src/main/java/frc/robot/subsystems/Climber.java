@@ -68,7 +68,7 @@ public class Climber extends SubsystemBase {
     setDesiredPosition(getPulleyLengthMeters());
   }
 
-  public void setHopperServoAngle(double angle){
+  public void setHopperServoAngle(double angle) {
     hopperServo.setAngle(angle);
   }
 
