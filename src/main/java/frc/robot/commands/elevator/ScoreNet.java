@@ -28,7 +28,7 @@ public class ScoreNet extends Command {
   @Override
   public void end(boolean interruped) {
     m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters());
+    m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpoint());
   }
 
   public boolean isFinished() {

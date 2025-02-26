@@ -145,6 +145,7 @@ public class RobotContainer {
   private void initializeSubSystems() {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+      MaxSpeed = V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -152,10 +153,12 @@ public class RobotContainer {
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
+      MaxSpeed = AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      MaxSpeed = V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
