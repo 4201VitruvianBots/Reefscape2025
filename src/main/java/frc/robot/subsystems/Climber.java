@@ -51,7 +51,7 @@ public class Climber extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
-  private final Servo hopperServo = new Servo(1);
+  private final Servo hopperServo = new Servo(9);
 
   public Climber() {
     TalonFXConfiguration configclimber = new TalonFXConfiguration();
