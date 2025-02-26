@@ -12,6 +12,8 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -22,6 +24,7 @@ import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
+@Logged
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
@@ -43,7 +46,7 @@ public class Climber extends SubsystemBase {
   //     0.0);
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
-  private double m_desiredPositionMeters;
+  private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
@@ -60,6 +63,8 @@ public class Climber extends SubsystemBase {
 
     configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
     configclimber.MotionMagic.MotionMagicAcceleration = 200;
+    
+    setName("Climber");
   }
 
   public void holdclimber() {

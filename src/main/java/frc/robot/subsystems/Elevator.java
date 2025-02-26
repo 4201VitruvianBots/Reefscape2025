@@ -51,7 +51,7 @@ public class Elevator extends SubsystemBase {
   };
 
   // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
+  @NotLogged private final ElevatorSim m_elevatorSim =
       new ElevatorSim(
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
@@ -73,10 +73,10 @@ public class Elevator extends SubsystemBase {
   @NotLogged private final StatusSignal<AngularAcceleration> m_accelSignal =
       elevatorMotors[0].getAcceleration().clone();
 
-  private Distance m_desiredPosition;
-  private double m_joystickInput;
-  private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
-  private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
+  @Logged(name="Desired Height") private Distance m_desiredPosition = Meters.of(0);
+  @Logged(name="Joystick Input") private double m_joystickInput = 0.0;
+  @Logged(name="Control Mode") private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
+  @Logged(name="Neutral Mode") private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   @NotLogged private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
   @NotLogged private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
@@ -122,6 +122,7 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].setPosition(Rotations.of(0));
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
 
+    setName("Elevator");
     SmartDashboard.putData(this);
   }
 
@@ -133,6 +134,7 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].set(output);
   }
 
+  @Logged(name="Motor Output")
   public double getPercentOutput() {
     return elevatorMotors[0].get();
   }
@@ -157,27 +159,32 @@ public class Elevator extends SubsystemBase {
     return m_controlMode;
   }
 
+  @Logged(name="Motor Rotations")
   public Angle getRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValue();
   }
 
+  @NotLogged
   public Current getCurrent() {
     m_currentSignal.refresh();
     return m_currentSignal.getValue();
   }
 
+  @Logged(name="Velocity Meters")
   public LinearVelocity getVelocity() {
     m_velocitySignal.refresh();
     return MetersPerSecond.of(m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
   }
 
+  @Logged(name="Acceleration Meters")
   public LinearAcceleration getAcceleration() {
     m_accelSignal.refresh();
     return MetersPerSecondPerSecond.of(m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
         * ELEVATOR.drumRotationsToMeters);
   }
 
+  @NotLogged
   public double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
@@ -187,10 +194,12 @@ public class Elevator extends SubsystemBase {
     m_joystickInput = m_joystickY;
   }
 
+  @Logged(name="Height")
   public Distance getHeight() {
     return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters);
   }
 
+  @NotLogged
   public boolean isClosedLoopControl() {
     return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
@@ -209,7 +218,8 @@ public class Elevator extends SubsystemBase {
     return m_desiredPosition;
   }
 
-  // Elevator is within 1 inch of its set]point
+  // Elevator is within 1 inch of its setpoint
+  @Logged(name="At Setpoint")
   public boolean atSetpoint() {
     return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
   }
@@ -293,13 +303,13 @@ public class Elevator extends SubsystemBase {
   }
 
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Elevator/Height Inches", getHeight().in(Inches));
-    SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
-    SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocity());
-    SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
-    SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
-    SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
-    SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
+    // SmartDashboard.putNumber("Elevator/Height Inches", getHeight().in(Inches));
+    // SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
+    // SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocity());
+    // SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
+    // SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
+    // SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
+    // SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
     // SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
     // SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
     // SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);

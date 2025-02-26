@@ -55,12 +55,9 @@ public class EndEffectorPivot extends SubsystemBase {
   @Logged(name="Control Mode")
   ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
   
-  private double m_joystickInput;
-  private boolean m_limitJoystickInput;
-  private boolean m_userSetpoint;
+  @Logged(name="Joystick Input") private double m_joystickInput = 0.0;
 
-  private Angle m_desiredRotation = Degrees.of(0);
-  private boolean m_pivotState;
+  @Logged(name="Desired Rotation") private Angle m_desiredRotation = Degrees.of(0);
 
   // Simulation Code
   private final SingleJointedArmSim m_endEffectorSim =
@@ -121,15 +118,7 @@ public class EndEffectorPivot extends SubsystemBase {
     setName("EndEffectorPivot");
     SmartDashboard.putData(this);
   }
-
-  public void setState(boolean state) {
-    m_pivotState = state;
-  }
-
-  public boolean getState() {
-    return m_pivotState;
-  }
-
+  
   public void setPosition(Angle rotations) {
     if (PIVOT.enforceLimits) {
       m_desiredRotation =
@@ -150,18 +139,17 @@ public class EndEffectorPivot extends SubsystemBase {
     m_pivotMotor.set(speed);
   }
 
+  @Logged(name="Motor Output")
   public double getPercentOutput() {
     return m_pivotMotor.get();
   }
-
-  public ControlRequest getCurrentControlRequest() {
-    return m_pivotMotor.getAppliedControl();
-  }
-
+  
+  @Logged(name="Control Request")
   public String getCurrentControlRequestString() {
-    return getCurrentControlRequest().toString();
+    return m_pivotMotor.getAppliedControl().toString();
   }
 
+  @Logged(name="Current Rotation")
   public Angle getCurrentRotation() {
     try {
       m_positionSignal.refresh();
@@ -172,16 +160,18 @@ public class EndEffectorPivot extends SubsystemBase {
     }
   }
 
+  @Logged(name="Motor Angle") 
   public Angle getMotorAngle() {
     return m_pivotMotor.getPosition().getValue();
   }
 
   // Base unit from CANcoder is in Radians
+  @Logged(name="CANcoder Angle")
   public Angle getCANcoderAngle() {
     return m_pivotEncoder.getAbsolutePosition().getValue();
   }
 
-  @Logged(name="End Effector Angle")
+  @Logged(name="CANcoder Angle Degrees")
   public double getCANcoderAngleDegrees() {
     return getCANcoderAngle().in(Degrees);
   }
@@ -206,10 +196,6 @@ public class EndEffectorPivot extends SubsystemBase {
 
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
-  }
-
-  public void setJoystickLimit(boolean limit) {
-    m_limitJoystickInput = limit;
   }
 
   public void setJoystickY(double m_joystickY) {

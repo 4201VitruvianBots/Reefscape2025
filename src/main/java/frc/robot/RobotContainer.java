@@ -82,16 +82,11 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2 subsystems
-  private Climber m_climber;
-  private Elevator m_elevator;
-
-  @Logged(name = "EndEffector")
-  private EndEffector m_endEffector;
-
-  @Logged(name = "EndEffectorPivot")
-  private EndEffectorPivot m_endEffectorPivot;
-
-  private HopperIntake m_hopperIntake;
+  @Logged(name = "Climber") private Climber m_climber;
+  @Logged(name = "Elevator") private Elevator m_elevator;
+  @Logged(name = "EndEffector") private EndEffector m_endEffector;
+  @Logged(name = "EndEffectorPivot") private EndEffectorPivot m_endEffectorPivot;
+  @Logged(name = "HopperIntake") private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
 

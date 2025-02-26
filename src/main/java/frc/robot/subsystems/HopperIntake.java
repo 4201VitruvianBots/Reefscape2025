@@ -6,6 +6,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -19,16 +22,11 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.utils.CtreUtils;
 
+@Logged
 public class HopperIntake extends SubsystemBase {
 
-  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final StatusSignal<AngularVelocity> m_velocitySignal =
-      m_hopperIntakeMotor.getVelocity().clone();
-  private final StatusSignal<Voltage> m_voltageSignal =
-      m_hopperIntakeMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal =
-      m_hopperIntakeMotor.getTorqueCurrent().clone();
-  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+  @NotLogged private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
+  @NotLogged private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
@@ -51,14 +49,12 @@ public class HopperIntake extends SubsystemBase {
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
-
-  public void updateSmartDashboard() {
-    SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
-    SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
+  
+  @Logged(name="Motor Output")
+  public double getPercentOutput() {
+    return m_hopperIntakeMotor.get();
   }
-
+  
   @Override
   public void simulationPeriodic() {
     m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
@@ -75,7 +71,5 @@ public class HopperIntake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    updateSmartDashboard();
-  }
+  public void periodic() {}
 }
