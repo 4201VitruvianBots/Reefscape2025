@@ -49,17 +49,22 @@ public class OnePiece extends SequentialCommandGroup {
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
           new ParallelCommandGroup(
-                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                      .until(elevator::atSetpoint),
-                  new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
-                      .until(endEffectorpivot::atSetpoint))
-              .withTimeout(1),
+                  m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
+                  new ParallelCommandGroup(
+                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
+                          .until(elevator::atSetpoint),
+                      new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
+                          .until(endEffectorpivot::atSetpoint)))
+              .withTimeout(2),
           new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+          new SequentialCommandGroup(
+              new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED)
+                  .until(endEffectorpivot::atSetpoint),
+          new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
+              .until(elevator::atSetpoint)),
           new InstantCommand(
-                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
-                  swerveDrive)
-              .withTimeout(0.1),
-          m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
+                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
+              .withTimeout(0.1));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for Score1", e.getStackTrace());
       addCommands(new WaitCommand(0));

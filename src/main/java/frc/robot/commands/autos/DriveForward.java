@@ -6,7 +6,6 @@ package frc.robot.commands.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.util.PPLibTelemetry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -48,12 +47,19 @@ public class DriveForward extends SequentialCommandGroup {
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
-          new InstantCommand(()-> PPLibTelemetry.setCurrentPath(path)),
-          new ConditionalCommand(new InstantCommand(
-                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.k180deg)),
-                  swerveDrive),
-              new InstantCommand(()->swerveDrive.applyRequest(()->point.withModuleDirection(Rotation2d.kZero))),
-                  Controls::isRedAlliance).withTimeout(0.1),
+          new InstantCommand(() -> PPLibTelemetry.setCurrentPath(path)),
+          new ConditionalCommand(
+                  new InstantCommand(
+                      () ->
+                          swerveDrive.applyRequest(
+                              () -> point.withModuleDirection(Rotation2d.k180deg)),
+                      swerveDrive),
+                  new InstantCommand(
+                      () ->
+                          swerveDrive.applyRequest(
+                              () -> point.withModuleDirection(Rotation2d.kZero))),
+                  Controls::isRedAlliance)
+              .withTimeout(0.1),
           new WaitCommand(1),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
     } catch (Exception e) {
