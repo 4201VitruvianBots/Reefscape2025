@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ELEVATOR.ELEVATOR_ACCEL_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
@@ -108,7 +109,7 @@ public class Elevator extends SubsystemBase {
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     config.CurrentLimits.StatorCurrentLimit = 40;
     config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
@@ -141,8 +142,8 @@ public class Elevator extends SubsystemBase {
     m_desiredPosition = desiredPosition;
   }
 
-  public void setDesiredAcceleration(double desiredAccel) {
-    m_requestVelocity.Acceleration = desiredAccel;
+  public void setDesiredAcceleration(AngularAcceleration desiredAccel) {
+    m_requestVelocity.Acceleration = desiredAccel.in(RotationsPerSecondPerSecond);
   }
 
   public void setJoystickInput(double joystickInput) {
@@ -153,8 +154,9 @@ public class Elevator extends SubsystemBase {
     m_controlMode = controlMode;
   }
 
-  public double getStatorCurrent() {
-    return elevatorMotors[0].getStatorCurrent().getValueAsDouble();
+  public Current getStatorCurrent() {
+    m_voltageSignal.refresh();
+    return elevatorMotors[0].getStatorCurrent().getValue();
   }
 
   public CONTROL_MODE getControlMode() {
@@ -297,13 +299,13 @@ public class Elevator extends SubsystemBase {
   }
 
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Elevator/Height Inches", getHeight().in(Inches));
-    SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
-    SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocity());
-    SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
-    SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
-    SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
-    SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
+    // SmartDashboard.putNumber("Elevator/Height Inches", getHeight().in(Inches));
+    // SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
+    // SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocity());
+    // SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
+    // SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
+    // SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
+    // SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
     // SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
     // SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
     // SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
@@ -315,8 +317,7 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case CLOSED_LOOP_NET:
-        // m_requestVelocity.Acceleration = 100; TODO: figure out where to put this.
-        elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
+        elevatorMotors[0].setControl(m_requestVelocity.withVelocity(ELEVATOR_ACCEL_SETPOINT.NETSCORE.getVelocity()));
         break;
       case CLOSED_LOOP:
         if (atSetpoint()

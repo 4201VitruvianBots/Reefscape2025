@@ -20,6 +20,7 @@ public class ScoreNet extends Command {
   @Override
   public void initialize() {
     m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP_NET);
+    m_elevator.setDesiredAcceleration(m_acceleration.getAcceleration());
   }
 
   @Override
@@ -29,6 +30,7 @@ public class ScoreNet extends Command {
   public void end(boolean interruped) {
     m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);
     m_elevator.setDesiredPosition(ELEVATOR_SETPOINT.START_POSITION.getSetpoint());
+    m_elevator.setDesiredAcceleration(m_acceleration.getAcceleration());
   }
 
   public boolean isFinished() {

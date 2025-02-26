@@ -37,12 +37,14 @@ import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
+import frc.robot.commands.elevator.ScoreNet;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
+import frc.robot.constants.ELEVATOR.ELEVATOR_ACCEL_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -360,8 +362,9 @@ public class RobotContainer {
           .y()
           .whileTrue(
               new ConditionalCommand(
-                  moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
+                  new SequentialCommandGroup(
+                    new ScoreNet(m_elevator, ELEVATOR_ACCEL_SETPOINT.NETSCORE ).withTimeout(0.7),
+                    new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGE)), // Algae L4
                   moveSuperStructureDelayed(
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
