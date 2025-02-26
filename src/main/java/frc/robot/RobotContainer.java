@@ -317,7 +317,7 @@ public class RobotContainer {
   private SequentialCommandGroup moveSuperStructureDelayed(
       ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
     return new SequentialCommandGroup(
-        new SetElevatorSetpoint(m_elevator, elevatorSetpoint).withTimeout(0.7),
+        new SetElevatorSetpoint(m_elevator, elevatorSetpoint).withTimeout(0.4),
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
