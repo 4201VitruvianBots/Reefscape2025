@@ -58,7 +58,6 @@ public class TestHopperAuto extends SequentialCommandGroup {
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
               .until(() -> endEffector.hasCoral()),
-          swerveDrive.getTrajectoryUtils().resetRobotPoseAuto(path),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
