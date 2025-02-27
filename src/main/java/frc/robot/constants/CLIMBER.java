@@ -12,7 +12,7 @@ public class CLIMBER {
   public static final double sprocketRotationsToMeters = sprocketRadiusMeters * 2 * Math.PI;
   // public static final double kCarriageMassPounds = 15;
   public static final double gearRatio = 1.0 / 16.0;
-  public static final double hopperServoAngle = 90.0;
+  public static final double hopperServoAngle = 270.0;
 
   // public static final double kElevatorDrumRadius = Units.inchesToMeters(0.25);
   // public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
