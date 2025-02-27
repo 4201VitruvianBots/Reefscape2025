@@ -34,6 +34,7 @@ import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.autos.TestHopperAuto;
+import frc.robot.commands.autos.TwoPiece;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -220,7 +221,10 @@ public class RobotContainer {
             m_endEffector,
             m_endEffectorPivot,
             m_hopperIntake));
+
+    m_chooser.addOption("TwoPiece", new TwoPiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
   }
+
 
   private void initSmartDashboard() {
     if (ROBOT.useSysID) initSysidChooser();
