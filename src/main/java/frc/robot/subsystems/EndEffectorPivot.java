@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
-import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
@@ -224,7 +223,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public void teleopInit() {
     resetMotionMagicState();
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

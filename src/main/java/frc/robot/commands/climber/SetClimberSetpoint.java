@@ -1,7 +1,6 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.CLIMBER;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.subsystems.Climber;
 

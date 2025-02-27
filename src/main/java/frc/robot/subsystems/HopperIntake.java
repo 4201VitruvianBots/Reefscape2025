@@ -53,11 +53,11 @@ public class HopperIntake extends SubsystemBase {
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
-  
+
   public void moveServo(double speed) {
     m_hopperServo.set(speed);
   }
-  
+
   public void stopServo() {
     m_hopperServo.setAngle(90.0);
   }
@@ -69,7 +69,7 @@ public class HopperIntake extends SubsystemBase {
     SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
     SmartDashboard.putNumber("Hopper Intake/Servo Angle", m_hopperServo.getAngle());
   }
-  
+
   public void teleopInit() {
     stopServo();
   }

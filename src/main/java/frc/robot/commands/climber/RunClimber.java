@@ -12,12 +12,12 @@ import frc.robot.subsystems.Climber;
 public class RunClimber extends Command {
   private final Climber m_climber;
   private final double m_speed;
-  
+
   /** Creates a new RunClimber. */
   public RunClimber(Climber climber, double speed) {
     m_climber = climber;
     m_speed = speed;
-    
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_climber);
   }

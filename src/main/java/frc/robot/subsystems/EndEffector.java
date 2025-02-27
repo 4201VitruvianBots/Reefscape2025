@@ -10,13 +10,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.MathUtil; 
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,6 +41,7 @@ public class EndEffector extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
   private final DigitalInput input = new DigitalInput(0);
+  private double lastTrippedTimestamp = 0;
 
   /** Creates a new EndEffector. */
   public EndEffector() {
@@ -68,7 +70,19 @@ public class EndEffector extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return !input.get();
+    if (input.get()) {
+      lastTrippedTimestamp = 0;
+      return false;
+    } else {
+      if (lastTrippedTimestamp == 0) {
+        lastTrippedTimestamp = Timer.getTimestamp();
+      }
+    }
+    return true;
+  }
+
+  public double getLastTrippedTimestamp() {
+    return lastTrippedTimestamp;
   }
 
   @Override
