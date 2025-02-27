@@ -222,9 +222,16 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_hopperIntake));
 
-    m_chooser.addOption("TwoPiece", new TwoPiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
+    m_chooser.addOption(
+        "TwoPiece",
+        new TwoPiece(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
   }
-
 
   private void initSmartDashboard() {
     if (ROBOT.useSysID) initSysidChooser();
