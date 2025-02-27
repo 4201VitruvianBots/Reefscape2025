@@ -31,7 +31,9 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
+import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
@@ -56,7 +58,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private boolean m_limitJoystickInput;
   private boolean m_userSetpoint;
 
-  private Angle m_desiredRotation = Degrees.of(0);
+  private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
   private boolean m_pivotState;
 
   // Simulation Code
@@ -219,6 +221,10 @@ public class EndEffectorPivot extends SubsystemBase {
     SmartDashboard.putNumber("End Effector Pivot/End Effector Angle", getCANcoderAngleDegrees());
   }
 
+  public void teleopInit() {
+    resetMotionMagicState();
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -19,7 +19,6 @@ public class SetClimberSetpoint extends Command {
   @Override
   public void initialize() {
     m_climber.setDesiredPosition(m_setpoint.getSetpointMeters());
-    m_climber.setHopperServoAngle(CLIMBER.hopperServoAngle);
   }
 
   @Override
