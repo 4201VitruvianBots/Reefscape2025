@@ -28,7 +28,6 @@ import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
 import frc.robot.commands.autos.TestHopperAuto;
 import frc.robot.commands.climber.RunClimber;
-import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -36,11 +35,9 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
-import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
-import frc.robot.constants.CLIMBER;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
@@ -425,15 +422,14 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController
-          .povRight()
-          .whileTrue(new RunClimber(m_climber, 0.15));
-      m_driverController
-          .povLeft()
-          .whileTrue(new RunClimber(m_climber, -0.15));
+      m_driverController.povRight().whileTrue(new RunClimber(m_climber, 0.15));
+      m_driverController.povLeft().whileTrue(new RunClimber(m_climber, -0.15));
       m_driverController
           .back()
-          .whileTrue(Commands.startEnd(() -> m_hopperIntake.moveServo(1.0), () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
+          .whileTrue(
+              Commands.startEnd(
+                  () -> m_hopperIntake.moveServo(1.0),
+                  () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
     }
   }
 
