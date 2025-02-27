@@ -70,10 +70,10 @@ public class TwoPiece extends SequentialCommandGroup {
                       new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                       new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-                  .until(() -> endEffector.hasCoral())),
+                  .until(() -> endEffector.hasCoral())).withTimeout(0.1),
           new ParallelCommandGroup(
               new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),
+              new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)).withTimeout(0.1),
           new ParallelCommandGroup(
                   m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
                   new ParallelCommandGroup(
