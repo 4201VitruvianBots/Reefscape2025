@@ -152,7 +152,6 @@ public class EndEffectorPivot extends SubsystemBase {
   @Logged(name="Current Rotation")
   public Angle getCurrentRotation() {
     try {
-      m_positionSignal.refresh();
       return m_positionSignal.getValue();
     } catch (Exception e) {
       DriverStation.reportWarning("[EndEffectorPivot] Position signal is null!", false);
@@ -163,6 +162,10 @@ public class EndEffectorPivot extends SubsystemBase {
   @Logged(name="Motor Angle") 
   public Angle getMotorAngle() {
     return m_pivotMotor.getPosition().getValue();
+  }
+
+  public boolean atSetpoint() {
+    return m_desiredRotation.minus(getCurrentRotation()).abs(Degree) <= 0.0254;
   }
 
   // Base unit from CANcoder is in Radians

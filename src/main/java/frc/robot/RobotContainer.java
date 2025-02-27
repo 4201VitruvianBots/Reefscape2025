@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.RunEndEffectorIntake;
 import frc.robot.commands.SetHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
@@ -33,11 +32,13 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.DriveForward;
 import frc.robot.commands.autos.OnePiece;
 import frc.robot.commands.autos.TestAuto1;
+import frc.robot.commands.autos.TestHopperAuto;
 import frc.robot.commands.climber.SetClimberSetpoint;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
@@ -202,7 +203,19 @@ public class RobotContainer {
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
     m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
-    m_chooser.addOption("OnePiece", new OnePiece(m_swerveDrive, m_fieldSim));
+    m_chooser.addOption(
+        "OnePiece",
+        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
+
+    m_chooser.addOption(
+        "HopperTest",
+        new TestHopperAuto(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffector,
+            m_endEffectorPivot,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -302,7 +315,7 @@ public class RobotContainer {
   private SequentialCommandGroup moveSuperStructureDelayed(
       ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
     return new SequentialCommandGroup(
-        new SetElevatorSetpoint(m_elevator, elevatorSetpoint).withTimeout(0.7),
+        new SetElevatorSetpoint(m_elevator, elevatorSetpoint).withTimeout(0.4),
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
@@ -379,10 +392,13 @@ public class RobotContainer {
               new ParallelCommandGroup(
                   new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                      .until(
-                          () ->
-                              m_endEffector
-                                  .hasCoral()), // End effector stops running when coral is detected
+                      .withDeadline(
+                          new WaitUntilCommand(
+                              () ->
+                                  m_endEffector
+                                      .hasCoral()) // End effector stops running when coral is
+                          // detected
+                          ),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);

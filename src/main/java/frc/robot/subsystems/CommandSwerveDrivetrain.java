@@ -227,7 +227,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
   }
 
-  // TODO: fix
   public void setChassisSpeedsAuto(
       ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {
     setControl(

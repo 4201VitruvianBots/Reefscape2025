@@ -5,29 +5,27 @@
 package frc.robot.commands.endEffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
-import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
+import frc.robot.subsystems.EndEffector;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class EndEffectorSetpoint extends Command {
-  private final EndEffectorPivot m_endEffectorPivot;
-  private final PIVOT_SETPOINT m_setpoint;
+public class AutoRunEndEffectorIntake extends Command {
+  private final EndEffector m_endEffector;
+  private final ROLLER_SPEED m_speed;
 
-  /** Creates a new EndEffectorSetpoint. */
-  public EndEffectorSetpoint(EndEffectorPivot endEffectorPivot, PIVOT_SETPOINT setpoint) {
+  /** Creates a new RunEndEffectorIntake. */
+  public AutoRunEndEffectorIntake(EndEffector endEffector, ROLLER_SPEED speed) {
+    m_endEffector = endEffector;
+    m_speed = speed;
+
     // Use addRequirements() here to declare subsystem dependencies.
-    m_endEffectorPivot = endEffectorPivot;
-    m_setpoint = setpoint;
-
-    addRequirements(endEffectorPivot);
+    addRequirements(m_endEffector);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endEffectorPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_endEffectorPivot.setSetpoint(m_setpoint.get());
+    m_endEffector.setPercentOutput(m_speed.get());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +39,6 @@ public class EndEffectorSetpoint extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
