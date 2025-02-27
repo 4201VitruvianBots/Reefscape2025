@@ -432,10 +432,8 @@ public class RobotContainer {
           .povLeft()
           .whileTrue(new RunClimber(m_climber, -0.15));
       m_driverController
-          .button(7) // select
-          .onTrue(Commands.run(() -> m_climber.setHopperServoAngle(CLIMBER.hopperServoAngle))); // mvoe hopper out of the way
-      // m_driverController
-      //  .start()
+          .back()
+          .whileTrue(Commands.startEnd(() -> m_hopperIntake.moveServo(1.0), () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
     }
   }
 
@@ -461,6 +459,8 @@ public class RobotContainer {
   public void teleopInit() {
     m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
     m_elevator.teleopInit();
+    m_hopperIntake.teleopInit();
+    m_endEffectorPivot.teleopInit();
   }
 
   public void testInit() {

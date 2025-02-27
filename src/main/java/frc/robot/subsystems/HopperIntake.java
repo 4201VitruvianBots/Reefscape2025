@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +35,7 @@ public class HopperIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
           HOPPERINTAKE.gearbox);
+  private final Servo m_hopperServo = new Servo(9);
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -51,12 +53,25 @@ public class HopperIntake extends SubsystemBase {
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
+  
+  public void moveServo(double speed) {
+    m_hopperServo.set(speed);
+  }
+  
+  public void stopServo() {
+    m_hopperServo.setAngle(90.0);
+  }
 
   public void updateSmartDashboard() {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
     SmartDashboard.putNumber("Hopper Intake/Motor Current", m_currentSignal.getValueAsDouble());
+    SmartDashboard.putNumber("Hopper Intake/Servo Angle", m_hopperServo.getAngle());
+  }
+  
+  public void teleopInit() {
+    stopServo();
   }
 
   @Override
