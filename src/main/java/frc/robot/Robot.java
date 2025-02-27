@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
@@ -49,9 +50,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    ROBOT.initConstants();
-
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    FollowPathCommand.warmupCommand().schedule();
+    // Instantiate our RobotContainer. This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }

@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.constants.ELEVATOR;
-import frc.robot.constants.ENDEFFECTOR;
+import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
@@ -74,12 +74,9 @@ public class Robot2d {
   Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
-                  "EndEffector2d",
-                  new Color8Bit(0, 255, 255),
-                  ENDEFFECTOR.startingAngle,
-                  ENDEFFECTOR.length)
+                  "EndEffector2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle, PIVOT.length)
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
-          m_endEffectorRoot);
+          m_elevator.getLastStageLigament());
 
   /** Map of subsystems for Robot2d to update */
   Map<String, Subsystem> m_subsystemMap = new HashMap<>();

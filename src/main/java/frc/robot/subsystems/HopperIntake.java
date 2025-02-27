@@ -42,7 +42,9 @@ public class HopperIntake extends SubsystemBase {
     config.Slot0.kD = HOPPERINTAKE.kD;
     config.Feedback.SensorToMechanismRatio = HOPPERINTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.PeakReverseDutyCycle = HOPPERINTAKE.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = HOPPERINTAKE.peakForwardOutput;
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
   }
 
@@ -50,7 +52,7 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotor.set(speed);
   }
 
-  public void updateLogger() {
+  public void updateSmartDashboard() {
     SmartDashboard.putNumber("Hopper Intake/Motor Velocity", m_velocitySignal.getValueAsDouble());
     SmartDashboard.putNumber(
         "Hopper Intake/Motor Output", m_voltageSignal.getValueAsDouble() / 12.0);
@@ -73,5 +75,7 @@ public class HopperIntake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateSmartDashboard();
+  }
 }

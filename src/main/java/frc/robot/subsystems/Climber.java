@@ -15,6 +15,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 // import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
@@ -50,6 +51,7 @@ public class Climber extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
+  private final Servo hopperServo = new Servo(9);
 
   public Climber() {
     TalonFXConfiguration configclimber = new TalonFXConfiguration();
@@ -62,8 +64,12 @@ public class Climber extends SubsystemBase {
     configclimber.MotionMagic.MotionMagicAcceleration = 200;
   }
 
-  public void holdclimber() {
-    setDesiredPosition(getPullyLengthMeters());
+  public void holdClimber() {
+    setDesiredPosition(getPulleyLengthMeters());
+  }
+
+  public void setHopperServoAngle(double angle) {
+    hopperServo.setAngle(angle);
   }
 
   public void setPercentOutput(double output) {
@@ -104,7 +110,7 @@ public class Climber extends SubsystemBase {
     return m_voltageSignal.getValueAsDouble();
   }
 
-  public double getPullyLengthMeters() {
+  public double getPulleyLengthMeters() {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
   }
 

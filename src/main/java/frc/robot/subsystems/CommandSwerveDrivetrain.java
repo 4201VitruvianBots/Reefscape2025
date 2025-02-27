@@ -36,8 +36,12 @@ import frc.robot.constants.VISION;
 import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import frc.robot.utils.CtreUtils;
+import java.io.IOException;
 import java.util.function.Supplier;
+import org.json.simple.parser.ParseException;
+import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
+import org.team4201.codex.utils.TrajectoryUtils;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -69,6 +73,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean m_hasAppliedOperatorPerspective = false;
+
+  private TrajectoryUtils m_trajectoryUtils;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -156,6 +162,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+
+    try {
+      m_trajectoryUtils = new TrajectoryUtils(this);
+    } catch (Exception ex) {
+      DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
+    }
   }
 
   public void initDriveSysid() {
@@ -227,9 +239,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     configureAutoBuilder();
   }
 
-  // TODO: fix
   public void setChassisSpeedsAuto(
-      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {
+    setControl(
+        m_pathApplyRobotSpeeds
+            .withSpeeds(chassisSpeeds)
+            .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+  }
 
   // TODO: Re-implement
   //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
@@ -356,6 +373,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return m_kinematics.toChassisSpeeds(getState().ModuleStates);
   }
 
+  public TrajectoryUtils getTrajectoryUtils() {
+    return m_trajectoryUtils;
+  }
+
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
@@ -474,5 +495,34 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public void addVisionMeasurement(
       Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
     super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
+  }
+
+  @Override
+  public RobotConfig getAutoRobotConfig() {
+    // TODO Auto-generated method stub
+    try {
+      return RobotConfig.fromGUISettings();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public PIDConstants getAutoTranslationPIDConstants() {
+    // TODO Auto-generated method stub
+    return new PIDConstants(10, 0, 0);
+  }
+
+  @Override
+  public PIDConstants getAutoRotationPIDConstants() {
+    // TODO Auto-generated method stub
+    return new PIDConstants(7, 0, 0);
   }
 }
