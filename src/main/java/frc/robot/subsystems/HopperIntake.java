@@ -6,7 +6,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -78,8 +77,7 @@ public class HopperIntake extends SubsystemBase {
   public void simulationPeriodic() {
     m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_hopperIntakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_hopperIntakeMotorSimState.getMotorVoltage(), -12, 12));
+    m_hopperIntakeMotorSim.setInputVoltage(m_hopperIntakeMotorSimState.getMotorVoltage());
 
     m_hopperIntakeMotorSim.update(0.02); // TODO update this later maybe?
 

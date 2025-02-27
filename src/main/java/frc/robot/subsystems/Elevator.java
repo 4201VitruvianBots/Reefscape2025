@@ -17,7 +17,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -320,7 +319,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
+    m_elevatorSim.setInputVoltage(m_motorSimState.getMotorVoltage());
 
     m_elevatorSim.update(0.020);
 

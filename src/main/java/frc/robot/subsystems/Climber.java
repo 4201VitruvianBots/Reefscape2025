@@ -4,15 +4,19 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
@@ -25,18 +29,10 @@ public class Climber extends SubsystemBase {
   private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
 
   // Simulation classes help us simulate what's going on, including gravity.
-  // private final ElevatorSim m_climberSim =
-  // new ElevatorSim(
-  //     CLIMBER.gearbox,
-  //     climber.kClimberGearing,
-  //     climber.kCarriageMassPounds,
-  //     climber.kClimberDrumRadius,
-  //     climber.upperLimitMeters,
-  //     climber.lowerLimitMeters,
-  //     true,
-  //     0,
-  //     0.01,
-  //     0.0);
+  private final FlywheelSim m_climberSim =
+      new FlywheelSim(
+          LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
+
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
   private double m_desiredPositionMeters;
@@ -101,7 +97,7 @@ public class Climber extends SubsystemBase {
   }
 
   public double getPulleyLengthMeters() {
-    return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
+    return getMotorRotations() * CLIMBER.sprocketRotationsToMeters.magnitude();
   }
 
   // Sets the control state of the climber
@@ -137,9 +133,9 @@ public class Climber extends SubsystemBase {
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    // m_climberSim.update(0.020);
+    m_climberSim.update(0.020);
 
-    // m_climberSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-
+    m_motorSimState.setRawRotorPosition(m_climberSim.getAngularVelocity().times(Seconds.of(0.02)));
+    m_motorSimState.setRotorVelocity(m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio));
   }
 }

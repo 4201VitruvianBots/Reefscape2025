@@ -305,7 +305,7 @@ public class GroundPivot extends SubsystemBase {
     // Set supply voltage of pivot motor
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_pivotSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_pivotSim.setInputVoltage(m_simState.getMotorVoltage());
 
     m_pivotSim.update(0.020);
 

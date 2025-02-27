@@ -246,8 +246,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public void simulationPeriodic() {
     m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(
-        MathUtil.clamp(m_pivotMotorSimState.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(m_pivotMotorSimState.getMotorVoltage());
 
     m_endEffectorSim.update(0.020);
 

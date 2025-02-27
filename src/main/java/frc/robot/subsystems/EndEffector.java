@@ -11,7 +11,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -87,9 +86,9 @@ public class EndEffector extends SubsystemBase {
   public void simulationPeriodic() {
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(m_simState.getMotorVoltage());
 
-    m_endEffectorSim.update(0.02); // TODO update this later maybe?
+    m_endEffectorSim.update(0.02);
 
     m_simState.setRawRotorPosition(
         m_endEffectorSim.getAngularPositionRotations() * ROLLERS.gearRatio);

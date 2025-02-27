@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
@@ -115,8 +114,7 @@ public class CoralOuttake extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    outtakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_outtakeMotorSimState.getMotorVoltage(), -12, 12));
+    outtakeMotorSim.setInputVoltage(m_outtakeMotorSimState.getMotorVoltage());
 
     // TODO Right now this thing has no idea what time it is, so gotta update that.
 
