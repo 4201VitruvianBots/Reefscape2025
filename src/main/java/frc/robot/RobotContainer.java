@@ -54,7 +54,6 @@ import frc.robot.constants.USB;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.alphabot.*;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
@@ -69,11 +68,11 @@ import org.team4201.codex.simulation.FieldSim;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-@Logged
+@Logged(name = "RobotContainer", importance = Logged.Importance.CRITICAL)
 public class RobotContainer {
   private CommandSwerveDrivetrain m_swerveDrive;
 
-  @Logged(name = "Controls")
+  @Logged(name = "Controls", importance = Logged.Importance.INFO)
   private final Controls m_controls = new Controls();
 
   private final Telemetry m_telemetry = new Telemetry();
@@ -85,14 +84,24 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2 subsystems
-  @Logged(name = "Climber") private Climber m_climber;
-  @Logged(name = "Elevator") private Elevator m_elevator;
-  @Logged(name = "EndEffector") private EndEffector m_endEffector;
-  @Logged(name = "EndEffectorPivot") private EndEffectorPivot m_endEffectorPivot;
-  @Logged(name = "HopperIntake") private HopperIntake m_hopperIntake;
+  @Logged(name = "Climber", importance = Logged.Importance.INFO)
+  private Climber m_climber;
+
+  @Logged(name = "Elevator", importance = Logged.Importance.INFO)
+  private Elevator m_elevator;
+
+  @Logged(name = "EndEffector", importance = Logged.Importance.INFO)
+  private EndEffector m_endEffector;
+
+  @Logged(name = "EndEffectorPivot", importance = Logged.Importance.INFO)
+  private EndEffectorPivot m_endEffectorPivot;
+
+  @Logged(name = "HopperIntake", importance = Logged.Importance.INFO)
+  private HopperIntake m_hopperIntake;
 
   private final Robot2d m_robot2d = new Robot2d();
 
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -106,8 +115,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
 
-  @NotLogged
-  private double MaxSpeed;
+  @NotLogged private double MaxSpeed;
 
   @NotLogged
   private double MaxAngularRate =
@@ -138,7 +146,8 @@ public class RobotContainer {
   private void initializeSubSystems() {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
-      MaxSpeed = V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      MaxSpeed =
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -146,12 +155,15 @@ public class RobotContainer {
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
-      MaxSpeed = AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      MaxSpeed =
+          AlphaBotConstants.kSpeedAt12Volts.in(
+              MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
-      MaxSpeed = V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      MaxSpeed =
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -393,7 +405,8 @@ public class RobotContainer {
           .whileTrue(
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).until(m_endEffector::hasCoral),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
+                      .until(m_endEffector::hasCoral),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);

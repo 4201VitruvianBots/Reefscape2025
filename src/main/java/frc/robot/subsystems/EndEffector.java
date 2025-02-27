@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,15 +20,14 @@ import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import frc.robot.utils.CtreUtils;
 
-@Logged
 public class EndEffector extends SubsystemBase {
-  @NotLogged private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
+  private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
-  @NotLogged private final DigitalInput m_beamBreakSensor = new DigitalInput(0);
+  private final DigitalInput m_beamBreakSensor = new DigitalInput(0);
 
   /** Creates a new EndEffector. */
   public EndEffector() {
@@ -49,13 +47,13 @@ public class EndEffector extends SubsystemBase {
   public void setPercentOutput(double output) {
     m_endEffectorMotor.set(output);
   }
-  
-  @Logged(name="Motor Output")
+
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return m_endEffectorMotor.get();
   }
 
-  @Logged(name="Has Coral")
+  @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
     return !m_beamBreakSensor.get();
   }

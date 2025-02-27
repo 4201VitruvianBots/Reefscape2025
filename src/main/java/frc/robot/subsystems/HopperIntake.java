@@ -1,32 +1,27 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.utils.CtreUtils;
 
-@Logged
 public class HopperIntake extends SubsystemBase {
 
-  @NotLogged private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  @NotLogged private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
+  
+  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
@@ -49,12 +44,12 @@ public class HopperIntake extends SubsystemBase {
   public void setPercentOutput(double speed) {
     m_hopperIntakeMotor.set(speed);
   }
-  
-  @Logged(name="Motor Output")
+
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return m_hopperIntakeMotor.get();
   }
-  
+
   @Override
   public void simulationPeriodic() {
     m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
