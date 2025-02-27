@@ -50,14 +50,14 @@ public class TestHopperAuto extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
-          new PrintCommand("path starting point" + path.getStartingHolonomicPose().toString()),
+          new PrintCommand("path starting point" + path.getStartingHolonomicPose()),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           new ParallelCommandGroup(
                   new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-              .until(() -> endEffector.hasCoral()),
+              .until(endEffector::hasCoral),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)

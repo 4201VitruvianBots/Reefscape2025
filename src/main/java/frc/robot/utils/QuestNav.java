@@ -10,23 +10,24 @@ import edu.wpi.first.wpilibj.RobotController;
 
 public class QuestNav {
   // Configure Network Tables topics (questnav/...) to communicate with the Quest HMD
-  NetworkTableInstance nt4Instance = NetworkTableInstance.getDefault();
-  NetworkTable nt4Table = nt4Instance.getTable("questnav");
-  private IntegerSubscriber questMiso = nt4Table.getIntegerTopic("miso").subscribe(0);
-  private IntegerPublisher questMosi = nt4Table.getIntegerTopic("mosi").publish();
+  private final NetworkTableInstance nt4Instance = NetworkTableInstance.getDefault();
+  private final NetworkTable nt4Table = nt4Instance.getTable("questnav");
+  private final IntegerSubscriber questMiso = nt4Table.getIntegerTopic("miso").subscribe(0);
+  private final IntegerPublisher questMosi = nt4Table.getIntegerTopic("mosi").publish();
 
   // Subscribe to the Network Tables questnav data topics
-  private DoubleSubscriber questTimestamp = nt4Table.getDoubleTopic("timestamp").subscribe(0.0f);
-  private FloatArraySubscriber questPosition =
+  private final DoubleSubscriber questTimestamp =
+      nt4Table.getDoubleTopic("timestamp").subscribe(0.0f);
+  private final FloatArraySubscriber questPosition =
       nt4Table.getFloatArrayTopic("position").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private FloatArraySubscriber questQuaternion =
+  private final FloatArraySubscriber questQuaternion =
       nt4Table.getFloatArrayTopic("quaternion").subscribe(new float[] {0.0f, 0.0f, 0.0f, 0.0f});
-  private FloatArraySubscriber questEulerAngles =
+  private final FloatArraySubscriber questEulerAngles =
       nt4Table.getFloatArrayTopic("eulerAngles").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private DoubleSubscriber questBatteryPercent =
+  private final DoubleSubscriber questBatteryPercent =
       nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
 
-  private StructPublisher<Pose2d> questNavPose =
+  private final StructPublisher<Pose2d> questNavPose =
       nt4Instance.getStructTopic("QuestNavPose", Pose2d.struct).publish();
   // Local heading helper variables
   private float yaw_offset = 0.0f;
@@ -66,7 +67,7 @@ public class QuestNav {
     return questTimestamp.get();
   }
 
-  // Zero the relativerobot heading
+  // Zero the relative robot heading
   public void zeroHeading() {
     float[] eulerAngles = questEulerAngles.get();
     yaw_offset = eulerAngles[1];
@@ -104,9 +105,9 @@ public class QuestNav {
   }
 
   private Pose2d getQuestNavPose() {
-    var oculousPositionCompensated =
+    var oculusPositionCompensated =
         getQuestNavTranslation().minus(new Translation2d(0, 0.1651)); // 6.5
-    return new Pose2d(oculousPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
+    return new Pose2d(oculusPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
   }
 
   public void periodic() {

@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -37,7 +35,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator */
@@ -50,7 +48,7 @@ public class Elevator extends SubsystemBase {
       new ElevatorSim(
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
-          ELEVATOR.kCarriageMassPounds,
+          ELEVATOR.kCarriageMass.in(Kilograms),
           ELEVATOR.kElevatorDrumDiameter / 2,
           ELEVATOR.lowerLimitMeters,
           ELEVATOR.upperLimitMeters,
@@ -117,6 +115,7 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].setPosition(Rotations.of(0));
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
 
+    setName("Elevator");
     SmartDashboard.putData(this);
   }
 
@@ -270,23 +269,6 @@ public class Elevator extends SubsystemBase {
     holdElevator();
   }
 
-  @Override
-  public void simulationPeriodic() {
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_elevatorSim.update(0.020);
-
-    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
-    m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters);
-  }
-
   private void updateSmartDashboard() {
     SmartDashboard.putNumber("Elevator/Elevator Height", getHeightMeters());
     SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
@@ -333,5 +315,20 @@ public class Elevator extends SubsystemBase {
         break;
     }
     updateSmartDashboard();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
+
+    m_elevatorSim.update(0.020);
+
+    m_motorSimState.setRawRotorPosition(
+        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
+    m_motorSimState.setRotorVelocity(
+        m_elevatorSim.getVelocityMetersPerSecond()
+            * ELEVATOR.gearRatio
+            / ELEVATOR.drumRotationsToMeters);
   }
 }

@@ -238,7 +238,7 @@ public class V2Constants {
 
   /**
    * Creates a CommandSwerveDrivetrain instance. This should only be called once in your robot
-   * program,.
+   * program.
    */
   public static CommandSwerveDrivetrain createDrivetrain() {
     return new CommandSwerveDrivetrain(

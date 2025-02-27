@@ -40,19 +40,6 @@ public final class VISION {
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
 
-  public static final double noteDetectionLimelightCameraDistanceFromCenterX =
-      Units.inchesToMeters(12.125);
-  public static final double noteDetectionLimelightCameraDistanceFromCenterY =
-      Units.inchesToMeters(0);
-  public static final double noteDetectionLimelightCameraDistanceFromGroundZ =
-      Units.inchesToMeters(7.040388);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesRoll =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesPitch =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesYaw =
-      Units.degreesToRadians(0);
-
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
   public static final Transform3d robotToAprilTagLimelightCameraA =
       new Transform3d(
@@ -87,19 +74,6 @@ public final class VISION {
   public enum CAMERA_TYPE {
     LIMELIGHT,
     PHOTONVISION
-  }
-
-  public enum PIPELINE {
-    APRILTAGS(0);
-    private final int pipeline;
-
-    PIPELINE(final int pipeline) {
-      this.pipeline = pipeline;
-    }
-
-    public int get() {
-      return pipeline;
-    }
   }
 
   public enum CAMERA_SERVER {

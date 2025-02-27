@@ -5,7 +5,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
@@ -35,7 +34,6 @@ import org.team4201.codex.simulation.FieldSim;
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
-  private Translation2d m_goal = new Translation2d();
 
   private final NetworkTable NoteDetectionLimelight =
       NetworkTableInstance.getDefault().getTable("limelight");
@@ -66,8 +64,8 @@ public class Vision extends SubsystemBase {
 
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
-  // Networktables publisher setup
-  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  // NetworkTables publisher setup
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("VisionDebug");
   private final DoublePublisher visionEstPoseTimestamp =
       table.getDoubleTopic("EstPoseTimestamp").publish();
@@ -127,9 +125,7 @@ public class Vision extends SubsystemBase {
                 getSimDebugField()
                     .getObject("VisionEstimation")
                     .setPose(est.estimatedPose.toPose2d()),
-            () -> {
-              getSimDebugField().getObject("VisionEstimation").setPoses();
-            });
+            () -> getSimDebugField().getObject("VisionEstimation").setPoses());
       }
     }
     return visionEst;
@@ -157,7 +153,7 @@ public class Vision extends SubsystemBase {
       int numTags = 0;
       double avgDist = 0;
 
-      // Precalculation - see how many tags we found, and calculate an average-distance metric
+      // Pre-calculation - see how many tags we found, and calculate an average-distance metric
       for (var tgt : targets) {
         var tagPose = limelightPhotonPoseEstimatorB.getFieldTags().getTagPose(tgt.getFiducialId());
         if (tagPose.isEmpty()) continue;
@@ -194,37 +190,6 @@ public class Vision extends SubsystemBase {
   public void registerFieldSim(FieldSim fieldSim) {
     m_fieldSim = fieldSim;
   }
-
-  // TODO: find out if this can be used for multi camera pose estimation
-  // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
-  //   var poseDelta = a.minus(b);
-
-  //   if (Math.abs(poseDelta.getTranslation().getX()) > VISION.poseXTolerance) {
-  //     return false;
-  //   }
-
-  //   if (Math.abs(poseDelta.getTranslation().getY()) > VISION.poseYTolerance) {
-  //     return false;
-  //   }
-
-  //   //    if (Math.abs(poseDelta.getTranslation().getZ()) > VISION.poseZTolerance) {
-  //   //      return false;
-  //   //    }
-
-  //   //    if (Math.abs(poseDelta.getRotation().getX()) > VISION.poseRollTolerance) {
-  //   //      return false;
-  //   //    }
-  //   //
-  //   //    if (Math.abs(poseDelta.getRotation().getY()) > VISION.posePitchTolerance) {
-  //   //      return false;
-  //   //    }
-
-  //   if (Math.abs(poseDelta.getRotation().getZ()) > VISION.poseYawTolerance) {
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
 
   public boolean isCameraConnected(PhotonCamera camera) {
     return camera.isConnected();

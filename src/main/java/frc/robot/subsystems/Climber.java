@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-// import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
@@ -16,26 +14,24 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Servo;
-// import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
-  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
 
-  //   // Simulation classes help us simulate what's going on, including gravity.
-  //     // Simulation classes help us simulate what's going on, including gravity.
+  // Simulation classes help us simulate what's going on, including gravity.
   // private final ElevatorSim m_climberSim =
   // new ElevatorSim(
   //     CLIMBER.gearbox,
-  //     climber.kclimberGearing,
+  //     climber.kClimberGearing,
   //     climber.kCarriageMassPounds,
-  //     climber.kclimberDrumRadius,
+  //     climber.kClimberDrumRadius,
   //     climber.upperLimitMeters,
   //     climber.lowerLimitMeters,
   //     true,
@@ -54,14 +50,14 @@ public class Climber extends SubsystemBase {
   private final Servo hopperServo = new Servo(9);
 
   public Climber() {
-    TalonFXConfiguration configclimber = new TalonFXConfiguration();
-    configclimber.Slot0.kP = CLIMBER.kP;
-    configclimber.Slot0.kI = CLIMBER.kI;
-    configclimber.Slot0.kD = CLIMBER.kD;
-    CtreUtils.configureTalonFx(climberMotor, configclimber);
+    TalonFXConfiguration climberConfig = new TalonFXConfiguration();
+    climberConfig.Slot0.kP = CLIMBER.kP;
+    climberConfig.Slot0.kI = CLIMBER.kI;
+    climberConfig.Slot0.kD = CLIMBER.kD;
+    CtreUtils.configureTalonFx(climberMotor, climberConfig);
 
-    configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
-    configclimber.MotionMagic.MotionMagicAcceleration = 200;
+    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
+    climberConfig.MotionMagic.MotionMagicAcceleration = 200;
   }
 
   public void holdClimber() {

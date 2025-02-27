@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
 
 public class ELEVATOR {
   public static final double upperLimitMeters = Units.inchesToMeters(57.5);
@@ -42,7 +43,7 @@ public class ELEVATOR {
       kElevatorDrumDiameter
           * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // meters
-  public static final double kCarriageMassPounds = 15.0;
+  public static final Mass kCarriageMass = Pounds.of(15.0);
   public static final double gearRatio = 48.0 / 10.0;
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
 

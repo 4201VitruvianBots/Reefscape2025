@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,22 +24,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 @Logged
 public class EndEffector extends SubsystemBase {
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
+
+  @NotLogged
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_endEffectorMotor.getVelocity().clone();
+
+  @NotLogged
   private final StatusSignal<Voltage> m_voltageSignal =
       m_endEffectorMotor.getMotorVoltage().clone();
+
+  @NotLogged
   private final StatusSignal<Current> m_currentSignal =
       m_endEffectorMotor.getTorqueCurrent().clone();
-  private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
+
+  @NotLogged private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
+
+  @NotLogged
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
           ROLLERS.gearbox);
+
   private final DigitalInput input = new DigitalInput(0);
 
   /** Creates a new EndEffector. */
@@ -54,6 +65,7 @@ public class EndEffector extends SubsystemBase {
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");
+    SmartDashboard.putData(this);
   }
 
   public void setPercentOutput(double output) {

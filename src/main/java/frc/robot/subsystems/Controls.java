@@ -24,11 +24,11 @@ public class Controls extends SubsystemBase {
   }
 
   public static boolean isRedAlliance() {
-    return (m_allianceColor == DriverStation.Alliance.Red);
+    return getAllianceColor() == DriverStation.Alliance.Red;
   }
 
   public static boolean isBlueAlliance() {
-    return (m_allianceColor == DriverStation.Alliance.Blue);
+    return getAllianceColor() == DriverStation.Alliance.Blue;
   }
 
   private void initSmartDashboard() {
@@ -40,8 +40,7 @@ public class Controls extends SubsystemBase {
     // This method will be called once per scheduler run
 
     if (DriverStation.isDisabled()) {
-      var allianceCheck = DriverStation.getAlliance();
-      allianceCheck.ifPresent(a -> m_allianceColor = a);
+      DriverStation.getAlliance().ifPresent(a -> m_allianceColor = a);
     }
   }
 }

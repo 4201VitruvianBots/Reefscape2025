@@ -21,22 +21,6 @@ public class DriveForward extends SequentialCommandGroup {
   /** Creates a new DriveForward. */
   public DriveForward(CommandSwerveDrivetrain swerveDrive, FieldSim fieldSim) {
     try {
-      //            var waypoints =
-      //                PathPlannerPath.waypointsFromPoses(
-      //                    new Pose2d(1, 1, Rotation2d.kZero), new Pose2d(5, 1, Rotation2d.kZero));
-      //      var waypoints =
-      //          PathPlannerPath.waypointsFromPoses(
-      //              new Pose2d(17, 1, Rotation2d.k180deg), new Pose2d(13, 1, Rotation2d.k180deg));
-      //      var pathConstraints = new PathConstraints(4, 4, 0.1, 0.1, 12);
-      //      var path =
-      //          new PathPlannerPath(
-      //              waypoints,
-      //              pathConstraints,
-      //              new IdealStartingState(0, Rotation2d.k180deg),
-      //              new GoalEndState(0, Rotation2d.k180deg));
-      //      var m_ppCommand =
-      //          swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand(path, () -> false);
-
       var path = PathPlannerPath.fromPathFile("DriveForward");
       var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand(path);
 

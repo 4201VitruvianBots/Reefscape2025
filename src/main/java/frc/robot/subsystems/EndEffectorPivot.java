@@ -34,7 +34,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 @Logged
 public class EndEffectorPivot extends SubsystemBase {
@@ -60,6 +60,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private boolean m_pivotState;
 
   // Simulation Code
+  @NotLogged
   private final SingleJointedArmSim m_endEffectorSim =
       new SingleJointedArmSim(
           PIVOT.pivotGearBox,
@@ -151,6 +152,7 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_pivotMotor.get();
   }
 
+  @NotLogged
   public ControlRequest getCurrentControlRequest() {
     return m_pivotMotor.getAppliedControl();
   }

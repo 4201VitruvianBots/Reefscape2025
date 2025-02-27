@@ -27,11 +27,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.alphabot.CAN;
 import frc.robot.constants.alphabot.CORALOUTTAKE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
-  private LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
+  private final LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   private final DCMotorSim outtakeMotorSim =
       new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); // TODO implement sim code
@@ -41,7 +41,7 @@ public class CoralOuttake extends SubsystemBase {
   private final VoltageOut m_voltageRequest = new VoltageOut(0);
   private final TorqueCurrentFOC m_TorqueCurrentFOC = new TorqueCurrentFOC(0);
   private final VelocityTorqueCurrentFOC m_focVelocityControl = new VelocityTorqueCurrentFOC(0);
-  private TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
+  private final TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
   // Test mode setup
   private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
   private final NetworkTable coralOuttakeTab =
@@ -108,7 +108,7 @@ public class CoralOuttake extends SubsystemBase {
     CtreUtils.configureTalonFx(outtakeMotor, config);
   }
 
-  public double getRPMsetpoint() {
+  public double getRpmSetpoint() {
     return m_rpmSetpoint;
   }
 

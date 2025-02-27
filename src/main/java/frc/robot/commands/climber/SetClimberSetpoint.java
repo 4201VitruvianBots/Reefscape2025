@@ -26,7 +26,7 @@ public class SetClimberSetpoint extends Command {
   public void execute() {}
 
   @Override
-  public void end(boolean interruped) {}
+  public void end(boolean interrupted) {}
 
   public boolean isFinished() {
     return false;
