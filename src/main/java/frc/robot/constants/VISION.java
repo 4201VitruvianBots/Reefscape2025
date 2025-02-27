@@ -23,12 +23,12 @@ public final class VISION {
     // Robot Center to Limelight Camera A
     new Transform3d(
         new Translation3d(
-            Units.inchesToMeters(-14), Units.inchesToMeters(6.5), Units.inchesToMeters(14.6875)),
+            Units.inchesToMeters(14), Units.inchesToMeters(5), Units.inchesToMeters(8.5)),
         new Rotation3d()),
     // Robot Center to Limelight Camera B
     new Transform3d(
         new Translation3d(
-            Units.inchesToMeters(14), Units.inchesToMeters(-6.5), Units.inchesToMeters(14.6875)),
+            Units.inchesToMeters(-12.5), Units.inchesToMeters(11.75), Units.inchesToMeters(17)),
         new Rotation3d()),
   };
 

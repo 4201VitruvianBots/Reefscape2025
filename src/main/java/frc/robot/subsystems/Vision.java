@@ -9,14 +9,19 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
+import frc.robot.LimelightHelpers.LimelightTarget_Barcode;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
@@ -37,6 +42,28 @@ public class Vision extends SubsystemBase {
 
   private final DoubleArrayPublisher m_limelightAPositionPub;
   private final DoubleArrayPublisher m_limelightBPositionPub;
+
+  private NetworkTable limelightATable = NetworkTableInstance.getDefault().getTable("limelight-a");
+  private NetworkTableEntry txOfLimelightA = limelightATable.getEntry("tx");
+  private NetworkTableEntry tyOfLimelightA = limelightATable.getEntry("ty");
+  private NetworkTableEntry taOfLimelightA = limelightATable.getEntry("ta");
+
+//read values periodically
+  private double xOfLimelightA = txOfLimelightA.getDouble(0.0);
+  private double yOfLimelightA = tyOfLimelightA.getDouble(0.0);
+  private double areaOfLimelightA = taOfLimelightA.getDouble(0.0);
+
+  private NetworkTable limelightBTable = NetworkTableInstance.getDefault().getTable("limelight-b");
+  private NetworkTableEntry txOfLimelightB = limelightBTable.getEntry("tx");
+  private NetworkTableEntry tyOfLimelightB = limelightBTable.getEntry("ty");
+  private NetworkTableEntry taOfLimelightB = limelightBTable.getEntry("ta");
+
+//read values periodically
+  private double xOfLimelightB = txOfLimelightB.getDouble(0.0);
+  private double yOfLimelightB = tyOfLimelightB.getDouble(0.0);
+  private double areaOfLimelightB = taOfLimelightB.getDouble(0.0);
+
+//post to smart dashboard periodically
 
   // public static final PhotonCamera aprilTagLimelightCameraA = new PhotonCamera("LimelightA");
   // PhotonPoseEstimator limelightPhotonPoseEstimatorA =
@@ -62,7 +89,7 @@ public class Vision extends SubsystemBase {
   private double cameraATimestamp, cameraBTimestamp;
   private boolean cameraAHasPose, cameraBHasPose, poseAgreement;
   private boolean m_localized;
-  private boolean doRejectUpdate;
+  private boolean doRejectUpdate = false;
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
   // Networktables publisher setup
@@ -86,17 +113,17 @@ public class Vision extends SubsystemBase {
       PortForwarder.add(port + 10, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), port);
     }
 
-    PortForwarder.add(5800, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), 5800);
+    // PortForwarder.add(5800, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), 5800);
 
     m_limelightAPositionPub =
         NetworkTableInstance.getDefault()
-            .getTable("lLocalizer")
+            .getTable("fLocalizer")
             .getDoubleArrayTopic("camToRobotT3D")
             .publish();
 
     m_limelightBPositionPub =
         NetworkTableInstance.getDefault()
-            .getTable("lLocalizer")
+            .getTable("bLocalizer")
             .getDoubleArrayTopic("camToRobotT3D")
             .publish();
 
@@ -324,7 +351,15 @@ public class Vision extends SubsystemBase {
                     robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDriveTrain.setAngleToTarget(m_swerveDriveTrain.getState().Pose.getTranslation().minus(robotToBranch[1].getTranslation()).getAngle().minus(Rotation2d.k180deg));
+              m_swerveDriveTrain.setAngleToTarget(
+                  m_swerveDriveTrain
+                      .getState()
+                      .Pose
+                      .getTranslation()
+                      .minus(robotToBranch[1].getTranslation())
+                      .getAngle()
+                      // .minus(Rotation2d.k180deg)
+                      );
             });
   }
 
@@ -336,7 +371,16 @@ public class Vision extends SubsystemBase {
     m_localized = false;
   }
 
-  private void updateSmartDashboard() {}
+  public void updateSmartDashboard() {
+    // limelight a target data
+    SmartDashboard.putNumber("LimelightA_X", xOfLimelightA);
+    SmartDashboard.putNumber("LimelightA_Y", yOfLimelightA);
+    SmartDashboard.putNumber("LimelightA_Area", areaOfLimelightA);
+    // limelight b target data
+    SmartDashboard.putNumber("LimelightB_X", xOfLimelightB);
+    SmartDashboard.putNumber("LimelightB_Y", yOfLimelightB);
+    SmartDashboard.putNumber("LimelightB_Area", areaOfLimelightB);
+  }
 
   private void updateLog() {}
 
@@ -359,31 +403,119 @@ public class Vision extends SubsystemBase {
       //       m_swerveDriveTrain.addVisionMeasurement(
       //           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
       //     });
-
-      // LimelightHelpers.SetRobotOrientation("limelight-a",
-      // m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      // LimelightHelpers.PoseEstimate mt2_limelightA =
-      // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
-      // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
-      // > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision
-      // updates
-      // {
-      //   doRejectUpdate = true;
-      // }
-      // if(mt2_limelightA.tagCount == 0)
-      // {
-      //   doRejectUpdate = true;
-      // }
-      // if(!doRejectUpdate)
-      // {
-      //   visionEstPose.set(mt2_limelightA.pose);
-      //   visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
-      //   m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      //   m_swerveDriveTrain.addVisionMeasurement(
-      //       mt2_limelightA.pose,
-      //       mt2_limelightA.timestampSeconds);
-      // }
-
+      boolean useMegaTag2 = true; // set to false to use MegaTag1
+      try {
+        if (useMegaTag2 == false) {
+          LimelightHelpers.PoseEstimate mt1_limelightA =
+              LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-a");
+          if (mt1_limelightA.tagCount == 1 && mt1_limelightA.rawFiducials.length == 1) {
+            if (mt1_limelightA.rawFiducials[0].ambiguity > .7) {
+              doRejectUpdate = true;
+            }
+            if (mt1_limelightA.rawFiducials[0].distToCamera > 3) {
+              doRejectUpdate = true;
+            }
+          }
+          if (mt1_limelightA.tagCount == 0) {
+            doRejectUpdate = true;
+          }
+          if (!doRejectUpdate) {
+            visionEstPose.set(mt1_limelightA.pose);
+            visionEstPoseTimestamp.set(mt1_limelightA.timestampSeconds);
+            m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+            m_swerveDriveTrain.addVisionMeasurement(
+                mt1_limelightA.pose, mt1_limelightA.timestampSeconds);
+          } else if (useMegaTag2 == true) {
+            LimelightHelpers.SetRobotOrientation(
+                "limelight-a",
+                m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+                0,
+                0,
+                0,
+                0,
+                0);
+            LimelightHelpers.SetIMUMode("limelight-a", 2);
+            LimelightHelpers.PoseEstimate mt2_limelightA =
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
+  
+            // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            if (Math.abs(
+                    m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
+                > 720) {
+              doRejectUpdate = true;
+            }
+            if (mt2_limelightA.tagCount == 0) {
+              doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+              visionEstPose.set(mt2_limelightA.pose);
+              visionEstPoseTimestamp.set(mt2_limelightA.timestampSeconds);
+              m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+              m_swerveDriveTrain.addVisionMeasurement(
+                  mt2_limelightA.pose, mt2_limelightA.timestampSeconds);
+            }
+          }
+        }
+      } catch (NullPointerException e) {
+        DriverStation.reportWarning("LimelightA failed to get pose esstimation from NetworkTables", true);
+      }
+      
+      try {
+        if (useMegaTag2 == false) {
+          LimelightHelpers.PoseEstimate mt1_limelightB =
+              LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-a");
+          if (mt1_limelightB.tagCount == 1 && mt1_limelightB.rawFiducials.length == 1) {
+            if (mt1_limelightB.rawFiducials[0].ambiguity > .7) {
+              doRejectUpdate = true;
+            }
+            if (mt1_limelightB.rawFiducials[0].distToCamera > 3) {
+              doRejectUpdate = true;
+            }
+          }
+          if (mt1_limelightB.tagCount == 0) {
+            doRejectUpdate = true;
+          }
+          if (!doRejectUpdate) {
+            visionEstPose.set(mt1_limelightB.pose);
+            visionEstPoseTimestamp.set(mt1_limelightB.timestampSeconds);
+            m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+            m_swerveDriveTrain.addVisionMeasurement(
+                mt1_limelightB.pose, mt1_limelightB.timestampSeconds);
+          } else if (useMegaTag2 == true) {
+            LimelightHelpers.SetRobotOrientation(
+                "limelight-b",
+                m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+                0,
+                0,
+                0,
+                0,
+                0);
+            LimelightHelpers.SetIMUMode("limelight-b", 2);
+            LimelightHelpers.PoseEstimate mt2_limelightB =
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+  
+            // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            if (Math.abs(
+                    m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
+                > 720) {
+              doRejectUpdate = true;
+            }
+            if (mt2_limelightB.tagCount == 0) {
+              doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+              visionEstPose.set(mt2_limelightB.pose);
+              visionEstPoseTimestamp.set(mt2_limelightB.timestampSeconds);
+              m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+              m_swerveDriveTrain.addVisionMeasurement(
+                  mt2_limelightB.pose, mt2_limelightB.timestampSeconds);
+            }
+          }
+        }
+      } catch (NullPointerException e) {
+        DriverStation.reportWarning("LimelightB failed to get pose esstimation from NetworkTables", true);
+      }
+      
       // LimelightHelpers.SetRobotOrientation("limelight-b",
       // m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
       // LimelightHelpers.PoseEstimate mt2_limelightB =

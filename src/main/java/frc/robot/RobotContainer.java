@@ -115,6 +115,9 @@ public class RobotContainer {
           .withDeadband(MaxSpeed * 0.1)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
 
+  // private final SwerveRequest.FieldCentricFacingAngle angle =
+  //     .
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     initializeSubSystems();
@@ -409,7 +412,14 @@ public class RobotContainer {
                     robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDrive.setAngleToTarget(m_swerveDrive.getState().Pose.getTranslation().minus(robotToBranch[1].getTranslation()).getAngle().minus(Rotation2d.k180deg));
+              m_swerveDrive.setAngleToTarget(
+                  m_swerveDrive
+                      .getState()
+                      .Pose
+                      .getTranslation()
+                      .minus(robotToBranch[1].getTranslation())
+                      .getAngle()
+                      .minus(Rotation2d.k180deg));
             });
   }
 
