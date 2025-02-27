@@ -105,11 +105,11 @@ public class Vision extends SubsystemBase {
     m_limeLightB = NetworkTableInstance.getDefault().getTable("limeLight-b");
     // TODO: Decide if this is necessary
     // Port Forwarding to access limelight on USB Ethernet
-    for (int port = 5800; port <= 5807; port++) {
+    for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port, VISION.CAMERA_SERVER.LIMELIGHTA.toString(), port);
     }
 
-    for (int port = 5800; port <= 5807; port++) {
+    for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port + 10, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), port);
     }
 
