@@ -39,7 +39,6 @@ import frc.robot.utils.CtreUtils;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
-import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
 

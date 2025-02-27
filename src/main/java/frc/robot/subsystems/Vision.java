@@ -3,13 +3,11 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
-import frc.robot.LimelightHelpers.LimelightTarget_Barcode;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
@@ -48,7 +45,7 @@ public class Vision extends SubsystemBase {
   private NetworkTableEntry tyOfLimelightA = limelightATable.getEntry("ty");
   private NetworkTableEntry taOfLimelightA = limelightATable.getEntry("ta");
 
-//read values periodically
+  // read values periodically
   private double xOfLimelightA = txOfLimelightA.getDouble(0.0);
   private double yOfLimelightA = tyOfLimelightA.getDouble(0.0);
   private double areaOfLimelightA = taOfLimelightA.getDouble(0.0);
@@ -58,12 +55,12 @@ public class Vision extends SubsystemBase {
   private NetworkTableEntry tyOfLimelightB = limelightBTable.getEntry("ty");
   private NetworkTableEntry taOfLimelightB = limelightBTable.getEntry("ta");
 
-//read values periodically
+  // read values periodically
   private double xOfLimelightB = txOfLimelightB.getDouble(0.0);
   private double yOfLimelightB = tyOfLimelightB.getDouble(0.0);
   private double areaOfLimelightB = taOfLimelightB.getDouble(0.0);
 
-//post to smart dashboard periodically
+  // post to smart dashboard periodically
 
   // public static final PhotonCamera aprilTagLimelightCameraA = new PhotonCamera("LimelightA");
   // PhotonPoseEstimator limelightPhotonPoseEstimatorA =
@@ -358,8 +355,8 @@ public class Vision extends SubsystemBase {
                       .getTranslation()
                       .minus(robotToBranch[1].getTranslation())
                       .getAngle()
-                      // .minus(Rotation2d.k180deg)
-                      );
+                  // .minus(Rotation2d.k180deg)
+                  );
             });
   }
 
@@ -437,7 +434,7 @@ public class Vision extends SubsystemBase {
             LimelightHelpers.SetIMUMode("limelight-a", 2);
             LimelightHelpers.PoseEstimate mt2_limelightA =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
-  
+
             // if our angular velocity is greater than 720 degrees per second, ignore vision updates
             if (Math.abs(
                     m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
@@ -457,9 +454,10 @@ public class Vision extends SubsystemBase {
           }
         }
       } catch (NullPointerException e) {
-        DriverStation.reportWarning("LimelightA failed to get pose esstimation from NetworkTables", true);
+        DriverStation.reportWarning(
+            "LimelightA failed to get pose esstimation from NetworkTables", true);
       }
-      
+
       try {
         if (useMegaTag2 == false) {
           LimelightHelpers.PoseEstimate mt1_limelightB =
@@ -493,7 +491,7 @@ public class Vision extends SubsystemBase {
             LimelightHelpers.SetIMUMode("limelight-b", 2);
             LimelightHelpers.PoseEstimate mt2_limelightB =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
-  
+
             // if our angular velocity is greater than 720 degrees per second, ignore vision updates
             if (Math.abs(
                     m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble())
@@ -513,9 +511,10 @@ public class Vision extends SubsystemBase {
           }
         }
       } catch (NullPointerException e) {
-        DriverStation.reportWarning("LimelightB failed to get pose esstimation from NetworkTables", true);
+        DriverStation.reportWarning(
+            "LimelightB failed to get pose esstimation from NetworkTables", true);
       }
-      
+
       // LimelightHelpers.SetRobotOrientation("limelight-b",
       // m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
       // LimelightHelpers.PoseEstimate mt2_limelightB =
