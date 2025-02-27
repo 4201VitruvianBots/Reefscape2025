@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.endEffector.AutoRunEndEffectorIntake;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -55,7 +55,7 @@ public class OnePiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
                           .until(endEffectorpivot::atSetpoint)))
               .withTimeout(2),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
           new SequentialCommandGroup(
               new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.4),
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
