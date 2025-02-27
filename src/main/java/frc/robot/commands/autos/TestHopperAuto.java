@@ -56,13 +56,14 @@ public class TestHopperAuto extends SequentialCommandGroup {
                   new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
-                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-              .until(() -> endEffector.hasCoral()),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)) .until(() -> endEffector.hasCoral()
+             ),
+             new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
-              .withTimeout(0.1),
-          m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
+              .withTimeout(0.1)
+         );
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
       addCommands(new WaitCommand(0));

@@ -36,6 +36,7 @@ public class OnePiece extends SequentialCommandGroup {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
       var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score1");
+      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score2");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -55,11 +56,13 @@ public class OnePiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
                           .until(endEffectorpivot::atSetpoint)))
               .withTimeout(2),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
+          m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new SequentialCommandGroup(
-              new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.4),
+              new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
-                  .until(elevator::atSetpoint)),
+                  .until(elevator::atSetpoint),
+              new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
