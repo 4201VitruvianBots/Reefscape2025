@@ -4,6 +4,7 @@
 
 package frc.robot.commands.endEffector;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.subsystems.EndEffector;
@@ -35,12 +36,12 @@ public class RunEndEffectorIntake extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_endEffector.setPercentOutput(0);
+    if (!DriverStation.isAutonomous()) m_endEffector.setPercentOutput(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return DriverStation.isAutonomous();
   }
 }

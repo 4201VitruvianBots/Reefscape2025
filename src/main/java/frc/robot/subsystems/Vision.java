@@ -32,7 +32,6 @@ import org.team4201.codex.simulation.FieldSim;
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
-  private Translation2d m_goal = new Translation2d();
 
   private final NetworkTable m_limeLightA;
   private final NetworkTable m_limeLightB;
@@ -90,8 +89,8 @@ public class Vision extends SubsystemBase {
   private boolean useMegaTag2 = true; // set to false to use MegaTag1
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
-  // Networktables publisher setup
-  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  // NetworkTables publisher setup
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("VisionDebug");
   private final DoublePublisher visionEstPoseTimestamp =
       table.getDoubleTopic("EstPoseTimestamp").publish();

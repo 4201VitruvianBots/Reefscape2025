@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-// import static edu.wpi.first.units.Units.*; // I'll use this later don't worrrryyyyy
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,38 +12,30 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-// import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
-  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
 
-  //   // Simulation classes help us simulate what's going on, including gravity.
-  //     // Simulation classes help us simulate what's going on, including gravity.
-  // private final ElevatorSim m_climberSim =
-  // new ElevatorSim(
-  //     CLIMBER.gearbox,
-  //     climber.kclimberGearing,
-  //     climber.kCarriageMassPounds,
-  //     climber.kclimberDrumRadius,
-  //     climber.upperLimitMeters,
-  //     climber.lowerLimitMeters,
-  //     true,
-  //     0,
-  //     0.01,
-  //     0.0);
+  // Simulation classes help us simulate what's going on, including gravity.
+  private final FlywheelSim m_climberSim =
+      new FlywheelSim(
+          LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
+
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
-  private double m_desiredPositionMeters;
+  private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
@@ -52,14 +44,14 @@ public class Climber extends SubsystemBase {
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
 
   public Climber() {
-    TalonFXConfiguration configclimber = new TalonFXConfiguration();
-    configclimber.Slot0.kP = CLIMBER.kP;
-    configclimber.Slot0.kI = CLIMBER.kI;
-    configclimber.Slot0.kD = CLIMBER.kD;
-    CtreUtils.configureTalonFx(climberMotor, configclimber);
+    TalonFXConfiguration climberConfig = new TalonFXConfiguration();
+    climberConfig.Slot0.kP = CLIMBER.kP;
+    climberConfig.Slot0.kI = CLIMBER.kI;
+    climberConfig.Slot0.kD = CLIMBER.kD;
+    CtreUtils.configureTalonFx(climberMotor, climberConfig);
 
-    configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
-    configclimber.MotionMagic.MotionMagicAcceleration = 200;
+    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
+    climberConfig.MotionMagic.MotionMagicAcceleration = 200;
   }
 
   public void holdClimber() {
@@ -95,17 +87,13 @@ public class Climber extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public CONTROL_MODE getClosedLoopControlMode() {
-    return m_controlMode;
-  }
-
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }
 
   public double getPulleyLengthMeters() {
-    return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
+    return getMotorRotations() * CLIMBER.sprocketRotationsToMeters.magnitude();
   }
 
   // Sets the control state of the climber
@@ -114,7 +102,7 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean isClosedLoopControl() {
-    return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
+    return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
 
   public void setClimberNeutralMode(NeutralModeValue mode) {
@@ -141,9 +129,9 @@ public class Climber extends SubsystemBase {
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    // m_climberSim.update(0.020);
+    m_climberSim.update(0.020);
 
-    // m_climberSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-
+    m_motorSimState.setRawRotorPosition(m_climberSim.getAngularVelocity().times(Seconds.of(0.02)));
+    m_motorSimState.setRotorVelocity(m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio));
   }
 }

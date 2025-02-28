@@ -21,14 +21,11 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.SetHopperIntake;
+import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
-import frc.robot.commands.autos.DriveForward;
-import frc.robot.commands.autos.OnePiece;
-import frc.robot.commands.autos.TestAuto1;
-import frc.robot.commands.autos.TestHopperAuto;
+import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -51,7 +48,8 @@ import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.alphabot.*;
+import frc.robot.subsystems.alphabot.AlgaeIntake;
+import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
@@ -64,14 +62,14 @@ import org.team4201.codex.simulation.FieldSim;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-@Logged
+@Logged(name = "RobotContainer", importance = Logged.Importance.CRITICAL)
 public class RobotContainer {
-  private CommandSwerveDrivetrain m_swerveDrive;
+  @NotLogged private CommandSwerveDrivetrain m_swerveDrive;
 
-  @Logged(name = "Controls")
+  @Logged(name = "Controls", importance = Logged.Importance.INFO)
   private final Controls m_controls = new Controls();
 
-  private final Telemetry m_telemetry = new Telemetry();
+  @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
   private final Vision m_vision = new Vision();
 
@@ -80,42 +78,50 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2 subsystems
+  @Logged(name = "Climber", importance = Logged.Importance.INFO)
   private Climber m_climber;
+
+  @Logged(name = "Elevator", importance = Logged.Importance.INFO)
   private Elevator m_elevator;
 
-  @Logged(name = "EndEffector")
+  @Logged(name = "EndEffector", importance = Logged.Importance.INFO)
   private EndEffector m_endEffector;
 
-  @Logged(name = "EndEffectorPivot")
+  @Logged(name = "EndEffectorPivot", importance = Logged.Importance.INFO)
   private EndEffectorPivot m_endEffectorPivot;
 
+  @Logged(name = "HopperIntake", importance = Logged.Importance.INFO)
   private HopperIntake m_hopperIntake;
 
-  private final Robot2d m_robot2d = new Robot2d();
+  @NotLogged private final Robot2d m_robot2d = new Robot2d();
+  private Pose2d nearestBranchPose = Pose2d.kZero;
+  private final Pose2d[] robotToBranch = {Pose2d.kZero, Pose2d.kZero};
 
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
-  @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
-
   @Logged(name = "AutoChooser")
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
-  private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
+  @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
+
+  @NotLogged private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
+  @NotLogged private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
+
+  @NotLogged
   private final CommandXboxController m_driverController =
       new CommandXboxController(USB.xBoxController);
 
-  @NotLogged
-  private double MaxSpeed =
-      AlphaBotConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  @NotLogged private double MaxSpeed;
 
   @NotLogged
-  private double MaxAngularRate =
+  private final double MaxAngularRate =
       RotationsPerSecond.of(SWERVE.kMaxRotationRadiansPerSecond)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
+  @NotLogged
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
@@ -139,6 +145,8 @@ public class RobotContainer {
   private void initializeSubSystems() {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+      MaxSpeed =
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -146,10 +154,15 @@ public class RobotContainer {
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
+      MaxSpeed =
+          AlphaBotConstants.kSpeedAt12Volts.in(
+              MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      MaxSpeed =
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -157,7 +170,7 @@ public class RobotContainer {
       m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else {
-      // Most likely, the code will crash later on if you get here
+      // Most likely, the code will crash later on if you get here, so send an error message
       DriverStation.reportError(
           "[RobotContainer] Unhandled initSubsystem for RobotID " + ROBOT.robotID.getName(), false);
     }
@@ -167,7 +180,6 @@ public class RobotContainer {
 
     m_telemetry.registerFieldSim(m_fieldSim);
 
-    // TODO: Enable this when subsystems are implemented
     m_robot2d.registerSubsystem(m_elevator);
     m_robot2d.registerSubsystem(m_endEffectorPivot);
     m_robot2d.registerSubsystem(m_endEffector);
@@ -220,6 +232,16 @@ public class RobotContainer {
             m_elevator,
             m_endEffector,
             m_endEffectorPivot,
+            m_hopperIntake));
+
+    m_chooser.addOption(
+        "TwoPiece",
+        new TwoPiece(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
             m_hopperIntake));
   }
 
@@ -398,15 +420,9 @@ public class RobotContainer {
           .povUp()
           .whileTrue(
               new ParallelCommandGroup(
-                  new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                  new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                      .withDeadline(
-                          new WaitUntilCommand(
-                              () ->
-                                  m_endEffector
-                                      .hasCoral()) // End effector stops running when coral is
-                          // detected
-                          ),
+                      .until(m_endEffector::hasCoral),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(stowAll);
@@ -429,7 +445,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
                   new ParallelCommandGroup(
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                      new SetHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
+                      new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
@@ -458,6 +474,22 @@ public class RobotContainer {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
     }
+
+    // A bit messy, but it works
+  }
+
+  public void disabledPeriodic() {
+    if (Controls.isRedAlliance()) {
+      m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
+      m_fieldSim.initializePoses("Red Branch Targets", FIELD.RED_BRANCH_TARGETS);
+      m_fieldSim.initializePoses("Blue Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+      m_fieldSim.initializePoses("Blue Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+    } else {
+      m_fieldSim.initializePoses("Red Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+      m_fieldSim.initializePoses("Red Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+      m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+      m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
+    }
   }
 
   public void autonomousInit() {
@@ -475,7 +507,8 @@ public class RobotContainer {
     try {
       if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testInit();
     } catch (Exception e) {
-      e.printStackTrace();
+      DriverStation.reportWarning(
+          "[RobotContainer] testInit() could not run coralOuttake.testInit()!", e.getStackTrace());
     }
   }
 
@@ -483,39 +516,17 @@ public class RobotContainer {
     try {
       if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) m_coralOuttake.testPeriodic();
     } catch (Exception e) {
-      e.printStackTrace();
+      DriverStation.reportWarning(
+          "[RobotContainer] testPeriodic() could not run coralOuttake.testPeriodic()!",
+          e.getStackTrace());
     }
   }
 
   public void simulationInit() {
-    //    m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
-    m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
-    m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
+    // m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+    m_fieldSim.initializePoses("AprilTags", FIELD.APRIL_TAG.getAllAprilTagPoses());
     m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
     m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
-
-    //    m_fieldSim.initializePoses(
-    //        "RED_REEF_NEAR_LEFT AprilTag", FIELD.APRIL_TAG.RED_REEF_NEAR_LEFT.getPose2d());
-    //    m_fieldSim.initializePoses(
-    //        "RED_REEF_NEAR_LEFT_LEFT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_LEFT.getPose2d());
-    //    m_fieldSim.initializePoses(
-    //        "RED_REEF_NEAR_LEFT_RIGHT", FIELD.REEF_BRANCHES.RED_REEF_NEAR_LEFT_RIGHT.getPose2d());
-
-    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_LEFT_ZONE",
-    // FIELD.ZONES.RED_REEF_NEAR_LEFT_LEFT.getZone());
-    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_LEFT_RIGHT_ZONE",
-    // FIELD.ZONES.RED_REEF_NEAR_LEFT_RIGHT.getZone());
-    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_LEFT_ZONE",
-    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_LEFT.getZone());
-    //    m_fieldSim.addStaticPoses("BLUE_REEF_NEAR_LEFT_RIGHT_ZONE",
-    // FIELD.ZONES.BLUE_REEF_NEAR_LEFT_RIGHT.getZone());
-
-    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER AprilTag",
-    // FIELD.APRIL_TAG.RED_REEF_NEAR_CENTER.getPose2d());
-    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_LEFT",
-    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_LEFT.getPose2d());
-    //    m_fieldSim.addStaticPoses("RED_REEF_NEAR_CENTER_RIGHT",
-    // FIELD.REEF_BRANCHES.RED_REEF_NEAR_CENTER_RIGHT.getPose2d());
   }
 
   public void simulationPeriodic() {
@@ -544,5 +555,15 @@ public class RobotContainer {
   public void robotPeriodic() {
     m_robot2d.updateRobot2d();
     // m_questNav.periodic();
+
+    // TODO: Implement code to drive to this Pose2d
+    robotToBranch[0] = m_swerveDrive.getState().Pose;
+    if (Controls.isBlueAlliance()) {
+      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+    } else {
+      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+    }
+    robotToBranch[1] = FIELD.REEF_BRANCHES.getBranchPoseToTargetPose(nearestBranchPose);
+    m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
   }
 }

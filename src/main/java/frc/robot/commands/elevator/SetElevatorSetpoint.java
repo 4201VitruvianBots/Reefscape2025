@@ -20,14 +20,14 @@ public class SetElevatorSetpoint extends Command {
   @Override
   public void initialize() {
     m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);
-    m_elevator.setDesiredPosition(m_setpoint.getSetpointMeters());
+    m_elevator.setDesiredPosition(m_setpoint.getSetpoint());
   }
 
   @Override
   public void execute() {}
 
   @Override
-  public void end(boolean interruped) {}
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {

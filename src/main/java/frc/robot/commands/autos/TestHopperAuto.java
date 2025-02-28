@@ -13,9 +13,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.endEffector.AutoRunEndEffectorIntake;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -28,7 +29,7 @@ import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
 public class TestHopperAuto extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
+  /** Creates a new TestHopperAuto. */
   public TestHopperAuto(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
@@ -50,19 +51,21 @@ public class TestHopperAuto extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
-          new PrintCommand("path starting point" + path.getStartingHolonomicPose().toString()),
+          new PrintCommand("path starting point" + path.getStartingHolonomicPose()),
           new PlotAutoPath(swerveDrive, fieldSim, path),
           new ParallelCommandGroup(
-                  new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
+                  new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                  new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-              .until(() -> endEffector.hasCoral()),
+              .until(endEffector::hasCoral),
+          new ParallelCommandGroup(
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
-              .withTimeout(0.1),
-          m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)));
+              .withTimeout(0.1));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
       addCommands(new WaitCommand(0));

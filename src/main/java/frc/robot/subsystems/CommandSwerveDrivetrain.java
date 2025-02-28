@@ -34,11 +34,11 @@ import frc.robot.constants.SWERVE;
 import frc.robot.constants.VISION;
 import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
-import frc.robot.utils.CtreUtils;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
 import org.team4201.codex.subsystems.SwerveSubsystem;
+import org.team4201.codex.utils.CtreUtils;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
 
@@ -48,14 +48,14 @@ import org.team4201.codex.utils.TrajectoryUtils;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
   private Vision m_vision;
-  private TalonFX[] driveMotors = {
+  private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
     getModule(2).getDriveMotor(),
     getModule(3).getDriveMotor()
   };
 
-  private TalonFX[] steerMotors = {
+  private final TalonFX[] steerMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
     getModule(2).getDriveMotor(),
@@ -247,11 +247,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
             .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
   }
 
-  // TODO: Re-implement
-  //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
-  //      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
-  //   }
-
   /**
    * Second-Order Kinematics <a
    * href="https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/79">...</a>
@@ -293,18 +288,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   // rotationSpeed);
   //
   //              if (isRobotCentric) {
-  //                return m_driveReqeustRobotCentric
+  //                return m_driveRequestRobotCentric
   //                        .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
   //                        .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
   //                        .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
   //              } else {
   //                if (Controls.isRedAlliance()) {
-  //                  return m_driveReqeustFieldCentric
+  //                  return m_driveRequestFieldCentric
   //                          .withVelocityX(-m_newChassisSpeeds.vxMetersPerSecond)
   //                          .withVelocityY(-m_newChassisSpeeds.vyMetersPerSecond)
   //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
   //                } else {
-  //                  return m_driveReqeustFieldCentric
+  //                  return m_driveRequestFieldCentric
   //                          .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
   //                          .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
   //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
@@ -374,6 +369,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   public TrajectoryUtils getTrajectoryUtils() {
     return m_trajectoryUtils;
+  }
+
+  @Override
+  public RobotConfig getAutoRobotConfig() {
+    try {
+      return RobotConfig.fromGUISettings();
+    } catch (IOException e) {
+      DriverStation.reportWarning(
+          "[SwerveDrive] Could not load RobotConfig for autos!", e.getStackTrace());
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+      DriverStation.reportWarning(
+          "[SwerveDrive] Could not parse RobotConfig for autos!", e.getStackTrace());
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public PIDConstants getAutoTranslationPIDConstants() {
+    // TODO: Move PID constants to variables under SWERVE.java
+    return new PIDConstants(10, 0, 0);
+  }
+
+  @Override
+  public PIDConstants getAutoRotationPIDConstants() {
+    // TODO: Move PID constants to variables under SWERVE.java
+    return new PIDConstants(7, 0, 0);
   }
 
   /**
@@ -494,34 +516,5 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   public void addVisionMeasurement(
       Pose2d pose, double timestampSeconds, Matrix<N3, N1> standardDevs) {
     super.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(timestampSeconds), standardDevs);
-  }
-
-  @Override
-  public RobotConfig getAutoRobotConfig() {
-    // TODO Auto-generated method stub
-    try {
-      return RobotConfig.fromGUISettings();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    } catch (ParseException e) {
-
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public PIDConstants getAutoTranslationPIDConstants() {
-    // TODO Auto-generated method stub
-    return new PIDConstants(10, 0, 0);
-  }
-
-  @Override
-  public PIDConstants getAutoRotationPIDConstants() {
-    // TODO Auto-generated method stub
-    return new PIDConstants(7, 0, 0);
   }
 }

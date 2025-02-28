@@ -94,19 +94,6 @@ public final class VISION {
     PHOTONVISION
   }
 
-  public enum PIPELINE {
-    APRILTAGS(0);
-    private final int pipeline;
-
-    PIPELINE(final int pipeline) {
-      this.pipeline = pipeline;
-    }
-
-    public int get() {
-      return pipeline;
-    }
-  }
-
   public enum CAMERA_SERVER {
     LIMELIGHTA("10.42.1.11"),
     LIMELIGHTB("10.42.1.12"),

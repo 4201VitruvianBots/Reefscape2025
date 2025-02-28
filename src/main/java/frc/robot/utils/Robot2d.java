@@ -24,7 +24,7 @@ import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 
 /**
  * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
- * the window in Glass/SmartDashboard). For consistency, we should just use Inches.
+ * the window in Glass/SmartDashboard. For consistency, we should just use Inches.
  */
 public class Robot2d {
 
@@ -32,19 +32,20 @@ public class Robot2d {
    * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the
    * lineWidth of MechanismLigament2d appropriately
    */
-  double pixelsPerInch = 29.0 / 2.0;
+  private final double pixelsPerInch = 29.0 / 2.0;
 
-  Distance robotCanvasX = Inches.of(45.31034);
-  Distance robotCanvasY = Inches.of(57.24138);
+  private final Distance robotCanvasX = Inches.of(45.31034);
+  private final Distance robotCanvasY = Inches.of(57.24138);
 
-  Mechanism2d m_robot = new Mechanism2d(robotCanvasX.magnitude(), robotCanvasY.magnitude());
+  private final Mechanism2d m_robot =
+      new Mechanism2d(robotCanvasX.magnitude(), robotCanvasY.magnitude());
 
   /** Declare a single point from the main Mechanism2d to attach the chassis */
-  MechanismRoot2d m_chassisRoot =
+  final MechanismRoot2d m_chassisRoot =
       m_robot.getRoot("chassisRoot", Inches.of(11).magnitude(), Inches.of(3.75).magnitude());
 
   /** Use a line (MechanismLigament2d) to represent the robot chassis */
-  MechanismLigament2d m_robotChassis =
+  final MechanismLigament2d m_robotChassis =
       new MechanismLigament2d(
           "chassis2d",
           SWERVE.kWheelBase.in(Inches),
@@ -53,11 +54,11 @@ public class Robot2d {
           new Color8Bit(0, 127, 0));
 
   /** Declare a single point from the main Mechanism2d to attach the Elevator2d */
-  MechanismRoot2d m_elevatorRoot =
+  private final MechanismRoot2d m_elevatorRoot =
       m_robot.getRoot("ElevatorRoot", Inches.of(18.25).magnitude(), Inches.of(3).magnitude());
 
   /** Create an Elevator2d to represent an elevator, and then attach it to the m_elevatorRoot */
-  Elevator2d m_elevator =
+  private final Elevator2d m_elevator =
       new Elevator2d(
           new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
@@ -67,11 +68,11 @@ public class Robot2d {
           m_elevatorRoot);
 
   /** Declare a single point from the main Mechanism2d to attach the Arm2d */
-  MechanismRoot2d m_endEffectorRoot =
+  private final MechanismRoot2d m_endEffectorRoot =
       m_robot.getRoot("EndEffectorRoot", Inches.of(11.625).magnitude(), Inches.of(39).magnitude());
 
   /** Create an Arm2d to represent the endEffector */
-  Arm2d m_endEffector =
+  private final Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
                   "EndEffector2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle, PIVOT.length)
@@ -79,7 +80,7 @@ public class Robot2d {
           m_elevator.getLastStageLigament());
 
   /** Map of subsystems for Robot2d to update */
-  Map<String, Subsystem> m_subsystemMap = new HashMap<>();
+  private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   public Robot2d() {
     // Attach the robotChassis to the chassisRoot
@@ -107,7 +108,7 @@ public class Robot2d {
   public void updateRobot2d() {
     if (m_subsystemMap.containsKey("Elevator")) {
       var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
-      m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()));
+      m_elevator.update(elevatorSubsystem.getHeight());
       // TODO: Add LinearVelocity function in elevator
       //   m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
     }

@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
 
 public class ELEVATOR {
   public static final double upperLimitMeters = Units.inchesToMeters(57.5);
@@ -42,29 +43,29 @@ public class ELEVATOR {
       kElevatorDrumDiameter
           * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // meters
-  public static final double kCarriageMassPounds = 15.0;
+  public static final Mass kCarriageMass = Pounds.of(15.0);
   public static final double gearRatio = 48.0 / 10.0;
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
 
   public enum ELEVATOR_SETPOINT {
-    START_POSITION(Units.inchesToMeters(0.0)),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(21)),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(35)),
-    PROCESSOR(Units.inchesToMeters(7)),
-    INTAKE_HOPPER(Units.inchesToMeters(3.543)),
-    LEVEL_2(Units.inchesToMeters(13)),
-    LEVEL_3(Units.inchesToMeters(27)),
-    LEVEL_4(Units.inchesToMeters(57)),
-    NET(Units.inchesToMeters(57.5));
+    START_POSITION(Inches.of(0.0)),
+    ALGAE_REEF_INTAKE_LOWER(Inches.of(21)),
+    ALGAE_REEF_INTAKE_UPPER(Inches.of(35)),
+    PROCESSOR(Inches.of(7)),
+    INTAKE_HOPPER(Inches.of(3.543)),
+    LEVEL_2(Inches.of(13)),
+    LEVEL_3(Inches.of(27)),
+    LEVEL_4(Inches.of(57)),
+    NET(Inches.of(57.5));
 
-    private final double setpointMeters;
+    private final Distance setpoint;
 
-    ELEVATOR_SETPOINT(double setpointMeters) {
-      this.setpointMeters = setpointMeters;
+    ELEVATOR_SETPOINT(Distance setpoint) {
+      this.setpoint = setpoint;
     }
 
-    public double getSetpointMeters() {
-      return setpointMeters;
+    public Distance getSetpoint() {
+      return setpoint;
     }
   }
 

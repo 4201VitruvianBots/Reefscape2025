@@ -9,12 +9,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ENDEFFECTOR {
-  public class ROLLERS {
+  public static class ROLLERS {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double gearRatio = 1.0;
-    public static DCMotor gearbox = DCMotor.getKrakenX60(1);
+    public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
     public static final double peakForwardOutput = 0.2;
     public static final double peakReverseOutput = -0.4;
@@ -24,6 +24,7 @@ public class ENDEFFECTOR {
       OUTTAKE_CORAL(-0.2),
       INTAKE_CORAL(-0.1),
       CORAL_REVERSE(0.2),
+      ZERO(0),
 
       // Algae
       // INTAKE_ALGAE_GROUND(0.35),
@@ -43,7 +44,7 @@ public class ENDEFFECTOR {
     }
   }
 
-  public class PIVOT {
+  public static class PIVOT {
     // Pivot motor stuff
     public static final double kPivotP = 19.0;
     public static final double kPivotI = 0.0;

@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.ROBOT;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class GroundPivot extends SubsystemBase {
   /** Creates a new GroundPivot. */
@@ -289,8 +289,8 @@ public class GroundPivot extends SubsystemBase {
         if (DriverStation.isEnabled())
           m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
-      default:
       case OPEN_LOOP:
+      default:
         if (DriverStation.isDisabled()) {
           setPercentOutput(0.0);
         }
@@ -305,7 +305,7 @@ public class GroundPivot extends SubsystemBase {
     // Set supply voltage of pivot motor
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_pivotSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_pivotSim.setInputVoltage(m_simState.getMotorVoltage());
 
     m_pivotSim.update(0.020);
 
