@@ -17,9 +17,11 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,6 +31,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.SWERVE;
+import frc.robot.constants.VISION;
+import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -43,6 +47,7 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
+  private Vision m_vision;
   private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
@@ -133,6 +138,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+
+  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = new Rotation2d();
+  private Rotation2d m_angleToTarget = new Rotation2d();
+  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
+  private SwerveDriveKinematics m_kinematics;
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -352,6 +363,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
+  public ChassisSpeeds getChassisSpeed() {
+    return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  }
+
   public TrajectoryUtils getTrajectoryUtils() {
     return m_trajectoryUtils;
   }
@@ -393,6 +408,42 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
+  public void setAngleToTarget(Rotation2d angle) {
+    m_angleToTarget = angle;
+  }
+
+  public void setTrackingState(VISION.TRACKING_STATE state) {
+    if (m_trackingState != state) {
+      m_pidController.reset();
+      m_trackingState = state;
+    }
+  }
+
+  public double calculateRotationToTarget() {
+    return m_pidController.calculate(
+        getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
+  }
+
+  private void updateTargetAngle() {
+    switch (m_trackingState) {
+      case BRANCH:
+        m_targetAngle = m_angleToTarget;
+        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
+        break;
+      default:
+      case NONE:
+        break;
+    }
+  }
+
+  public boolean isTrackingState() {
+    if (m_trackingState == TRACKING_STATE.BRANCH) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine specified by {@link
    * #m_sysIdRoutineToApply}.
@@ -417,6 +468,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   @Override
   public void periodic() {
+    updateTargetAngle();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -16,6 +18,19 @@ public final class VISION {
   public static final double kLimelightHFOV = 63.12;
   public static final double kLimelightVFOV = 49.54;
   public static final double kLimelightDFOV = 75.07;
+
+  public static final Transform3d[] LOCALIZER_CAMERA_POSITION = {
+    // Robot Center to Limelight Camera A
+    new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(14), Units.inchesToMeters(5), Units.inchesToMeters(8.5)),
+        new Rotation3d()),
+    // Robot Center to Limelight Camera B
+    new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(-12.5), Units.inchesToMeters(11.75), Units.inchesToMeters(17)),
+        new Rotation3d()),
+  };
 
   public static final double aprilTagLimelightCameraADistanceFromCenterX =
       Units.inchesToMeters(-14);
@@ -39,6 +54,9 @@ public final class VISION {
   public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
+
+  public static final AprilTagFieldLayout aprilTagFieldLayout =
+      AprilTagFields.k2025ReefscapeAndyMark.loadAprilTagLayoutField();
 
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
   public static final Transform3d robotToAprilTagLimelightCameraA =
@@ -77,9 +95,8 @@ public final class VISION {
   }
 
   public enum CAMERA_SERVER {
-    INTAKE("10.42.1.11"),
-    LIMELIGHTA("10.42.1.12"),
-    LIMELIGHTB("10.42.1.13"),
+    LIMELIGHTA("10.42.1.11"),
+    LIMELIGHTB("10.42.1.12"),
     ;
     private final String ip;
 
@@ -95,6 +112,6 @@ public final class VISION {
 
   public enum TRACKING_STATE {
     NONE,
-    REEF
+    BRANCH
   }
 }

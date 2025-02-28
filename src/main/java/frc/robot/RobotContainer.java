@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
@@ -32,6 +33,7 @@ import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.ResetGyro;
+import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
@@ -42,6 +44,7 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
+import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
@@ -185,17 +188,22 @@ public class RobotContainer {
     m_swerveDrive.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        leftJoystick.getRawAxis(1)
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        rightJoystick.getRawAxis(0)
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+            () -> {
+              var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
+              // if heading target
+              if (m_swerveDrive.isTrackingState()) {
+                rotationRate = m_swerveDrive.calculateRotationToTarget();
+              }
+              drive
+                  .withVelocityX(
+                      leftJoystick.getRawAxis(1)
+                          * MaxSpeed) // Drive forward with negative Y (forward)
+                  .withVelocityY(
+                      leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                  .withRotationalRate(
+                      rotationRate); // Drive counterclockwise with negative X (left)
+              return drive;
+            }));
     if (m_elevator != null) {
       m_elevator.setDefaultCommand(
           new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
@@ -339,6 +347,9 @@ public class RobotContainer {
   }
 
   private void configureV2Bindings() {
+    var targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+
     ParallelRaceGroup stowAll =
         moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1);
 
@@ -518,7 +529,28 @@ public class RobotContainer {
     m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
   }
 
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    DriverStation.getAlliance()
+        .ifPresent(
+            a -> {
+              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
+              switch (a) {
+                case Red ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                case Blue ->
+                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+              }
+              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
+              m_swerveDrive.setAngleToTarget(
+                  m_swerveDrive
+                      .getState()
+                      .Pose
+                      .getTranslation()
+                      .minus(robotToBranch[1].getTranslation())
+                      .getAngle()
+                      .minus(Rotation2d.k180deg));
+            });
+  }
 
   public void robotPeriodic() {
     m_robot2d.updateRobot2d();
