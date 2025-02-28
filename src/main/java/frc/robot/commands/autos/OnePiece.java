@@ -56,7 +56,7 @@ public class OnePiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
                           .until(endEffectorpivot::atSetpoint)))
               .withTimeout(2),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(1.75),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new SequentialCommandGroup(
               new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),

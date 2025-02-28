@@ -450,10 +450,10 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.povRight().whileTrue(new RunClimber(m_climber, 0.15));
-      m_driverController.povLeft().whileTrue(new RunClimber(m_climber, -0.15));
+      m_driverController.start().whileTrue(new RunClimber(m_climber, 0.15));
+      m_driverController.back().whileTrue(new RunClimber(m_climber, -0.15));
       m_driverController
-          .back()
+          .povLeft()
           .whileTrue(
               Commands.startEnd(
                   () -> m_hopperIntake.moveServo(1.0),
