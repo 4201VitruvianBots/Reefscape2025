@@ -23,10 +23,7 @@ import frc.robot.commands.SetHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
-import frc.robot.commands.autos.DriveForward;
-import frc.robot.commands.autos.OnePiece;
-import frc.robot.commands.autos.TestAuto1;
-import frc.robot.commands.autos.TestHopperAuto;
+import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -211,6 +208,16 @@ public class RobotContainer {
             m_elevator,
             m_endEffector,
             m_endEffectorPivot,
+            m_hopperIntake));
+
+    m_chooser.addOption(
+        "TwoPiece",
+        new TwoPiece(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
             m_hopperIntake));
   }
 
