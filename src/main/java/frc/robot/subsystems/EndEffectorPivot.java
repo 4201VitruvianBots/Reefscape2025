@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,10 +19,10 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -37,28 +36,27 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
 
-@Logged
 public class EndEffectorPivot extends SubsystemBase {
-  @NotLogged private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
-  @NotLogged private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
+  private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
+  private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
+  @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  @NotLogged private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
 
-  @NotLogged
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
+  private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
+  private final StatusSignal<AngularAcceleration> m_accelSignal =
+      m_pivotMotor.getAcceleration().clone();
 
-  @NotLogged
-  private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
+  @Logged(name = "Control Mode", importance = Logged.Importance.INFO)
+  ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
 
-  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
-  private double m_joystickInput;
-  private boolean m_limitJoystickInput;
-  private boolean m_userSetpoint;
+  @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
+  private double m_joystickInput = 0.0;
 
   private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
-  private boolean m_pivotState;
 
   // Simulation Code
   private final SingleJointedArmSim m_endEffectorSim =
@@ -72,8 +70,8 @@ public class EndEffectorPivot extends SubsystemBase {
           false,
           PIVOT.startingAngle.in(Radians));
 
-  @NotLogged private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
-  @NotLogged private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
+  private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
+  private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
@@ -120,15 +118,7 @@ public class EndEffectorPivot extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
-  public void setState(boolean state) {
-    m_pivotState = state;
-  }
-
-  public boolean getState() {
-    return m_pivotState;
-  }
-
-  public void setSetpoint(Angle rotations) {
+  public void setPosition(Angle rotations) {
     if (PIVOT.enforceLimits) {
       m_desiredRotation =
           Degrees.of(
@@ -140,28 +130,28 @@ public class EndEffectorPivot extends SubsystemBase {
     }
   }
 
-  public Angle getDesiredRotation() {
-    return m_desiredRotation;
+  @Logged(name = "Desired Angle Degrees", importance = Logged.Importance.INFO)
+  public double getDesiredRotationDegrees() {
+    return m_desiredRotation.in(Degrees);
   }
 
   public void setPercentOutput(double speed) {
     m_pivotMotor.set(speed);
   }
 
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return m_pivotMotor.get();
   }
 
-  public ControlRequest getCurrentControlRequest() {
-    return m_pivotMotor.getAppliedControl();
-  }
-
+  @Logged(name = "Control Request", importance = Logged.Importance.DEBUG)
   public String getCurrentControlRequestString() {
-    return getCurrentControlRequest().toString();
+    return m_pivotMotor.getAppliedControl().toString();
   }
 
   public Angle getCurrentRotation() {
     try {
+      m_positionSignal.refresh();
       return m_positionSignal.getValue();
     } catch (Exception e) {
       DriverStation.reportWarning("[EndEffectorPivot] Position signal is null!", false);
@@ -169,21 +159,31 @@ public class EndEffectorPivot extends SubsystemBase {
     }
   }
 
-  public Angle getMotorAngle() {
-    return m_pivotMotor.getPosition().getValue();
+  @Logged(name = "Current Angle Degrees", importance = Logged.Importance.INFO)
+  public double getCurrentRotationDegrees() {
+    return getCurrentRotation().in(Degrees);
   }
 
+  @Logged(name = "Velocity Degrees s", importance = Logged.Importance.INFO)
+  public double getVelocityDegrees() {
+    m_velocitySignal.refresh();
+    return m_velocitySignal.getValue().in(DegreesPerSecond);
+  }
+
+  @Logged(name = "Acceleration Degrees s^2", importance = Logged.Importance.INFO)
+  public double getAccelerationDegrees() {
+    m_accelSignal.refresh();
+    return m_accelSignal.getValue().in(DegreesPerSecondPerSecond);
+  }
+
+  @Logged(name = "At Setpoint", importance = Logged.Importance.DEBUG)
   public boolean atSetpoint() {
-    return m_desiredRotation.minus(getCurrentRotation()).abs(Degree) <= 0.0254;
+    return m_desiredRotation.minus(getCurrentRotation()).abs(Degree) <= 1.0;
   }
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
     return m_pivotEncoder.getAbsolutePosition().getValue();
-  }
-
-  public double getCANcoderAngleDegrees() {
-    return getCANcoderAngle().in(Degrees);
   }
 
   public void resetMotionMagicState() {
@@ -208,16 +208,8 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_controlMode;
   }
 
-  public void setJoystickLimit(boolean limit) {
-    m_limitJoystickInput = limit;
-  }
-
   public void setJoystickY(double m_joystickY) {
     m_joystickInput = m_joystickY;
-  }
-
-  private void updateSmartDashboard() {
-    SmartDashboard.putNumber("End Effector Pivot/End Effector Angle", getCANcoderAngleDegrees());
   }
 
   public void teleopInit() {
@@ -237,7 +229,6 @@ public class EndEffectorPivot extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
-    updateSmartDashboard();
   }
 
   @Override

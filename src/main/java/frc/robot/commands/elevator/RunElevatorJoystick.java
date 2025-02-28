@@ -30,7 +30,7 @@ public class RunElevatorJoystick extends Command {
     if (joystickYDeadbandOutput != 0.0) {
       m_elevatorHeld = false;
       m_elevator.setControlMode(CONTROL_MODE.OPEN_LOOP);
-      m_elevator.setJoystickY(joystickYDeadbandOutput);
+      m_elevator.setJoystickInput(joystickYDeadbandOutput);
     }
     if (joystickYDeadbandOutput == 0) {
       m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);

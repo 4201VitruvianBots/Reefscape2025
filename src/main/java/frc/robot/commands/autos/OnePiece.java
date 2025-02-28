@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.endEffector.AutoRunEndEffectorIntake;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -56,13 +56,13 @@ public class OnePiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
                           .until(endEffectorpivot::atSetpoint)))
               .withTimeout(2),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new SequentialCommandGroup(
               new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
                   .until(elevator::atSetpoint),
-              new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO)),
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -25,6 +26,7 @@ import frc.robot.utils.CtreUtils;
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
+  @NotLogged
   private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
 
   //   // Simulation classes help us simulate what's going on, including gravity.
@@ -43,7 +45,7 @@ public class Climber extends SubsystemBase {
   //     0.0);
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
-  private double m_desiredPositionMeters;
+  private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
@@ -52,14 +54,16 @@ public class Climber extends SubsystemBase {
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
 
   public Climber() {
-    TalonFXConfiguration configclimber = new TalonFXConfiguration();
-    configclimber.Slot0.kP = CLIMBER.kP;
-    configclimber.Slot0.kI = CLIMBER.kI;
-    configclimber.Slot0.kD = CLIMBER.kD;
-    CtreUtils.configureTalonFx(climberMotor, configclimber);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = CLIMBER.kP;
+    config.Slot0.kI = CLIMBER.kI;
+    config.Slot0.kD = CLIMBER.kD;
+    CtreUtils.configureTalonFx(climberMotor, config);
 
-    configclimber.MotionMagic.MotionMagicCruiseVelocity = 100;
-    configclimber.MotionMagic.MotionMagicAcceleration = 200;
+    config.MotionMagic.MotionMagicCruiseVelocity = 100;
+    config.MotionMagic.MotionMagicAcceleration = 200;
+
+    setName("Climber");
   }
 
   public void holdClimber() {
@@ -95,10 +99,6 @@ public class Climber extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public CONTROL_MODE getClosedLoopControlMode() {
-    return m_controlMode;
-  }
-
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
@@ -114,7 +114,7 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean isClosedLoopControl() {
-    return getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP;
+    return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }
 
   public void setClimberNeutralMode(NeutralModeValue mode) {

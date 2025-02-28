@@ -20,11 +20,11 @@ import frc.robot.constants.ROBOT;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-@Logged
+@Logged(name = "Robot", importance = Logged.Importance.CRITICAL)
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  @Logged(name = "RobotContainer")
+  @Logged(name = "RobotContainer", importance = Logged.Importance.CRITICAL)
   private RobotContainer m_robotContainer;
 
   /**
@@ -41,9 +41,11 @@ public class Robot extends TimedRobot {
 
           if (RobotBase.isSimulation()) {
             config.errorHandler = ErrorHandler.crashOnError();
+            config.minimumImportance = Logged.Importance.DEBUG;
+          } else {
+            // During competition/practice
+            config.minimumImportance = Logged.Importance.INFO;
           }
-
-          config.minimumImportance = Logged.Importance.DEBUG;
         });
     Epilogue.bind(this);
   }
