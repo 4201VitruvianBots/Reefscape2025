@@ -10,6 +10,9 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +27,7 @@ public class FIELD {
    * <p>Note: Values are using ideal values from WPILib TODO: Create layout from practice field.
    */
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // public static final AprilTagFieldLayout practiceFieldAprilTagLayout;
 
@@ -75,7 +78,11 @@ public class FIELD {
 
     APRIL_TAG(final int id) {
       this.id = id;
-      aprilTagFieldLayout.getTagPose(this.id).ifPresent(pose3d -> this.pose = pose3d);
+      aprilTagFieldLayout.getTagPose(this.id).ifPresentOrElse(pose3d -> this.pose = pose3d, 
+      ()-> {
+        System.out.printf("[FIELD] Could not read AprilTag ID %s data from FieldLayout\n", this.id); 
+        new Alert(String.format("[FIELD] APRIL_TAG ID %s value couldn't be read", this.id), AlertType.kError);
+    });
 
       if (this.pose == null) {
         throw new IllegalArgumentException("AprilTag ID " + this.id + " does not have a Pose3d!");
@@ -212,18 +219,25 @@ public class FIELD {
                 .getTagById(aprilTagId)
                 .getPose2d()
                 .plus(new Transform2d(branchOffset, Rotation2d.kZero));
+    } catch (Exception e) {
+        System.out.println(
+            "[FIELD] Could not generate pose for reef at AprilTag "
+                + aprilTagId
+                + (isLeft ? " Left" : " Right"));
+    }
+    try {
         targetPose =
             APRIL_TAG
                 .getTagById(aprilTagId)
                 .getPose2d()
                 .plus(new Transform2d(targetOffset, Rotation2d.kZero));
 
-      } catch (Exception e) {
+    } catch (Exception e) {
         System.out.println(
-            "Could not generate offset for reef at AprilTag "
+            "[FIELD] Could not generate targetPose for reef at AprilTag "
                 + aprilTagId
                 + (isLeft ? " Left" : " Right"));
-      }
+        }
 
       pose = branchPose;
       this.targetPose = targetPose;

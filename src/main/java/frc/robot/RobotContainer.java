@@ -528,8 +528,13 @@ public class RobotContainer {
     m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
     m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
   }
-
+  
+  boolean isInit = false;
   public void simulationPeriodic() {
+    if(!isInit) {
+        simulationInit();
+        isInit = true;
+    }
     DriverStation.getAlliance()
         .ifPresent(
             a -> {
