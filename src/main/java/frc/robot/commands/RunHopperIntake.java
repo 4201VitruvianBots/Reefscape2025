@@ -26,7 +26,7 @@ public class RunHopperIntake extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_hopperIntake.setPercentOutput(0);
+    if (!DriverStation.isAutonomous()) m_hopperIntake.setPercentOutput(0);
   }
 
   @Override
