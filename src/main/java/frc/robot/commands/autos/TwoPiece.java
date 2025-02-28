@@ -12,9 +12,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.endEffector.AutoRunEndEffectorIntake;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
+import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -61,20 +62,20 @@ public class TwoPiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(0.6),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new ParallelCommandGroup(
                   m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
                   new ParallelCommandGroup(
-                          new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
+                          new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                           new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                           new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
                       .until(() -> endEffector.hasCoral()))
               .withTimeout(0.1),
           new ParallelCommandGroup(
-                  new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-                  new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
+                  new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+                  new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
               .withTimeout(0.1),
           new ParallelCommandGroup(
                   m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
@@ -84,14 +85,14 @@ public class TwoPiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(0.6),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
-          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
           new SequentialCommandGroup(
               new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
                   .until(elevator::atSetpoint),
-              new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO)),
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));

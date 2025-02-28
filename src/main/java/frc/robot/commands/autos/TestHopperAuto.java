@@ -60,8 +60,8 @@ public class TestHopperAuto extends SequentialCommandGroup {
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
               .until(() -> endEffector.hasCoral()),
           new ParallelCommandGroup(
-              new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING)),
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
                   swerveDrive)
