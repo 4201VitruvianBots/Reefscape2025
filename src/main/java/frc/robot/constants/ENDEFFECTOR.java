@@ -87,7 +87,7 @@ public class ENDEFFECTOR {
       BARGE(Degrees.of(150.0)),
       OUTTAKE_ALGAE_PROCESSOR(
           Degrees.of(
-              -155.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint to make this angle not
+              181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint to make this angle not
       // negative
 
       private final Angle angle;

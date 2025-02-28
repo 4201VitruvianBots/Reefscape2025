@@ -51,7 +51,7 @@ public class ELEVATOR {
     START_POSITION(Inches.of(0.0)),
     ALGAE_REEF_INTAKE_LOWER(Inches.of(21)),
     ALGAE_REEF_INTAKE_UPPER(Inches.of(35)),
-    PROCESSOR(Inches.of(7)),
+    PROCESSOR(Inches.of(7.25)),
     INTAKE_HOPPER(Inches.of(3.543)),
     LEVEL_2(Inches.of(13)),
     LEVEL_3(Inches.of(27)),
