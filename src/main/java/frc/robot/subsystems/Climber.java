@@ -12,7 +12,6 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -27,7 +26,8 @@ import frc.robot.utils.CtreUtils;
 public class Climber extends SubsystemBase {
 
   /** Creates a new climber */
-  @NotLogged private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
+  @NotLogged
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor); // These are just placeholders
 
   //   // Simulation classes help us simulate what's going on, including gravity.
   //     // Simulation classes help us simulate what's going on, including gravity.
@@ -98,12 +98,12 @@ public class Climber extends SubsystemBase {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
-  
+
   public Double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }
-  
+
   public double getPulleyLengthMeters() {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters;
   }
@@ -113,7 +113,6 @@ public class Climber extends SubsystemBase {
     m_controlMode = mode;
   }
 
-  
   public boolean isClosedLoopControl() {
     return getControlMode() == CONTROL_MODE.CLOSED_LOOP;
   }

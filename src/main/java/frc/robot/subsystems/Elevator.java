@@ -18,8 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.epilogue.Logged.Naming;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -28,7 +26,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -70,22 +67,25 @@ public class Elevator extends SubsystemBase {
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
-      
+
   private final StatusSignal<AngularAcceleration> m_accelSignal =
       elevatorMotors[0].getAcceleration().clone();
 
   private Distance m_desiredPosition = Inches.of(0);
 
-  @Logged(name = "Joystick Input", importance=Logged.Importance.DEBUG) private double m_joystickInput = 0.0;
-  
-  @Logged(name = "Control Mode", importance=Logged.Importance.INFO) private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
-  
-  @Logged(name = "Neutral Mode", importance=Logged.Importance.INFO) private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
+  @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
+  private double m_joystickInput = 0.0;
+
+  @Logged(name = "Control Mode", importance = Logged.Importance.INFO)
+  private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
+
+  @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
+  private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
   private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
-  
+
   private final TalonFXSimState m_motorSimState;
   private DoubleSubscriber m_kP_subscriber,
       m_kI_subscriber,
@@ -136,8 +136,8 @@ public class Elevator extends SubsystemBase {
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
   }
-  
-  @Logged(name="Motor Output", importance = Logged.Importance.INFO)
+
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return elevatorMotors[0].get();
   }
@@ -157,12 +157,12 @@ public class Elevator extends SubsystemBase {
   public void setControlMode(CONTROL_MODE controlMode) {
     m_controlMode = controlMode;
   }
-  
+
   public CONTROL_MODE getControlMode() {
     return m_controlMode;
   }
-  
-  @Logged(name = "Motor Rotations", importance=Logged.Importance.DEBUG)
+
+  @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
   public Angle getRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValue();
@@ -173,8 +173,8 @@ public class Elevator extends SubsystemBase {
     return MetersPerSecond.of(
         m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
   }
-  
-  @Logged(name = "Velocity Inches s", importance=Logged.Importance.INFO)
+
+  @Logged(name = "Velocity Inches s", importance = Logged.Importance.INFO)
   public double getVelocityInches() {
     return getVelocity().in(InchesPerSecond);
   }
@@ -184,12 +184,12 @@ public class Elevator extends SubsystemBase {
     return MetersPerSecondPerSecond.of(
         m_accelSignal.getValue().in(RotationsPerSecondPerSecond) * ELEVATOR.drumRotationsToMeters);
   }
-  
-  @Logged(name = "Acceleration Inches s^2", importance=Logged.Importance.INFO)
+
+  @Logged(name = "Acceleration Inches s^2", importance = Logged.Importance.INFO)
   public double getAccelerationInches() {
-      return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
+    return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
   }
-  
+
   @Logged(name = "Control Request", importance = Logged.Importance.DEBUG)
   public String getCurrentControlRequestString() {
     return elevatorMotors[0].getAppliedControl().toString();
@@ -203,8 +203,8 @@ public class Elevator extends SubsystemBase {
   public Distance getHeight() {
     return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters);
   }
-  
-  @Logged(name = "Height Inches", importance=Logged.Importance.INFO)
+
+  @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
   public double getHeightInches() {
     return getHeight().in(Inches);
   }
@@ -218,18 +218,18 @@ public class Elevator extends SubsystemBase {
     m_neutralMode = mode;
     elevatorMotors[0].setNeutralMode(mode);
   }
-  
+
   public NeutralModeValue getNeutralMode() {
     return m_neutralMode;
   }
 
-  @Logged(name = "Desired Height Inches", importance=Logged.Importance.INFO) 
+  @Logged(name = "Desired Height Inches", importance = Logged.Importance.INFO)
   public double getDesiredHeightInches() {
     return m_desiredPosition.in(Inches);
   }
-  
+
   // Elevator is within 1 inch of its setpoint
-  @Logged(name = "At Setpoint", importance=Logged.Importance.DEBUG)
+  @Logged(name = "At Setpoint", importance = Logged.Importance.DEBUG)
   public boolean atSetpoint() {
     return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
   }

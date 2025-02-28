@@ -19,12 +19,10 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -49,14 +47,15 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
-  private final StatusSignal<AngularAcceleration> m_accelSignal = m_pivotMotor.getAcceleration().clone();
+  private final StatusSignal<AngularAcceleration> m_accelSignal =
+      m_pivotMotor.getAcceleration().clone();
 
   @Logged(name = "Control Mode", importance = Logged.Importance.INFO)
   ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
 
   @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
   private double m_joystickInput = 0.0;
-  
+
   private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
 
   // Simulation Code
@@ -149,7 +148,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public String getCurrentControlRequestString() {
     return m_pivotMotor.getAppliedControl().toString();
   }
-  
+
   public Angle getCurrentRotation() {
     try {
       m_positionSignal.refresh();
@@ -159,17 +158,18 @@ public class EndEffectorPivot extends SubsystemBase {
       return Degrees.of(0);
     }
   }
+
   @Logged(name = "Current Angle Degrees", importance = Logged.Importance.INFO)
   public double getCurrentRotationDegrees() {
     return getCurrentRotation().in(Degrees);
   }
-  
+
   @Logged(name = "Velocity Degrees s", importance = Logged.Importance.INFO)
   public double getVelocityDegrees() {
     m_velocitySignal.refresh();
     return m_velocitySignal.getValue().in(DegreesPerSecond);
   }
-  
+
   @Logged(name = "Acceleration Degrees s^2", importance = Logged.Importance.INFO)
   public double getAccelerationDegrees() {
     m_accelSignal.refresh();
