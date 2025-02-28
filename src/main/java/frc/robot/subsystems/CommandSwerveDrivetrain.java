@@ -39,6 +39,7 @@ import frc.robot.utils.CtreUtils;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
+import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
 
@@ -46,7 +47,7 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
  * be used in command-based projects.
  */
-public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
   private Vision m_vision;
   private TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),

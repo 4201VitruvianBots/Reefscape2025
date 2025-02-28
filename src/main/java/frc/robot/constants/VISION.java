@@ -128,6 +128,4 @@ public final class VISION {
     BRANCH
   }
 
-  // TODO: figure out what value this should be
-  public static final double velocityShoot = 9.255586759; // Previously 11.1 m/s
 }
