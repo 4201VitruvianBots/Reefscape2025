@@ -49,6 +49,7 @@ public class Vision extends SubsystemBase {
   private double xOfLimelightA = txOfLimelightA.getDouble(0.0);
   private double yOfLimelightA = tyOfLimelightA.getDouble(0.0);
   private double areaOfLimelightA = taOfLimelightA.getDouble(0.0);
+  private boolean limelightAHasTarget = LimelightHelpers.getTV("limelight-a");
 
   private NetworkTable limelightBTable = NetworkTableInstance.getDefault().getTable("limelight-b");
   private NetworkTableEntry txOfLimelightB = limelightBTable.getEntry("tx");
@@ -59,8 +60,7 @@ public class Vision extends SubsystemBase {
   private double xOfLimelightB = txOfLimelightB.getDouble(0.0);
   private double yOfLimelightB = tyOfLimelightB.getDouble(0.0);
   private double areaOfLimelightB = taOfLimelightB.getDouble(0.0);
-
-  // post to smart dashboard periodically
+  private boolean limelightBHasTarget = LimelightHelpers.getTV("limelight-b");
 
   // public static final PhotonCamera aprilTagLimelightCameraA = new PhotonCamera("LimelightA");
   // PhotonPoseEstimator limelightPhotonPoseEstimatorA =
@@ -87,6 +87,7 @@ public class Vision extends SubsystemBase {
   private boolean cameraAHasPose, cameraBHasPose, poseAgreement;
   private boolean m_localized;
   private boolean doRejectUpdate = false;
+  private boolean useMegaTag2 = true; // set to false to use MegaTag1
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
   // Networktables publisher setup
@@ -124,6 +125,25 @@ public class Vision extends SubsystemBase {
             .getDoubleArrayTopic("camToRobotT3D")
             .publish();
 
+    // Change the camera pose relative to robot center (x forward, y left, z up, degrees)
+    LimelightHelpers.setCameraPose_RobotSpace(
+        "limelight-a",
+        0.3556, // Forward offset (meters)
+        0.127, // Side offset (meters)
+        0.2159, // Height offset (meters)
+        0.0, // Roll (degrees)
+        0.0, // Pitch (degrees)
+        0.0); // Yaw (degrees)
+
+    LimelightHelpers.setCameraPose_RobotSpace(
+        "limelight-b",
+        -0.3175, // Forward offset (meters)
+        0.29845, // Side offset (meters)
+        0.4318, // Height offset (meters)
+        0.0, // Roll (degrees)
+        5.0, // Pitch (degrees)
+        0.0 // Yaw (degrees)
+        );
     // limelightPhotonPoseEstimatorA.setMultiTagFallbackStrategy(
     //   PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
     // limelightPhotonPoseEstimatorB.setMultiTagFallbackStrategy(
@@ -239,37 +259,6 @@ public class Vision extends SubsystemBase {
     m_fieldSim = fieldSim;
   }
 
-  // TODO: find out if this can be used for multi camera pose estimation
-  // public boolean checkPoseAgreement(Pose3d a, Pose3d b) {
-  //   var poseDelta = a.minus(b);
-
-  //   if (Math.abs(poseDelta.getTranslation().getX()) > VISION.poseXTolerance) {
-  //     return false;
-  //   }
-
-  //   if (Math.abs(poseDelta.getTranslation().getY()) > VISION.poseYTolerance) {
-  //     return false;
-  //   }
-
-  //   //    if (Math.abs(poseDelta.getTranslation().getZ()) > VISION.poseZTolerance) {
-  //   //      return false;
-  //   //    }
-
-  //   //    if (Math.abs(poseDelta.getRotation().getX()) > VISION.poseRollTolerance) {
-  //   //      return false;
-  //   //    }
-  //   //
-  //   //    if (Math.abs(poseDelta.getRotation().getY()) > VISION.posePitchTolerance) {
-  //   //      return false;
-  //   //    }
-
-  //   if (Math.abs(poseDelta.getRotation().getZ()) > VISION.poseYawTolerance) {
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
   public void setTrackingState(VISION.TRACKING_STATE state) {
     trackingState = state;
   }
@@ -373,10 +362,12 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("LimelightA_X", xOfLimelightA);
     SmartDashboard.putNumber("LimelightA_Y", yOfLimelightA);
     SmartDashboard.putNumber("LimelightA_Area", areaOfLimelightA);
+    SmartDashboard.putBoolean("limelightA_TV", limelightAHasTarget);
     // limelight b target data
     SmartDashboard.putNumber("LimelightB_X", xOfLimelightB);
     SmartDashboard.putNumber("LimelightB_Y", yOfLimelightB);
     SmartDashboard.putNumber("LimelightB_Area", areaOfLimelightB);
+    SmartDashboard.putBoolean("limelightA_TV", limelightBHasTarget);
   }
 
   private void updateLog() {}
@@ -401,8 +392,7 @@ public class Vision extends SubsystemBase {
       //           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
       //     });
 
-      boolean useMegaTag2 = true; // set to false to use MegaTag1
-      //limelighta setup
+      // limelighta setup
       try {
         if (useMegaTag2 == false) {
           LimelightHelpers.PoseEstimate mt1_limelightA =
@@ -433,12 +423,9 @@ public class Vision extends SubsystemBase {
                 0,
                 0,
                 0);
-            if (DriverStation.isAutonomous()) 
-            {
+            if (DriverStation.isAutonomous()) {
               LimelightHelpers.SetIMUMode("limelight-a", 1);
-            }
-            else
-            {
+            } else {
               LimelightHelpers.SetIMUMode("limelight-a", 2);
             }
             LimelightHelpers.PoseEstimate mt2_limelightA =
@@ -466,7 +453,7 @@ public class Vision extends SubsystemBase {
         DriverStation.reportWarning(
             "LimelightA failed to get pose esstimation from NetworkTables", true);
       }
-      
+
       // limelightb setup
       try {
         if (useMegaTag2 == false) {
@@ -498,12 +485,9 @@ public class Vision extends SubsystemBase {
                 0,
                 0,
                 0);
-            if (DriverStation.isAutonomous()) 
-            {
+            if (DriverStation.isAutonomous()) {
               LimelightHelpers.SetIMUMode("limelight-a", 1);
-            }
-            else
-            {
+            } else {
               LimelightHelpers.SetIMUMode("limelight-a", 2);
             }
             LimelightHelpers.PoseEstimate mt2_limelightB =
