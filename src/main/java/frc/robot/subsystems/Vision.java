@@ -400,7 +400,9 @@ public class Vision extends SubsystemBase {
       //       m_swerveDriveTrain.addVisionMeasurement(
       //           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
       //     });
+
       boolean useMegaTag2 = true; // set to false to use MegaTag1
+      //limelighta setup
       try {
         if (useMegaTag2 == false) {
           LimelightHelpers.PoseEstimate mt1_limelightA =
@@ -431,7 +433,14 @@ public class Vision extends SubsystemBase {
                 0,
                 0,
                 0);
-            LimelightHelpers.SetIMUMode("limelight-a", 2);
+            if (DriverStation.isAutonomous()) 
+            {
+              LimelightHelpers.SetIMUMode("limelight-a", 1);
+            }
+            else
+            {
+              LimelightHelpers.SetIMUMode("limelight-a", 2);
+            }
             LimelightHelpers.PoseEstimate mt2_limelightA =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
 
@@ -457,7 +466,8 @@ public class Vision extends SubsystemBase {
         DriverStation.reportWarning(
             "LimelightA failed to get pose esstimation from NetworkTables", true);
       }
-
+      
+      // limelightb setup
       try {
         if (useMegaTag2 == false) {
           LimelightHelpers.PoseEstimate mt1_limelightB =
@@ -488,7 +498,14 @@ public class Vision extends SubsystemBase {
                 0,
                 0,
                 0);
-            LimelightHelpers.SetIMUMode("limelight-b", 2);
+            if (DriverStation.isAutonomous()) 
+            {
+              LimelightHelpers.SetIMUMode("limelight-a", 1);
+            }
+            else
+            {
+              LimelightHelpers.SetIMUMode("limelight-a", 2);
+            }
             LimelightHelpers.PoseEstimate mt2_limelightB =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
 
