@@ -9,16 +9,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
@@ -42,6 +42,7 @@ public class EndEffector extends SubsystemBase {
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");
+    SmartDashboard.putData(this);
   }
 
   public void setPercentOutput(double output) {
@@ -62,9 +63,9 @@ public class EndEffector extends SubsystemBase {
   public void simulationPeriodic() {
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(m_simState.getMotorVoltage());
 
-    m_endEffectorSim.update(0.02); // TODO update this later maybe?
+    m_endEffectorSim.update(0.02);
 
     m_simState.setRawRotorPosition(
         m_endEffectorSim.getAngularPositionRotations() * ROLLERS.gearRatio);

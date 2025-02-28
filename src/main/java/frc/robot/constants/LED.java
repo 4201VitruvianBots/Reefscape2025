@@ -51,6 +51,6 @@ public class LED {
     ALGAE,
     ALGAE_OWNED,
     REEF_LINEUP,
-    ENDGAME;
+    ENDGAME
   }
 }

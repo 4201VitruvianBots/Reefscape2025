@@ -34,7 +34,7 @@ import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffectorPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
@@ -236,8 +236,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public void simulationPeriodic() {
     m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_endEffectorSim.setInputVoltage(
-        MathUtil.clamp(m_pivotMotorSimState.getMotorVoltage(), -12, 12));
+    m_endEffectorSim.setInputVoltage(m_pivotMotorSimState.getMotorVoltage());
 
     m_endEffectorSim.update(0.020);
 

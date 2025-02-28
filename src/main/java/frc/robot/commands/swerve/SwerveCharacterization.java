@@ -19,10 +19,10 @@ public class SwerveCharacterization extends SequentialCommandGroup {
       SysIdRoutine.Direction direction,
       ROUTINE_TYPE routineType) {
     Command sysidCommand;
-
+    SysIdRoutine routine;
     switch (routineType) {
       case DRIVE_DYNAMIC:
-        var routine = SysIdUtils.getSwerveDriveRoutine();
+        routine = SysIdUtils.getSwerveDriveRoutine();
         sysidCommand = routine.dynamic(direction);
         break;
       case DRIVE_QUASISTATIC:

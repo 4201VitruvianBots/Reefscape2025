@@ -19,10 +19,9 @@ public class TestAuto1 extends SequentialCommandGroup {
   /**
    * Creates a new TestAuto1.
    *
-   * @param m_fieldSim
+   * @param m_fieldSim {@link FieldSim}
    */
   public TestAuto1(CommandSwerveDrivetrain swerveDrive, FieldSim m_fieldSim) {
-    // TODO implement field sim
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("4PieceL");
 

@@ -13,8 +13,8 @@ public class ResetGyro extends Command {
   /** Creates a new ResetGyro. */
   private final CommandSwerveDrivetrain m_swerveDrive;
 
-  public ResetGyro(CommandSwerveDrivetrain swervedrive) {
-    m_swerveDrive = swervedrive;
+  public ResetGyro(CommandSwerveDrivetrain swerveDrive) {
+    m_swerveDrive = swerveDrive;
     // Use addRequirements() here to declare subsystem dependencies.
 
     addRequirements(m_swerveDrive);

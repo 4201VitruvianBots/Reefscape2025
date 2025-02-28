@@ -18,7 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -39,7 +38,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator */
@@ -52,7 +51,7 @@ public class Elevator extends SubsystemBase {
       new ElevatorSim(
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
-          ELEVATOR.kCarriageMassPounds,
+          ELEVATOR.kCarriageMass.in(Kilograms),
           ELEVATOR.kElevatorDrumDiameter / 2,
           ELEVATOR.lowerLimitMeters,
           ELEVATOR.upperLimitMeters,
@@ -296,23 +295,6 @@ public class Elevator extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_elevatorSim.update(0.020);
-
-    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
-    m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters);
-  }
-
-  @Override
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
@@ -343,5 +325,20 @@ public class Elevator extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_elevatorSim.setInputVoltage(m_motorSimState.getMotorVoltage());
+
+    m_elevatorSim.update(0.020);
+
+    m_motorSimState.setRawRotorPosition(
+        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
+    m_motorSimState.setRotorVelocity(
+        m_elevatorSim.getVelocityMetersPerSecond()
+            * ELEVATOR.gearRatio
+            / ELEVATOR.drumRotationsToMeters);
   }
 }
