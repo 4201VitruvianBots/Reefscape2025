@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
@@ -27,6 +28,7 @@ public class HopperIntake extends SubsystemBase {
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
           HOPPERINTAKE.gearbox);
+  private final Servo m_hopperServo = new Servo(9);
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -45,9 +47,20 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotor.set(speed);
   }
 
+  public void moveServo(double speed) {
+    m_hopperServo.set(speed);
+  }
+
+  public void stopServo() {
+    m_hopperServo.setAngle(90.0);
+  }
   @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return m_hopperIntakeMotor.get();
+  }
+
+  public void teleopInit() {
+    stopServo();
   }
 
   @Override

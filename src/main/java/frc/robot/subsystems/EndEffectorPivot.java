@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
+import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.utils.CtreUtils;
@@ -56,7 +57,7 @@ public class EndEffectorPivot extends SubsystemBase {
   @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
   private double m_joystickInput = 0.0;
   
-  private Angle m_desiredRotation = Degrees.of(0);
+  private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
 
   // Simulation Code
   private final SingleJointedArmSim m_endEffectorSim =
@@ -209,6 +210,10 @@ public class EndEffectorPivot extends SubsystemBase {
 
   public void setJoystickY(double m_joystickY) {
     m_joystickInput = m_joystickY;
+  }
+
+  public void teleopInit() {
+    resetMotionMagicState();
   }
 
   @Override

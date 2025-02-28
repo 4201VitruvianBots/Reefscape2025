@@ -16,24 +16,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
-import frc.robot.commands.autos.DriveForward;
-import frc.robot.commands.autos.OnePiece;
-import frc.robot.commands.autos.TestAuto1;
-import frc.robot.commands.autos.TestHopperAuto;
-import frc.robot.commands.climber.SetClimberSetpoint;
+import frc.robot.commands.autos.*;
+import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -41,7 +32,6 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
-import frc.robot.constants.CLIMBER.CLIMBER_SETPOINT;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
@@ -229,6 +219,16 @@ public class RobotContainer {
             m_elevator,
             m_endEffector,
             m_endEffectorPivot,
+            m_hopperIntake));
+
+    m_chooser.addOption(
+        "TwoPiece",
+        new TwoPiece(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
             m_hopperIntake));
   }
 
@@ -434,9 +434,14 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
+      m_driverController.povRight().whileTrue(new RunClimber(m_climber, 0.15));
+      m_driverController.povLeft().whileTrue(new RunClimber(m_climber, -0.15));
       m_driverController
-          .povRight()
-          .onTrue(new SetClimberSetpoint(m_climber, CLIMBER_SETPOINT.CLIMB));
+          .back()
+          .whileTrue(
+              Commands.startEnd(
+                  () -> m_hopperIntake.moveServo(1.0),
+                  () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
     }
   }
 
@@ -462,6 +467,8 @@ public class RobotContainer {
   public void teleopInit() {
     m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
     m_elevator.teleopInit();
+    m_hopperIntake.teleopInit();
+    m_endEffectorPivot.teleopInit();
   }
 
   public void testInit() {
