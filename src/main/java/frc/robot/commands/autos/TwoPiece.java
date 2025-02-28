@@ -64,16 +64,18 @@ public class TwoPiece extends SequentialCommandGroup {
           new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(0.3),
           new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new ParallelCommandGroup(
-              m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
-              new ParallelCommandGroup(
-                      new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                      new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
-                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
-                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-                  .until(() -> endEffector.hasCoral())).withTimeout(0.1),
+                  m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
+                  new ParallelCommandGroup(
+                          new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                          new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
+                          new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
+                          new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
+                      .until(() -> endEffector.hasCoral()))
+              .withTimeout(0.1),
           new ParallelCommandGroup(
-              new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)).withTimeout(0.1),
+                  new AutoRunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+                  new AutoRunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
+              .withTimeout(0.1),
           new ParallelCommandGroup(
                   m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
                   new ParallelCommandGroup(
