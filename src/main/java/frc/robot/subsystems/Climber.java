@@ -120,8 +120,8 @@ public class Climber extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
-        setPercentOutput(percentOutput);
+        // double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
+        // setPercentOutput(percentOutput);
         break;
     }
   }
