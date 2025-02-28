@@ -29,7 +29,7 @@ import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
 public class TestHopperAuto extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
+  /** Creates a new TestHopperAuto. */
   public TestHopperAuto(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,

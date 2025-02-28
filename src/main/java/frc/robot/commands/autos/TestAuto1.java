@@ -17,7 +17,7 @@ import org.team4201.codex.simulation.FieldSim;
 
 public class TestAuto1 extends SequentialCommandGroup {
   /**
-   * Creates a new DriveForward.
+   * Creates a new TestAuto1.
    *
    * @param m_fieldSim
    */

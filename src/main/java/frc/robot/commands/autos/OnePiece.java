@@ -25,7 +25,7 @@ import frc.robot.subsystems.EndEffectorPivot;
 import org.team4201.codex.simulation.FieldSim;
 
 public class OnePiece extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
+  /** The OnePiece is Real */
   public OnePiece(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,

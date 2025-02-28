@@ -28,7 +28,7 @@ import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
 public class TwoPiece extends SequentialCommandGroup {
-  /** Creates a new DriveForward. */
+  /** Creates a new TwoPiece. */
   public TwoPiece(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
