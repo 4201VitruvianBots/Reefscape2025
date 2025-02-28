@@ -349,7 +349,7 @@ public class RobotContainer {
   private void configureV2Bindings() {
     var targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
-    
+
     ParallelRaceGroup stowAll =
         moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1);
 
