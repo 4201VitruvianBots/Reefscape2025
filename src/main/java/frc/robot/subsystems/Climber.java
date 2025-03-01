@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -69,6 +70,10 @@ public class Climber extends SubsystemBase {
   @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return climberMotor.get();
+  }
+  
+  public void setInputVoltage(Voltage voltage) {
+    climberMotor.setVoltage(voltage.in(Volts));
   }
 
   public void setDesiredPosition(double desiredPosition) {

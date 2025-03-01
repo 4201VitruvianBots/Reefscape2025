@@ -4,19 +4,20 @@
 
 package frc.robot.commands.climber;
 
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.Climber;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RunClimber extends Command {
+public class RunClimberVoltage extends Command {
   private final Climber m_climber;
-  private final double m_speed;
+  private final Voltage m_voltage;
 
   /** Creates a new RunClimber. */
-  public RunClimber(Climber climber, double speed) {
+  public RunClimberVoltage(Climber climber, Voltage voltage) {
     m_climber = climber;
-    m_speed = speed;
+    m_voltage = voltage;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_climber);
@@ -26,13 +27,13 @@ public class RunClimber extends Command {
   @Override
   public void initialize() {
     m_climber.setControlMode(CONTROL_MODE.OPEN_LOOP);
-    m_climber.setPercentOutput(m_speed);
+    m_climber.setInputVoltage(m_voltage);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_climber.setPercentOutput(m_speed);
+    m_climber.setInputVoltage(m_voltage);
   }
 
   // Called once the command ends or is interrupted.

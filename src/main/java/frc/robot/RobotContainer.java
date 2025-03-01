@@ -26,7 +26,7 @@ import frc.robot.commands.ToggleGamePiece;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
-import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -462,7 +462,7 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.back().whileTrue(new RunClimber(m_climber, -0.15));
+      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(-1.8)));
       m_driverController
           .start()
           .whileTrue(
