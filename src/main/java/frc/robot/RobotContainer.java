@@ -423,20 +423,32 @@ public class RobotContainer {
     // Ground intake on left trigger, TODO: implement
     // Ground intake algae on povDown, TODO: implement
 
-    // Ready hopper
     if (m_hopperIntake != null
         && m_endEffectorPivot != null
         && m_endEffector != null
         && m_elevator != null) {
+      // Ready hopper
       m_driverController
           .povUp()
           .whileTrue(
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL),
-                  /* .until(m_endEffector::hasCoral), */
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).until(m_endEffector::hasCoral),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
+          .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1));
+      // Coral Reverse / Algae Outtake
+      m_driverController
+          .rightBumper()
+          .whileTrue(
+              new ConditionalCommand(
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
+                  new ParallelCommandGroup(
+                    new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
+                    new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
+                    moveSuperStructure(
+                        ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
+                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
           .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1));
     }
 
@@ -449,20 +461,10 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
-      // Coral Reverse / Algae Outtake
-      m_driverController
-          .rightBumper()
-          .whileTrue(
-              new ConditionalCommand(
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
-                  new ParallelCommandGroup(
-                      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                      new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL)),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
     if (m_climber != null) {
-      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(-1.8)));
+      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(2.5)));
       m_driverController
           .start()
           .whileTrue(
