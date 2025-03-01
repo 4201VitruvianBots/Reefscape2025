@@ -243,6 +243,16 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
+
+    m_chooser.addOption(
+        "OnePieceLeft",
+        new OnePieceLeft(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -350,8 +360,12 @@ public class RobotContainer {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
 
-    ParallelRaceGroup stowAll =
+    ParallelRaceGroup stowAllCoral =
         moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1);
+
+    ParallelRaceGroup stowAllAlgae =
+        moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
+            .withTimeout(1);
 
     ParallelRaceGroup stowAllDelayed =
         new SequentialCommandGroup(
@@ -374,7 +388,7 @@ public class RobotContainer {
                       PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
-          .onFalse(stowAll);
+          .onFalse(m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE ? stowAllAlgae : stowAllCoral);
       m_driverController
           .x()
           .whileTrue(
@@ -385,7 +399,7 @@ public class RobotContainer {
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
-          .onFalse(stowAll);
+          .onFalse(stowAllCoral);
       m_driverController
           .y()
           .whileTrue(
@@ -405,7 +419,7 @@ public class RobotContainer {
                       PIVOT_SETPOINT.INTAKE_ALGAE_HIGH), // Algae L3
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
-          .onFalse(stowAll);
+          .onFalse(stowAllCoral);
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -422,10 +436,10 @@ public class RobotContainer {
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL),
-                      /* .until(m_endEffector::hasCoral), */
+                  /* .until(m_endEffector::hasCoral), */
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
-          .onFalse(stowAll);
+          .onFalse(stowAllCoral);
     }
 
     if (m_endEffector != null) {
@@ -450,10 +464,9 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.start().whileTrue(new RunClimber(m_climber, 0.15));
       m_driverController.back().whileTrue(new RunClimber(m_climber, -0.15));
       m_driverController
-          .povLeft()
+          .start()
           .whileTrue(
               Commands.startEnd(
                   () -> m_hopperIntake.moveServo(1.0),
@@ -528,12 +541,13 @@ public class RobotContainer {
     m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
     m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
   }
-  
+
   boolean isInit = false;
+
   public void simulationPeriodic() {
-    if(!isInit) {
-        simulationInit();
-        isInit = true;
+    if (!isInit) {
+      simulationInit();
+      isInit = true;
     }
     DriverStation.getAlliance()
         .ifPresent(
