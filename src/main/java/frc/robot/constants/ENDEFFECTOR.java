@@ -58,7 +58,7 @@ public class ENDEFFECTOR {
     public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
     // The values for Distance and Mass are made up
-    public static final Distance length = Inches.of(8);
+    public static final Distance baseLength = Inches.of(7.14);
     public static final Mass mass = Pounds.of(5);
 
     public static final double kPercentOutputMultiplier = 1.0;
@@ -87,8 +87,7 @@ public class ENDEFFECTOR {
       BARGE(Degrees.of(150.0)),
       OUTTAKE_ALGAE_PROCESSOR(
           Degrees.of(
-              181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint to make this angle not
-      // negative
+              181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint
 
       private final Angle angle;
 
