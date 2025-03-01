@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -71,7 +72,7 @@ public class Climber extends SubsystemBase {
   public double getPercentOutput() {
     return climberMotor.get();
   }
-  
+
   public void setInputVoltage(Voltage voltage) {
     climberMotor.setVoltage(voltage.in(Volts));
   }
@@ -92,18 +93,24 @@ public class Climber extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public Double getMotorRotations() {
+  @Logged(name = "Motor Rotations", importance = Logged.Importance.INFO)
+  public double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
 
-  public Double getMotorVoltage() {
+  public double getMotorVoltage() {
     m_voltageSignal.refresh();
     return m_voltageSignal.getValueAsDouble();
   }
 
   public double getPulleyLengthMeters() {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters.magnitude();
+  }
+
+  @Logged(name = "Pulley Length Inches", importance = Logged.Importance.INFO)
+  public double getPulleyLengthInches() {
+    return Units.metersToInches(getPulleyLengthMeters());
   }
 
   public boolean isClosedLoopControl() {
