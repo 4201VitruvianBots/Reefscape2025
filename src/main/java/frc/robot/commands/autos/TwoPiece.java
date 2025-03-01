@@ -63,10 +63,12 @@ public class TwoPiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(2),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(1.3),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new ParallelCommandGroup(
+                new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+                new WaitCommand(2)),
           new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)), // move back
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new ParallelCommandGroup(
                   new ParallelCommandGroup(
                     m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
@@ -90,10 +92,12 @@ public class TwoPiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(2),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(1.5),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+            new ParallelCommandGroup(
+                new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
+                new WaitCommand(2)),
           new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
           m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new SequentialCommandGroup(
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
                   .until(elevator::atSetpoint),
