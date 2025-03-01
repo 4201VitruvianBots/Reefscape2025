@@ -376,7 +376,7 @@ public class RobotContainer {
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
           .onFalse(new ConditionalCommand(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-            .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+            .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
       m_driverController
           .x()
           .whileTrue(
@@ -385,10 +385,10 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.PROCESSOR,
                       PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
                   moveSuperStructure(
-                      ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
+                      ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED), // Coral L1
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
           .onFalse(new ConditionalCommand(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-            .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+            .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
       m_driverController
           .y()
           .whileTrue(
@@ -401,11 +401,11 @@ public class RobotContainer {
            .onFalse(
            new ConditionalCommand(new SequentialCommandGroup(
                    new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
-                   new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
+                   new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.CORAL_STOWED))
                .withTimeout(1),
               new SequentialCommandGroup(
                       new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
-                      new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
+                      new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.CORAL_STOWED))
                   .withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
       m_driverController
           .b()
@@ -417,7 +417,7 @@ public class RobotContainer {
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
                   .onFalse(new ConditionalCommand(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-                  .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  .withTimeout(1), moveSuperStructure(ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED).withTimeout(1), () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -436,7 +436,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).until(m_endEffector::hasCoral),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
-          .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1));
+          .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED).withTimeout(1));
       // Coral Reverse / Algae Outtake
       m_driverController
           .rightBumper()
@@ -449,7 +449,7 @@ public class RobotContainer {
                     moveSuperStructure(
                         ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
-          .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1));
+          .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.CORAL_STOWED, PIVOT_SETPOINT.STOWED).withTimeout(1));
     }
 
     if (m_endEffector != null) {
