@@ -12,14 +12,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
-import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
@@ -27,9 +25,9 @@ import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class TwoPiece extends SequentialCommandGroup {
+public class OnePieceLeft extends SequentialCommandGroup {
   /** Creates a new TwoPiece. */
-  public TwoPiece(
+  public OnePieceLeft(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
@@ -41,9 +39,6 @@ public class TwoPiece extends SequentialCommandGroup {
 
       var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt1");
       var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLback");
-      var m_ppCommand3 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt2");
-      var m_ppCommand4 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt3");
-      var m_ppCommand5 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt4");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -63,35 +58,9 @@ public class TwoPiece extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(0.6),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(1.3),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(2.5),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
-          new ParallelCommandGroup(
-                  new ParallelCommandGroup(
-                    m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
-                    new ParallelCommandGroup(
-                        new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                        new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
-                        new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
-                        new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER))
-                    .until(() -> endEffector.hasCoral()))
-            .withTimeout(0.1)
-                  ),     
-          new ParallelCommandGroup(
-                  new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-                  new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
-              .withTimeout(0.1),
-          new ParallelCommandGroup(
-                  m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
-                  new ParallelCommandGroup(
-                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                          .until(elevator::atSetpoint),
-                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                          .until(() -> endEffectorPivot.atSetpoint())))
-              .withTimeout(0.6),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(1.5),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-          m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
           new SequentialCommandGroup(
               new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
@@ -101,7 +70,7 @@ public class TwoPiece extends SequentialCommandGroup {
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load path for Score2", e.getStackTrace());
+      DriverStation.reportError("Failed to load path for Score1", e.getStackTrace());
       addCommands(new WaitCommand(0));
     }
   }
