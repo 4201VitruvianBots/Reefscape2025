@@ -57,11 +57,11 @@ public class OnePieceLeft extends SequentialCommandGroup {
                           .until(elevator::atSetpoint),
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                           .until(() -> endEffectorPivot.atSetpoint())))
-              .withTimeout(0.6),
+              .withTimeout(2),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL).withTimeout(2.5),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
-          m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
+          m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)), // move back
           new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
               .until(elevator::atSetpoint),
           new InstantCommand(
