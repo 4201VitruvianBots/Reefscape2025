@@ -433,7 +433,7 @@ public class RobotContainer {
           .whileTrue(
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).until(m_endEffector::hasCoral),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)/* .until(m_endEffector::hasCoral)*/,
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED).withTimeout(1));
