@@ -12,7 +12,6 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -50,12 +49,12 @@ public class Climber extends SubsystemBase {
     climberConfig.Slot0.kP = CLIMBER.kP;
     climberConfig.Slot0.kI = CLIMBER.kI;
     climberConfig.Slot0.kD = CLIMBER.kD;
-    
+
     // climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
     // climberConfig.MotionMagic.MotionMagicAcceleration = 200;
-    
+
     CtreUtils.configureTalonFx(climberMotor, climberConfig);
-    
+
     setClimberNeutralMode(m_neutralMode);
   }
 
