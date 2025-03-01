@@ -56,7 +56,7 @@ public class EndEffector extends SubsystemBase {
 
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
-    return !m_beamBreakSensor.get();
+    return !m_beamBreakSensor.get() && ENDEFFECTOR.enableBeamBreak;
   }
 
   @Override

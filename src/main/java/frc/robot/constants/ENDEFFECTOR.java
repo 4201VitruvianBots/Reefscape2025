@@ -9,6 +9,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ENDEFFECTOR {
+  public static final boolean enableBeamBreak = false;
+  
   public static class ROLLERS {
     public static final double kP = 0.0;
     public static final double kI = 0.0;
