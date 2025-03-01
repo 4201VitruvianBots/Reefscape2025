@@ -549,6 +549,7 @@ public class RobotContainer {
       simulationInit();
       isInit = true;
     }
+    m_robot2d.updateRobot2d();
     DriverStation.getAlliance()
         .ifPresent(
             a -> {
@@ -572,7 +573,6 @@ public class RobotContainer {
   }
 
   public void robotPeriodic() {
-    m_robot2d.updateRobot2d();
     // m_questNav.periodic();
 
     // TODO: Implement code to drive to this Pose2d
