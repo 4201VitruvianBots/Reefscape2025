@@ -43,17 +43,17 @@ public class Robot2d {
   /** Declare a single point from the main Mechanism2d to attach the chassis */
   final MechanismRoot2d m_chassisRoot =
       m_robot.getRoot("chassisRoot", Inches.of(16).magnitude(), Inches.of(3.75).magnitude());
-      
-    private final MechanismRoot2d m_superStructureRoot =
+
+  private final MechanismRoot2d m_superStructureRoot =
       m_robot.getRoot("SuperStructureRoot", Inches.of(23.25).magnitude(), Inches.of(3).magnitude());
- final MechanismLigament2d m_superStructure = 
+  final MechanismLigament2d m_superStructure =
       new MechanismLigament2d(
           "superStructure2d",
           ELEVATOR.superStructureHeight.in(Inches),
           90,
           Inches.of(2).magnitude() * pixelsPerInch,
           new Color8Bit(0, 127, 0));
-  
+
   /** Use a line (MechanismLigament2d) to represent the robot chassis */
   final MechanismLigament2d m_robotChassis =
       new MechanismLigament2d(
@@ -77,37 +77,49 @@ public class Robot2d {
               .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
-  final MechanismLigament2d m_endEffectorAttachment = 
-          m_elevator.getLastStageLigament().append(new MechanismLigament2d(
-              "endEffectorAttachment2d",
-              Inches.of(11.75).magnitude(),
-              36.11,
-              Inches.of(2).magnitude() * pixelsPerInch,
-              new Color8Bit(0, 127, 0)));
-   
+  final MechanismLigament2d m_endEffectorAttachment =
+      m_elevator
+          .getLastStageLigament()
+          .append(
+              new MechanismLigament2d(
+                  "endEffectorAttachment2d",
+                  Inches.of(11.75).magnitude(),
+                  36.11,
+                  Inches.of(2).magnitude() * pixelsPerInch,
+                  new Color8Bit(0, 127, 0)));
+
   /** Create an Arm2d to represent the endEffector */
   private final Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
-                  "EndEffector2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle.minus(Degrees.of(25.676)), PIVOT.baseLength)
+                  "EndEffector2d",
+                  new Color8Bit(0, 255, 255),
+                  PIVOT.startingAngle.minus(Degrees.of(25.676)),
+                  PIVOT.baseLength)
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
           m_endEffectorAttachment);
 
   /** Another Arm2d to represent the other half of the endEffector */
   private final Arm2d m_endEffectorBack =
-  new Arm2d(
-      new Arm2dConfig(
-              "EndEffectorBack2d", new Color8Bit(0, 255, 255), PIVOT.startingAngle.minus(Degrees.of(25.676)).plus(Degrees.of(90)), PIVOT.baseLength)
-          .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
-      m_endEffectorAttachment);
-  
+      new Arm2d(
+          new Arm2dConfig(
+                  "EndEffectorBack2d",
+                  new Color8Bit(0, 255, 255),
+                  PIVOT.startingAngle.minus(Degrees.of(25.676)).plus(Degrees.of(90)),
+                  PIVOT.baseLength)
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+          m_endEffectorAttachment);
+
   final MechanismLigament2d m_endEffectorIntake =
-        m_endEffector.getLigament().append(new MechanismLigament2d(
-            "endEffectorIntake2d",
-            Inches.of(9).magnitude(),
-            -47.5,
-            Inches.of(1.9675).magnitude() * pixelsPerInch,
-            new Color8Bit(0, 0, 255)));
+      m_endEffector
+          .getLigament()
+          .append(
+              new MechanismLigament2d(
+                  "endEffectorIntake2d",
+                  Inches.of(9).magnitude(),
+                  -47.5,
+                  Inches.of(1.9675).magnitude() * pixelsPerInch,
+                  new Color8Bit(0, 0, 255)));
 
   /** Map of subsystems for Robot2d to update */
   private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
@@ -148,8 +160,14 @@ public class Robot2d {
       var endEffectorPivotSubsystem = (EndEffectorPivot) m_subsystemMap.get("EndEffectorPivot");
       // Visually, this will go opposite of the actual angle, so we just negate it here so it looks
       // correct
-      m_endEffector.update(endEffectorPivotSubsystem.getCANcoderAngle().minus(Degrees.of(25.676)).unaryMinus());
-      m_endEffectorBack.update(endEffectorPivotSubsystem.getCANcoderAngle().minus(Degrees.of(25.676)).unaryMinus().plus(Degrees.of(90)));
+      m_endEffector.update(
+          endEffectorPivotSubsystem.getCANcoderAngle().minus(Degrees.of(25.676)).unaryMinus());
+      m_endEffectorBack.update(
+          endEffectorPivotSubsystem
+              .getCANcoderAngle()
+              .minus(Degrees.of(25.676))
+              .unaryMinus()
+              .plus(Degrees.of(90)));
     }
 
     if (m_subsystemMap.containsKey("EndEffector")) {
