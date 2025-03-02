@@ -27,6 +27,7 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
+import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -204,9 +205,12 @@ public class RobotContainer {
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
             }));
-    if (m_elevator != null) {
-      m_elevator.setDefaultCommand(
-          new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY()));
+    // if (m_elevator != null) {
+    //   m_elevator.setDefaultCommand(
+    //       new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
+    // }
+    if (m_climber != null) {
+      m_climber.setDefaultCommand(new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(

@@ -45,6 +45,7 @@ public class Climber extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
+  private double m_buttonInput = 0.0;
 
   public Climber() {
     TalonFXConfiguration climberConfig = new TalonFXConfiguration();
@@ -62,6 +63,10 @@ public class Climber extends SubsystemBase {
 
   public void holdClimber() {
     setDesiredPosition(getPulleyLengthMeters());
+  }
+
+  public void setJoystickInput(double input) {
+    m_joystickInput = input;
   }
 
   public void setPercentOutput(double output) {
@@ -123,6 +128,10 @@ public class Climber extends SubsystemBase {
     climberMotor.setNeutralMode(mode);
   }
 
+  public void setButtonInput(double buttonInput) {
+    m_buttonInput = buttonInput;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -132,8 +141,12 @@ public class Climber extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        // double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
-        // setPercentOutput(percentOutput);
+        double percentOutput = m_joystickInput * CLIMBER.kLimitedPercentOutputMultiplier;
+        if (percentOutput > m_buttonInput) {
+          setInputVoltage(Volts.of(percentOutput * 12.0));
+        } else {
+          setInputVoltage(Volts.of(m_buttonInput * 12.0));
+        }
         break;
     }
   }
