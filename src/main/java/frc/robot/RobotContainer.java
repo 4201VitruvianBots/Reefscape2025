@@ -28,7 +28,6 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
-import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -207,10 +206,12 @@ public class RobotContainer {
             }));
     // if (m_elevator != null) {
     //   m_elevator.setDefaultCommand(
-    //       new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
+    //       new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator
+    // open loop control
     // }
     if (m_climber != null) {
-      m_climber.setDefaultCommand(new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+      m_climber.setDefaultCommand(
+          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(
@@ -257,17 +258,16 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-            
-            m_chooser.addOption(
-              "OnePieceRight",
-              new OnePieceRight(
-                  m_swerveDrive,
-                  m_fieldSim,
-                  m_elevator,
-                  m_endEffectorPivot,
-                  m_endEffector,
-                  m_hopperIntake));
 
+    m_chooser.addOption(
+        "OnePieceRight",
+        new OnePieceRight(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -504,13 +504,12 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
       m_driverController
-                  .rightBumper()
-                  .whileTrue(
-                      new ConditionalCommand(
-                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
-                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                          () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
-      
+          .rightBumper()
+          .whileTrue(
+              new ConditionalCommand(
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
+                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
     if (m_climber != null) {

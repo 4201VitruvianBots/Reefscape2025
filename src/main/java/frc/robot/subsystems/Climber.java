@@ -17,6 +17,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -38,6 +39,9 @@ public class Climber extends SubsystemBase {
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal = climberMotor.getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_satorCurrentSignal = climberMotor.getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal = climberMotor.getTorqueCurrent().clone();
   private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
@@ -104,9 +108,28 @@ public class Climber extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public double getMotorVoltage() {
-    m_voltageSignal.refresh();
-    return m_voltageSignal.getValueAsDouble();
+  @Logged(name = "Motor Voltage", importance = Logged.Importance.INFO)
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.getValue();
+  }
+
+  public double getMotorVoltageDouble() {
+    return getMotorVoltage().magnitude();
+  }
+
+  @Logged(name = "Supply Current", importance = Logged.Importance.INFO)
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.getValue();
+  }
+  
+  @Logged(name = "Sator Current", importance = Logged.Importance.INFO)
+  public Current getSatorCurrent() {
+    return m_satorCurrentSignal.getValue();
+  }
+
+  @Logged(name = "Torque Current", importance = Logged.Importance.INFO)
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.getValue();
   }
 
   public double getPulleyLengthMeters() {
@@ -153,6 +176,7 @@ public class Climber extends SubsystemBase {
 
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_climberSim.setInputVoltage(m_climberSim.getInputVoltage());
 
     m_climberSim.update(0.020);
 
