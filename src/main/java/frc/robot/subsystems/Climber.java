@@ -39,9 +39,12 @@ public class Climber extends SubsystemBase {
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
-  private final StatusSignal<Current> m_supplyCurrentSignal = climberMotor.getSupplyCurrent().clone();
-  private final StatusSignal<Current> m_satorCurrentSignal = climberMotor.getStatorCurrent().clone();
-  private final StatusSignal<Current> m_torqueCurrentSignal = climberMotor.getTorqueCurrent().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      climberMotor.getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_satorCurrentSignal =
+      climberMotor.getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      climberMotor.getTorqueCurrent().clone();
   private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
@@ -121,7 +124,7 @@ public class Climber extends SubsystemBase {
   public Current getSupplyCurrent() {
     return m_supplyCurrentSignal.getValue();
   }
-  
+
   @Logged(name = "Sator Current", importance = Logged.Importance.INFO)
   public Current getSatorCurrent() {
     return m_satorCurrentSignal.getValue();
