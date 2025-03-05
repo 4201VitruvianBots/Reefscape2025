@@ -15,6 +15,18 @@
           "data": {
             "pathName": "Score2"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score4"
+          }
         }
       ]
     }
