@@ -27,9 +27,9 @@ import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class TwoPiece extends SequentialCommandGroup {
+public class ThreePiece extends SequentialCommandGroup {
   /** Creates a new TwoPiece. */
-  public TwoPiece(
+  public ThreePiece(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
