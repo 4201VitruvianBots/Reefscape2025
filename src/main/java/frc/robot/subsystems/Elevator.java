@@ -230,7 +230,7 @@ public class Elevator extends SubsystemBase {
   // Elevator is within 1 inch of its setpoint
   @Logged(name = "At Setpoint", importance = Logged.Importance.DEBUG)
   public boolean atSetpoint() {
-    return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
+    return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference 
   }
 
   public void testInit() {

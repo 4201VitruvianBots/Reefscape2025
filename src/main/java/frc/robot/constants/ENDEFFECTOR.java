@@ -87,6 +87,7 @@ public class ENDEFFECTOR {
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
       BARGE(Degrees.of(150.0)),
+      BARGEFLICK(Degrees.of(140.0)), // IDK what this is supposed to be bro
       OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint
 
       private final Angle angle;

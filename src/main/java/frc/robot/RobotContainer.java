@@ -482,7 +482,7 @@ public class RobotContainer {
           .povDown()
           .whileTrue(
               new ConditionalCommand(
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
+                  new SequentialCommandGroup(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGEFLICK).until(() ->  m_endEffectorPivot.atSetpoint() == true), new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)), //Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
