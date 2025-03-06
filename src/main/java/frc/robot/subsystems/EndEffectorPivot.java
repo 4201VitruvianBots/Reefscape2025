@@ -182,6 +182,11 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_desiredRotation.minus(getCurrentRotation()).abs(Degree) <= 1.0;
   }
 
+  @Logged(name = "At Midpoint", importance = Logged.Importance.INFO)
+  public boolean atMidpoint() {
+    return (m_desiredRotation.abs(Degree) / 2) - (getCurrentRotation()).abs(Degree) <= 1.0;
+  }
+
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
     return m_pivotEncoder.getAbsolutePosition().getValue();
