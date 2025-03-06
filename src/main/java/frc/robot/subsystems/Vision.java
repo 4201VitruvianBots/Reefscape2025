@@ -130,7 +130,7 @@ public class Vision extends SubsystemBase {
         0.127, // Side offset (meters)
         0.2159, // Height offset (meters)
         0.0, // Roll (degrees)
-        0.0, // Pitch (degrees)
+        5.0, // Pitch (degrees)
         0.0); // Yaw (degrees)
 
     LimelightHelpers.setCameraPose_RobotSpace(

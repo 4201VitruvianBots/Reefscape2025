@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,7 +13,9 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -48,6 +51,7 @@ public class Climber extends SubsystemBase {
       new FlywheelSim(
           LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
+  private double m_buttonInput = 0.0;
 
   /** Creates a new climber */
   public Climber() {
@@ -55,22 +59,34 @@ public class Climber extends SubsystemBase {
     climberConfig.Slot0.kP = CLIMBER.kP;
     climberConfig.Slot0.kI = CLIMBER.kI;
     climberConfig.Slot0.kD = CLIMBER.kD;
+
+    // climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
+    // climberConfig.MotionMagic.MotionMagicAcceleration = 200;
+
     CtreUtils.configureTalonFx(climberMotor, climberConfig);
 
-    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
-    climberConfig.MotionMagic.MotionMagicAcceleration = 200;
+    setClimberNeutralMode(m_neutralMode);
   }
 
   public void holdClimber() {
     setDesiredPosition(getPulleyLengthMeters());
   }
 
+  public void setJoystickInput(double input) {
+    m_joystickInput = input;
+  }
+
   public void setPercentOutput(double output) {
     climberMotor.set(output);
   }
 
-  public double getPercentOutputMotor() {
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
+  public double getPercentOutput() {
     return climberMotor.get();
+  }
+
+  public void setInputVoltage(Voltage voltage) {
+    climberMotor.setVoltage(voltage.in(Volts));
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -89,7 +105,8 @@ public class Climber extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public Double getMotorRotations() {
+  @Logged(name = "Motor Rotations", importance = Logged.Importance.INFO)
+  public double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
@@ -114,9 +131,9 @@ public class Climber extends SubsystemBase {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters.magnitude();
   }
 
-  // Sets the control state of the climber
-  public void setClosedLoopControlMode(CONTROL_MODE mode) {
-    m_controlMode = mode;
+  @Logged(name = "Pulley Length Inches", importance = Logged.Importance.INFO)
+  public double getPulleyLengthInches() {
+    return Units.metersToInches(getPulleyLengthMeters());
   }
 
   public boolean isClosedLoopControl() {
@@ -124,9 +141,13 @@ public class Climber extends SubsystemBase {
   }
 
   public void setClimberNeutralMode(NeutralModeValue mode) {
-    if (mode == m_neutralMode) return;
-    m_neutralMode = mode;
+    // if (mode == m_neutralMode) return;
+    // m_neutralMode = mode;
     climberMotor.setNeutralMode(mode);
+  }
+
+  public void setButtonInput(double buttonInput) {
+    m_buttonInput = buttonInput;
   }
 
   @Override
@@ -138,8 +159,12 @@ public class Climber extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
-        setPercentOutput(percentOutput);
+        double percentOutput = m_joystickInput * CLIMBER.kLimitedPercentOutputMultiplier;
+        if (percentOutput > m_buttonInput) {
+          setInputVoltage(Volts.of(percentOutput * 12.0));
+        } else {
+          setInputVoltage(Volts.of(m_buttonInput * 12.0));
+        }
         break;
     }
   }
