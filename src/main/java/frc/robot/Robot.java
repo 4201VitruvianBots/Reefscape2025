@@ -8,6 +8,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -46,7 +47,10 @@ public class Robot extends TimedRobot {
             // During competition/practice
             config.minimumImportance = Logged.Importance.INFO;
           }
+
+          config.root = "EpilogueTelemetry";
         });
+    DataLogManager.start();
     Epilogue.bind(this);
   }
 
@@ -135,7 +139,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    m_robotContainer.simulationInit();
+    // TODO: Figure out why this breaks in simulation
+    // m_robotContainer.simulationInit();
   }
 
   /** This function is called periodically whilst in simulation. */

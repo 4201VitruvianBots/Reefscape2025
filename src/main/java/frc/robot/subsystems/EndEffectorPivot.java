@@ -63,8 +63,8 @@ public class EndEffectorPivot extends SubsystemBase {
       new SingleJointedArmSim(
           PIVOT.pivotGearBox,
           PIVOT.pivotGearRatio,
-          SingleJointedArmSim.estimateMOI(PIVOT.length.in(Meters), PIVOT.mass.in(Kilograms)),
-          PIVOT.length.in(Meters),
+          SingleJointedArmSim.estimateMOI(PIVOT.baseLength.in(Meters), PIVOT.mass.in(Kilograms)),
+          PIVOT.baseLength.in(Meters),
           PIVOT.minAngle.in(Radians),
           PIVOT.maxAngle.in(Radians),
           false,

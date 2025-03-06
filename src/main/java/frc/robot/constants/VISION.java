@@ -4,8 +4,6 @@
 
 package frc.robot.constants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -54,9 +52,6 @@ public final class VISION {
   public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
       Units.degreesToRadians(0);
   public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
-
-  public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2025ReefscapeAndyMark.loadAprilTagLayoutField();
 
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
   public static final Transform3d robotToAprilTagLimelightCameraA =

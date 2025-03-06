@@ -22,21 +22,23 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class OnePiece extends SequentialCommandGroup {
-  /** The OnePiece is Real */
-  public OnePiece(
+public class OnePieceLeft extends SequentialCommandGroup {
+  /** Creates a new TwoPiece. */
+  public OnePieceLeft(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
-      EndEffectorPivot endEffectorpivot,
-      EndEffector endEffector) {
+      EndEffectorPivot endEffectorPivot,
+      EndEffector endEffector,
+      HopperIntake hopperIntake) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score1");
-      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("Score2");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt1");
+      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLback");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -53,13 +55,13 @@ public class OnePiece extends SequentialCommandGroup {
                   new ParallelCommandGroup(
                       new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
                           .until(elevator::atSetpoint),
-                      new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.L4)
-                          .until(endEffectorpivot::atSetpoint)))
+                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
+                          .until(() -> endEffectorPivot.atSetpoint())))
               .withTimeout(2),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
               new WaitCommand(5)),
-          new EndEffectorSetpoint(endEffectorpivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
+          new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED).withTimeout(0.7),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)), // move back
           new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
               .until(elevator::atSetpoint),

@@ -9,8 +9,10 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ENDEFFECTOR {
+  public static final boolean enableBeamBreak = false;
+
   public static class ROLLERS {
-    public static final double kP = 0.0;
+    public static final double kP = 0.0; // Why are there PID values on rollers T_T
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double gearRatio = 1.0;
@@ -58,7 +60,7 @@ public class ENDEFFECTOR {
     public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
     // The values for Distance and Mass are made up
-    public static final Distance length = Inches.of(8);
+    public static final Distance baseLength = Inches.of(7.14);
     public static final Mass mass = Pounds.of(5);
 
     public static final double kPercentOutputMultiplier = 1.0;
@@ -85,10 +87,7 @@ public class ENDEFFECTOR {
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
       BARGE(Degrees.of(150.0)),
-      OUTTAKE_ALGAE_PROCESSOR(
-          Degrees.of(
-              -155.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint to make this angle not
-      // negative
+      OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint
 
       private final Angle angle;
 

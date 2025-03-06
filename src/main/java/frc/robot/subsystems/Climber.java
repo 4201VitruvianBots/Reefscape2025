@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,8 +13,11 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -35,6 +39,12 @@ public class Climber extends SubsystemBase {
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      climberMotor.getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_satorCurrentSignal =
+      climberMotor.getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      climberMotor.getTorqueCurrent().clone();
   private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
@@ -42,28 +52,41 @@ public class Climber extends SubsystemBase {
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
+  private double m_buttonInput = 0.0;
 
   public Climber() {
     TalonFXConfiguration climberConfig = new TalonFXConfiguration();
     climberConfig.Slot0.kP = CLIMBER.kP;
     climberConfig.Slot0.kI = CLIMBER.kI;
     climberConfig.Slot0.kD = CLIMBER.kD;
+
+    // climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
+    // climberConfig.MotionMagic.MotionMagicAcceleration = 200;
+
     CtreUtils.configureTalonFx(climberMotor, climberConfig);
 
-    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
-    climberConfig.MotionMagic.MotionMagicAcceleration = 200;
+    setClimberNeutralMode(m_neutralMode);
   }
 
   public void holdClimber() {
     setDesiredPosition(getPulleyLengthMeters());
   }
 
+  public void setJoystickInput(double input) {
+    m_joystickInput = input;
+  }
+
   public void setPercentOutput(double output) {
     climberMotor.set(output);
   }
 
-  public double getPercentOutputMotor() {
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
+  public double getPercentOutput() {
     return climberMotor.get();
+  }
+
+  public void setInputVoltage(Voltage voltage) {
+    climberMotor.setVoltage(voltage.in(Volts));
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -82,23 +105,43 @@ public class Climber extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public Double getMotorRotations() {
+  @Logged(name = "Motor Rotations", importance = Logged.Importance.INFO)
+  public double getMotorRotations() {
     m_positionSignal.refresh();
     return m_positionSignal.getValueAsDouble();
   }
 
-  public Double getMotorVoltage() {
-    m_voltageSignal.refresh();
-    return m_voltageSignal.getValueAsDouble();
+  @Logged(name = "Motor Voltage", importance = Logged.Importance.INFO)
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.getValue();
+  }
+
+  public double getMotorVoltageDouble() {
+    return getMotorVoltage().magnitude();
+  }
+
+  @Logged(name = "Supply Current", importance = Logged.Importance.INFO)
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.getValue();
+  }
+
+  @Logged(name = "Sator Current", importance = Logged.Importance.INFO)
+  public Current getSatorCurrent() {
+    return m_satorCurrentSignal.getValue();
+  }
+
+  @Logged(name = "Torque Current", importance = Logged.Importance.INFO)
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.getValue();
   }
 
   public double getPulleyLengthMeters() {
     return getMotorRotations() * CLIMBER.sprocketRotationsToMeters.magnitude();
   }
 
-  // Sets the control state of the climber
-  public void setClosedLoopControlMode(CONTROL_MODE mode) {
-    m_controlMode = mode;
+  @Logged(name = "Pulley Length Inches", importance = Logged.Importance.INFO)
+  public double getPulleyLengthInches() {
+    return Units.metersToInches(getPulleyLengthMeters());
   }
 
   public boolean isClosedLoopControl() {
@@ -106,9 +149,13 @@ public class Climber extends SubsystemBase {
   }
 
   public void setClimberNeutralMode(NeutralModeValue mode) {
-    if (mode == m_neutralMode) return;
-    m_neutralMode = mode;
+    // if (mode == m_neutralMode) return;
+    // m_neutralMode = mode;
     climberMotor.setNeutralMode(mode);
+  }
+
+  public void setButtonInput(double buttonInput) {
+    m_buttonInput = buttonInput;
   }
 
   @Override
@@ -120,14 +167,19 @@ public class Climber extends SubsystemBase {
         break;
       case OPEN_LOOP:
       default:
-        double percentOutput = m_joystickInput * CLIMBER.kPercentOutputMultiplier;
-        setPercentOutput(percentOutput);
+        double percentOutput = m_joystickInput * CLIMBER.kLimitedPercentOutputMultiplier;
+        if (percentOutput > m_buttonInput) {
+          setInputVoltage(Volts.of(percentOutput * 12.0));
+        } else {
+          setInputVoltage(Volts.of(m_buttonInput * 12.0));
+        }
         break;
     }
   }
 
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_climberSim.setInputVoltage(m_climberSim.getInputVoltage());
 
     m_climberSim.update(0.020);
 
