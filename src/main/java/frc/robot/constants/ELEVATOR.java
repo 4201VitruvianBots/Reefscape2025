@@ -39,9 +39,11 @@ public class ELEVATOR {
   public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
   public static final double kElevatorDrumDiameter = Units.inchesToMeters(2.2557);
-  public static final double drumRotationsToMeters =
-      kElevatorDrumDiameter
-          * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
+  public static final Distance drumRotationsToMeters =
+      Meters.of(
+          kElevatorDrumDiameter
+              * Math
+                  .PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // meters
   public static final Mass kCarriageMass = Pounds.of(15.0);
   public static final double gearRatio = 48.0 / 10.0;

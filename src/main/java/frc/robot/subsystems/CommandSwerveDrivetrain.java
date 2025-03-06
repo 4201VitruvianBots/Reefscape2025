@@ -48,6 +48,7 @@ import org.team4201.codex.utils.TrajectoryUtils;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
   private Vision m_vision;
+
   private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
@@ -246,67 +247,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
             .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
             .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
   }
-
-  /**
-   * Second-Order Kinematics <a
-   * href="https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/79">...</a>
-   */
-  // TODO: Re-implement
-  //  public Command applyChassisSpeeds(
-  //          Supplier<ChassisSpeeds> chassisSpeeds,
-  //          double loopPeriod,
-  //          double driftRate,
-  //          boolean isRobotCentric) {
-  //    return applyRequest(
-  //            () -> {
-  //              m_futurePose =
-  //                      new Pose2d(
-  //                              chassisSpeeds.get().vxMetersPerSecond * loopPeriod,
-  //                              chassisSpeeds.get().vyMetersPerSecond * loopPeriod,
-  //                              Rotation2d.fromRadians(
-  //                                      chassisSpeeds.get().omegaRadiansPerSecond * loopPeriod *
-  // driftRate));
-  //
-  //              m_twistFromPose = new Pose2d().log(m_futurePose);
-  //
-  //              var rotationSpeed = chassisSpeeds.get().omegaRadiansPerSecond;
-  //              if (m_trackingState != VISION.TRACKING_STATE.NONE) {
-  //                if (m_trackingState == VISION.TRACKING_STATE.NOTE) {
-  //                  if (m_vision != null) {
-  //                    if (m_vision.hasGamePieceTarget()) {
-  //                      rotationSpeed = calculateRotationToTarget();
-  //                    }
-  //                  }
-  //                } else if (m_trackingState == VISION.TRACKING_STATE.SPEAKER) {
-  //                  rotationSpeed = calculateRotationToTarget();
-  //                }
-  //              }
-  //
-  //              m_newChassisSpeeds =
-  //                      new ChassisSpeeds(
-  //                              m_twistFromPose.dx / loopPeriod, m_twistFromPose.dy / loopPeriod,
-  // rotationSpeed);
-  //
-  //              if (isRobotCentric) {
-  //                return m_driveRequestRobotCentric
-  //                        .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
-  //                        .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
-  //                        .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //              } else {
-  //                if (Controls.isRedAlliance()) {
-  //                  return m_driveRequestFieldCentric
-  //                          .withVelocityX(-m_newChassisSpeeds.vxMetersPerSecond)
-  //                          .withVelocityY(-m_newChassisSpeeds.vyMetersPerSecond)
-  //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //                } else {
-  //                  return m_driveRequestFieldCentric
-  //                          .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
-  //                          .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
-  //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //                }
-  //              }
-  //            });
-  //  }
 
   public void resetGyro(double angle) {
     getPigeon2().setYaw(angle);

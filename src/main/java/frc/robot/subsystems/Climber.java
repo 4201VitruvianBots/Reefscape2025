@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -24,25 +25,31 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class Climber extends SubsystemBase {
-
-  /** Creates a new climber */
   private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
-
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final FlywheelSim m_climberSim =
-      new FlywheelSim(
-          LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      climberMotor.getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_statorCurrentSignal =
+      climberMotor.getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      climberMotor.getTorqueCurrent().clone();
+
   private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
+  // Simulation classes help us simulate what's going on
+  private final FlywheelSim m_climberSim =
+      new FlywheelSim(
+          LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
 
+  /** Creates a new climber */
   public Climber() {
     TalonFXConfiguration climberConfig = new TalonFXConfiguration();
     climberConfig.Slot0.kP = CLIMBER.kP;
@@ -87,9 +94,20 @@ public class Climber extends SubsystemBase {
     return m_positionSignal.getValueAsDouble();
   }
 
-  public Double getMotorVoltage() {
-    m_voltageSignal.refresh();
-    return m_voltageSignal.getValueAsDouble();
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.getValue();
+  }
+
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.getValue();
+  }
+
+  public Current getStatorCurrent() {
+    return m_statorCurrentSignal.getValue();
+  }
+
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.getValue();
   }
 
   public double getPulleyLengthMeters() {
@@ -128,6 +146,7 @@ public class Climber extends SubsystemBase {
 
   public void simulationPeriodic() {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_climberSim.setInputVoltage(m_motorSimState.getMotorVoltage());
 
     m_climberSim.update(0.020);
 

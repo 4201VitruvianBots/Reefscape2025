@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -7,6 +8,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -16,17 +20,26 @@ import frc.robot.constants.HOPPERINTAKE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
-
   private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
+  private final Servo m_hopperServo = new Servo(9);
 
-  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
+  private final StatusSignal<AngularVelocity> m_velocitySignal =
+      m_hopperIntakeMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_voltageSignal =
+      m_hopperIntakeMotor.getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      m_hopperIntakeMotor.getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_statorCurrentSignal =
+      m_hopperIntakeMotor.getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      m_hopperIntakeMotor.getTorqueCurrent().clone();
 
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
               HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
           HOPPERINTAKE.gearbox);
-  private final Servo m_hopperServo = new Servo(9);
+  private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
 
   public HopperIntake() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -58,9 +71,32 @@ public class HopperIntake extends SubsystemBase {
     return m_hopperIntakeMotor.get();
   }
 
+  public AngularVelocity getVelocity() {
+    return m_velocitySignal.getValue();
+  }
+
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.getValue();
+  }
+
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.getValue();
+  }
+
+  public Current getStatorCurrent() {
+    return m_statorCurrentSignal.getValue();
+  }
+
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.getValue();
+  }
+
   public void teleopInit() {
     stopServo();
   }
+
+  @Override
+  public void periodic() {}
 
   @Override
   public void simulationPeriodic() {
@@ -75,7 +111,4 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotorSimState.setRotorVelocity(
         m_hopperIntakeMotorSim.getAngularVelocityRPM() * HOPPERINTAKE.gearRatio / 60.0);
   }
-
-  @Override
-  public void periodic() {}
 }
