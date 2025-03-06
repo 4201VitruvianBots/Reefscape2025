@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.005921601334445,
-        "y": 2.8064532944120093
+        "x": 4.9359375,
+        "y": 2.8633096590909086
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.242686003860323,
-        "y": 2.3123343872730593
+        "x": 5.172701902525877,
+        "y": 2.3691907519519586
       },
       "isLocked": false,
       "linkedName": "2Pieceend1"
@@ -45,7 +45,7 @@
     "rotation": 115.0
   },
   "reversed": false,
-  "folder": "ThreePieceL",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 115.0
