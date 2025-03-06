@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.6126241721854304,
-        "y": 0.6980546357615901
+        "x": 1.5356249999999998,
+        "y": 0.6695596590909088
       },
       "prevControl": {
-        "x": 2.041597885287085,
-        "y": 1.5565874004194709
+        "x": 1.9645987131016545,
+        "y": 1.5280924237487894
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 50.31454566994464
   },
   "reversed": false,
-  "folder": "ThreePieceL",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 115.0

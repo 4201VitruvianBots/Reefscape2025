@@ -45,7 +45,7 @@ public class ThreePiece extends SequentialCommandGroup {
       var m_ppCommand4 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceLPt3");
       var m_ppCommand5 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceLPt4");
       var m_ppCommand6 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceLPt5");
-
+      var m_ppCommand7 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceLPt6");
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -62,6 +62,7 @@ public class ThreePiece extends SequentialCommandGroup {
           m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
           m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
           m_ppCommand6.andThen(() -> swerveDrive.setControl(stopRequest)),
+          m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
