@@ -268,17 +268,16 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-           
-            m_chooser.addOption(
-              "ThreePiece",
-              new ThreePiece(
-                  m_swerveDrive,
-                  m_fieldSim,
-                  m_elevator,
-                  m_endEffectorPivot,
-                  m_endEffector,
-                  m_hopperIntake));
 
+    m_chooser.addOption(
+        "ThreePiece",
+        new ThreePiece(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {

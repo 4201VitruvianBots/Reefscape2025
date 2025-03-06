@@ -56,45 +56,43 @@ public class ThreePiece extends SequentialCommandGroup {
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
-        new ParallelCommandGroup(
-            m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
-            new ParallelCommandGroup(
-                new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                    .until(elevator::atSetpoint),
-                new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                    .until(endEffectorPivot::atSetpoint))
-        ),
-        new ParallelCommandGroup(
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-          new WaitCommand(0.5)),
+          new ParallelCommandGroup(
+              m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
+                      .until(elevator::atSetpoint),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
+                      .until(endEffectorPivot::atSetpoint))),
+          new ParallelCommandGroup(
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
+              new WaitCommand(0.5)),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-        m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
-        new ParallelCommandGroup(
-          m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
+          m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
-            new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER).until(elevator::atSetpoint),
-          new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)
-          .until(endEffectorPivot::atSetpoint),
-          new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-          new ParallelCommandGroup( new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL)),
-          new WaitCommand(5))),
-          new  RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER)
+                      .until(elevator::atSetpoint),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)
+                      .until(endEffectorPivot::atSetpoint),
+                  new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                      new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL))),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           new ParallelCommandGroup(
-            m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
-            new ParallelCommandGroup(
-              new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                  .until(elevator::atSetpoint),
-              new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                  .until(endEffectorPivot::atSetpoint))
-          ),
-          m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
-          new ParallelCommandGroup(
-            new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER).until(elevator::atSetpoint),
-            new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)
-            .until(endEffectorPivot::atSetpoint),
-            new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
-            new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL)
-          ),
+              m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
+                      .until(elevator::atSetpoint),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
+                      .until(endEffectorPivot::atSetpoint))),
+                m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
+              new ParallelCommandGroup(
+                new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER)
+                    .until(elevator::atSetpoint),
+                new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)
+                    .until(endEffectorPivot::atSetpoint),
+                new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                new RunEndEffectorIntake(endEffector, ROLLER_SPEED.OUTTAKE_CORAL)),
           // m_ppCommand6.andThen(() -> swerveDrive.setControl(stopRequest)),
           // m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new InstantCommand(

@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "4PieceL",
+    "ThreePieceL",
     "OnePieceMiddle",
     "TwoPieceL",
     "TwoPieceR"
