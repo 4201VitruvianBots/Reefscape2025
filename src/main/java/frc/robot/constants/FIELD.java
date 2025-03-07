@@ -149,6 +149,10 @@ public class FIELD {
   //    }
   //  }
 
+  //
+  // Coral Branch constants
+  //
+
   /** Depth of the reef poles from the AprilTag */
   //  static Distance baseReefDepth = Inches.of(30.738);  // Mechanical Advantage's measurement
   //  static Distance baseReefDepth = Inches.of(24); // CAD Measurement to base
@@ -159,15 +163,15 @@ public class FIELD {
    */
   static final Distance baseReefTranslation = Inches.of(6.469);
 
-  static final Translation2d leftReefOffset =
+  static final Translation2d leftReefCoralOffset =
       new Translation2d(-baseReefDepth.in(Meters), baseReefTranslation.in(Meters));
-  static final Translation2d rightReefOffset =
+  static final Translation2d rightReefCoralOffset =
       new Translation2d(-baseReefDepth.in(Meters), -baseReefTranslation.in(Meters));
 
-  static final Translation2d baseLeftBranchTargetOffset =
+  static final Translation2d baseLeftCoralTargetOffset =
       new Translation2d(
           kWheelBase.plus(kBumperThickness).in(Meters), baseReefTranslation.in(Meters));
-  static final Translation2d baseRightBranchTargetOffset =
+  static final Translation2d baseRightCoralTargetOffset =
       new Translation2d(
           kWheelBase.plus(kBumperThickness).in(Meters), -baseReefTranslation.in(Meters));
 
@@ -175,10 +179,10 @@ public class FIELD {
   static Translation2d adjustableRightBranchOffset = new Translation2d();
 
   /**
-   * Location of all Reef Branches based on their position relative to their nearest AprilTag.
+   * Location of all coral targets based on their position relative to their nearest AprilTag.
    * Includes the ability to add a left/right offset in inches to account for field differences
    */
-  public enum REEF_BRANCHES {
+  public enum CORAL_TARGETS {
     RED_REEF_NEAR_LEFT_LEFT(6, true, Inches.of(0)),
     RED_REEF_NEAR_LEFT_RIGHT(6, false, Inches.of(0)),
     RED_REEF_NEAR_CENTER_LEFT(7, true, Inches.of(0)),
@@ -204,20 +208,22 @@ public class FIELD {
     BLUE_REEF_FAR_RIGHT_LEFT(22, true, Inches.of(0)),
     BLUE_REEF_FAR_RIGHT_RIGHT(22, false, Inches.of(0));
 
+    /** Pose2d of the coral */
     private final Pose2d pose;
 
-    // Pose2d we want the robot to go to relative to the branch's location
+    /** Pose2d we want the robot to go to relative to the branch's location */
     private final Pose2d targetPose;
 
-    private static final Map<Pose2d, Pose2d> branchPoseToTargetPose = new HashMap<>();
+    /** Map to convert the coral's Pose2d to the target Pose2d */
+    private static final Map<Pose2d, Pose2d> coralPoseToTargetPose = new HashMap<>();
 
-    REEF_BRANCHES(final int aprilTagId, boolean isLeft, Distance offset) {
+    CORAL_TARGETS(final int aprilTagId, boolean isLeft, Distance offset) {
       Pose2d branchPose = Pose2d.kZero;
       Pose2d targetPose = Pose2d.kZero;
 
-      var branchOffset = isLeft ? leftReefOffset : rightReefOffset;
+      var branchOffset = isLeft ? leftReefCoralOffset : rightReefCoralOffset;
       branchOffset.plus(new Translation2d(0, offset.in(Meters)));
-      var targetOffset = isLeft ? baseLeftBranchTargetOffset : baseRightBranchTargetOffset;
+      var targetOffset = isLeft ? baseLeftCoralTargetOffset : baseRightCoralTargetOffset;
       try {
         branchPose =
             APRIL_TAG
@@ -225,10 +231,9 @@ public class FIELD {
                 .getPose2d()
                 .plus(new Transform2d(branchOffset, Rotation2d.kZero));
       } catch (Exception e) {
-        System.out.println(
-            "[FIELD] Could not generate pose for reef at AprilTag "
-                + aprilTagId
-                + (isLeft ? " Left" : " Right"));
+        System.out.printf(
+            "[FIELD] Could not generate coral pose at AprilTag %d %s\n",
+            aprilTagId, (isLeft ? " Left" : " Right"));
       }
       try {
         targetPose =
@@ -238,39 +243,39 @@ public class FIELD {
                 .plus(new Transform2d(targetOffset, Rotation2d.kZero));
 
       } catch (Exception e) {
-        System.out.println(
-            "[FIELD] Could not generate targetPose for reef at AprilTag "
-                + aprilTagId
-                + (isLeft ? " Left" : " Right"));
+        System.out.printf(
+            "[FIELD] Could not generate coral targetPose at AprilTag %d %s\n",
+            aprilTagId, (isLeft ? " Left" : " Right"));
       }
 
-      pose = branchPose;
+      this.pose = branchPose;
       this.targetPose = targetPose;
     }
 
     static {
-      for (REEF_BRANCHES b : REEF_BRANCHES.values()) {
-        branchPoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());
+      for (CORAL_TARGETS b : CORAL_TARGETS.values()) {
+        coralPoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());
       }
     }
 
-    /** Return the selected branch's position as a Pose2d */
+    /** Return the selected coral's position as a Pose2d */
     public Pose2d getPose2d() {
       return pose;
     }
 
+    /** Return the selected coral position's target as a Pose2d */
     public Pose2d getTargetPose2d() {
       return targetPose;
     }
 
-    /** 2d array of all branches */
+    /** 2d array of all coral positions */
     public static Pose2d[] getAllPose2d() {
-      return Arrays.stream(REEF_BRANCHES.values())
-          .map(REEF_BRANCHES::getPose2d)
+      return Arrays.stream(CORAL_TARGETS.values())
+          .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
     }
 
-    /** 2d array of branches by Alliance color */
+    /** 2d array of coral positions by Alliance color */
     public static Pose2d[] getAlliancePose2d(DriverStation.Alliance alliance) {
       if (alliance == DriverStation.Alliance.Red) {
         return Arrays.stream(getAllPose2d()).limit(12).toArray(Pose2d[]::new);
@@ -279,14 +284,14 @@ public class FIELD {
       }
     }
 
-    /** 2d array of all branch targets */
+    /** 2d array of all coral targets */
     public static Pose2d[] getAllTargetPose2d() {
-      return Arrays.stream(REEF_BRANCHES.values())
-          .map(REEF_BRANCHES::getTargetPose2d)
+      return Arrays.stream(CORAL_TARGETS.values())
+          .map(CORAL_TARGETS::getTargetPose2d)
           .toArray(Pose2d[]::new);
     }
 
-    /** 2d array of branch targets by Alliance color */
+    /** 2d array of coral targets by Alliance color */
     public static Pose2d[] getAllianceTargetPose2d(DriverStation.Alliance alliance) {
       if (alliance == DriverStation.Alliance.Red) {
         return Arrays.stream(getAllTargetPose2d()).limit(12).toArray(Pose2d[]::new);
@@ -295,31 +300,174 @@ public class FIELD {
       }
     }
 
-    public static Pose2d getBranchPoseToTargetPose(Pose2d branchPose) {
-      if (!branchPoseToTargetPose.containsKey(branchPose)) {
-        DriverStation.reportWarning("[FIELD] Trying to use a non-existent branch pose!", false);
+    /** Convert the nearest coral position to the target position */
+    public static Pose2d getCoralPoseToTargetPose(Pose2d branchPose) {
+      if (!coralPoseToTargetPose.containsKey(branchPose)) {
+        DriverStation.reportWarning("[FIELD] Trying to use a non-existent coral pose!", false);
         return Pose2d.kZero;
       } else {
-        return branchPoseToTargetPose.get(branchPose);
+        return coralPoseToTargetPose.get(branchPose);
       }
     }
   }
 
   /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] RED_BRANCHES =
-      REEF_BRANCHES.getAlliancePose2d(DriverStation.Alliance.Red);
+  public static final Pose2d[] RED_CORAL_BRANCHES =
+      CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red);
 
   /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] BLUE_BRANCHES =
-      REEF_BRANCHES.getAlliancePose2d(DriverStation.Alliance.Blue);
+  public static final Pose2d[] BLUE_CORAL_BRANCHES =
+      CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue);
 
   /** Static array of all Red Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] RED_BRANCH_TARGETS =
-      REEF_BRANCHES.getAllianceTargetPose2d(DriverStation.Alliance.Red);
+  public static final Pose2d[] RED_CORAL_TARGETS =
+      CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red);
 
   /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] BLUE_BRANCH_TARGETS =
-      REEF_BRANCHES.getAllianceTargetPose2d(DriverStation.Alliance.Blue);
+  public static final Pose2d[] BLUE_CORAL_TARGETS =
+      CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue);
+
+  //
+  // Algae Branch constants
+  //
+
+  static final Translation2d baseAlgaeTargetOffset =
+      new Translation2d(kWheelBase.plus(kBumperThickness).in(Meters), 0);
+
+  public enum TARGET_TYPE {
+    REEF,
+    PROCESSOR,
+    BARGE,
+    STAGED
+  }
+
+  public enum ALGAE_TARGETS {
+    RED_REEF_NEAR_LEFT(6, TARGET_TYPE.REEF, Inches.of(0)),
+    RED_REEF_NEAR_CENTER(7, TARGET_TYPE.REEF, Inches.of(0)),
+    RED_REEF_NEAR_RIGHT(8, TARGET_TYPE.REEF, Inches.of(0)),
+    RED_REEF_FAR_RIGHT(9, TARGET_TYPE.REEF, Inches.of(0)),
+    RED_REEF_FAR_CENTER(10, TARGET_TYPE.REEF, Inches.of(0)),
+    RED_REEF_FAR_LEFT(11, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_NEAR_RIGHT(17, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_NEAR_CENTER(18, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_NEAR_LEFT(19, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_FAR_LEFT(20, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_FAR_CENTER(21, TARGET_TYPE.REEF, Inches.of(0)),
+    BLUE_REEF_FAR_RIGHT(22, TARGET_TYPE.REEF, Inches.of(0));
+
+    /** Pose2d of the algae */
+    private final Pose2d pose;
+
+    /** Pose2d we want the robot to go to relative to the algae location */
+    private final Pose2d targetPose;
+
+    /** Map to convert the algae Pose2d to the target Pose2d */
+    private static final Map<Pose2d, Pose2d> algaePoseToTargetPose = new HashMap<>();
+
+    ALGAE_TARGETS(final int aprilTagId, TARGET_TYPE type, Distance offset) {
+      Pose2d tagPose = Pose2d.kZero;
+
+      try {
+        tagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
+      } catch (Exception e) {
+        System.out.printf("[FIELD] Could not generate algae pose at AprilTag %d\n", aprilTagId);
+      }
+
+      //      Translation2d targetOffset = Translation2d.kZero;
+      //      switch (type) {
+      //        case REEF -> targetOffset = baseReefAlgaeTargetOffset;
+      //        case PROCESSOR -> targetOffset = Translation2d.kZero;
+      //        case BARGE -> targetOffset = Translation2d.kZero;
+      //        case STAGED -> targetOffset = Translation2d.kZero;
+      //      }
+
+      Pose2d targetPose =
+          tagPose.plus(
+              new Transform2d(
+                  baseAlgaeTargetOffset.plus(new Translation2d(offset.in(Meters), 0)),
+                  Rotation2d.kZero));
+
+      this.pose = tagPose;
+      this.targetPose = targetPose;
+    }
+
+    static {
+      for (ALGAE_TARGETS b : ALGAE_TARGETS.values()) {
+        algaePoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());
+      }
+    }
+
+    /** Return the selected algae position as a Pose2d */
+    public Pose2d getPose2d() {
+      return pose;
+    }
+
+    public Pose2d getTargetPose2d() {
+      return targetPose;
+    }
+
+    /** 2d array of all algae */
+    public static Pose2d[] getAllPose2d() {
+      return Arrays.stream(ALGAE_TARGETS.values())
+          .map(ALGAE_TARGETS::getPose2d)
+          .toArray(Pose2d[]::new);
+    }
+
+    /** 2d array of algae by Alliance color */
+    public static Pose2d[] getAlliancePose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllPose2d()).limit(6).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllPose2d()).skip(6).limit(6).toArray(Pose2d[]::new);
+      }
+    }
+
+    /** 2d array of all algae targets */
+    public static Pose2d[] getAllTargetPose2d() {
+      return Arrays.stream(ALGAE_TARGETS.values())
+          .map(ALGAE_TARGETS::getTargetPose2d)
+          .toArray(Pose2d[]::new);
+    }
+
+    /** 2d array of algae targets by Alliance color */
+    public static Pose2d[] getAllianceTargetPose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllTargetPose2d()).limit(6).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllTargetPose2d()).skip(6).limit(6).toArray(Pose2d[]::new);
+      }
+    }
+
+    /** Convert the nearest algae position to the target position */
+    public static Pose2d getAlgaePoseToTargetPose(Pose2d branchPose) {
+      if (!algaePoseToTargetPose.containsKey(branchPose)) {
+        DriverStation.reportWarning("[FIELD] Trying to use a non-existent algae pose!", false);
+        return Pose2d.kZero;
+      } else {
+        return algaePoseToTargetPose.get(branchPose);
+      }
+    }
+  }
+
+  /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
+  public static final Pose2d[] RED_ALGAE_BRANCHES =
+      ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red);
+
+  /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
+  public static final Pose2d[] BLUE_ALGAE_BRANCHES =
+      ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue);
+
+  /** Static array of all Red Alliance Reef Branch targets to avoid constantly generating it */
+  public static final Pose2d[] RED_ALGAE_TARGETS =
+      ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red);
+
+  /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
+  public static final Pose2d[] BLUE_ALGAE_TARGETS =
+      ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue);
+
+  //
+  // Zone Constants
+  //
 
   /** Position of each reef center */
   public static final Translation2d redReefCenter =

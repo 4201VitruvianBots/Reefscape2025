@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -94,8 +95,8 @@ public class RobotContainer {
   private HopperIntake m_hopperIntake;
 
   @NotLogged private final Robot2d m_robot2d = new Robot2d();
-  private Pose2d nearestBranchPose = Pose2d.kZero;
-  private final Pose2d[] robotToBranch = {Pose2d.kZero, Pose2d.kZero};
+  private Pose2d neaerestPose = Pose2d.kZero;
+  private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
 
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
@@ -126,6 +127,8 @@ public class RobotContainer {
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
+
+  @NotLogged boolean isInit = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -519,7 +522,7 @@ public class RobotContainer {
           .whileTrue(
               Commands.startEnd(
                   () -> m_hopperIntake.moveServo(1.0),
-                  () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
+                  () -> m_hopperIntake.stopServo())); // move hopper out of the way
     }
   }
 
@@ -532,6 +535,30 @@ public class RobotContainer {
     return m_chooser.getSelected();
   }
 
+  public void robotPeriodic() {
+    // m_questNav.periodic();
+
+    // TODO: Implement code to drive to this Pose2d
+    robotToTarget[0] = m_swerveDrive.getState().Pose;
+    if(m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE) {
+      if (Controls.isBlueAlliance()) {
+        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_ALGAE_BRANCHES));
+      } else {
+        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_ALGAE_BRANCHES));
+      }
+      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(neaerestPose);
+    } else {
+      if (Controls.isBlueAlliance()) {
+        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_CORAL_BRANCHES));
+
+      } else {
+        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_CORAL_BRANCHES));
+      }
+      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(neaerestPose);
+    }
+    m_fieldSim.addPoses("LineToNearestTarget", robotToTarget);
+  }
+
   public void disabledInit() {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
@@ -541,16 +568,39 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    if (Controls.isRedAlliance()) {
-      m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
-      m_fieldSim.initializePoses("Red Branch Targets", FIELD.RED_BRANCH_TARGETS);
-      m_fieldSim.initializePoses("Blue Branches", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Blue Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+    if (RobotBase.isReal()) {
+      if (Controls.isRedAlliance()) {
+        m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+        m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+        m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+        m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+        m_fieldSim.initializePoses("Blue Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Blue Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses("Blue Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Blue Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+      } else {
+        m_fieldSim.initializePoses("Red Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Red Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses("Red Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Red Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+        m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+        m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+        m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
+      }
     } else {
-      m_fieldSim.initializePoses("Red Branches", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Red Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
-      m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
+      m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+      m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+      m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+      m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+      m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+      m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+      m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+      m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
     }
   }
 
@@ -591,47 +641,11 @@ public class RobotContainer {
     m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
   }
 
-  boolean isInit = false;
-
   public void simulationPeriodic() {
     if (!isInit) {
       simulationInit();
       isInit = true;
     }
     m_robot2d.updateRobot2d();
-    DriverStation.getAlliance()
-        .ifPresent(
-            a -> {
-              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
-              switch (a) {
-                case Red ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-                case Blue ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
-              }
-              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDrive.setAngleToTarget(
-                  m_swerveDrive
-                      .getState()
-                      .Pose
-                      .getTranslation()
-                      .minus(robotToBranch[1].getTranslation())
-                      .getAngle()
-                      .minus(Rotation2d.k180deg));
-            });
-  }
-
-  public void robotPeriodic() {
-    // m_questNav.periodic();
-
-    // TODO: Implement code to drive to this Pose2d
-    robotToBranch[0] = m_swerveDrive.getState().Pose;
-    if (Controls.isBlueAlliance()) {
-      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-    } else {
-      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
-    }
-    robotToBranch[1] = FIELD.REEF_BRANCHES.getBranchPoseToTargetPose(nearestBranchPose);
-    m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
   }
 }

@@ -330,9 +330,11 @@ public class Vision extends SubsystemBase {
               Pose2d[] robotToBranch = {m_swerveDriveTrain.getState().Pose, new Pose2d()};
               switch (a) {
                 case Red ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
+                    robotToBranch[1] =
+                        robotToBranch[0].nearest(Arrays.asList(FIELD.RED_CORAL_BRANCHES));
                 case Blue ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+                    robotToBranch[1] =
+                        robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_CORAL_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
               m_swerveDriveTrain.setAngleToTarget(
