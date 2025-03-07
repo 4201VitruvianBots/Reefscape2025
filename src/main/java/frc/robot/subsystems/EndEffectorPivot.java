@@ -117,7 +117,7 @@ public class EndEffectorPivot extends SubsystemBase {
     }
     CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
-//    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
+    //    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
 
     setName("EndEffectorPivot");
@@ -276,6 +276,7 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Update the pivotEncoder simState
     m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));
-    m_pivotEncoderSimState.setVelocity(RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
+    m_pivotEncoderSimState.setVelocity(
+        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
   }
 }
