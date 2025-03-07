@@ -161,7 +161,7 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
   public Angle getRotations() {
     m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    return m_positionSignal.refresh().getValue();
   }
 
   public LinearVelocity getVelocity() {
@@ -188,19 +188,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public Voltage getMotorVoltage() {
-    return m_voltageSignal.getValue();
+    return m_voltageSignal.refresh().getValue();
   }
 
   public Current getSupplyCurrent() {
-    return m_supplyCurrentSignal.getValue();
+    return m_supplyCurrentSignal.refresh().getValue();
   }
 
   public Current getStatorCurrent() {
-    return m_statorCurrentSignal.getValue();
+    return m_statorCurrentSignal.refresh().getValue();
   }
 
   public Current getTorqueCurrent() {
-    return m_torqueCurrentSignal.getValue();
+    return m_torqueCurrentSignal.refresh().getValue();
   }
 
   @Logged(name = "Control Request", importance = Logged.Importance.DEBUG)

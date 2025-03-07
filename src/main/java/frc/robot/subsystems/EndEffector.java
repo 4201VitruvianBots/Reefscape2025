@@ -76,23 +76,23 @@ public class EndEffector extends SubsystemBase {
   }
 
   public AngularVelocity getVelocity() {
-    return m_velocitySignal.getValue();
+    return m_velocitySignal.refresh().getValue();
   }
 
   public Voltage getMotorVoltage() {
-    return m_voltageSignal.getValue();
+    return m_voltageSignal.refresh().getValue();
   }
 
   public Current getSupplyCurrent() {
-    return m_supplyCurrentSignal.getValue();
+    return m_supplyCurrentSignal.refresh().getValue();
   }
 
   public Current getStatorCurrent() {
-    return m_statorCurrentSignal.getValue();
+    return m_statorCurrentSignal.refresh().getValue();
   }
 
   public Current getTorqueCurrent() {
-    return m_torqueCurrentSignal.getValue();
+    return m_torqueCurrentSignal.refresh().getValue();
   }
 
   @Override
