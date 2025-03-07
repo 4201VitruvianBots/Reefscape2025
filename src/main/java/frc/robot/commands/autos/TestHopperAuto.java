@@ -61,10 +61,9 @@ public class TestHopperAuto extends SequentialCommandGroup {
               .until(endEffector::hasCoral),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING)),
-          new InstantCommand(
-                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)),
-                  swerveDrive)
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO),
+              new InstantCommand(
+                  () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero))))
               .withTimeout(0.1));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for DriveForward", e.getStackTrace());
