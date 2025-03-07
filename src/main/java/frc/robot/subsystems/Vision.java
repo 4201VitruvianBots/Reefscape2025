@@ -580,16 +580,16 @@ public class Vision extends SubsystemBase {
 
     m_limelightAPositionPub.set(
         new double[] {
-          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getX(),
-          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getY(),
-          VISION.LOCALIZER_CAMERA_POSITION[0].getTranslation().getZ(),
+          VISION.limelightAPosition.getTranslation().getX(),
+          VISION.limelightAPosition.getTranslation().getY(),
+          VISION.limelightAPosition.getTranslation().getZ(),
         });
 
     m_limelightBPositionPub.set(
         new double[] {
-          VISION.LOCALIZER_CAMERA_POSITION[1].getTranslation().getX(),
-          VISION.LOCALIZER_CAMERA_POSITION[1].getTranslation().getY(),
-          VISION.LOCALIZER_CAMERA_POSITION[1].getTranslation().getZ(),
+          VISION.limelightBPosition.getTranslation().getX(),
+          VISION.limelightBPosition.getTranslation().getY(),
+          VISION.limelightBPosition.getTranslation().getZ(),
         });
 
     // This method will be called once per scheduler run
