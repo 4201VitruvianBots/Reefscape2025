@@ -21,7 +21,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -75,6 +74,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   private boolean m_hasAppliedOperatorPerspective = false;
 
   private TrajectoryUtils m_trajectoryUtils;
+
+  private final PIDController m_pidController = new PIDController(10.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = Rotation2d.kZero;
+  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -139,12 +142,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
-
-  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
-  private Rotation2d m_targetAngle = new Rotation2d();
-  private Rotation2d m_angleToTarget = new Rotation2d();
-  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
-  private SwerveDriveKinematics m_kinematics;
 
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -303,10 +300,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
-  public ChassisSpeeds getChassisSpeed() {
-    return m_kinematics.toChassisSpeeds(getState().ModuleStates);
-  }
-
   public TrajectoryUtils getTrajectoryUtils() {
     return m_trajectoryUtils;
   }
@@ -348,8 +341,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
-  public void setAngleToTarget(Rotation2d angle) {
-    m_angleToTarget = angle;
+  public void setTargetAngle(Rotation2d angle) {
+    m_targetAngle = angle;
   }
 
   public void setTrackingState(VISION.TRACKING_STATE state) {
@@ -359,29 +352,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
+  public boolean isTrackingState() {
+    return m_trackingState == TRACKING_STATE.BRANCH;
+  }
+
   public double calculateRotationToTarget() {
     return m_pidController.calculate(
         getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
-  }
-
-  private void updateTargetAngle() {
-    switch (m_trackingState) {
-      case BRANCH:
-        m_targetAngle = m_angleToTarget;
-        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
-        break;
-      default:
-      case NONE:
-        break;
-    }
-  }
-
-  public boolean isTrackingState() {
-    if (m_trackingState == TRACKING_STATE.BRANCH) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   /**
@@ -408,7 +385,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   @Override
   public void periodic() {
-    updateTargetAngle();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

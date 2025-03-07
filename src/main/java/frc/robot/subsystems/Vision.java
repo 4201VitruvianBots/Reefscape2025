@@ -337,7 +337,7 @@ public class Vision extends SubsystemBase {
                         robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_CORAL_BRANCHES));
               }
               m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDriveTrain.setAngleToTarget(
+              m_swerveDriveTrain.setTargetAngle(
                   m_swerveDriveTrain
                       .getState()
                       .Pose

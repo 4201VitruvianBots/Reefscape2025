@@ -95,7 +95,7 @@ public class RobotContainer {
   private HopperIntake m_hopperIntake;
 
   @NotLogged private final Robot2d m_robot2d = new Robot2d();
-  private Pose2d neaerestPose = Pose2d.kZero;
+  private Pose2d nearestPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
 
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
@@ -540,21 +540,20 @@ public class RobotContainer {
 
     // TODO: Implement code to drive to this Pose2d
     robotToTarget[0] = m_swerveDrive.getState().Pose;
-    if(m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE) {
+    if (m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE) {
       if (Controls.isBlueAlliance()) {
-        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_ALGAE_BRANCHES));
+        nearestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_ALGAE_BRANCHES));
       } else {
-        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_ALGAE_BRANCHES));
+        nearestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_ALGAE_BRANCHES));
       }
-      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(neaerestPose);
+      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
     } else {
       if (Controls.isBlueAlliance()) {
-        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_CORAL_BRANCHES));
-
+        nearestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.BLUE_CORAL_BRANCHES));
       } else {
-        neaerestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_CORAL_BRANCHES));
+        nearestPose = robotToTarget[0].nearest(Arrays.asList(FIELD.RED_CORAL_BRANCHES));
       }
-      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(neaerestPose);
+      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
     }
     m_fieldSim.addPoses("LineToNearestTarget", robotToTarget);
   }
@@ -563,8 +562,6 @@ public class RobotContainer {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
     }
-
-    // A bit messy, but it works
   }
 
   public void disabledPeriodic() {
@@ -635,16 +632,21 @@ public class RobotContainer {
   }
 
   public void simulationInit() {
-    // m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
-    m_fieldSim.initializePoses("AprilTags", FIELD.APRIL_TAG.getAllAprilTagPoses());
-    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
-    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+    try {
+      // This crashes code if used in Robot::simulationInit() due to race condition
+      // m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+      m_fieldSim.initializePoses("AprilTags", FIELD.APRIL_TAG.getAllAprilTagPoses());
+      m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+      m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+      isInit = true;
+    } catch (Exception e) {
+      DriverStation.reportWarning("[RobotContainer] Could not run simulationInit()", false);
+    }
   }
 
   public void simulationPeriodic() {
     if (!isInit) {
       simulationInit();
-      isInit = true;
     }
     m_robot2d.updateRobot2d();
   }
