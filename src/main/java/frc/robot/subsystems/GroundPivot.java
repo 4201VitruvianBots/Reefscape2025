@@ -156,23 +156,23 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public Angle getAngle() {
-    return m_positionSignal.getValue();
+    return m_positionSignal.refresh().getValue();
   }
 
   public AngularVelocity getRotationalVelocity() {
-    return m_velocitySignal.getValue();
+    return m_velocitySignal.refresh().getValue();
   }
 
   public Angle getCANcoderAngle() {
-    return m_pivotEncoder.getAbsolutePosition().getValue();
+    return m_pivotEncoder.getAbsolutePosition().refresh().getValue();
   }
 
   public Voltage getInputVoltage() {
-    return m_supplyVoltageSignal.getValue();
+    return m_supplyVoltageSignal.refresh().getValue();
   }
 
   public Voltage getMotorVoltage() {
-    return m_motorVoltageSignal.getValue();
+    return m_motorVoltageSignal.refresh().getValue();
   }
 
   public void setNeutralMode(NeutralModeValue mode) {

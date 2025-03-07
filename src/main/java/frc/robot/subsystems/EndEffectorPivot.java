@@ -117,7 +117,7 @@ public class EndEffectorPivot extends SubsystemBase {
     }
     CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
-    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
+//    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
 
     setName("EndEffectorPivot");
@@ -162,12 +162,18 @@ public class EndEffectorPivot extends SubsystemBase {
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
-    return m_canCoderAbsolutePositionSignal.getValue();
+    m_canCoderAbsolutePositionSignal.refresh();
+    return m_canCoderAbsolutePositionSignal.refresh().getValue();
+  }
+
+  @Logged(name = "CANcoder Angle Degrees", importance = Logged.Importance.INFO)
+  public double getCANcoderAngleDegrees() {
+    return getCANcoderAngle().in(Degrees);
   }
 
   public Angle getAngle() {
     m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    return m_positionSignal.refresh().getValue();
   }
 
   @Logged(name = "Current Angle Degrees", importance = Logged.Importance.INFO)
@@ -176,7 +182,7 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public AngularVelocity getVelocity() {
-    return m_velocitySignal.getValue();
+    return m_velocitySignal.refresh().getValue();
   }
 
   @Logged(name = "Velocity Degrees-s", importance = Logged.Importance.INFO)
@@ -185,7 +191,7 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public AngularAcceleration getAcceleration() {
-    return m_accelSignal.getValue();
+    return m_accelSignal.refresh().getValue();
   }
 
   @Logged(name = "Acceleration Degrees-s^2", importance = Logged.Importance.INFO)
@@ -194,19 +200,19 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public Voltage getMotorVoltage() {
-    return m_voltageSignal.getValue();
+    return m_voltageSignal.refresh().getValue();
   }
 
   public Current getSupplyCurrent() {
-    return m_supplyCurrentSignal.getValue();
+    return m_supplyCurrentSignal.refresh().getValue();
   }
 
   public Current getStatorCurrent() {
-    return m_statorCurrentSignal.getValue();
+    return m_statorCurrentSignal.refresh().getValue();
   }
 
   public Current getTorqueCurrent() {
-    return m_torqueCurrentSignal.getValue();
+    return m_torqueCurrentSignal.refresh().getValue();
   }
 
   public void resetMotionMagicState() {
@@ -257,6 +263,7 @@ public class EndEffectorPivot extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_pivotEncoderSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     m_endEffectorSim.setInputVoltage(m_pivotMotorSimState.getMotorVoltage());
 
     m_endEffectorSim.update(0.020);
@@ -269,7 +276,6 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Update the pivotEncoder simState
     m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));
-    m_pivotEncoderSimState.setVelocity(
-        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
+    m_pivotEncoderSimState.setVelocity(RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()));
   }
 }
