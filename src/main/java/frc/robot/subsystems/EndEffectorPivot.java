@@ -92,15 +92,13 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.Slot0.kP = PIVOT.kPivotP;
     motorConfig.Slot0.kI = PIVOT.kPivotI;
     motorConfig.Slot0.kD = PIVOT.kPivotD;
-    motorConfig.Slot1.kP = PIVOT.kPivotP;
-    motorConfig.Slot1.kI = PIVOT.kPivotI;
-    motorConfig.Slot1.kD = PIVOT.kPivotD;
-    motorConfig.Slot1.kG = PIVOT.kGPositive;
+    motorConfig.Slot0.kG = PIVOT.kGPositive;
     motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kPivotMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kPivotMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = m_neutralMode;
-    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+//    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
       motorConfig.Feedback.SensorToMechanismRatio = PIVOT.pivotGearRatio;
@@ -168,6 +166,7 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public Angle getAngle() {
+    m_positionSignal.refresh();
     return m_positionSignal.getValue();
   }
 
@@ -180,7 +179,7 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_velocitySignal.getValue();
   }
 
-  @Logged(name = "Velocity Degrees/s", importance = Logged.Importance.INFO)
+  @Logged(name = "Velocity Degrees-s", importance = Logged.Importance.INFO)
   public double getVelocityDegrees() {
     return getVelocity().in(DegreesPerSecond);
   }
@@ -189,7 +188,7 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_accelSignal.getValue();
   }
 
-  @Logged(name = "Acceleration Degrees/s^2", importance = Logged.Importance.INFO)
+  @Logged(name = "Acceleration Degrees-s^2", importance = Logged.Importance.INFO)
   public double getAccelerationDegrees() {
     return getAcceleration().in(DegreesPerSecondPerSecond);
   }
@@ -258,7 +257,6 @@ public class EndEffectorPivot extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_pivotMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
     m_endEffectorSim.setInputVoltage(m_pivotMotorSimState.getMotorVoltage());
 
     m_endEffectorSim.update(0.020);

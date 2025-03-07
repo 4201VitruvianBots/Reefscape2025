@@ -170,7 +170,7 @@ public class Elevator extends SubsystemBase {
             * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  @Logged(name = "Velocity Inches/s", importance = Logged.Importance.INFO)
+  @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)
   public double getVelocityInches() {
     return getVelocity().in(InchesPerSecond);
   }
@@ -182,7 +182,7 @@ public class Elevator extends SubsystemBase {
             * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  @Logged(name = "Acceleration Inches/s^2", importance = Logged.Importance.INFO)
+  @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
   public double getAccelerationInches() {
     return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
   }
