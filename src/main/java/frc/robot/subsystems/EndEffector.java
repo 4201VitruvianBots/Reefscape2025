@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +23,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
+
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
@@ -76,7 +80,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   public AngularVelocity getVelocity() {
-    return m_velocitySignal.refresh().getValue();
+    if (RobotBase.isSimulation()) {
+        return RotationsPerSecond.of(m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+    } else {
+        return m_velocitySignal.refresh().getValue();
+    }
   }
 
   public Voltage getMotorVoltage() {
