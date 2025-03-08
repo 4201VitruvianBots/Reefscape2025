@@ -119,24 +119,20 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // limelight a
+    LimelightHelpers.SetIMUMode("limelight-a", 1);
     LimelightHelpers.SetRobotOrientation("limelight-a", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate limelightMeasurementCam1 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(limelightMeasurementCam1.timestampSeconds == 0) {
-      DriverStation.reportWarning("LimelightA not running pose estimation", true);
+      // DriverStation.reportWarning("LimelightA not running pose estimation", true);
     }
     else {
-      DriverStation.reportWarning("LimelightA got vison pose", false);
+      // DriverStation.reportWarning("LimelightA got vision pose", false);
       estPoseLLA.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
     }
   
-    // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) > 720)
-    // {
-    //   doRejectUpdateLLA = true;
-    // }
     if(limelightMeasurementCam1.tagCount == 0)
     {
       doRejectUpdateLLA = true;
@@ -153,31 +149,27 @@ public class Vision extends SubsystemBase {
     }
 
     // limelight b
+    LimelightHelpers.SetIMUMode("limelight-b", 1);
     LimelightHelpers.SetRobotOrientation("limelight-b", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(limelightMeasurementCam2.timestampSeconds == 0) {
-      DriverStation.reportWarning("LimelightB not running pose estimation", true);
+      // DriverStation.reportWarning("LimelightB not running pose estimation", true);
     }
     else {
-      DriverStation.reportWarning("LimelightB got vison pose", false);
+      // DriverStation.reportWarning("LimelightB got vision pose", false);
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
     }
 
-    // // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720)
-    // {
-    //   doRejectUpdateLLB = true;
-    // }
     if(limelightMeasurementCam2.tagCount == 0)
     {
       doRejectUpdateLLB = true;
     }
     if(limelightMeasurementCam2.tagCount >= 1)
     {
-      doRejectUpdateLLA = false;
+      doRejectUpdateLLB = false;
     }
     if(!doRejectUpdateLLB) {
       m_swerveDriveTrain.addVisionMeasurement(
