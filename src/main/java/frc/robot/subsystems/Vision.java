@@ -1,14 +1,10 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,12 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.ROBOT;
 import frc.robot.constants.VISION;
 import java.util.Arrays;
 // import frc.robot.simulation.FieldSim;
 import org.photonvision.PhotonCamera;
-import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.VisionSystemSim;
 import org.team4201.codex.simulation.FieldSim;
 
@@ -45,8 +39,7 @@ public class Vision extends SubsystemBase {
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
   private final StructPublisher<Pose2d> estPoseLLA =
       table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
-  private final DoublePublisher estTimeStamp =
-      table.getDoubleTopic("estTimeStamp").publish();
+  private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
 
@@ -120,62 +113,68 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     // limelight a
     LimelightHelpers.SetIMUMode("limelight-a", 1);
-    LimelightHelpers.SetRobotOrientation("limelight-a", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam1 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
+    LimelightHelpers.SetRobotOrientation(
+        "limelight-a",
+        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+        0,
+        0,
+        0,
+        0,
+        0);
+    LimelightHelpers.PoseEstimate limelightMeasurementCam1 =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-    
-    if(limelightMeasurementCam1.timestampSeconds == 0) {
+
+    if (limelightMeasurementCam1.timestampSeconds == 0) {
       // DriverStation.reportWarning("LimelightA not running pose estimation", true);
-    }
-    else {
+    } else {
       // DriverStation.reportWarning("LimelightA got vision pose", false);
       estPoseLLA.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
     }
-  
-    if(limelightMeasurementCam1.tagCount == 0)
-    {
+
+    if (limelightMeasurementCam1.tagCount == 0) {
       doRejectUpdateLLA = true;
     }
-    if(limelightMeasurementCam1.tagCount >= 1)
-    {
+    if (limelightMeasurementCam1.tagCount >= 1) {
       doRejectUpdateLLA = false;
     }
-    if(!doRejectUpdateLLA) {
+    if (!doRejectUpdateLLA) {
       m_swerveDriveTrain.addVisionMeasurement(
-        limelightMeasurementCam1.pose,
-       limelightMeasurementCam1.timestampSeconds
-      );
+          limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
     }
 
     // limelight b
     LimelightHelpers.SetIMUMode("limelight-b", 1);
-    LimelightHelpers.SetRobotOrientation("limelight-b", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+    LimelightHelpers.SetRobotOrientation(
+        "limelight-b",
+        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+        0,
+        0,
+        0,
+        0,
+        0);
+    LimelightHelpers.PoseEstimate limelightMeasurementCam2 =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-    
-    if(limelightMeasurementCam2.timestampSeconds == 0) {
+
+    if (limelightMeasurementCam2.timestampSeconds == 0) {
       // DriverStation.reportWarning("LimelightB not running pose estimation", true);
-    }
-    else {
+    } else {
       // DriverStation.reportWarning("LimelightB got vision pose", false);
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
     }
 
-    if(limelightMeasurementCam2.tagCount == 0)
-    {
+    if (limelightMeasurementCam2.tagCount == 0) {
       doRejectUpdateLLB = true;
     }
-    if(limelightMeasurementCam2.tagCount >= 1)
-    {
+    if (limelightMeasurementCam2.tagCount >= 1) {
       doRejectUpdateLLB = false;
     }
-    if(!doRejectUpdateLLB) {
+    if (!doRejectUpdateLLB) {
       m_swerveDriveTrain.addVisionMeasurement(
-        limelightMeasurementCam2.pose,
-        limelightMeasurementCam2.timestampSeconds
-      );
+          limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
     }
     updateSmartDashboard();
   }
