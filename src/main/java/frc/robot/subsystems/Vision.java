@@ -125,10 +125,9 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
-    if(limelightMeasurementCam1 == null) {
+    if (limelightMeasurementCam1 == null) {
       DriverStation.reportWarning("LimelightA is not connected", true);
-    }
-    else {
+    } else {
       estPoseLLA.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
 
