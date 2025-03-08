@@ -41,6 +41,7 @@ import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.CtreUtils;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
+import org.team4201.codex.utils.TrajectoryUtils.TrajectoryUtilsConfig;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -164,7 +165,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
 
     try {
-      m_trajectoryUtils = new TrajectoryUtils(this);
+      m_trajectoryUtils = new TrajectoryUtils(this, 
+        new TrajectoryUtilsConfig().withResetPoseOnAuto(false));
     } catch (Exception ex) {
       DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
     }
