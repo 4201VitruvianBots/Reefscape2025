@@ -22,13 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -46,29 +40,18 @@ public class Elevator extends SubsystemBase {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
 
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          ELEVATOR.gearbox,
-          ELEVATOR.gearRatio,
-          ELEVATOR.kCarriageMass.in(Kilograms),
-          ELEVATOR.kElevatorDrumDiameter / 2,
-          ELEVATOR.lowerLimitMeters,
-          ELEVATOR.upperLimitMeters,
-          true,
-          0,
-          0.0,
-          0.0);
-
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
-
-  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
-
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
-
   private final StatusSignal<AngularAcceleration> m_accelSignal =
       elevatorMotors[0].getAcceleration().clone();
+  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      elevatorMotors[0].getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_statorCurrentSignal =
+      elevatorMotors[0].getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      elevatorMotors[0].getTorqueCurrent().clone();
 
   private Distance m_desiredPosition = Inches.of(0);
 
@@ -85,7 +68,6 @@ public class Elevator extends SubsystemBase {
 
   private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
 
-  private final TalonFXSimState m_motorSimState;
   private DoubleSubscriber m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
@@ -95,6 +77,21 @@ public class Elevator extends SubsystemBase {
       m_accelerationSubscriber;
   private final NetworkTable elevatorTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
+
+  // Simulation classes help us simulate what's going on, including gravity.
+  private final ElevatorSim m_elevatorSim =
+      new ElevatorSim(
+          ELEVATOR.gearbox,
+          ELEVATOR.gearRatio,
+          ELEVATOR.kCarriageMass.in(Kilograms),
+          ELEVATOR.kElevatorDrumDiameter / 2,
+          ELEVATOR.lowerLimitMeters,
+          ELEVATOR.upperLimitMeters,
+          true,
+          0,
+          0.0,
+          0.0);
+  private final TalonFXSimState m_motorSimState;
 
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -164,16 +161,16 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
   public Angle getRotations() {
     m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+    return m_positionSignal.refresh().getValue();
   }
 
   public LinearVelocity getVelocity() {
-    m_velocitySignal.refresh();
     return MetersPerSecond.of(
-        m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters);
+        m_velocitySignal.getValue().in(RotationsPerSecond)
+            * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  @Logged(name = "Velocity Inches s", importance = Logged.Importance.INFO)
+  @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)
   public double getVelocityInches() {
     return getVelocity().in(InchesPerSecond);
   }
@@ -181,12 +178,29 @@ public class Elevator extends SubsystemBase {
   public LinearAcceleration getAcceleration() {
     m_accelSignal.refresh();
     return MetersPerSecondPerSecond.of(
-        m_accelSignal.getValue().in(RotationsPerSecondPerSecond) * ELEVATOR.drumRotationsToMeters);
+        m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
+            * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  @Logged(name = "Acceleration Inches s^2", importance = Logged.Importance.INFO)
+  @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
   public double getAccelerationInches() {
     return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
+  }
+
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.refresh().getValue();
+  }
+
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.refresh().getValue();
+  }
+
+  public Current getStatorCurrent() {
+    return m_statorCurrentSignal.refresh().getValue();
+  }
+
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.refresh().getValue();
   }
 
   @Logged(name = "Control Request", importance = Logged.Importance.DEBUG)
@@ -194,13 +208,8 @@ public class Elevator extends SubsystemBase {
     return elevatorMotors[0].getAppliedControl().toString();
   }
 
-  public double getMotorVoltage() {
-    m_voltageSignal.refresh();
-    return m_voltageSignal.getValueAsDouble();
-  }
-
   public Distance getHeight() {
-    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters);
+    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
   @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
@@ -310,7 +319,7 @@ public class Elevator extends SubsystemBase {
         } else {
           elevatorMotors[0].setControl(
               m_request.withPosition(
-                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters));
+                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.magnitude()));
         }
         break;
       case OPEN_LOOP:
@@ -335,10 +344,12 @@ public class Elevator extends SubsystemBase {
     m_elevatorSim.update(0.020);
 
     m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
+        m_elevatorSim.getPositionMeters()
+            * ELEVATOR.gearRatio
+            / ELEVATOR.drumRotationsToMeters.magnitude());
     m_motorSimState.setRotorVelocity(
         m_elevatorSim.getVelocityMetersPerSecond()
             * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters);
+            / ELEVATOR.drumRotationsToMeters.magnitude());
   }
 }
