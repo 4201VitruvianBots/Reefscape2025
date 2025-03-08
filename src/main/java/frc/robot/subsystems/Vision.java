@@ -128,7 +128,7 @@ public class Vision extends SubsystemBase {
     if (limelightMeasurementCam1 == null) {
       DriverStation.reportWarning("LimelightA is not connected", true);
     } else {
-      estPoseLLA.set(limelightMeasurementCam1.pose);
+      estPoseLLF.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
 
       if (limelightMeasurementCam1.tagCount == 0) {
