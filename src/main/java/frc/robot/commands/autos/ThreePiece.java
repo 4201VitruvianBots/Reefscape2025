@@ -68,7 +68,37 @@ public class ThreePiece extends SequentialCommandGroup {
               new WaitCommand(0.2)),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
-                             
+          new ParallelCommandGroup(
+                  m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
+                  new ParallelCommandGroup(
+                      new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                      new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
+                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
+                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)))
+              .until(endEffector::hasCoral),
+          new WaitCommand(0.25),
+          new ParallelCommandGroup(
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),
+          new ParallelCommandGroup(
+              m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
+              new ParallelCommandGroup(
+                  new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
+                      .until(elevator::atSetpoint),
+                  new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
+                      .until(endEffectorPivot::atSetpoint))),
+          new ParallelCommandGroup(
+                  m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
+                  new SequentialCommandGroup(
+                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER),
+                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
+                      new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
+                      new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL)))
+              .until(endEffector::hasCoral),
+          new WaitCommand(0.25),
+          new ParallelCommandGroup(
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),
           // m_ppCommand6.andThen(() -> swerveDrive.setControl(stopRequest)),
           // m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new InstantCommand(

@@ -259,15 +259,15 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
-    m_chooser.addOption(
-        "OnePieceRight",
-        new OnePieceRight(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "OnePieceRight",
+    //     new OnePieceRight(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
 
     m_chooser.addOption(
         "ThreePiece",

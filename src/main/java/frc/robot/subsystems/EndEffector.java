@@ -67,7 +67,7 @@ public class EndEffector extends SubsystemBase {
 
   @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
-    return m_endEffectorMotor.get(); 
+    return m_endEffectorMotor.get();
   }
 
   public boolean getSensorInput1() {

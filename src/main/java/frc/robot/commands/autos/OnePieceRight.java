@@ -38,7 +38,7 @@ public class OnePieceRight extends SequentialCommandGroup {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
       var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceRPt1");
-      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceRPt2");
+      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceRPt2");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
