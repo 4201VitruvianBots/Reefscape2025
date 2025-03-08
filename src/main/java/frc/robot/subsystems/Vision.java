@@ -125,23 +125,23 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
-    if (limelightMeasurementCam1.timestampSeconds == 0) {
-      // DriverStation.reportWarning("LimelightA not running pose estimation", true);
-    } else {
-      // DriverStation.reportWarning("LimelightA got vision pose", false);
+    if(limelightMeasurementCam1 == null) {
+      DriverStation.reportWarning("LimelightA is not connected", true);
+    }
+    else {
       estPoseLLA.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
-    }
 
-    if (limelightMeasurementCam1.tagCount == 0) {
-      doRejectUpdateLLA = true;
-    }
-    if (limelightMeasurementCam1.tagCount >= 1) {
-      doRejectUpdateLLA = false;
-    }
-    if (!doRejectUpdateLLA) {
-      m_swerveDriveTrain.addVisionMeasurement(
-          limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
+      if (limelightMeasurementCam1.tagCount == 0) {
+        doRejectUpdateLLA = true;
+      }
+      if (limelightMeasurementCam1.tagCount >= 1) {
+        doRejectUpdateLLA = false;
+      }
+      if (!doRejectUpdateLLA) {
+        m_swerveDriveTrain.addVisionMeasurement(
+            limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
+      }
     }
 
     // limelight b
@@ -158,23 +158,22 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
-    if (limelightMeasurementCam2.timestampSeconds == 0) {
-      // DriverStation.reportWarning("LimelightB not running pose estimation", true);
+    if (limelightMeasurementCam2 == null) {
+      DriverStation.reportWarning("LimelightB is not connected", true);
     } else {
-      // DriverStation.reportWarning("LimelightB got vision pose", false);
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
-    }
 
-    if (limelightMeasurementCam2.tagCount == 0) {
-      doRejectUpdateLLB = true;
-    }
-    if (limelightMeasurementCam2.tagCount >= 1) {
-      doRejectUpdateLLB = false;
-    }
-    if (!doRejectUpdateLLB) {
-      m_swerveDriveTrain.addVisionMeasurement(
-          limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
+      if (limelightMeasurementCam2.tagCount == 0) {
+        doRejectUpdateLLB = true;
+      }
+      if (limelightMeasurementCam2.tagCount >= 1) {
+        doRejectUpdateLLB = false;
+      }
+      if (!doRejectUpdateLLB) {
+        m_swerveDriveTrain.addVisionMeasurement(
+            limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
+      }
     }
     updateSmartDashboard();
   }
