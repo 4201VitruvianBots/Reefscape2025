@@ -87,15 +87,18 @@ public class ThreePiece extends SequentialCommandGroup {
                       .until(elevator::atSetpoint),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
                       .until(endEffectorPivot::atSetpoint))),
-          new ParallelCommandGroup(
+                      new ParallelCommandGroup(
+              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
+              new WaitCommand(0.2)),
+            new ParallelCommandGroup(
                   m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
-                  new SequentialCommandGroup(
+                  new ParallelCommandGroup(
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER),
                       new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                       new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                       new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL)))
               .until(endEffector::hasCoral),
-          new WaitCommand(0.25),
+          new WaitCommand(0.25), 
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
               new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),

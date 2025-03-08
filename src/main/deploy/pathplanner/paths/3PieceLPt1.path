@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.413404693454232,
-        "y": 1.6470063021318786
+        "x": 6.341610461622752,
+        "y": 1.9024578026703
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.9359375,
-        "y": 2.8633096590909086
+        "x": 4.966,
+        "y": 2.833
       },
       "prevControl": {
-        "x": 4.961667479527696,
-        "y": 2.5206285296191995
+        "x": 4.8590438625849455,
+        "y": 2.5871140709597227
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,8 +58,8 @@
   ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 115.0
+    "rotation": 119.29136217098417
   },
   "reversed": false,
   "folder": "ThreePieceL",
