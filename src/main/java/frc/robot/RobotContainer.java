@@ -572,6 +572,8 @@ public class RobotContainer {
       DriverStation.reportWarning(
           "[RobotContainer] testInit() could not run coralOuttake.testInit()!", e.getStackTrace());
     }
+    if (m_elevator != null) m_elevator.testInit();
+    if (m_endEffectorPivot != null) m_endEffectorPivot.testInit();
   }
 
   public void testPeriodic() {
@@ -582,6 +584,8 @@ public class RobotContainer {
           "[RobotContainer] testPeriodic() could not run coralOuttake.testPeriodic()!",
           e.getStackTrace());
     }
+    if (m_elevator != null) m_elevator.testPeriodic();
+    if (m_endEffectorPivot != null) m_endEffectorPivot.testPeriodic();
   }
 
   public void simulationInit() {

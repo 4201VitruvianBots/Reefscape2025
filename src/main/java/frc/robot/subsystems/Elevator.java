@@ -68,13 +68,17 @@ public class Elevator extends SubsystemBase {
 
   private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
 
-  private DoubleSubscriber m_kP_subscriber,
+  private DoubleSubscriber
+      m_kG_subscriber,
+      m_kS_subscriber,
+      m_kV_Subscriber,
+      m_kA_Subscriber,
+      m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
-      m_kASubscriber,
-      m_kVSubscriber,
       m_velocitySubscriber,
-      m_accelerationSubscriber;
+      m_accelerationSubscriber,
+      m_setpointSubscriber;
   private final NetworkTable elevatorTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
 
@@ -243,11 +247,13 @@ public class Elevator extends SubsystemBase {
   }
 
   public void testInit() {
+    elevatorTab.getDoubleTopic("kG").publish().set(ELEVATOR.kG);
+    elevatorTab.getDoubleTopic("kS").publish().set(ELEVATOR.kS);
+    elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
+    elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
     elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);
     elevatorTab.getDoubleTopic("kI").publish().set(ELEVATOR.kI);
     elevatorTab.getDoubleTopic("kD").publish().set(ELEVATOR.kD);
-    elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
-    elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
     elevatorTab
         .getDoubleTopic("MotionMagicCruiseVelocity")
         .publish()
@@ -256,12 +262,17 @@ public class Elevator extends SubsystemBase {
         .getDoubleTopic("MotionMagicAcceleration")
         .publish()
         .set(ELEVATOR.motionMagicAcceleration);
-    // elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
+    elevatorTab
+        .getDoubleTopic("Setpoint Inches")
+        .publish()
+        .set(m_desiredPosition.in(Inches));
+    m_kG_subscriber = elevatorTab.getDoubleTopic("kG").subscribe(ELEVATOR.kG);
+    m_kS_subscriber = elevatorTab.getDoubleTopic("kS").subscribe(ELEVATOR.kS);
+    m_kV_Subscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
+    m_kA_Subscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
     m_kP_subscriber = elevatorTab.getDoubleTopic("kP").subscribe(ELEVATOR.kP);
     m_kI_subscriber = elevatorTab.getDoubleTopic("kI").subscribe(ELEVATOR.kI);
     m_kD_subscriber = elevatorTab.getDoubleTopic("kD").subscribe(ELEVATOR.kD);
-    m_kASubscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
-    m_kVSubscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
     m_velocitySubscriber =
         elevatorTab
             .getDoubleTopic("MotionMagicCruiseVelocity")
@@ -270,33 +281,38 @@ public class Elevator extends SubsystemBase {
         elevatorTab
             .getDoubleTopic("MotionMagicAcceleration")
             .subscribe(ELEVATOR.motionMagicAcceleration);
-    // m_jerkSubscriber =
-    //     elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
+    
+    m_setpointSubscriber = elevatorTab.getDoubleTopic("Setpoint Inches").subscribe(m_desiredPosition.in(Inches));
   }
 
   public void testPeriodic() {
     Slot0Configs slot0Configs = new Slot0Configs();
 
+    slot0Configs.kG = m_kG_subscriber.get(ELEVATOR.kG);
+    slot0Configs.kS = m_kS_subscriber.get(ELEVATOR.kS);
+    slot0Configs.kV = m_kV_Subscriber.get(ELEVATOR.kV);
+    slot0Configs.kA = m_kA_Subscriber.get(ELEVATOR.kA);
     slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
     slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
     slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
-    slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
-    slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
 
     elevatorMotors[0].getConfigurator().apply(slot0Configs);
     elevatorMotors[1].getConfigurator().apply(slot0Configs);
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
 
-    // Who on earth knows if this part works, I was guessing that it would.
     motionMagicConfigs.MotionMagicCruiseVelocity =
         m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
     motionMagicConfigs.MotionMagicAcceleration =
         m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
-    // motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
 
     elevatorMotors[0].getConfigurator().apply(motionMagicConfigs);
     elevatorMotors[1].getConfigurator().apply(motionMagicConfigs);
+    
+    double newSetpoint = m_setpointSubscriber.get(m_desiredPosition.in(Inches));
+    if (newSetpoint != m_desiredPosition.in(Inches)) {
+      setDesiredPosition(Inches.of(newSetpoint));
+    }
   }
 
   public void teleopInit() {
