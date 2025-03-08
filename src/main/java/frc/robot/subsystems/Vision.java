@@ -31,37 +31,11 @@ public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
 
-  private NetworkTable limelightATable = NetworkTableInstance.getDefault().getTable("limelight-a");
-  private NetworkTableEntry txOfLimelightA = limelightATable.getEntry("tx");
-  private NetworkTableEntry tyOfLimelightA = limelightATable.getEntry("ty");
-  private NetworkTableEntry taOfLimelightA = limelightATable.getEntry("ta");
-
-  // read values periodically
-  private double xOfLimelightA = txOfLimelightA.getDouble(0.0);
-  private double yOfLimelightA = tyOfLimelightA.getDouble(0.0);
-  private double areaOfLimelightA = taOfLimelightA.getDouble(0.0);
-  private boolean limelightAHasTarget = LimelightHelpers.getTV("limelight-a");
-
-  private NetworkTable limelightBTable = NetworkTableInstance.getDefault().getTable("limelight-b");
-  private NetworkTableEntry txOfLimelightB = limelightBTable.getEntry("tx");
-  private NetworkTableEntry tyOfLimelightB = limelightBTable.getEntry("ty");
-  private NetworkTableEntry taOfLimelightB = limelightBTable.getEntry("ta");
-
-  // read values periodically
-  private double xOfLimelightB = txOfLimelightB.getDouble(0.0);
-  private double yOfLimelightB = tyOfLimelightB.getDouble(0.0);
-  private double areaOfLimelightB = taOfLimelightB.getDouble(0.0);
-  private boolean limelightBHasTarget = LimelightHelpers.getTV("limelight-b");
-
   private VisionSystemSim visionSim;
 
-  private Pose2d cameraAEstimatedPose = new Pose2d();
-  private Pose2d cameraBEstimatedPose = new Pose2d();
-  private double cameraATimestamp, cameraBTimestamp;
-  private boolean cameraAHasPose, cameraBHasPose, poseAgreement;
   private boolean m_localized;
-  private boolean doRejectUpdate = false;
-  private boolean useMegaTag2 = true; // set to false to use MegaTag1
+  private boolean doRejectUpdateLLA = false;
+  private boolean doRejectUpdateLLB = false;
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
   // NetworkTables publisher setup
@@ -136,16 +110,8 @@ public class Vision extends SubsystemBase {
   }
 
   public void updateSmartDashboard() {
-    // limelight a target data
-    SmartDashboard.putNumber("LimelightA_X", xOfLimelightA);
-    SmartDashboard.putNumber("LimelightA_Y", yOfLimelightA);
-    SmartDashboard.putNumber("LimelightA_Area", areaOfLimelightA);
-    SmartDashboard.putBoolean("limelightA_TV", limelightAHasTarget);
-    // limelight b target data
-    SmartDashboard.putNumber("LimelightB_X", xOfLimelightB);
-    SmartDashboard.putNumber("LimelightB_Y", yOfLimelightB);
-    SmartDashboard.putNumber("LimelightB_Area", areaOfLimelightB);
-    SmartDashboard.putBoolean("limelightB_TV", limelightBHasTarget);
+    SmartDashboard.putBoolean("rejectionUpdateLLA", doRejectUpdateLLA);
+    SmartDashboard.putBoolean("rejectionUpdateLLB", doRejectUpdateLLB);
   }
 
   private void updateLog() {}
@@ -164,12 +130,28 @@ public class Vision extends SubsystemBase {
       DriverStation.reportWarning("LimelightA got vison pose", false);
       estPoseLLA.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
-      m_swerveDriveTrain.addVisionMeasurement(
-        limelightMeasurementCam1.pose,
-        limelightMeasurementCam1.timestampSeconds
-      );
     }
   
+    // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) > 720)
+    // {
+    //   doRejectUpdateLLA = true;
+    // }
+    if(limelightMeasurementCam1.tagCount == 0)
+    {
+      doRejectUpdateLLA = true;
+    }
+    if(limelightMeasurementCam1.tagCount >= 1)
+    {
+      doRejectUpdateLLA = false;
+    }
+    if(!doRejectUpdateLLA) {
+      m_swerveDriveTrain.addVisionMeasurement(
+        limelightMeasurementCam1.pose,
+       limelightMeasurementCam1.timestampSeconds
+      );
+    }
+
     // limelight b
     LimelightHelpers.SetRobotOrientation("limelight-b", m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
@@ -182,11 +164,28 @@ public class Vision extends SubsystemBase {
       DriverStation.reportWarning("LimelightB got vison pose", false);
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
+    }
+
+    // // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720)
+    // {
+    //   doRejectUpdateLLB = true;
+    // }
+    if(limelightMeasurementCam2.tagCount == 0)
+    {
+      doRejectUpdateLLB = true;
+    }
+    if(limelightMeasurementCam2.tagCount >= 1)
+    {
+      doRejectUpdateLLA = false;
+    }
+    if(!doRejectUpdateLLB) {
       m_swerveDriveTrain.addVisionMeasurement(
         limelightMeasurementCam2.pose,
         limelightMeasurementCam2.timestampSeconds
       );
     }
+    updateSmartDashboard();
   }
 
   @Override
