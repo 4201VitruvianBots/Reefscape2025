@@ -94,6 +94,10 @@ public class EndEffector extends SubsystemBase {
   public Current getTorqueCurrent() {
     return m_torqueCurrentSignal.refresh().getValue();
   }
+  
+  public boolean isConnected() {
+    return m_endEffectorMotor.isConnected();
+  }
 
   @Override
   public void periodic() {}

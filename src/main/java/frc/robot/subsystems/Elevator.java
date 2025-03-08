@@ -241,6 +241,10 @@ public class Elevator extends SubsystemBase {
   public boolean atSetpoint() {
     return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
   }
+  
+  public boolean[] isConnected() {
+    return new boolean[] {elevatorMotors[0].isConnected(), elevatorMotors[1].isConnected()};
+  }
 
   public void testInit() {
     elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);

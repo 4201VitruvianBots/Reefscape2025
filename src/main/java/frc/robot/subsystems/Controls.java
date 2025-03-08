@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.Alert;
@@ -13,7 +15,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
 import frc.robot.constants.USB;
 
 @Logged
@@ -23,15 +27,18 @@ public class Controls extends SubsystemBase {
   private static Alert m_usbAlert = new Alert("USB connection alert not properly initialized", AlertType.kError);
   private static Alert m_brownoutAlert = new Alert("Brownout alert not properly initialized", AlertType.kWarning);   
   private static Alert m_storageAlert = new Alert("Storage space alert not properly initialized", AlertType.kWarning);
+  private static Alert m_canAlert = new Alert("CAN bus alert not properly initialized", AlertType.kError);
+  private static Alert m_visionAlert = new Alert("Vision alert not properly initialized", AlertType.kWarning);
   
   private static Timer m_brownoutTimer = new Timer();
   private static double m_brownoutLastUpdatedTime = 0.0;
+  
+  /** Map of subsystems for Controls to update */
+  private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   /** Creates a new Controls. */
   public Controls() {
     initSmartDashboard();
-    
-    m_brownoutTimer.start();
   }
 
   public static DriverStation.Alliance getAllianceColor() {
@@ -49,9 +56,16 @@ public class Controls extends SubsystemBase {
   private void initSmartDashboard() {
     SmartDashboard.putString("Controls/Serial Number", RobotController.getSerialNumber());
   }
+  
+  public void registerSubsystem(Subsystem subsystem) {
+    if (subsystem != null) {
+      m_subsystemMap.put(subsystem.getName(), subsystem);
+    } else {
+      DriverStation.reportWarning("[Controls] Attempting to register null subsystem!", true);
+    }
+  }
 
-  private void updateAlerts() {
-    
+  public void updateAlerts() {
     // Update USB alerts
     m_usbAlert.set(false);
     
@@ -81,7 +95,7 @@ public class Controls extends SubsystemBase {
     if (RobotController.isBrownedOut()) {
         m_brownoutAlert.setText("A brownout occured less than a minute ago. Please ensure that a fresh battery has been plugged in.");
         m_brownoutAlert.set(true);
-        m_brownoutTimer.reset();
+        m_brownoutTimer.restart();
         m_brownoutLastUpdatedTime = 0.0;
     }
     
@@ -99,6 +113,91 @@ public class Controls extends SubsystemBase {
         m_storageAlert.setText("There is only " + freeSpaceMB + " MB of storage space left on the RoboRIO. Consider deleting old logs to free up space.");
         m_storageAlert.set(true);
     }
+    
+    // Update CAN alerts
+    m_canAlert.set(false);
+    
+    // String for CAN alert message
+    String canAlertMessage = "The following CAN devices are not connected: ";
+    
+    if (m_subsystemMap.containsKey("Climber")) {
+        var climberSubsystem = (Climber) m_subsystemMap.get("Climber");
+        if (!climberSubsystem.isConnected()) {
+            canAlertMessage += "Climber (" + CAN.climberMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("Elevator")) {
+        var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
+        if (!(elevatorSubsystem.isConnected()[0] || elevatorSubsystem.isConnected()[1])) {
+            canAlertMessage += "Elevator (" + CAN.elevatorMotor1 + ", " + CAN.elevatorMotor2 + "), ";
+            m_canAlert.set(true);
+        } else if (!elevatorSubsystem.isConnected()[0]) {
+            canAlertMessage += "Elevator (" + CAN.elevatorMotor1 + "), ";
+            m_canAlert.set(true);
+        } else if (!elevatorSubsystem.isConnected()[1]) {
+            canAlertMessage += "Elevator (" + CAN.elevatorMotor2 + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("EndEffector")) {
+        var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffector");
+        if (!endEffectorSubsystem.isConnected()) {
+            canAlertMessage += "End Effector (" + CAN.endEffectorMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("EndEffectorPivot")) {
+        var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffectorPivot");
+        if (!endEffectorSubsystem.isConnected()) {
+            canAlertMessage += "End Effector Pivot (" + CAN.endEffectorPivotMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("GroundIntake")) {
+        var groundIntakeSubsystem = (GroundIntake) m_subsystemMap.get("GroundIntake");
+        if (!groundIntakeSubsystem.isConnected()) {
+            canAlertMessage += "End Effector (" + CAN.groundRollerMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("GroundPivot")) {
+        var groundPivotSubsystem = (EndEffector) m_subsystemMap.get("GroundPivot");
+        if (!groundPivotSubsystem.isConnected()) {
+            canAlertMessage += "Ground Pivot (" + CAN.groundPivotMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("HopperIntake")) {
+        var hopperIntakeSubsystem = (HopperIntake) m_subsystemMap.get("HopperIntake");
+        if (!hopperIntakeSubsystem.isConnected()) {
+            canAlertMessage += "Hopper Intake (" + CAN.hopperIntakeMotor + "), ";
+            m_canAlert.set(true);
+        }
+    }
+    
+    if (m_subsystemMap.containsKey("CommandSwerveDrivetrain")) {
+        var swerveSubsystem = (CommandSwerveDrivetrain) m_subsystemMap.get("CommandSwerveDrivetrain");
+        for (Map.Entry<String, Boolean> connectionStatus : swerveSubsystem.isConnected().entrySet()) {
+            if (!connectionStatus.getValue()) {
+                canAlertMessage += connectionStatus.getKey() + ", ";
+                m_canAlert.set(true);
+            }
+        }
+    }
+    
+    // Remove the last comma and space
+    if (canAlertMessage.endsWith(", ")) {
+        canAlertMessage = canAlertMessage.substring(0, usbAlertMessage.length() - 2);
+    }
+    m_canAlert.setText(canAlertMessage);
+    
   }
   
   @Override
@@ -108,7 +207,5 @@ public class Controls extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       DriverStation.getAlliance().ifPresent(a -> m_allianceColor = a);
     }
-    
-    updateAlerts();
   }
 }

@@ -48,7 +48,7 @@ public class GroundIntake extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     CtreUtils.configureTalonFx(m_groundIntakeMotor, config);
   }
-
+  
   public void setPercentOutput(double speed) {
     m_groundIntakeMotor.set(speed);
   }
@@ -60,6 +60,10 @@ public class GroundIntake extends SubsystemBase {
     SmartDashboard.putNumber("Ground Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
+  public boolean isConnected() {
+    return m_groundIntakeMotor.isConnected();
+  }
+  
   @Override
   public void simulationPeriodic() {
     m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());

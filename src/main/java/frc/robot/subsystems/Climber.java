@@ -149,6 +149,10 @@ public class Climber extends SubsystemBase {
   public void setButtonInput(double buttonInput) {
     m_buttonInput = buttonInput;
   }
+  
+  public boolean isConnected() {
+    return climberMotor.isConnected();
+  }
 
   @Override
   public void periodic() {

@@ -620,6 +620,10 @@ public class RobotContainer {
                       .minus(Rotation2d.k180deg));
             });
   }
+  
+  public Controls getControls() {
+    return m_controls;
+  }
 
   public void robotPeriodic() {
     // m_questNav.periodic();
