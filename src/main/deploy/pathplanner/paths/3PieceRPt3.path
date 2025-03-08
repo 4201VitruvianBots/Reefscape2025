@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.342577147623018,
-        "y": 5.060581734778982
+        "x": 5.534232954545455,
+        "y": 5.376150568181817
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.542921218833159,
-        "y": 5.394979944358871
+        "x": 5.767049426671868,
+        "y": 5.285065496371934
       },
       "isLocked": false,
-      "linkedName": "Pt1 R end"
+      "linkedName": "3RT2END"
     },
     {
       "anchor": {
-        "x": 5.671914095079233,
-        "y": 5.609476647206004
+        "x": 1.555568181818182,
+        "y": 7.290696022727272
       },
       "prevControl": {
-        "x": 5.479336749702578,
-        "y": 5.29733093448398
+        "x": 2.06269423750179,
+        "y": 7.128443948484285
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3RT3END"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -126.193
+    "rotation": -52.696000000000005
   },
   "reversed": false,
   "folder": "TwoPieceR",

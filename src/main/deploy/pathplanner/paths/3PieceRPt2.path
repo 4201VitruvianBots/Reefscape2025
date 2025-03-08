@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.342577147623018,
+        "y": 5.060581734778982
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.504341828660432,
+        "y": 5.341020692212713
+      },
+      "isLocked": false,
+      "linkedName": "Pt1 R end"
+    },
+    {
+      "anchor": {
+        "x": 5.534232954545455,
+        "y": 5.376150568181817
+      },
+      "prevControl": {
+        "x": 5.40617688179024,
+        "y": 5.1327575507961445
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "3RT2END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -126.193
+  },
+  "reversed": false,
+  "folder": "TwoPieceR",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -126.193
+  },
+  "useDefaultConstraints": true
+}
