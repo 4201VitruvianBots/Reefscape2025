@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
   private VisionSystemSim visionSim;
 
   private boolean m_localized;
-  private boolean doRejectUpdateLLA = false;
+  private boolean doRejectUpdateLLF = false;
   private boolean doRejectUpdateLLB = false;
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
@@ -37,7 +37,7 @@ public class Vision extends SubsystemBase {
 
   /* Robot swerve drive state */
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
-  private final StructPublisher<Pose2d> estPoseLLA =
+  private final StructPublisher<Pose2d> estPoseLLF =
       table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
   private final StructPublisher<Pose2d> estPoseLLB =
@@ -46,7 +46,7 @@ public class Vision extends SubsystemBase {
   public Vision() {
     // Port Forwarding to access limelight on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port, VISION.CAMERA_SERVER.LIMELIGHTA.toString(), port);
+      PortForwarder.add(port, VISION.CAMERA_SERVER.LIMELIGHTF.toString(), port);
     }
 
     for (int port = 5800; port <= 5809; port++) {
@@ -103,7 +103,7 @@ public class Vision extends SubsystemBase {
   }
 
   public void updateSmartDashboard() {
-    SmartDashboard.putBoolean("rejectionUpdateLLA", doRejectUpdateLLA);
+    SmartDashboard.putBoolean("rejectionUpdateLLF", doRejectUpdateLLF);
     SmartDashboard.putBoolean("rejectionUpdateLLB", doRejectUpdateLLB);
   }
 
@@ -112,9 +112,9 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // limelight a
-    LimelightHelpers.SetIMUMode("limelight-a", 1);
+    LimelightHelpers.SetIMUMode("limelight-f", 1);
     LimelightHelpers.SetRobotOrientation(
-        "limelight-a",
+        "limelight-f",
         m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
         0,
         0,
@@ -122,7 +122,7 @@ public class Vision extends SubsystemBase {
         0,
         0);
     LimelightHelpers.PoseEstimate limelightMeasurementCam1 =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurementCam1 == null) {
@@ -132,12 +132,12 @@ public class Vision extends SubsystemBase {
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
 
       if (limelightMeasurementCam1.tagCount == 0) {
-        doRejectUpdateLLA = true;
+        doRejectUpdateLLF = true;
       }
       if (limelightMeasurementCam1.tagCount >= 1) {
-        doRejectUpdateLLA = false;
+        doRejectUpdateLLF = false;
       }
-      if (!doRejectUpdateLLA) {
+      if (!doRejectUpdateLLF) {
         m_swerveDriveTrain.addVisionMeasurement(
             limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
       }
