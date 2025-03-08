@@ -46,8 +46,6 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
-  private Vision m_vision;
-
   private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),

@@ -74,7 +74,7 @@ public class Robot2d {
           new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
               .withSuperStructureOffset(Inches.of(3))
-              .withStageMaxLengths(Meters.of(ELEVATOR.upperLimitMeters))
+              .withStageMaxLengths(ELEVATOR.upperLimit)
               .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 

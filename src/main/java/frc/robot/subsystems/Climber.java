@@ -4,8 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,13 +13,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
@@ -47,9 +47,11 @@ public class Climber extends SubsystemBase {
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   // Simulation classes help us simulate what's going on
-  private final FlywheelSim m_climberSim =
-      new FlywheelSim(
-          LinearSystemId.identifyVelocitySystem(0.8, 0.6), CLIMBER.gearbox, CLIMBER.gearRatio);
+  private final DCMotorSim m_climberSim =
+      new DCMotorSim(
+          (LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, CLIMBER.gearRatio)),
+          CLIMBER.gearbox);
+  private Angle motorSimPosition = Rotations.of(0);
   private final TalonFXSimState m_motorSimState = climberMotor.getSimState();
   private double m_buttonInput = 0.0;
 
@@ -107,8 +109,7 @@ public class Climber extends SubsystemBase {
 
   @Logged(name = "Motor Rotations", importance = Logged.Importance.INFO)
   public double getMotorRotations() {
-    m_positionSignal.refresh();
-    return m_positionSignal.getValueAsDouble();
+    return m_positionSignal.refresh().getValueAsDouble();
   }
 
   public Voltage getMotorVoltage() {
@@ -173,9 +174,12 @@ public class Climber extends SubsystemBase {
     m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     m_climberSim.setInputVoltage(m_motorSimState.getMotorVoltage());
 
-    m_climberSim.update(0.020);
+    m_climberSim.update(0.02);
 
-    m_motorSimState.setRawRotorPosition(m_climberSim.getAngularVelocity().times(Seconds.of(0.02)));
+    motorSimPosition =
+        motorSimPosition.plus(
+            m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio).times(Seconds.of(0.02)));
+    m_motorSimState.setRawRotorPosition(motorSimPosition);
     m_motorSimState.setRotorVelocity(m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio));
   }
 }

@@ -5,14 +5,13 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.constants.ELEVATOR.rotationsToMeters;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -84,13 +83,11 @@ public class Elevator extends SubsystemBase {
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
           ELEVATOR.kCarriageMass.in(Kilograms),
-          ELEVATOR.kElevatorDrumDiameter / 2,
-          ELEVATOR.lowerLimitMeters,
-          ELEVATOR.upperLimitMeters,
+          ELEVATOR.kElevatorDrumDiameter.div(2).in(Meters),
+          ELEVATOR.lowerLimit.in(Meters),
+          ELEVATOR.upperLimit.in(Meters),
           true,
-          0,
-          0.0,
-          0.0);
+          1);
   private final TalonFXSimState m_motorSimState;
 
   public Elevator() {
@@ -106,11 +103,10 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
+    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
-    config.CurrentLimits.StatorCurrentLimit = 40;
-    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
-    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
@@ -160,14 +156,27 @@ public class Elevator extends SubsystemBase {
 
   @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
   public Angle getRotations() {
-    m_positionSignal.refresh();
     return m_positionSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Velocity", importance = Logged.Importance.DEBUG)
+  public AngularVelocity getMotorVelocity() {
+    return m_velocitySignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Acceleration", importance = Logged.Importance.DEBUG)
+  public AngularAcceleration getMotorAcceleration() {
+    return m_accelSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Reference", importance = Logged.Importance.DEBUG)
+  public Angle getReference() {
+    return Rotations.of(elevatorMotors[0].getClosedLoopReference().refresh().getValue());
   }
 
   public LinearVelocity getVelocity() {
     return MetersPerSecond.of(
-        m_velocitySignal.getValue().in(RotationsPerSecond)
-            * ELEVATOR.drumRotationsToMeters.magnitude());
+        getMotorVelocity().in(RotationsPerSecond) * ELEVATOR.drumCircumference.magnitude());
   }
 
   @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)
@@ -176,10 +185,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public LinearAcceleration getAcceleration() {
-    m_accelSignal.refresh();
     return MetersPerSecondPerSecond.of(
-        m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
-            * ELEVATOR.drumRotationsToMeters.magnitude());
+        getMotorAcceleration().in(RotationsPerSecondPerSecond)
+            * ELEVATOR.drumCircumference.magnitude());
   }
 
   @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
@@ -187,6 +195,7 @@ public class Elevator extends SubsystemBase {
     return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
   }
 
+  @Logged(name = "Motor Voltage", importance = Logged.Importance.DEBUG)
   public Voltage getMotorVoltage() {
     return m_voltageSignal.refresh().getValue();
   }
@@ -209,7 +218,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getHeight() {
-    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.magnitude());
+    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumCircumference.magnitude());
   }
 
   @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
@@ -319,7 +328,7 @@ public class Elevator extends SubsystemBase {
         } else {
           elevatorMotors[0].setControl(
               m_request.withPosition(
-                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.magnitude()));
+                  m_desiredPosition.in(Meters) / ELEVATOR.drumCircumference.magnitude()));
         }
         break;
       case OPEN_LOOP:
@@ -344,12 +353,8 @@ public class Elevator extends SubsystemBase {
     m_elevatorSim.update(0.020);
 
     m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+        m_elevatorSim.getPositionMeters() * rotationsToMeters.magnitude());
     m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+        m_elevatorSim.getVelocityMetersPerSecond() * rotationsToMeters.magnitude());
   }
 }
