@@ -44,7 +44,7 @@ public final class VISION {
   }
 
   public enum CAMERA_SERVER {
-    LIMELIGHTA("10.42.1.11"),
+    LIMELIGHTF("10.42.1.11"),
     LIMELIGHTB("10.42.1.12"),
     ;
     private final String ip;

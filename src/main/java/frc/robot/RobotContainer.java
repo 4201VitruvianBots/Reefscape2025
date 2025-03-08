@@ -560,9 +560,9 @@ public class RobotContainer {
 
   public void teleopInit() {
     m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
-    m_elevator.teleopInit();
-    m_hopperIntake.teleopInit();
-    m_endEffectorPivot.teleopInit();
+    if (m_elevator != null) m_elevator.teleopInit();
+    if (m_hopperIntake != null) m_hopperIntake.teleopInit();
+    if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
   }
 
   public void testInit() {
