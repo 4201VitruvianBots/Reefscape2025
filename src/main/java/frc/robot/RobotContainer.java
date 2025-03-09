@@ -28,6 +28,7 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
+import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -172,8 +173,8 @@ public class RobotContainer {
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       MaxSpeed =
-          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-      m_swerveDrive = V2Constants.createDrivetrain();
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
@@ -214,15 +215,14 @@ public class RobotContainer {
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
             }));
-    // if (m_elevator != null) {
-    //   m_elevator.setDefaultCommand(
-    //       new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator
-    // open loop control
-    // }
-    if (m_climber != null) {
-      m_climber.setDefaultCommand(
-          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+    if (m_elevator != null) {
+      m_elevator.setDefaultCommand(
+          new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
+    // if (m_climber != null) {
+    //   m_climber.setDefaultCommand(
+    //       new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+    // }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(
           new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
