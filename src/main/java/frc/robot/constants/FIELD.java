@@ -83,8 +83,9 @@ public class FIELD {
                 System.out.printf(
                     "[FIELD] Could not read AprilTag ID %s data from FieldLayout\n", this.id);
                 new Alert(
-                    String.format("[FIELD] APRIL_TAG ID %s value couldn't be read", this.id),
-                    AlertType.kError);
+                        String.format("[FIELD] APRIL_TAG ID %s value couldn't be read", this.id),
+                        AlertType.kError)
+                    .set(true);
               });
 
       if (this.pose == null) {
@@ -156,6 +157,7 @@ public class FIELD {
   //  static Distance baseReefDepth = Inches.of(24); // CAD Measurement to base
   static final Distance baseReefDepth = Inches.of(2); // CAD Measurement L4 CC distance
 
+  // TODO: Verify these offset is correct
   /**
    * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
    */
@@ -174,9 +176,6 @@ public class FIELD {
       new Translation2d(
           SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters),
           -baseReefTranslation.in(Meters));
-
-  static Translation2d adjustableLeftBranchOffset = new Translation2d();
-  static Translation2d adjustableRightBranchOffset = new Translation2d();
 
   /**
    * Location of all coral targets based on their position relative to their nearest AprilTag.
@@ -225,33 +224,19 @@ public class FIELD {
       branchOffset.plus(new Translation2d(0, offset.in(Meters)));
       var targetOffset = isLeft ? baseLeftCoralTargetOffset : baseRightCoralTargetOffset;
       try {
-        branchPose =
-            APRIL_TAG
-                .getTagById(aprilTagId)
-                .getPose2d()
-                .plus(new Transform2d(branchOffset, Rotation2d.kZero));
+        var aprilTagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
+        branchPose = aprilTagPose.plus(new Transform2d(branchOffset, Rotation2d.kZero));
+
+        targetPose = aprilTagPose.plus(new Transform2d(targetOffset, Rotation2d.kZero));
       } catch (Exception e) {
         System.out.printf(
-            "[FIELD] Could not generate coral pose at AprilTag %d %s\n",
-            aprilTagId, (isLeft ? " Left" : " Right"));
+            "[FIELD] Could not get AprilTag %d Pose for CORAL_TARGET generation!\n", aprilTagId);
       }
-      try {
-        targetPose =
-            APRIL_TAG
-                .getTagById(aprilTagId)
-                .getPose2d()
-                .plus(new Transform2d(targetOffset, Rotation2d.kZero));
-
-      } catch (Exception e) {
-        System.out.printf(
-            "[FIELD] Could not generate coral targetPose at AprilTag %d %s\n",
-            aprilTagId, (isLeft ? " Left" : " Right"));
-      }
-
       this.pose = branchPose;
       this.targetPose = targetPose;
     }
 
+    /** Map the coral pose to the target pose */
     static {
       for (CORAL_TARGETS b : CORAL_TARGETS.values()) {
         coralPoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());
@@ -331,6 +316,7 @@ public class FIELD {
   // Algae Branch constants
   //
 
+  // TODO: Verify this offset is correct
   static final Translation2d baseAlgaeTargetOffset =
       new Translation2d(SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters), 0);
 
@@ -338,6 +324,7 @@ public class FIELD {
     REEF,
     PROCESSOR,
     BARGE,
+    /** Ground Algae staged at the beginning of a match */
     STAGED
   }
 
@@ -365,14 +352,16 @@ public class FIELD {
     private static final Map<Pose2d, Pose2d> algaePoseToTargetPose = new HashMap<>();
 
     ALGAE_TARGETS(final int aprilTagId, TARGET_TYPE type, Distance offset) {
-      Pose2d tagPose = Pose2d.kZero;
+      Pose2d aprilTagPose = Pose2d.kZero;
 
       try {
-        tagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
+        aprilTagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
       } catch (Exception e) {
-        System.out.printf("[FIELD] Could not generate algae pose at AprilTag %d\n", aprilTagId);
+        System.out.printf(
+            "[FIELD] Could not get AprilTag %d Pose for ALGAE_TARGET generation!\n", aprilTagId);
       }
 
+      // TODO: Implement
       //      Translation2d targetOffset = Translation2d.kZero;
       //      switch (type) {
       //        case REEF -> targetOffset = baseReefAlgaeTargetOffset;
@@ -382,15 +371,16 @@ public class FIELD {
       //      }
 
       Pose2d targetPose =
-          tagPose.plus(
+          aprilTagPose.plus(
               new Transform2d(
                   baseAlgaeTargetOffset.plus(new Translation2d(offset.in(Meters), 0)),
                   Rotation2d.kZero));
 
-      this.pose = tagPose;
+      this.pose = aprilTagPose;
       this.targetPose = targetPose;
     }
 
+    /** Map the algae pose to the target pose */
     static {
       for (ALGAE_TARGETS b : ALGAE_TARGETS.values()) {
         algaePoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());

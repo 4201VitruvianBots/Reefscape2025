@@ -44,10 +44,9 @@ public class ELEVATOR {
   public static final Distance drumCircumference =
       kElevatorDrumDiameter.times(
           2 * Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
+  // meters
   public static final Per<AngleUnit, DistanceUnit> rotationsToMeters =
       Rotations.of(1).times(gearRatio).div(drumCircumference);
-
-  // meters
 
   public enum ELEVATOR_SETPOINT {
     START_POSITION(Inches.of(0.0)),

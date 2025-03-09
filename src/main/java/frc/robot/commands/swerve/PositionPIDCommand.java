@@ -52,7 +52,7 @@ public class PositionPIDCommand extends Command {
 
               var speed =
                   m_swerve
-                      .getVelocityMagnitude(m_swerve.getChassisSpeed())
+                      .getVelocityMagnitude(m_swerve.getState().Speeds)
                       .lt(SWERVE.kSpeedTolerance);
 
               System.out.println(

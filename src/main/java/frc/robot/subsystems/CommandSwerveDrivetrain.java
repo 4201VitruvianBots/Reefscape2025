@@ -266,16 +266,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
-  public ChassisSpeeds getChassisSpeed() {
-    return getKinematics().toChassisSpeeds(getState().ModuleStates);
-  }
-
-  public ChassisSpeeds getFieldVelocity() {
-    ChassisSpeeds robotRelativeSpeeds = getKinematics().toChassisSpeeds(getState().ModuleStates);
-    return ChassisSpeeds.fromRobotRelativeSpeeds(
-        robotRelativeSpeeds, getState().Pose.getRotation());
-  }
-
   public LinearVelocity getVelocityMagnitude(ChassisSpeeds cs) {
     return MetersPerSecond.of(
         new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());

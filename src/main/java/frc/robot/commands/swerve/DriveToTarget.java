@@ -25,10 +25,10 @@ public class DriveToTarget {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Vision m_vision;
 
-  private final StructPublisher<Pose2d> desiredBranchPublisher =
+  private final StructPublisher<Pose2d> desiredTargetPublisher =
       NetworkTableInstance.getDefault()
-          .getTable("VisionTracking")
-          .getStructTopic("desired branch", Pose2d.struct)
+          .getTable("Vision")
+          .getStructTopic("Desired Target", Pose2d.struct)
           .publish();
 
   /** Creates a new DriveToBranch. */
@@ -44,27 +44,28 @@ public class DriveToTarget {
           var targetPose = m_vision.getNearestTargetPose();
 
           // publish the position we want to drive to
-          desiredBranchPublisher.accept(targetPose);
+          desiredTargetPublisher.accept(targetPose);
 
           // generate a path to the desired position
-          return getPathFromWaypoint(targetPose);
+          return getPathToWaypoint(targetPose);
         },
         Set.of());
   }
 
-  private Command getPathFromWaypoint(Pose2d waypoint) {
+  private Command getPathToWaypoint(Pose2d targetWaypoint) {
     List<Waypoint> waypoints =
         PathPlannerPath.waypointsFromPoses(
             new Pose2d(
                 m_swerveDrive.getState().Pose.getTranslation(),
-                m_swerveDrive.getPathVelocityHeading(m_swerveDrive.getFieldVelocity(), waypoint)),
-            waypoint);
+                // TODO: Verify if this midpoint is needed.
+                m_swerveDrive.getPathVelocityHeading(m_swerveDrive.getState().Speeds, targetWaypoint)),
+            targetWaypoint);
 
     if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.01) {
       return Commands.sequence(
           Commands.print("start position PID loop"),
           PositionPIDCommand.generateCommand(
-              m_swerveDrive, waypoint, SWERVE.kAlignmentAdjustmentTimeout),
+              m_swerveDrive, targetWaypoint, SWERVE.kAlignmentAdjustmentTimeout),
           Commands.print("end position PID loop"));
     }
     PathPlannerPath path =
@@ -72,9 +73,9 @@ public class DriveToTarget {
             waypoints,
             SWERVE.kAutoAlignPathConstraints,
             new IdealStartingState(
-                m_swerveDrive.getVelocityMagnitude(m_swerveDrive.getChassisSpeed()),
+                m_swerveDrive.getVelocityMagnitude(m_swerveDrive.getState().Speeds),
                 m_swerveDrive.getState().Pose.getRotation()),
-            new GoalEndState(0.0, waypoint.getRotation()));
+            new GoalEndState(0.0, targetWaypoint.getRotation()));
 
     return ppHolonomicCommand(path);
   }
