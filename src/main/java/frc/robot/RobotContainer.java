@@ -27,7 +27,6 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
-import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -208,7 +207,7 @@ public class RobotContainer {
     if (m_elevator != null) {
       m_elevator.setDefaultCommand(
           new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator
-    // open loop control
+      // open loop control
     }
     if (m_climber != null) {
       // m_climber.setDefaultCommand(
@@ -484,8 +483,11 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new SequentialCommandGroup(
-                    new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGEFLICK).withTimeout(0.4), 
-                    new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR)), //Net scoring binding here
+                      new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGEFLICK)
+                          .withTimeout(0.4),
+                      new RunEndEffectorIntake(
+                          m_endEffector,
+                          ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
@@ -493,8 +495,11 @@ public class RobotContainer {
                           ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
                   () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
           .onFalse(
-              moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                  .withTimeout(1));
+              new ConditionalCommand(
+                  new WaitCommand(3),
+                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
+                      .withTimeout(1),
+                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
     }
 
     if (m_endEffector != null) {
