@@ -47,6 +47,7 @@ import frc.robot.constants.USB;
 import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
+import frc.robot.generated.V3Constants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
@@ -144,7 +145,16 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     // Initialize Subsystem classes
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
+      MaxSpeed =
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V3Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_endEffector = new EndEffector();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
           V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();

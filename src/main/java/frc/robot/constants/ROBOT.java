@@ -38,14 +38,17 @@ public class ROBOT {
   public enum ROBOT_ID {
     // Robot Serial Numbers (2023-2024)
     // FORTE - 030cbc95
-    // ALPHABOT_OLD - 030cbcf0
     // GRIDLOCK - 0306ce62
     // BOBOT - 030e6a97
+
+    // 030cbcf0 - 23-1 Rio 1.0 (in the green bins)
+    // 030cbd1c - 23-2 Rio 1.0 (in the green bins)
+    // 0310d915 - 23-3 Rio 1.0 (Doesn't work right - Sheraz)
 
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
     V2("0382381FB"), // 23-1 Rio 2.0
-    V3("32398ed"), // 23-2 Rio 2.0 (TODO: verify serial number)
+    V3("32398ed"), // 23-2 Rio 2.0
 
     SIM("");
 
@@ -71,7 +74,7 @@ public class ROBOT {
   public static void initV2() {
     robotID = ROBOT_ID.V2;
   }
-  
+
   public static void initV3() {
     robotID = ROBOT_ID.V3;
   }
