@@ -32,6 +32,7 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.swerve.DriveToBranch;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
@@ -190,10 +191,10 @@ public class RobotContainer {
         m_swerveDrive.applyRequest(
             () -> {
               var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
-              // if heading target
-              if (m_swerveDrive.isTrackingState()) {
-                rotationRate = m_swerveDrive.calculateRotationToTarget();
-              }
+              // // if heading target
+              // if (m_swerveDrive.isTrackingState()) {
+              //   rotationRate = m_swerveDrive.calculateRotationToTarget();
+              // }
               drive
                   .withVelocityX(
                       leftJoystick.getRawAxis(1)
@@ -373,7 +374,7 @@ public class RobotContainer {
 
   private void configureV2Bindings() {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+    targetTrackingButton.whileTrue(new DriveToBranch(m_swerveDrive));
 
     // Algae Toggle
     m_driverController
@@ -627,9 +628,9 @@ public class RobotContainer {
     // TODO: Implement code to drive to this Pose2d
     robotToBranch[0] = m_swerveDrive.getState().Pose;
     if (Controls.isBlueAlliance()) {
-      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-    } else {
       nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
+    } else {
+      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
     }
     robotToBranch[1] = FIELD.REEF_BRANCHES.getBranchPoseToTargetPose(nearestBranchPose);
     m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);

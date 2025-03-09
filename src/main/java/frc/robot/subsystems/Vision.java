@@ -16,7 +16,6 @@ import frc.robot.Robot;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.VISION;
 import java.util.Arrays;
-// import frc.robot.simulation.FieldSim;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.VisionSystemSim;
 import org.team4201.codex.simulation.FieldSim;
@@ -105,6 +104,7 @@ public class Vision extends SubsystemBase {
   public void updateSmartDashboard() {
     SmartDashboard.putBoolean("rejectionUpdateLLF", doRejectUpdateLLF);
     SmartDashboard.putBoolean("rejectionUpdateLLB", doRejectUpdateLLB);
+    SmartDashboard.putBoolean("trackingState", m_swerveDriveTrain.isTrackingState());
   }
 
   private void updateLog() {}
@@ -175,13 +175,22 @@ public class Vision extends SubsystemBase {
       }
     }
     updateSmartDashboard();
+
+    switch (trackingState) {
+      case BRANCH:
+        updateAngleToBranch();
+        break;
+      case NONE:
+      default:
+        break;
+    }
   }
 
   @Override
   public void simulationPeriodic() {
     // if (m_swerveDriveTrain != null) {
-    //   visionSim.update(m_swerveDriveTrain.getState().Pose);
-    //   visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
+    // visionSim.update(m_swerveDriveTrain.getState().Pose);
+    // visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
     // }
   }
 

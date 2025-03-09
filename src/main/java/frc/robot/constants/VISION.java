@@ -4,39 +4,27 @@
 
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 
 public final class VISION {
-  public static final double kLimelightHFOV = 63.12;
-  public static final double kLimelightVFOV = 49.54;
-  public static final double kLimelightDFOV = 75.07;
 
-  // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d limelightAPosition =
-      new Transform3d(
-          new Translation3d(
-              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
+  public static final Rotation2d kRotationTolerance = Rotation2d.fromDegrees(2.0);
+  public static final Distance kPositionTolerance = Inches.of(0.4);
+  public static final LinearVelocity kSpeedTolerance = InchesPerSecond.of(0.25);
 
-  // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d limelightBPosition =
-      new Transform3d(
-          new Translation3d(
-              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
-
-  public static final double poseXTolerance = Units.inchesToMeters(4);
-  public static final double poseYTolerance = Units.inchesToMeters(4);
-  public static final double poseZTolerance = Units.inchesToMeters(4);
-  public static final double posePitchTolerance = Units.degreesToRadians(4);
-  public static final double poseRollTolerance = Units.degreesToRadians(4);
-  public static final double poseYawTolerance = Units.degreesToRadians(4);
+  public static final Time kEndTriggerDebounce = Seconds.of(0.04);
+  public static final Time kAlignmentAdjustmentTimeout = Seconds.of(0.075);
+  public static final PathConstraints kPathConstraints =
+      new PathConstraints(
+          1.25, 1.25, 1 / 2 * Math.PI, 1 * Math.PI); // The constraints for this path.
 
   public enum CAMERA_TYPE {
     LIMELIGHT,

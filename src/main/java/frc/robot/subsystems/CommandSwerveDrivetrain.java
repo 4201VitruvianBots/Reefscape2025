@@ -20,16 +20,19 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+// import frc.robot.commands.swerve.PositionPIDCommand;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.VISION;
 import frc.robot.constants.VISION.TRACKING_STATE;
@@ -47,6 +50,7 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
+  // private final SwerveDrive m_swerveDrive;
   private Vision m_vision;
 
   private final TalonFX[] driveMotors = {
@@ -239,6 +243,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
   }
 
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setControl(m_pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
+  }
+
   public void setChassisSpeedsAuto(
       ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {
     setControl(
@@ -305,6 +313,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   public ChassisSpeeds getChassisSpeed() {
     return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  }
+
+  public ChassisSpeeds getFieldVelocity() {
+    ChassisSpeeds robotRelativeSpeeds = m_kinematics.toChassisSpeeds(this.getState().ModuleStates);
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        robotRelativeSpeeds, getState().Pose.getRotation());
+  }
+
+  public LinearVelocity getVelocityMagnitude(ChassisSpeeds cs) {
+    return MetersPerSecond.of(
+        new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());
+  }
+
+  public Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target) {
+    if (getVelocityMagnitude(cs).in(MetersPerSecond) < 0.25) {
+      var diff = target.minus(getState().Pose).getTranslation();
+      return (diff.getNorm() < 0.01)
+          ? target.getRotation()
+          : diff.getAngle(); // .rotateBy(Rotation2d.k180deg);
+    }
+    return new Rotation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond);
   }
 
   public TrajectoryUtils getTrajectoryUtils() {
