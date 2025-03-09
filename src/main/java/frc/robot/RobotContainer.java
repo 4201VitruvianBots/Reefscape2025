@@ -278,16 +278,15 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-            m_chooser.addOption(
-             
-            "VisionTest",
-              new VisionTest(
-                  m_swerveDrive,
-                  m_fieldSim,
-                  m_elevator,
-                  m_endEffectorPivot,
-                  m_endEffector,
-                  m_hopperIntake));
+    m_chooser.addOption(
+        "VisionTest",
+        new VisionTest(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
   }
 
   private void initSmartDashboard() {
