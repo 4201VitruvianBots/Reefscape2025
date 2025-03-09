@@ -268,9 +268,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
     // Update the pivotMotor simState
     m_pivotMotorSimState.setRawRotorPosition(
-        Radians.of(m_endEffectorSim.getAngleRads() * PIVOT.pivotGearRatio));
+        Radians.of(m_endEffectorSim.getAngleRads()).times(PIVOT.pivotGearRatio));
     m_pivotMotorSimState.setRotorVelocity(
-        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec() * PIVOT.pivotGearRatio));
+        RadiansPerSecond.of(m_endEffectorSim.getVelocityRadPerSec()).times(PIVOT.pivotGearRatio));
 
     // Update the pivotEncoder simState
     m_pivotEncoderSimState.setRawPosition(Radians.of(m_endEffectorSim.getAngleRads()));

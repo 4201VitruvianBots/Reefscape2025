@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -106,8 +109,8 @@ public class EndEffector extends SubsystemBase {
     m_endEffectorSim.update(0.02);
 
     m_simState.setRawRotorPosition(
-        m_endEffectorSim.getAngularPositionRotations() * ROLLERS.gearRatio);
+        Rotations.of(m_endEffectorSim.getAngularPositionRotations()).times(ROLLERS.gearRatio));
     m_simState.setRotorVelocity(
-        m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+        RPM.of(m_endEffectorSim.getAngularVelocityRPM()).times(ROLLERS.gearRatio));
   }
 }
