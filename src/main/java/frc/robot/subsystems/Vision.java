@@ -111,18 +111,18 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // limelight a
-    LimelightHelpers.SetIMUMode("limelight-f", 1);
-    LimelightHelpers.SetRobotOrientation(
-        "limelight-f",
-        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
-        0,
-        0,
-        0,
-        0,
-        0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam1 =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
+
+    LimelightHelpers.PoseEstimate limelightMeasurementCam1;
+    // cheking when robot is disabled we us mega tag 1 and when robot is enabled we use mega tag 2
+    // When we put the robot on the field we don't know our gyro angle  so we use mega tag 1 to get
+    // the position
+    if (DriverStation.isDisabled()) {
+      // get limelight pose estimate using mega tag 1
+      limelightMeasurementCam1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-f");
+    } else {
+      limelightMeasurementCam1 =
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
+    }
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurementCam1 == null) {
@@ -143,18 +143,18 @@ public class Vision extends SubsystemBase {
       }
     }
 
-    // limelight b
-    LimelightHelpers.SetIMUMode("limelight-b", 1);
-    LimelightHelpers.SetRobotOrientation(
-        "limelight-b",
-        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
-        0,
-        0,
-        0,
-        0,
-        0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam2 =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+    LimelightHelpers.PoseEstimate limelightMeasurementCam2;
+    // cheking when robot is disabled we us mega tag 1 and when robot is enabled we use mega tag 2
+    // When we put the robot on the field we don't know our gyro angle  so we use mega tag 1 to get
+    // the position
+    if (DriverStation.isDisabled()) {
+      // get limelight pose estimate using mega tag 1
+      limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-b");
+    } else {
+      limelightMeasurementCam2 =
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+    }
+
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurementCam2 == null) {
@@ -174,14 +174,34 @@ public class Vision extends SubsystemBase {
             limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
       }
     }
+    LimelightHelpers.SetIMUMode("limelight-f", 1);
+    LimelightHelpers.SetRobotOrientation(
+        "limelight-f",
+        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+        0,
+        0,
+        0,
+        0,
+        0);
+
+    LimelightHelpers.SetIMUMode("limelight-b", 1);
+    LimelightHelpers.SetRobotOrientation(
+        "limelight-b",
+        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+        0,
+        0,
+        0,
+        0,
+        0);
+
     updateSmartDashboard();
   }
 
   @Override
   public void simulationPeriodic() {
     // if (m_swerveDriveTrain != null) {
-    //   visionSim.update(m_swerveDriveTrain.getState().Pose);
-    //   visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
+    // visionSim.update(m_swerveDriveTrain.getState().Pose);
+    // visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
     // }
   }
 
