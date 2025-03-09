@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.constants.ELEVATOR.rotationsToMeters;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -353,8 +352,8 @@ public class Elevator extends SubsystemBase {
     m_elevatorSim.update(0.020);
 
     m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters() * rotationsToMeters.magnitude());
+        m_elevatorSim.getPositionMeters() * ELEVATOR.rotationsToMeters.magnitude());
     m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond() * rotationsToMeters.magnitude());
+        m_elevatorSim.getVelocityMetersPerSecond() * ELEVATOR.rotationsToMeters.magnitude());
   }
 }

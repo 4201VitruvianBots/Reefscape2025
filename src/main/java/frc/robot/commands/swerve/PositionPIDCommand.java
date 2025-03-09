@@ -4,10 +4,8 @@
 
 package frc.robot.commands.swerve;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,13 +16,11 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.SWERVE;
-import frc.robot.constants.VISION;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class PositionPIDCommand extends Command {
-  public CommandSwerveDrivetrain m_swerve;
-  public final Pose2d goalPose;
-  private PPHolonomicDriveController mDriveController = SWERVE.kDriveController;
+  private final CommandSwerveDrivetrain m_swerve;
+  private final Pose2d goalPose;
 
   private final Trigger endTrigger;
   private final Trigger endTriggerDebounced;
@@ -48,16 +44,16 @@ public class PositionPIDCommand extends Command {
                   MathUtil.isNear(
                       0.0,
                       diff.getRotation().getRotations(),
-                      VISION.kRotationTolerance.getRotations(),
+                      SWERVE.kRotationTolerance.getRotations(),
                       0.0,
                       1.0);
 
-              var position = diff.getTranslation().getNorm() < VISION.kPositionTolerance.in(Meters);
+              var position = diff.getTranslation().getNorm() < SWERVE.kPositionTolerance.in(Meters);
 
               var speed =
                   m_swerve
                       .getVelocityMagnitude(m_swerve.getChassisSpeed())
-                      .lt(VISION.kSpeedTolerance);
+                      .lt(SWERVE.kSpeedTolerance);
 
               System.out.println(
                   "end trigger conditions R: " + rotation + "\tP: " + position + "\tS: " + speed);
@@ -65,7 +61,7 @@ public class PositionPIDCommand extends Command {
               return rotation && position && speed;
             });
 
-    endTriggerDebounced = endTrigger.debounce(VISION.kEndTriggerDebounce.in(Seconds));
+    endTriggerDebounced = endTrigger.debounce(SWERVE.kEndTriggerDebounce.in(Seconds));
   }
 
   public static Command generateCommand(
@@ -92,7 +88,7 @@ public class PositionPIDCommand extends Command {
     endTriggerLogger.accept(endTrigger.getAsBoolean());
 
     m_swerve.setChassisSpeeds(
-        mDriveController.calculateRobotRelativeSpeeds(m_swerve.getState().Pose, goalState));
+        SWERVE.kDriveController.calculateRobotRelativeSpeeds(m_swerve.getState().Pose, goalState));
   }
 
   @Override

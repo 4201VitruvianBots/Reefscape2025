@@ -1,9 +1,6 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.constants.SWERVE.kBumperThickness;
-import static frc.robot.constants.SWERVE.kWheelBase;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -171,10 +168,12 @@ public class FIELD {
 
   static final Translation2d baseLeftCoralTargetOffset =
       new Translation2d(
-          kWheelBase.plus(kBumperThickness).in(Meters), baseReefTranslation.in(Meters));
+          SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters),
+          baseReefTranslation.in(Meters));
   static final Translation2d baseRightCoralTargetOffset =
       new Translation2d(
-          kWheelBase.plus(kBumperThickness).in(Meters), -baseReefTranslation.in(Meters));
+          SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters),
+          -baseReefTranslation.in(Meters));
 
   static Translation2d adjustableLeftBranchOffset = new Translation2d();
   static Translation2d adjustableRightBranchOffset = new Translation2d();
@@ -333,7 +332,7 @@ public class FIELD {
   //
 
   static final Translation2d baseAlgaeTargetOffset =
-      new Translation2d(kWheelBase.plus(kBumperThickness).in(Meters), 0);
+      new Translation2d(SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters), 0);
 
   public enum TARGET_TYPE {
     REEF,

@@ -5,7 +5,6 @@
 package frc.robot.commands.swerve;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -15,7 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.constants.VISION;
+import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
 import java.util.List;
@@ -65,13 +64,13 @@ public class DriveToTarget {
       return Commands.sequence(
           Commands.print("start position PID loop"),
           PositionPIDCommand.generateCommand(
-              m_swerveDrive, waypoint, VISION.kAlignmentAdjustmentTimeout),
+              m_swerveDrive, waypoint, SWERVE.kAlignmentAdjustmentTimeout),
           Commands.print("end position PID loop"));
     }
     PathPlannerPath path =
         new PathPlannerPath(
             waypoints,
-            VISION.kPathConstraints,
+            SWERVE.kAutoAlignPathConstraints,
             new IdealStartingState(
                 m_swerveDrive.getVelocityMagnitude(m_swerveDrive.getChassisSpeed()),
                 m_swerveDrive.getState().Pose.getRotation()),
@@ -86,9 +85,7 @@ public class DriveToTarget {
             () -> m_swerveDrive.getState().Pose,
             () -> m_swerveDrive.getState().Speeds,
             m_swerveDrive::setChassisSpeedsAuto,
-            new PPHolonomicDriveController(
-                m_swerveDrive.getAutoTranslationPIDConstants(),
-                m_swerveDrive.getAutoRotationPIDConstants()),
+            SWERVE.kDriveController,
             m_swerveDrive.getAutoRobotConfig(),
             () -> false,
             m_swerveDrive)

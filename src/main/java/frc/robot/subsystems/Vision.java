@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import org.photonvision.simulation.VisionSystemSim;
@@ -24,12 +23,14 @@ public class Vision extends SubsystemBase {
   @NotLogged private CommandSwerveDrivetrain m_swerveDriveTrain;
   @NotLogged private FieldSim m_fieldSim;
 
+  // TODO: Re-add this
   @NotLogged private VisionSystemSim visionSim;
 
   private boolean m_localized = false;
 
+  // TODO: Maybe move GAME_PIECE logic to Controls?
   // @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
-  private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
+  private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
 
   private Pose2d nearestPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
@@ -93,6 +94,7 @@ public class Vision extends SubsystemBase {
       }
       robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
     } else {
+      // TODO: add left/right logic for driver to select between branches?
       if (Controls.isBlueAlliance()) {
         nearestPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_BRANCHES);
       } else {

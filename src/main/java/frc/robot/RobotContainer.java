@@ -397,6 +397,7 @@ public class RobotContainer {
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
                   m_vision::isGamePieceAlgae));
+
       m_driverController
           .x()
           .whileTrue(
@@ -415,6 +416,7 @@ public class RobotContainer {
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
                   m_vision::isGamePieceAlgae));
+
       m_driverController
           .y()
           .whileTrue(
@@ -437,6 +439,7 @@ public class RobotContainer {
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
                       .withTimeout(1),
                   m_vision::isGamePieceAlgae));
+
       m_driverController
           .b()
           .whileTrue(
@@ -503,6 +506,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   m_vision::isGamePieceAlgae));
+
       m_driverController
           .rightBumper()
           .whileTrue(
