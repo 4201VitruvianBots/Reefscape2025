@@ -21,6 +21,8 @@ import org.team4201.codex.simulation.visualization.Arm2d;
 import org.team4201.codex.simulation.visualization.Elevator2d;
 import org.team4201.codex.simulation.visualization.configs.Arm2dConfig;
 import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
+import org.team4201.codex.simulation.visualization.configs.Flywheel2dConfig;
+import org.team4201.codex.simulation.visualization.Flywheel2d;
 
 /**
  * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
@@ -120,7 +122,12 @@ public class Robot2d {
                   -47.5,
                   Inches.of(1.9675).magnitude() * pixelsPerInch,
                   new Color8Bit(0, 0, 255)));
-
+  
+  final Flywheel2d m_endEffectorRoller =
+      new Flywheel2d(
+          new Flywheel2dConfig("endEffectorRoller2d"),
+            m_endEffectorIntake);
+  
   /** Map of subsystems for Robot2d to update */
   private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
@@ -172,6 +179,8 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("EndEffector")) {
       var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffector");
+      
+      m_endEffectorRoller.update(endEffectorSubsystem.getVelocity());
     }
 
     if (m_subsystemMap.containsKey("GroundPivot")) {

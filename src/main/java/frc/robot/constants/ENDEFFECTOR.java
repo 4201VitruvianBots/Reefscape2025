@@ -48,14 +48,14 @@ public class ENDEFFECTOR {
 
   public static class PIVOT {
     // Pivot motor stuff
-    public static final double kPivotP = 100.0;
-    public static final double kPivotI = 0.0;
-    public static final double kPivotD = 0.01;
+    public static final double kP = 100.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.01;
     public static final double kGPositive = 0.0;
     public static final double kGNegative = 0.0;
     public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
-    public static final double kPivotMotionMagicVelocity = 360;
-    public static final double kPivotMotionMagicAcceleration = 600;
+    public static final double kMotionMagicVelocity = 360;
+    public static final double kMotionMagicAcceleration = 600;
 
     public static final DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;

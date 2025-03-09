@@ -7,6 +7,7 @@ package frc.robot.commands.endEffector;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
+import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.EndEffectorPivot;
 import java.util.function.DoubleSupplier;
 
@@ -56,12 +57,19 @@ public class EndEffectorJoystick extends Command {
     // 1)
     //         m_joystickDeadband = Math.max(m_joystickDeadband, 0);
     //     }
-    m_endEffectorPivot.setPercentOutput(m_joystickDeadband * PIVOT.joystickMultiplier);
+    m_endEffectorPivot.setJoystickY(m_joystickDeadband);
     //   }
     // } else {
     //   if (m_endEffectorPivot.getControlMode() == ROBOT.CONTROL_MODE.OPEN_LOOP)
     //     m_endEffectorPivot.setPercentOutput(m_joystickDeadband * PIVOT.joystickMultiplier);
     // }
+    
+    if (m_joystickDeadband != 0) {
+        m_endEffectorPivot.setControlMode(CONTROL_MODE.OPEN_LOOP);
+    } else {
+        m_endEffectorPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
+        m_endEffectorPivot.setPosition(m_endEffectorPivot.getAngle());
+    }
   }
 
   // Called once the command ends or is interrupted.
