@@ -33,8 +33,8 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.swerve.DriveToBranch;
 import frc.robot.commands.swerve.ResetGyro;
-import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
@@ -45,7 +45,6 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
-import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.subsystems.*;
@@ -193,10 +192,10 @@ public class RobotContainer {
         m_swerveDrive.applyRequest(
             () -> {
               var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
-              // if heading target
-              if (m_swerveDrive.isTrackingState()) {
-                rotationRate = m_swerveDrive.calculateRotationToTarget();
-              }
+              // // if heading target
+              // if (m_swerveDrive.isTrackingState()) {
+              //   rotationRate = m_swerveDrive.calculateRotationToTarget();
+              // }
               drive
                   .withVelocityX(
                       leftJoystick.getRawAxis(1)
@@ -376,7 +375,7 @@ public class RobotContainer {
 
   private void configureV2Bindings() {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+    targetTrackingButton.whileTrue(new DriveToBranch(m_swerveDrive));
 
     // Algae Toggle
     m_driverController

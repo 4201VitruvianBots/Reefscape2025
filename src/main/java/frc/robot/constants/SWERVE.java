@@ -3,6 +3,8 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -19,6 +21,11 @@ public class SWERVE {
   public static final Distance kWheelBase = Inches.of(23.75);
   public static final Distance kTrackWidth = Inches.of(23.75);
   public static final Distance kBumperThickness = Inches.of(2.5);
+
+  public static final PIDConstants kTranslationPID = new PIDConstants(5.0, 0, 0);
+  public static final PIDConstants kRotationPID = new PIDConstants(5.0, 0, 0);
+  public static final PPHolonomicDriveController kDriveController =
+      new PPHolonomicDriveController(kTranslationPID, kRotationPID);
 
   public static final Map<MODULE_POSITION, Translation2d> kModuleTranslations =
       Map.of(
