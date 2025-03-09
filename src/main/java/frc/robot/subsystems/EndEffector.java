@@ -45,7 +45,7 @@ public class EndEffector extends SubsystemBase {
 
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
+          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.kInertia, ROLLERS.gearRatio),
           ROLLERS.gearbox);
   private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
 
