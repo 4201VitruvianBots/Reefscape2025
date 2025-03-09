@@ -336,20 +336,6 @@ public class RobotContainer {
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
 
-    if (m_endEffectorPivot != null) {
-      //   m_driverController
-      //       .a()
-      //       .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
-    }
-    if (m_endEffector != null) {
-      //   m_driverController
-      //       .leftTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-      //   m_driverController
-      //       .rightTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
-    }
-
     if (m_algaeIntake != null) {
       // TODO: Make speeds into enum setpoints
       m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake

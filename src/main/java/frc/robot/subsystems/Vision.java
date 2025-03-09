@@ -30,6 +30,10 @@ public class Vision extends SubsystemBase {
   private boolean m_localized;
   private boolean doRejectUpdateLLF = false;
   private boolean doRejectUpdateLLB = false;
+  
+  private boolean m_limelightFConnected = false;
+  private boolean m_limelightBConnected = false;
+  
   private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
 
   // NetworkTables publisher setup
@@ -38,7 +42,7 @@ public class Vision extends SubsystemBase {
   /* Robot swerve drive state */
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
   private final StructPublisher<Pose2d> estPoseLLF =
-      table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
+      table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
@@ -65,11 +69,15 @@ public class Vision extends SubsystemBase {
   public void setTrackingState(VISION.TRACKING_STATE state) {
     trackingState = state;
   }
-
-  public boolean isCameraConnected(PhotonCamera camera) {
-    return camera.isConnected();
+  
+  public boolean isLimelightFConnected() {
+    return m_limelightFConnected;
   }
-
+  
+  public boolean isLimelightBConnected() {
+    return m_limelightBConnected;
+  }
+  
   private void updateAngleToBranch() {
     DriverStation.getAlliance()
         .ifPresent(
@@ -121,25 +129,26 @@ public class Vision extends SubsystemBase {
         0,
         0,
         0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam1 =
+    LimelightHelpers.PoseEstimate frontLimelightMeasurement =
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
-    if (limelightMeasurementCam1 == null) {
-      DriverStation.reportWarning("LimelightA is not connected", true);
+    m_limelightFConnected = frontLimelightMeasurement != null;
+    if (m_limelightFConnected) {
+      DriverStation.reportWarning("LimelightF is not connected", true);
     } else {
-      estPoseLLF.set(limelightMeasurementCam1.pose);
-      estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
+      estPoseLLF.set(frontLimelightMeasurement.pose);
+      estTimeStamp.set(frontLimelightMeasurement.timestampSeconds);
 
-      if (limelightMeasurementCam1.tagCount == 0) {
+      if (frontLimelightMeasurement.tagCount == 0) {
         doRejectUpdateLLF = true;
       }
-      if (limelightMeasurementCam1.tagCount >= 1) {
+      if (frontLimelightMeasurement.tagCount >= 1) {
         doRejectUpdateLLF = false;
       }
       if (!doRejectUpdateLLF) {
         m_swerveDriveTrain.addVisionMeasurement(
-            limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
+            frontLimelightMeasurement.pose, frontLimelightMeasurement.timestampSeconds);
       }
     }
 
@@ -153,25 +162,26 @@ public class Vision extends SubsystemBase {
         0,
         0,
         0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam2 =
+    LimelightHelpers.PoseEstimate backLimelightMeasurement =
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
-    if (limelightMeasurementCam2 == null) {
+    m_limelightBConnected = backLimelightMeasurement != null;
+    if (m_limelightBConnected) {
       DriverStation.reportWarning("LimelightB is not connected", true);
     } else {
-      estPoseLLB.set(limelightMeasurementCam2.pose);
-      estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
+      estPoseLLB.set(backLimelightMeasurement.pose);
+      estTimeStamp.set(backLimelightMeasurement.timestampSeconds);
 
-      if (limelightMeasurementCam2.tagCount == 0) {
+      if (backLimelightMeasurement.tagCount == 0) {
         doRejectUpdateLLB = true;
       }
-      if (limelightMeasurementCam2.tagCount >= 1) {
+      if (backLimelightMeasurement.tagCount >= 1) {
         doRejectUpdateLLB = false;
       }
       if (!doRejectUpdateLLB) {
         m_swerveDriveTrain.addVisionMeasurement(
-            limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
+            backLimelightMeasurement.pose, backLimelightMeasurement.timestampSeconds);
       }
     }
     updateSmartDashboard();

@@ -198,6 +198,22 @@ public class Controls extends SubsystemBase {
     }
     m_canAlert.setText(canAlertMessage);
     
+    // Update vision alerts
+    m_visionAlert.set(false);
+    
+    if (m_subsystemMap.containsKey("Vision")) {
+        var visionSubsystem = (Vision) m_subsystemMap.get("Vision");
+        if (!visionSubsystem.isLimelightFConnected() && !visionSubsystem.isLimelightBConnected()) {
+            m_visionAlert.setText("Both Limelights are disconnected");
+            m_visionAlert.set(true);
+        } else if (!visionSubsystem.isLimelightFConnected()) {
+            m_visionAlert.setText("The front Limelight is disconnected");
+            m_visionAlert.set(true);
+        } else if (!visionSubsystem.isLimelightBConnected()) {
+            m_visionAlert.setText("The back Limelight is disconnected");
+            m_visionAlert.set(true);
+        }
+    }
   }
   
   @Override
