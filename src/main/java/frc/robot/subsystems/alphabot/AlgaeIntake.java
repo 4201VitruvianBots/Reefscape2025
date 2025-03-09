@@ -10,7 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.alphabot.ALGAE;
 import frc.robot.constants.alphabot.CAN;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class AlgaeIntake extends SubsystemBase {
 
@@ -18,13 +18,13 @@ public class AlgaeIntake extends SubsystemBase {
 
   /** Creates a new Algae. */
   public AlgaeIntake() {
-    TalonFXConfiguration m_algaeMotorconfig = new TalonFXConfiguration();
-    m_algaeMotorconfig.Slot0.kP = ALGAE.kP;
-    m_algaeMotorconfig.Slot0.kI = ALGAE.kI;
-    m_algaeMotorconfig.Slot0.kD = ALGAE.kD;
-    m_algaeMotorconfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    m_algaeMotorconfig.Feedback.SensorToMechanismRatio = ALGAE.algaeGearRatio;
-    CtreUtils.configureTalonFx(m_algaeMotor, m_algaeMotorconfig);
+    TalonFXConfiguration m_algaeMotorConfig = new TalonFXConfiguration();
+    m_algaeMotorConfig.Slot0.kP = ALGAE.kP;
+    m_algaeMotorConfig.Slot0.kI = ALGAE.kI;
+    m_algaeMotorConfig.Slot0.kD = ALGAE.kD;
+    m_algaeMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    m_algaeMotorConfig.Feedback.SensorToMechanismRatio = ALGAE.algaeGearRatio;
+    CtreUtils.configureTalonFx(m_algaeMotor, m_algaeMotorConfig);
   }
 
   public void setPercentOutput(double output) {

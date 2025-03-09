@@ -5,42 +5,43 @@
 package frc.robot.commands.swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.VISION;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Controls;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ResetGyro extends Command {
-  /** Creates a new ResetGyro. */
+public class SetTrackingState extends Command {
   private final CommandSwerveDrivetrain m_swerveDrive;
 
-  public ResetGyro(CommandSwerveDrivetrain swerveDrive) {
-    m_swerveDrive = swerveDrive;
-    // Use addRequirements() here to declare subsystem dependencies.
+  private final VISION.TRACKING_STATE m_state;
 
-    addRequirements(m_swerveDrive);
+  public SetTrackingState(CommandSwerveDrivetrain swerveDrive, VISION.TRACKING_STATE state) {
+    m_swerveDrive = swerveDrive;
+    m_state = state;
+  }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    if (Controls.isBlueAlliance()) {
-      m_swerveDrive.resetGyro(0);
-    } else {
-      m_swerveDrive.resetGyro(180);
-    }
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_swerveDrive.setTrackingState(m_state);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_swerveDrive.setTrackingState(VISION.TRACKING_STATE.NONE);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

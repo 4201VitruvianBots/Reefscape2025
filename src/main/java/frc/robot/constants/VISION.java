@@ -4,83 +4,32 @@
 
 package frc.robot.constants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public final class VISION {
-
-  // TODO: figure out if these values need to be changed
-
   public static final double kLimelightHFOV = 63.12;
   public static final double kLimelightVFOV = 49.54;
   public static final double kLimelightDFOV = 75.07;
 
-  public static final double aprilTagLimelightCameraADistanceFromCenterX =
-      Units.inchesToMeters(-14);
-  public static final double aprilTagLimelightCameraADistanceFromCenterY =
-      Units.inchesToMeters(6.5);
-  public static final double aprilTagLimelightCameraADistanceFromGroundZ =
-      Units.inchesToMeters(14.6875);
-  public static final double aprilTagLimelightCameraAOffsetInRadiansRoll =
-      Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraAOffsetInRadiansPitch =
-      Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraAOffsetInRadiansYaw = Units.degreesToRadians(0);
-
-  public static final double aprilTagLimelightCameraBDistanceFromCenterX = Units.inchesToMeters(14);
-  public static final double aprilTagLimelightCameraBDistanceFromCenterY =
-      Units.inchesToMeters(-6.5);
-  public static final double aprilTagLimelightCameraBDistanceFromGroundZ =
-      Units.inchesToMeters(14.6875);
-  public static final double aprilTagLimelightCameraBOffsetInRadiansRoll =
-      Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraBOffsetInRadiansPitch =
-      Units.degreesToRadians(0);
-  public static final double aprilTagLimelightCameraBOffsetInRadiansYaw = Units.degreesToRadians(0);
-
-  public static final double noteDetectionLimelightCameraDistanceFromCenterX =
-      Units.inchesToMeters(12.125);
-  public static final double noteDetectionLimelightCameraDistanceFromCenterY =
-      Units.inchesToMeters(0);
-  public static final double noteDetectionLimelightCameraDistanceFromGroundZ =
-      Units.inchesToMeters(7.040388);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesRoll =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesPitch =
-      Units.degreesToRadians(0);
-  public static final double noteDetectionLimelightCameraOffsetInDegreesYaw =
-      Units.degreesToRadians(0);
-
-  public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
-
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d robotToAprilTagLimelightCameraA =
+  public static final Transform3d limelightAPosition =
       new Transform3d(
           new Translation3d(
-              aprilTagLimelightCameraADistanceFromCenterX,
-              aprilTagLimelightCameraADistanceFromCenterY,
-              aprilTagLimelightCameraADistanceFromGroundZ),
-          new Rotation3d(
-              aprilTagLimelightCameraAOffsetInRadiansRoll,
-              aprilTagLimelightCameraAOffsetInRadiansPitch,
-              aprilTagLimelightCameraAOffsetInRadiansYaw));
+              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 
   // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d robotToAprilTagLimelightCameraB =
+  public static final Transform3d limelightBPosition =
       new Transform3d(
           new Translation3d(
-              aprilTagLimelightCameraBDistanceFromCenterX,
-              aprilTagLimelightCameraBDistanceFromCenterY,
-              aprilTagLimelightCameraBDistanceFromGroundZ),
-          new Rotation3d(
-              aprilTagLimelightCameraBOffsetInRadiansRoll,
-              aprilTagLimelightCameraBOffsetInRadiansPitch,
-              aprilTagLimelightCameraBOffsetInRadiansYaw));
+              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
 
   public static final double poseXTolerance = Units.inchesToMeters(4);
   public static final double poseYTolerance = Units.inchesToMeters(4);
@@ -94,23 +43,9 @@ public final class VISION {
     PHOTONVISION
   }
 
-  public enum PIPELINE {
-    APRILTAGS(0);
-    private final int pipeline;
-
-    PIPELINE(final int pipeline) {
-      this.pipeline = pipeline;
-    }
-
-    public int get() {
-      return pipeline;
-    }
-  }
-
   public enum CAMERA_SERVER {
-    INTAKE("10.42.1.11"),
-    LIMELIGHTA("10.42.1.12"),
-    LIMELIGHTB("10.42.1.13"),
+    LIMELIGHTF("10.42.1.11"),
+    LIMELIGHTB("10.42.1.12"),
     ;
     private final String ip;
 
@@ -126,6 +61,6 @@ public final class VISION {
 
   public enum TRACKING_STATE {
     NONE,
-    REEF
+    BRANCH
   }
 }

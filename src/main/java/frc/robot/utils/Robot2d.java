@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.constants.ELEVATOR;
-import frc.robot.constants.ENDEFFECTOR;
+import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
 
 /**
  * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
- * the window in Glass/SmartDashboard). For consistency, we should just use Inches.
+ * the window in Glass/SmartDashboard. For consistency, we should just use Inches.
  */
 public class Robot2d {
 
@@ -32,19 +32,30 @@ public class Robot2d {
    * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the
    * lineWidth of MechanismLigament2d appropriately
    */
-  double pixelsPerInch = 29.0 / 2.0;
+  private final double pixelsPerInch = 29.0 / 2.0;
 
-  Distance robotCanvasX = Inches.of(45.31034);
-  Distance robotCanvasY = Inches.of(57.24138);
+  private final Distance robotCanvasX = Inches.of(45.31034);
+  private final Distance robotCanvasY = Inches.of(57.24138 + 20.0);
 
-  Mechanism2d m_robot = new Mechanism2d(robotCanvasX.magnitude(), robotCanvasY.magnitude());
+  private final Mechanism2d m_robot =
+      new Mechanism2d(robotCanvasX.magnitude(), robotCanvasY.magnitude());
 
   /** Declare a single point from the main Mechanism2d to attach the chassis */
-  MechanismRoot2d m_chassisRoot =
-      m_robot.getRoot("chassisRoot", Inches.of(11).magnitude(), Inches.of(3.75).magnitude());
+  final MechanismRoot2d m_chassisRoot =
+      m_robot.getRoot("chassisRoot", Inches.of(16).magnitude(), Inches.of(3.75).magnitude());
+
+  private final MechanismRoot2d m_superStructureRoot =
+      m_robot.getRoot("SuperStructureRoot", Inches.of(23.25).magnitude(), Inches.of(3).magnitude());
+  final MechanismLigament2d m_superStructure =
+      new MechanismLigament2d(
+          "superStructure2d",
+          ELEVATOR.superStructureHeight.in(Inches),
+          90,
+          Inches.of(2).magnitude() * pixelsPerInch,
+          new Color8Bit(0, 127, 0));
 
   /** Use a line (MechanismLigament2d) to represent the robot chassis */
-  MechanismLigament2d m_robotChassis =
+  final MechanismLigament2d m_robotChassis =
       new MechanismLigament2d(
           "chassis2d",
           SWERVE.kWheelBase.in(Inches),
@@ -53,40 +64,70 @@ public class Robot2d {
           new Color8Bit(0, 127, 0));
 
   /** Declare a single point from the main Mechanism2d to attach the Elevator2d */
-  MechanismRoot2d m_elevatorRoot =
-      m_robot.getRoot("ElevatorRoot", Inches.of(18.25).magnitude(), Inches.of(3).magnitude());
+  private final MechanismRoot2d m_elevatorRoot =
+      m_robot.getRoot("ElevatorRoot", Inches.of(23.25).magnitude(), Inches.of(3).magnitude());
 
   /** Create an Elevator2d to represent an elevator, and then attach it to the m_elevatorRoot */
-  Elevator2d m_elevator =
+  private final Elevator2d m_elevator =
       new Elevator2d(
           new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
-              .withSuperStructureOffset(ELEVATOR.superStructureHeight)
+              .withSuperStructureOffset(Inches.of(3))
               .withStageMaxLengths(Meters.of(ELEVATOR.upperLimitMeters))
               .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
-  /** Declare a single point from the main Mechanism2d to attach the Arm2d */
-  MechanismRoot2d m_endEffectorRoot =
-      m_robot.getRoot("EndEffectorRoot", Inches.of(11.625).magnitude(), Inches.of(39).magnitude());
+  final MechanismLigament2d m_endEffectorAttachment =
+      m_elevator
+          .getLastStageLigament()
+          .append(
+              new MechanismLigament2d(
+                  "endEffectorAttachment2d",
+                  Inches.of(11.75).magnitude(),
+                  36.11,
+                  Inches.of(2).magnitude() * pixelsPerInch,
+                  new Color8Bit(0, 127, 0)));
 
   /** Create an Arm2d to represent the endEffector */
-  Arm2d m_endEffector =
+  private final Arm2d m_endEffector =
       new Arm2d(
           new Arm2dConfig(
                   "EndEffector2d",
                   new Color8Bit(0, 255, 255),
-                  ENDEFFECTOR.startingAngle,
-                  ENDEFFECTOR.length)
+                  PIVOT.startingAngle.minus(Degrees.of(25.676)),
+                  PIVOT.baseLength)
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
-          m_endEffectorRoot);
+          m_endEffectorAttachment);
+
+  /** Another Arm2d to represent the other half of the endEffector */
+  private final Arm2d m_endEffectorBack =
+      new Arm2d(
+          new Arm2dConfig(
+                  "EndEffectorBack2d",
+                  new Color8Bit(0, 255, 255),
+                  PIVOT.startingAngle.minus(Degrees.of(25.676)).plus(Degrees.of(90)),
+                  PIVOT.baseLength)
+              .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
+          m_endEffectorAttachment);
+
+  final MechanismLigament2d m_endEffectorIntake =
+      m_endEffector
+          .getLigament()
+          .append(
+              new MechanismLigament2d(
+                  "endEffectorIntake2d",
+                  Inches.of(9).magnitude(),
+                  -47.5,
+                  Inches.of(1.9675).magnitude() * pixelsPerInch,
+                  new Color8Bit(0, 0, 255)));
 
   /** Map of subsystems for Robot2d to update */
-  Map<String, Subsystem> m_subsystemMap = new HashMap<>();
+  private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   public Robot2d() {
     // Attach the robotChassis to the chassisRoot
     m_chassisRoot.append(m_robotChassis);
+    m_superStructureRoot.append(m_superStructure);
 
     // Publish Robot2d to SmartDashboard
     SmartDashboard.putData("Robot2d", m_robot);
@@ -110,7 +151,7 @@ public class Robot2d {
   public void updateRobot2d() {
     if (m_subsystemMap.containsKey("Elevator")) {
       var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
-      m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()));
+      m_elevator.update(elevatorSubsystem.getHeight());
       // TODO: Add LinearVelocity function in elevator
       //   m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
     }
@@ -119,7 +160,14 @@ public class Robot2d {
       var endEffectorPivotSubsystem = (EndEffectorPivot) m_subsystemMap.get("EndEffectorPivot");
       // Visually, this will go opposite of the actual angle, so we just negate it here so it looks
       // correct
-      m_endEffector.update(endEffectorPivotSubsystem.getCANcoderAngle().unaryMinus());
+      m_endEffector.update(
+          endEffectorPivotSubsystem.getCANcoderAngle().minus(Degrees.of(25.676)).unaryMinus());
+      m_endEffectorBack.update(
+          endEffectorPivotSubsystem
+              .getCANcoderAngle()
+              .minus(Degrees.of(25.676))
+              .unaryMinus()
+              .plus(Degrees.of(90)));
     }
 
     if (m_subsystemMap.containsKey("EndEffector")) {

@@ -24,12 +24,11 @@ public class Telemetry {
   //    };
 
   private final Pose2d[] m_swerveModulePoses = {
-    new Pose2d(), new Pose2d(), new Pose2d(), new Pose2d(),
+    Pose2d.kZero, Pose2d.kZero, Pose2d.kZero, Pose2d.kZero
   };
   private final Transform2d[] m_moduleTransforms = new Transform2d[4];
-  private final double[] m_moduleAngles = new double[4];
 
-  /* What to publish over networktables for telemetry */
+  /* What to publish over NetworkTables for telemetry */
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /* Robot swerve drive state */
@@ -88,12 +87,11 @@ public class Telemetry {
     SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
     if (m_fieldSim != null) {
-      // TODO: Re-impelement
+      // TODO: Re-implement
       //            for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
       //                m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
-      //                m_moduleTransforms[i.ordinal()] =
-      //                        new Transform2d(
-      //                                SWERVE.DRIVE.kModuleTranslations.get(i),
+      //                m_moduleTransforms[i.ordinal()] = new
+      // Transform2d(SWERVE.DRIVE.kModuleTranslations.get(i),
       // state.ModuleStates[i.ordinal()].angle);
       //                m_swerveModulePoses[i.ordinal()] =
       // pose.transformBy(m_moduleTransforms[i.ordinal()]);

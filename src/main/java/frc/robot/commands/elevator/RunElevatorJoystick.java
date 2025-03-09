@@ -11,6 +11,8 @@ public class RunElevatorJoystick extends Command {
   private final Elevator m_elevator;
   private final DoubleSupplier m_joystickY;
 
+  private boolean m_elevatorHeld = false;
+
   public RunElevatorJoystick(Elevator elevator, DoubleSupplier joystickY) {
     m_elevator = elevator;
     m_joystickY = joystickY;
@@ -22,25 +24,25 @@ public class RunElevatorJoystick extends Command {
 
   @Override
   public void execute() {
-    double joystickYDeadbandOutput = MathUtil.applyDeadband(m_joystickY.getAsDouble(), 0.2);
+    // Adds a Deadband so joystick Ys below 0.1 won't be registered
+    double joystickYDeadbandOutput = MathUtil.applyDeadband(m_joystickY.getAsDouble(), 0.1);
 
-    if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.OPEN_LOOP) {
-      //         if (joystickYDeadbandOutput < 0)
-      //           joystickYDeadbandOutput *= CLIMBER.kLimitedPercentOutputMultiplier;
-      m_elevator.setJoystickY(joystickYDeadbandOutput);
-
-      if (joystickYDeadbandOutput == 0) {
+    if (joystickYDeadbandOutput != 0.0) {
+      m_elevatorHeld = false;
+      m_elevator.setControlMode(CONTROL_MODE.OPEN_LOOP);
+      m_elevator.setJoystickInput(joystickYDeadbandOutput);
+    }
+    if (joystickYDeadbandOutput == 0) {
+      m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP);
+      if (!m_elevatorHeld) {
         m_elevator.holdElevator();
+        m_elevatorHeld = true;
       }
-    } else if (m_elevator.getClosedLoopControlMode() == CONTROL_MODE.CLOSED_LOOP) {
-      m_elevator.setDesiredPosition(m_elevator.getHeightMeters() + joystickYDeadbandOutput * 0.5);
-
-      if (joystickYDeadbandOutput == 0) m_elevator.holdElevator();
     }
   }
 
   @Override
-  public void end(boolean interruped) {}
+  public void end(boolean interrupted) {}
 
   public boolean isFinished() {
     return false;

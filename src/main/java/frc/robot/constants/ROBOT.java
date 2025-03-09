@@ -22,6 +22,7 @@ public class ROBOT {
 
   public enum SUPERSTRUCTURE_STATES {
     STOWED,
+    HOPPER_INTAKE,
     L1,
     L2,
     L3,

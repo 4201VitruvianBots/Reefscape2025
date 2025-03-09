@@ -17,9 +17,11 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,10 +31,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.SWERVE;
+import frc.robot.constants.VISION;
+import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
-import frc.robot.utils.CtreUtils;
+import java.io.IOException;
 import java.util.function.Supplier;
+import org.json.simple.parser.ParseException;
 import org.team4201.codex.subsystems.SwerveSubsystem;
+import org.team4201.codex.utils.CtreUtils;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
 
@@ -41,14 +47,16 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
-  private TalonFX[] driveMotors = {
+  private Vision m_vision;
+
+  private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
     getModule(2).getDriveMotor(),
     getModule(3).getDriveMotor()
   };
 
-  private TalonFX[] steerMotors = {
+  private final TalonFX[] steerMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
     getModule(2).getDriveMotor(),
@@ -132,6 +140,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = new Rotation2d();
+  private Rotation2d m_angleToTarget = new Rotation2d();
+  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
+  private SwerveDriveKinematics m_kinematics;
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -150,14 +164,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
 
     try {
-      m_trajectoryUtils =
-          new TrajectoryUtils(
-              this,
-              RobotConfig.fromGUISettings(),
-              new PIDConstants(10, 0, 0),
-              new PIDConstants(7, 0, 0));
+      m_trajectoryUtils = new TrajectoryUtils(this);
     } catch (Exception ex) {
-      DriverStation.reportError("Failed to configure TrajectoryUtils", false);
+      DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
     }
   }
 
@@ -230,75 +239,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     configureAutoBuilder();
   }
 
-  // TODO: fix
   public void setChassisSpeedsAuto(
-      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {}
-
-  // TODO: Re-implement
-  //   public Command applyChassisSpeeds(Supplier<ChassisSpeeds> chassisSpeeds) {
-  //      return applyChassisSpeeds(chassisSpeeds, 0.02, 1.0, false);
-  //   }
-
-  /**
-   * Second-Order Kinematics <a
-   * href="https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/79">...</a>
-   */
-  // TODO: Re-implement
-  //  public Command applyChassisSpeeds(
-  //          Supplier<ChassisSpeeds> chassisSpeeds,
-  //          double loopPeriod,
-  //          double driftRate,
-  //          boolean isRobotCentric) {
-  //    return applyRequest(
-  //            () -> {
-  //              m_futurePose =
-  //                      new Pose2d(
-  //                              chassisSpeeds.get().vxMetersPerSecond * loopPeriod,
-  //                              chassisSpeeds.get().vyMetersPerSecond * loopPeriod,
-  //                              Rotation2d.fromRadians(
-  //                                      chassisSpeeds.get().omegaRadiansPerSecond * loopPeriod *
-  // driftRate));
-  //
-  //              m_twistFromPose = new Pose2d().log(m_futurePose);
-  //
-  //              var rotationSpeed = chassisSpeeds.get().omegaRadiansPerSecond;
-  //              if (m_trackingState != VISION.TRACKING_STATE.NONE) {
-  //                if (m_trackingState == VISION.TRACKING_STATE.NOTE) {
-  //                  if (m_vision != null) {
-  //                    if (m_vision.hasGamePieceTarget()) {
-  //                      rotationSpeed = calculateRotationToTarget();
-  //                    }
-  //                  }
-  //                } else if (m_trackingState == VISION.TRACKING_STATE.SPEAKER) {
-  //                  rotationSpeed = calculateRotationToTarget();
-  //                }
-  //              }
-  //
-  //              m_newChassisSpeeds =
-  //                      new ChassisSpeeds(
-  //                              m_twistFromPose.dx / loopPeriod, m_twistFromPose.dy / loopPeriod,
-  // rotationSpeed);
-  //
-  //              if (isRobotCentric) {
-  //                return m_driveReqeustRobotCentric
-  //                        .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
-  //                        .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
-  //                        .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //              } else {
-  //                if (Controls.isRedAlliance()) {
-  //                  return m_driveReqeustFieldCentric
-  //                          .withVelocityX(-m_newChassisSpeeds.vxMetersPerSecond)
-  //                          .withVelocityY(-m_newChassisSpeeds.vyMetersPerSecond)
-  //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //                } else {
-  //                  return m_driveReqeustFieldCentric
-  //                          .withVelocityX(m_newChassisSpeeds.vxMetersPerSecond)
-  //                          .withVelocityY(m_newChassisSpeeds.vyMetersPerSecond)
-  //                          .withRotationalRate(m_newChassisSpeeds.omegaRadiansPerSecond);
-  //                }
-  //              }
-  //            });
-  //  }
+      ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedforwards) {
+    setControl(
+        m_pathApplyRobotSpeeds
+            .withSpeeds(chassisSpeeds)
+            .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+  }
 
   public void resetGyro(double angle) {
     getPigeon2().setYaw(angle);
@@ -355,8 +303,39 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
+  public ChassisSpeeds getChassisSpeed() {
+    return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  }
+
   public TrajectoryUtils getTrajectoryUtils() {
     return m_trajectoryUtils;
+  }
+
+  @Override
+  public RobotConfig getAutoRobotConfig() {
+    try {
+      return RobotConfig.fromGUISettings();
+    } catch (IOException e) {
+      DriverStation.reportWarning(
+          "[SwerveDrive] Could not load RobotConfig for autos!", e.getStackTrace());
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+      DriverStation.reportWarning(
+          "[SwerveDrive] Could not parse RobotConfig for autos!", e.getStackTrace());
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public PIDConstants getAutoTranslationPIDConstants() {
+    // TODO: Move PID constants to variables under SWERVE.java
+    return new PIDConstants(10, 0, 0);
+  }
+
+  @Override
+  public PIDConstants getAutoRotationPIDConstants() {
+    // TODO: Move PID constants to variables under SWERVE.java
+    return new PIDConstants(7, 0, 0);
   }
 
   /**
@@ -367,6 +346,42 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
    */
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
+  }
+
+  public void setAngleToTarget(Rotation2d angle) {
+    m_angleToTarget = angle;
+  }
+
+  public void setTrackingState(VISION.TRACKING_STATE state) {
+    if (m_trackingState != state) {
+      m_pidController.reset();
+      m_trackingState = state;
+    }
+  }
+
+  public double calculateRotationToTarget() {
+    return m_pidController.calculate(
+        getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
+  }
+
+  private void updateTargetAngle() {
+    switch (m_trackingState) {
+      case BRANCH:
+        m_targetAngle = m_angleToTarget;
+        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
+        break;
+      default:
+      case NONE:
+        break;
+    }
+  }
+
+  public boolean isTrackingState() {
+    if (m_trackingState == TRACKING_STATE.BRANCH) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -393,6 +408,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   @Override
   public void periodic() {
+    updateTargetAngle();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

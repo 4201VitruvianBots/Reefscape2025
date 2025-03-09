@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -19,11 +21,11 @@ import frc.robot.constants.ROBOT;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-@Logged
+@Logged(name = "Robot", importance = Logged.Importance.CRITICAL)
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  @Logged(name = "RobotContainer")
+  @Logged(name = "RobotContainer", importance = Logged.Importance.CRITICAL)
   private RobotContainer m_robotContainer;
 
   /**
@@ -40,16 +42,22 @@ public class Robot extends TimedRobot {
 
           if (RobotBase.isSimulation()) {
             config.errorHandler = ErrorHandler.crashOnError();
+            config.minimumImportance = Logged.Importance.DEBUG;
+          } else {
+            // During competition/practice
+            config.minimumImportance = Logged.Importance.INFO;
           }
 
-          config.minimumImportance = Logged.Importance.DEBUG;
+          config.root = "EpilogueTelemetry";
         });
+    DataLogManager.start();
     Epilogue.bind(this);
   }
 
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    FollowPathCommand.warmupCommand().schedule();
+    // Instantiate our RobotContainer. This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
@@ -78,7 +86,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    m_robotContainer.disabledPeriodic();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -129,7 +139,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    m_robotContainer.simulationInit();
+    // TODO: Figure out why this breaks in simulation
+    // m_robotContainer.simulationInit();
   }
 
   /** This function is called periodically whilst in simulation. */

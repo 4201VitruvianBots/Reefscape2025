@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ToggleGamePiece extends InstantCommand {
-  private Supplier<ROBOT.GAME_PIECE> m_getGamePiece;
-  private Consumer<ROBOT.GAME_PIECE> m_toggleGamePiece;
+  private final Supplier<ROBOT.GAME_PIECE> m_getGamePiece;
+  private final Consumer<ROBOT.GAME_PIECE> m_toggleGamePiece;
 
   /** Creates a new ToggleGamePiece. */
   public ToggleGamePiece(

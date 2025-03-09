@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 
 public class GROUND {
-  public class PIVOT {
+  public static class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
@@ -24,7 +24,7 @@ public class GROUND {
     Since this gain is multiplied by the requested velocity,
     the units should be defined as units of output per unit of requested input velocity.
     For example, when controlling velocity using a duty cycle closed loop,
-    the units for the velocity feedfoward gain will be duty cycle per requested rps, or 1/rps. */
+    the units for the velocity feedforward gain will be duty cycle per requested rps, or 1/rps. */
     public static final double kV = 0;
 
     /* Acceleration Feedforward Gain
@@ -95,7 +95,7 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
   }
 
-  public class INTAKE {
+  public static class INTAKE {
 
     public static final double kP = 0.10; // change these
     public static final double kI = 0.00;

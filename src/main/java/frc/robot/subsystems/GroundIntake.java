@@ -10,7 +10,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -21,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class GroundIntake extends SubsystemBase {
 
@@ -65,10 +64,9 @@ public class GroundIntake extends SubsystemBase {
   public void simulationPeriodic() {
     m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_groundIntakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_groundIntakeMotorSimState.getMotorVoltage(), -12, 12));
+    m_groundIntakeMotorSim.setInputVoltage(m_groundIntakeMotorSimState.getMotorVoltage());
 
-    m_groundIntakeMotorSim.update(0.02); // TODO update this later maybe?
+    m_groundIntakeMotorSim.update(0.02);
 
     m_groundIntakeMotorSimState.setRawRotorPosition(
         m_groundIntakeMotorSim.getAngularPositionRotations() * GROUND.INTAKE.gearRatio);
