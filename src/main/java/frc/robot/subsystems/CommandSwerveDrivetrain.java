@@ -31,10 +31,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-// import frc.robot.commands.swerve.PositionPIDCommand;
 import frc.robot.constants.SWERVE;
-import frc.robot.constants.VISION;
-import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -49,9 +46,6 @@ import org.team4201.codex.utils.TrajectoryUtils;
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
-  // private final SwerveDrive m_swerveDrive;
-  private Vision m_vision;
-
   private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
@@ -81,7 +75,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   private final PIDController m_pidController = new PIDController(10.0, 0.0, 0.0);
   private Rotation2d m_targetAngle = Rotation2d.kZero;
-  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -376,17 +369,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   public void setTargetAngle(Rotation2d angle) {
     m_targetAngle = angle;
-  }
-
-  public void setTrackingState(VISION.TRACKING_STATE state) {
-    if (m_trackingState != state) {
-      m_pidController.reset();
-      m_trackingState = state;
-    }
-  }
-
-  public boolean isTrackingState() {
-    return m_trackingState == TRACKING_STATE.BRANCH;
   }
 
   public double calculateRotationToTarget() {

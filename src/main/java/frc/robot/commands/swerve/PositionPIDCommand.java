@@ -22,7 +22,6 @@ import frc.robot.constants.VISION;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class PositionPIDCommand extends Command {
-
   public CommandSwerveDrivetrain m_swerve;
   public final Pose2d goalPose;
   private PPHolonomicDriveController mDriveController = SWERVE.kDriveController;

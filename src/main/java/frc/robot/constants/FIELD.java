@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -312,20 +313,20 @@ public class FIELD {
   }
 
   /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] RED_CORAL_BRANCHES =
-      CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red);
+  public static final List<Pose2d> RED_CORAL_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red));
 
   /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] BLUE_CORAL_BRANCHES =
-      CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue);
+  public static final List<Pose2d> BLUE_CORAL_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue));
 
   /** Static array of all Red Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] RED_CORAL_TARGETS =
-      CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red);
+  public static final List<Pose2d> RED_CORAL_TARGETS =
+      Arrays.asList(CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red));
 
   /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] BLUE_CORAL_TARGETS =
-      CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue);
+  public static final List<Pose2d> BLUE_CORAL_TARGETS =
+      Arrays.asList(CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue));
 
   //
   // Algae Branch constants
@@ -450,20 +451,20 @@ public class FIELD {
   }
 
   /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] RED_ALGAE_BRANCHES =
-      ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red);
+  public static final List<Pose2d> RED_ALGAE_BRANCHES =
+      Arrays.asList(ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red));
 
   /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
-  public static final Pose2d[] BLUE_ALGAE_BRANCHES =
-      ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue);
+  public static final List<Pose2d> BLUE_ALGAE_BRANCHES =
+      Arrays.asList(ALGAE_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue));
 
   /** Static array of all Red Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] RED_ALGAE_TARGETS =
-      ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red);
+  public static final List<Pose2d> RED_ALGAE_TARGETS =
+      Arrays.asList(ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red));
 
   /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
-  public static final Pose2d[] BLUE_ALGAE_TARGETS =
-      ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue);
+  public static final List<Pose2d> BLUE_ALGAE_TARGETS =
+      Arrays.asList(ALGAE_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue));
 
   //
   // Zone Constants

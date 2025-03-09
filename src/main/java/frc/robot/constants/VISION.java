@@ -74,9 +74,4 @@ public final class VISION {
   public static final Angle posePitchTolerance = Degrees.of(4);
   public static final Angle poseRollTolerance = Degrees.of(4);
   public static final Angle poseYawTolerance = Degrees.of(4);
-
-  public enum TRACKING_STATE {
-    NONE,
-    BRANCH
-  }
 }
