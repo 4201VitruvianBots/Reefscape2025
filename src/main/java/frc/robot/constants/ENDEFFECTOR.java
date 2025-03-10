@@ -23,7 +23,7 @@ public class ENDEFFECTOR {
 
     public enum ROLLER_SPEED {
       // Coral
-      AUTOUTTAKE_CORAL(-0.5),
+      AUTOUTTAKE_CORAL(-0.6),
 
       OUTTAKE_CORAL(-0.2),
       INTAKE_CORAL(-0.1),

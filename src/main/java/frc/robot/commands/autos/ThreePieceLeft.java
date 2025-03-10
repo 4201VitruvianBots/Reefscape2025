@@ -25,9 +25,9 @@ import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class ThreePiece extends SequentialCommandGroup {
+public class ThreePieceLeft extends SequentialCommandGroup {
   /** Creates a new TwoPiece. */
-  public ThreePiece(
+  public ThreePieceLeft(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
@@ -64,7 +64,7 @@ public class ThreePiece extends SequentialCommandGroup {
           new WaitCommand(0.25),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-              new WaitCommand(0.2)),
+              new WaitCommand(0.5)),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           //   new ParallelCommandGroup(

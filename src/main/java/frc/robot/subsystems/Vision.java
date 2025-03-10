@@ -123,10 +123,9 @@ public class Vision extends SubsystemBase {
       if (limelightMeasurementCam1 != null && limelightMeasurementCam1.tagCount >= 2) {
         m_swerveDriveTrain.resetPose(limelightMeasurementCam1.pose);
 
-        SmartDashboard.putBoolean("updateInitalPose",true);
-      }
-      else{
-        SmartDashboard.putBoolean("updateInitalPose",false);
+        SmartDashboard.putBoolean("updateInitalPose", true);
+      } else {
+        SmartDashboard.putBoolean("updateInitalPose", false);
       }
     } else {
       limelightMeasurementCam1 =

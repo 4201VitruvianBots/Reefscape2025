@@ -25,9 +25,9 @@ import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class TwoPieceRight extends SequentialCommandGroup {
+public class ThreePieceRight extends SequentialCommandGroup {
   /** Creates a new TwoPiece. */
-  public TwoPieceRight(
+  public ThreePieceRight(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
@@ -37,7 +37,7 @@ public class TwoPieceRight extends SequentialCommandGroup {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceRPt1");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceRPt1");
       var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("3PieceRPt2");
 
       var point = new SwerveRequest.PointWheelsAt();
@@ -50,19 +50,8 @@ public class TwoPieceRight extends SequentialCommandGroup {
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
-          new ParallelCommandGroup(
-                  m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
-                  new ParallelCommandGroup(
-                      new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
-                          .until(elevator::atSetpoint),
-                      new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                          .until(() -> endEffectorPivot.atSetpoint())))
-              .withTimeout(2),
-          new ParallelCommandGroup(
-              new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-              new WaitCommand(0.1)),
-              m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
-          new InstantCommand(
+          m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
+           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
     } catch (Exception e) {
