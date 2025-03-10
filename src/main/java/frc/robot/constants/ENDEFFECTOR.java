@@ -3,6 +3,7 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -48,7 +49,12 @@ public class ENDEFFECTOR {
 
   public static class PIVOT {
     // Pivot motor stuff
-    public static final double kP = 100.0;
+//    public static final double kP = 100.0;
+//    public static final double kI = 0.0;
+//    public static final double kD = 0.01;
+//    public static final double kGPositive = 0.0;
+//    public static final double kGNegative = 0.0;
+    public static final double kP = 20.0;
     public static final double kI = 0.0;
     public static final double kD = 0.01;
     public static final double kGPositive = 0.0;
@@ -61,7 +67,7 @@ public class ENDEFFECTOR {
     public static final double pivotGearRatio = 70.0 / 1.0;
     // The values for Distance and Mass are made up
     public static final Distance baseLength = Inches.of(7.14);
-    public static final Mass mass = Pounds.of(5);
+    public static Mass mass = Pounds.of(7);
 
     public static final double kPercentOutputMultiplier = 1.0;
     public static final double kLimitedPercentOutputMultiplier = 0.5;
@@ -69,7 +75,9 @@ public class ENDEFFECTOR {
     public static final Angle minAngle = Degrees.of(-10.0);
     public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
-    public static final Angle encoderOffset = Rotations.of(-0.47607421875);
+
+    public static Angle encoderOffset = Rotations.of(0.00341796875);
+    public static SensorDirectionValue encoderDirection = SensorDirectionValue.Clockwise_Positive;
 
     public static final boolean limitOpenLoop = false;
 

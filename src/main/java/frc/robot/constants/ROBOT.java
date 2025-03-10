@@ -1,9 +1,15 @@
 package frc.robot.constants;
 
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
+
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Rotations;
 
 // TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
 public class ROBOT {
@@ -73,6 +79,10 @@ public class ROBOT {
 
   public static void initV2() {
     robotID = ROBOT_ID.V2;
+
+    ENDEFFECTOR.PIVOT.mass = Pounds.of(15); // TODO: Get actual values
+    ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(-0.47607421875);
+    ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.CounterClockwise_Positive;
   }
 
   public static void initV3() {
