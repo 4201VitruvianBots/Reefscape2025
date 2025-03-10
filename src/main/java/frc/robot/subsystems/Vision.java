@@ -119,6 +119,10 @@ public class Vision extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       // get limelight pose estimate using mega tag 1
       limelightMeasurementCam1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-f");
+
+      if (limelightMeasurementCam1 != null && limelightMeasurementCam1.tagCount >= 2) {
+        m_swerveDriveTrain.resetGyro(limelightMeasurementCam1.pose.getRotation().getDegrees());
+      }
     } else {
       limelightMeasurementCam1 =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
@@ -127,6 +131,7 @@ public class Vision extends SubsystemBase {
 
     if (limelightMeasurementCam1 == null) {
       DriverStation.reportWarning("LimelightA is not connected", true);
+
     } else {
       estPoseLLF.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
@@ -150,6 +155,10 @@ public class Vision extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       // get limelight pose estimate using mega tag 1
       limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-b");
+
+      if (limelightMeasurementCam2 != null && limelightMeasurementCam2.tagCount >= 2) {
+        m_swerveDriveTrain.resetGyro(limelightMeasurementCam2.pose.getRotation().getDegrees());
+      }
     } else {
       limelightMeasurementCam2 =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
