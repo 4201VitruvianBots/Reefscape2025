@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.V2;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -26,7 +26,7 @@ import frc.robot.constants.CLIMBER;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
 
-public class Climber extends SubsystemBase {
+public class V2Climber extends SubsystemBase {
   private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
@@ -53,7 +53,7 @@ public class Climber extends SubsystemBase {
   private double m_buttonInput = 0.0;
 
   /** Creates a new climber */
-  public Climber() {
+  public V2Climber() {
     TalonFXConfiguration climberConfig = new TalonFXConfiguration();
     climberConfig.Slot0.kP = CLIMBER.kP;
     climberConfig.Slot0.kI = CLIMBER.kI;
@@ -104,13 +104,13 @@ public class Climber extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public Angle getRotations() {
+  public Angle getMotorPosition() {
     return m_positionSignal.refresh().getValue();
   }
 
   @Logged(name = "Motor Rotations", importance = Logged.Importance.INFO)
   public double getMotorRotations() {
-    return getRotations().in(Rotations);
+    return getMotorPosition().in(Rotations);
   }
 
   public Voltage getMotorVoltage() {

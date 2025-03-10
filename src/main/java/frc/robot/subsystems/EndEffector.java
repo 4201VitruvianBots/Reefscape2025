@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,9 +25,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
@@ -81,9 +80,10 @@ public class EndEffector extends SubsystemBase {
 
   public AngularVelocity getVelocity() {
     if (RobotBase.isSimulation()) {
-        return RotationsPerSecond.of(m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+      return RotationsPerSecond.of(
+          m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
     } else {
-        return m_velocitySignal.refresh().getValue();
+      return m_velocitySignal.refresh().getValue();
     }
   }
 

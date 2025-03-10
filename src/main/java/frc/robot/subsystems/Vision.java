@@ -126,7 +126,7 @@ public class Vision extends SubsystemBase {
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurementCam1 == null) {
-      DriverStation.reportWarning("LimelightA is not connected", true);
+      if (Robot.isReal()) DriverStation.reportWarning("LimelightA is not connected", true);
     } else {
       estPoseLLF.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
@@ -158,7 +158,7 @@ public class Vision extends SubsystemBase {
     m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurementCam2 == null) {
-      DriverStation.reportWarning("LimelightB is not connected", true);
+      if (Robot.isReal()) DriverStation.reportWarning("LimelightB is not connected", true);
     } else {
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);

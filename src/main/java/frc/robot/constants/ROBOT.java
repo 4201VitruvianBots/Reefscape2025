@@ -1,20 +1,15 @@
 package frc.robot.constants;
 
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.Robot;
-
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Rotations;
 
-// TODO: this class is a mess with a lot of leftover stuff from Crescendo2024. delete or update
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotController;
+
 public class ROBOT {
-  public static String robotName = "";
-  public static final boolean disableVisualization = false;
   public static final boolean useSysID = false;
   // TODO: Change LOG_MODE to Logged.Importance
   public static LOG_MODE logMode = LOG_MODE.NORMAL;
@@ -71,6 +66,11 @@ public class ROBOT {
     public String getName() {
       return name();
     }
+
+    @Override
+    public String toString() {
+      return value;
+    }
   }
 
   public static void initAlphaBot() {
@@ -80,6 +80,27 @@ public class ROBOT {
   public static void initV2() {
     robotID = ROBOT_ID.V2;
 
+    ELEVATOR.kG = 0.36;
+    ELEVATOR.kS = 0.0;
+    ELEVATOR.kV = 0.6306;
+    ELEVATOR.kA = 0.2;
+    ELEVATOR.kP = 18.5;
+    ELEVATOR.kI = 0.0;
+    ELEVATOR.kD = 0.1;
+    ELEVATOR.motionMagicCruiseVelocity = 20;
+    ELEVATOR.motionMagicAcceleration = 40;
+    ELEVATOR.gearbox = DCMotor.getKrakenX60(2);
+    ELEVATOR.kCarriageMass = Pounds.of(15.0);
+
+    ENDEFFECTOR.PIVOT.kP = 100.0;
+    ENDEFFECTOR.PIVOT.kI = 0.0;
+    ENDEFFECTOR.PIVOT.kD = 0.01;
+    ENDEFFECTOR.PIVOT.kG = 0.0;
+    ENDEFFECTOR.PIVOT.kV = 0.0;
+    ENDEFFECTOR.PIVOT.kA = 0.0;
+    ENDEFFECTOR.PIVOT.kMotionMagicVelocity = 360;
+    ENDEFFECTOR.PIVOT.kMotionMagicAcceleration = 600;
+    ENDEFFECTOR.PIVOT.pivotGearBox = DCMotor.getKrakenX60(1);
     ENDEFFECTOR.PIVOT.mass = Pounds.of(15); // TODO: Get actual values
     ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(-0.47607421875);
     ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -97,30 +118,25 @@ public class ROBOT {
   public static void initConstants() {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
-    if (RobotController.getSerialNumber().equals(ROBOT_ID.ALPHABOT.getSerial())) {
-      alert.setText("Setting Robot Constants for ALPHABOT");
-      initAlphaBot();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V2.getSerial())) {
-      alert.setText("Setting Robot Constants for V2");
-      initV2();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.V3.getSerial())) {
-      alert.setText("Setting Robot Constants for V3");
-      initV3();
-    } else if (RobotController.getSerialNumber().equals(ROBOT_ID.SIM.getSerial())
-        && Robot.isSimulation()) {
-      alert.setText("Setting Robot Constants for Sim");
-      System.out.println(
-          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      System.out.println(
-          "!!! WARNING: This will put logging in debug mode                     !!!");
-      System.out.println(
-          "!!!          and almost certainly crash the real robot!              !!!");
-      System.out.println(
-          "!!! IF YOU ARE SEEING THIS IN THE DS CONSOLE, YOUR ROBOT WILL CRASH! !!!");
-      System.out.println(
-          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      initSim();
-    } else {
+    try {
+      switch (ROBOT_ID.valueOf(RobotController.getSerialNumber())) {
+        case ALPHABOT -> initAlphaBot();
+        case V2 -> initV2();
+        case V3 -> initV3();
+        case SIM -> {
+          initSim();
+          System.out.print(
+              """
+                          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                          !!! WARNING: This will put logging in debug mode                     !!!
+                          !!!          and almost certainly crash the real robot!              !!!
+                          !!! IF YOU ARE SEEING THIS IN THE DS CONSOLE, YOUR ROBOT WILL CRASH! !!!
+                          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                          """);
+        }
+      }
+      alert.setText("Setting Robot Constants for " + robotID.getName());
+    } catch (IllegalArgumentException e) {
       alert =
           new Alert(
               "WARN: Robot Serial Not Recognized! Current roboRIO Serial: "

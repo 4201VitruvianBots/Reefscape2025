@@ -12,13 +12,11 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
@@ -44,10 +42,10 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
-  @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
-  private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
-
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(Rotations.of(0));
+  //  private final MotionMagicVoltage m_request = new
+  // MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
+  private final MotionMagicTorqueCurrentFOC m_request =
+      new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
@@ -87,8 +85,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
   private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
-  private DoubleSubscriber
-      m_kG_subscriber,
+  private DoubleSubscriber m_kG_subscriber,
       m_kS_subscriber,
       m_kV_Subscriber,
       m_kA_Subscriber,
@@ -100,7 +97,7 @@ public class EndEffectorPivot extends SubsystemBase {
       m_setpointSubscriber;
   private final NetworkTable endEffectorPivotTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("EndEffectorPivot");
-      
+
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
     // Configure the Motor
@@ -113,12 +110,13 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.Slot0.kP = PIVOT.kP;
     motorConfig.Slot0.kI = PIVOT.kI;
     motorConfig.Slot0.kD = PIVOT.kD;
-    motorConfig.Slot0.kG = PIVOT.kGPositive;
+    motorConfig.Slot0.kG = PIVOT.kG;
     motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;
+    motorConfig.ClosedLoopGeneral.ContinuousWrap = false;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
-    motorConfig.MotorOutput.NeutralMode = m_neutralMode;
-    //    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
@@ -182,7 +180,6 @@ public class EndEffectorPivot extends SubsystemBase {
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
-    m_canCoderAbsolutePositionSignal.refresh();
     return m_canCoderAbsolutePositionSignal.refresh().getValue();
   }
 
@@ -263,7 +260,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public void teleopInit() {
     resetMotionMagicState();
   }
-  
+
   public void testInit() {
     endEffectorPivotTab.getDoubleTopic("kP").publish().set(PIVOT.kP);
     endEffectorPivotTab.getDoubleTopic("kI").publish().set(PIVOT.kI);
@@ -291,13 +288,16 @@ public class EndEffectorPivot extends SubsystemBase {
         endEffectorPivotTab
             .getDoubleTopic("MotionMagicAcceleration")
             .subscribe(PIVOT.kMotionMagicAcceleration);
-    
-    m_setpointSubscriber = endEffectorPivotTab.getDoubleTopic("Setpoint Degrees").subscribe(m_desiredRotation.in(Degrees));
+
+    m_setpointSubscriber =
+        endEffectorPivotTab
+            .getDoubleTopic("Setpoint Degrees")
+            .subscribe(m_desiredRotation.in(Degrees));
   }
 
   public void testPeriodic() {
     Slot0Configs slot0Configs = new Slot0Configs();
-    
+
     slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
     slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
     slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
@@ -312,7 +312,7 @@ public class EndEffectorPivot extends SubsystemBase {
         m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
 
     m_pivotMotor.getConfigurator().apply(motionMagicConfigs);
-    
+
     double newSetpoint = m_setpointSubscriber.get(m_desiredRotation.in(Degrees));
     if (newSetpoint != m_desiredRotation.in(Degrees)) {
       setPosition(Degrees.of(newSetpoint));
