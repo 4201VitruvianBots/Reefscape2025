@@ -122,6 +122,12 @@ public class Vision extends SubsystemBase {
 
       if (limelightMeasurementCam1 != null && limelightMeasurementCam1.tagCount >= 2) {
         m_swerveDriveTrain.resetGyro(limelightMeasurementCam1.pose.getRotation().getDegrees());
+        SmartDashboard.putBoolean("updateInitalPose",true);
+        
+      }
+      else{
+        SmartDashboard.putBoolean("updateInitalPose",false);
+  
       }
     } else {
       limelightMeasurementCam1 =
