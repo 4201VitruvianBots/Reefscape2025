@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -326,6 +327,12 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
+    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    targetTrackingButton.onTrue(driveToTarget.generateCommand());
+
+    m_driverController.y().whileTrue(driveToTarget.generateCommand());
+
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
       m_driverController
@@ -549,10 +556,10 @@ public class RobotContainer {
   public void disabledPeriodic() {
     if (RobotBase.isReal()) {
       if (Controls.isRedAlliance()) {
-        m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
-        m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
-        m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
-        m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+        // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+        // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+        // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+        // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
         m_fieldSim.initializePoses("Blue Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
         m_fieldSim.initializePoses(
             "Blue Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
@@ -566,20 +573,20 @@ public class RobotContainer {
         m_fieldSim.initializePoses("Red Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
         m_fieldSim.initializePoses(
             "Red Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
-        m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
-        m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
-        m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
-        m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
+        // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+        // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+        // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+        // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
       }
     } else {
-      m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
-      m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
-      m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
-      m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
-      m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
-      m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
-      m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
-      m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
+      // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+      // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+      // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+      // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+      // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+      // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+      // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+      // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
     }
   }
 
@@ -592,6 +599,16 @@ public class RobotContainer {
     if (m_elevator != null) m_elevator.teleopInit();
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
+  }
+
+  public void teleopPeriodic() {
+    m_vision.setTargetLock(m_driverController.y().getAsBoolean());
+    if(m_vision.isOnTarget()) {
+      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
+    }
+    else{
+      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
+    }
   }
 
   public void testInit() {

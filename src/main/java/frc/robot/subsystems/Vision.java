@@ -16,6 +16,10 @@ import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
+
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import org.photonvision.simulation.VisionSystemSim;
 import org.team4201.codex.simulation.FieldSim;
 
@@ -34,7 +38,7 @@ public class Vision extends SubsystemBase {
 
   private Pose2d nearestPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
-
+  private boolean lockTarget = false;
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -85,6 +89,8 @@ public class Vision extends SubsystemBase {
   }
 
   private void updateNearestScoringTarget() {
+    if(lockTarget)
+    return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
     if (isGamePieceAlgae()) {
       if (Controls.isBlueAlliance()) {
@@ -115,6 +121,8 @@ public class Vision extends SubsystemBase {
 
   public void resetInitialLocalization() {
     m_localized = false;
+
+    // TODO: Set Swerve Pose to (0, 0) to reset it
   }
 
   public boolean processLimelight(String limelightName, StructPublisher<Pose2d> posePublisher) {
@@ -147,7 +155,7 @@ public class Vision extends SubsystemBase {
       posePublisher.set(limelightMeasurement.pose);
       estTimeStamp.set(limelightMeasurement.timestampSeconds);
 
-      if (limelightMeasurement.tagCount == 0) {
+      if (limelightMeasurement.tagCount <= 1) {
         rejectLimelightUpdate = true;
       }
       if (!rejectLimelightUpdate) {
@@ -160,7 +168,25 @@ public class Vision extends SubsystemBase {
     return !rejectLimelightUpdate;
   }
 
-  public void updateSmartDashboard() {}
+  public void setTargetLock(boolean set) {
+    lockTarget = set;
+  }
+
+  public boolean isOnTarget() {
+    var delta = m_swerveDriveTrain.getState().Pose.getTranslation().minus(robotToTarget[1].getTranslation()).getNorm();
+    SmartDashboard.putNumber("Target delta", delta);
+    if (delta < Inches.of(2).in(Meters)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void updateSmartDashboard() {
+    SmartDashboard.putBoolean("On target?", isOnTarget());
+    SmartDashboard.putBoolean("algae", isGamePieceAlgae());
+    SmartDashboard.putBoolean("coral", isGamePieceCoral());
+  }
 
   @Override
   public void periodic() {

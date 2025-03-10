@@ -161,7 +161,7 @@ public class FIELD {
   /**
    * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
    */
-  static final Distance baseReefTranslation = Inches.of(6.469);
+  static final Distance baseReefTranslation = Inches.of(8);
 
   static final Translation2d leftReefCoralOffset =
       new Translation2d(-baseReefDepth.in(Meters), baseReefTranslation.in(Meters));
@@ -170,11 +170,11 @@ public class FIELD {
 
   static final Translation2d baseLeftCoralTargetOffset =
       new Translation2d(
-          SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters),
+          SWERVE.kWheelBase.div(2).plus(SWERVE.kBumperThickness).minus(Inches.of(1.5)).in(Meters),
           baseReefTranslation.in(Meters));
   static final Translation2d baseRightCoralTargetOffset =
       new Translation2d(
-          SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters),
+          SWERVE.kWheelBase.div(2).plus(SWERVE.kBumperThickness).minus(Inches.of(1.5)).in(Meters),
           -baseReefTranslation.in(Meters));
 
   /**
@@ -318,7 +318,7 @@ public class FIELD {
 
   // TODO: Verify this offset is correct
   static final Translation2d baseAlgaeTargetOffset =
-      new Translation2d(SWERVE.kWheelBase.plus(SWERVE.kBumperThickness).in(Meters), 0);
+      new Translation2d(SWERVE.kWheelBase.div(2).plus(SWERVE.kBumperThickness).in(Meters), 0);
 
   public enum TARGET_TYPE {
     REEF,

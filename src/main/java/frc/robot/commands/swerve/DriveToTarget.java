@@ -58,7 +58,8 @@ public class DriveToTarget {
             new Pose2d(
                 m_swerveDrive.getState().Pose.getTranslation(),
                 // TODO: Verify if this midpoint is needed.
-                m_swerveDrive.getPathVelocityHeading(m_swerveDrive.getState().Speeds, targetWaypoint)),
+                m_swerveDrive.getPathVelocityHeading(
+                    m_swerveDrive.getState().Speeds, targetWaypoint)),
             targetWaypoint);
 
     if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.01) {

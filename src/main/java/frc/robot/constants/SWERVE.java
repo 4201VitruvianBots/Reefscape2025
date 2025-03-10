@@ -44,8 +44,10 @@ public class SWERVE {
       Math.PI * 0.3; // temporary to reduce speed (original value 2.0) TODO: change back
 
   // Auto-alignment constants
+  public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(10, 0, 0);
+  public static final PIDConstants kAutoAlignRotationPID = new PIDConstants(7, 0, 0);
   public static final PPHolonomicDriveController kDriveController =
-      new PPHolonomicDriveController(kTranslationPID, kRotationPID);
+      new PPHolonomicDriveController(kAutoAlignTranslationPID, kAutoAlignRotationPID);
   public static final PathConstraints kAutoAlignPathConstraints =
       new PathConstraints(
           1.25, 1.25, 1.0 / 2 * Math.PI, 1 * Math.PI); // The constraints for this path.
