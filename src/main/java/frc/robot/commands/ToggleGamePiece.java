@@ -5,28 +5,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.constants.ROBOT;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import frc.robot.constants.ROBOT.GAME_PIECE;
+import frc.robot.subsystems.Vision;
 
 public class ToggleGamePiece extends InstantCommand {
-  private final Supplier<ROBOT.GAME_PIECE> m_getGamePiece;
-  private final Consumer<ROBOT.GAME_PIECE> m_toggleGamePiece;
+  private final Vision m_vision;
 
   /** Creates a new ToggleGamePiece. */
-  public ToggleGamePiece(
-      Supplier<ROBOT.GAME_PIECE> getGamePiece, Consumer<ROBOT.GAME_PIECE> toggleGamePiece) {
-    m_getGamePiece = getGamePiece;
-    m_toggleGamePiece = toggleGamePiece;
+  public ToggleGamePiece(Vision vision) {
+    m_vision = vision;
+  }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_getGamePiece.get() == ROBOT.GAME_PIECE.CORAL) {
-      m_toggleGamePiece.accept(ROBOT.GAME_PIECE.ALGAE);
+    if (m_vision.isGamePieceCoral()) {
+      m_vision.setSelectedGamePiece(GAME_PIECE.ALGAE);
     } else {
-      m_toggleGamePiece.accept(ROBOT.GAME_PIECE.CORAL);
+      m_vision.setSelectedGamePiece(GAME_PIECE.CORAL);
     }
   }
 }

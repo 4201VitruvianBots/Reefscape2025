@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.net.PortForwarder;
@@ -8,49 +12,54 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
-import frc.robot.Robot;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.VISION;
-import java.util.Arrays;
-// import frc.robot.simulation.FieldSim;
-import org.photonvision.PhotonCamera;
+import frc.robot.constants.ROBOT.GAME_PIECE;
+import frc.robot.constants.VISION.CAMERA_SERVER;
 import org.photonvision.simulation.VisionSystemSim;
 import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
-  private CommandSwerveDrivetrain m_swerveDriveTrain;
-  private FieldSim m_fieldSim;
+  @NotLogged private CommandSwerveDrivetrain m_swerveDriveTrain;
+  @NotLogged private FieldSim m_fieldSim;
 
-  private VisionSystemSim visionSim;
+  // TODO: Re-add this
+  @NotLogged private VisionSystemSim visionSim;
 
-  private boolean m_localized;
-  private boolean doRejectUpdateLLF = false;
-  private boolean doRejectUpdateLLB = false;
-  private VISION.TRACKING_STATE trackingState = VISION.TRACKING_STATE.NONE;
+  private boolean m_localized = false;
 
+  // TODO: Maybe move GAME_PIECE logic to Controls?
+  // @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
+  private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+
+  private Pose2d nearestPose = Pose2d.kZero;
+  private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
+  private boolean lockTarget = false;
   // NetworkTables publisher setup
-  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /* Robot swerve drive state */
-  private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
+  @NotLogged private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
+
+  @NotLogged
   private final StructPublisher<Pose2d> estPoseLLF =
       table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
+
+  @NotLogged
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
+
+  @NotLogged
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
 
   public Vision() {
     // Port Forwarding to access limelight on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port, VISION.CAMERA_SERVER.LIMELIGHTF.toString(), port);
-    }
-
-    for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port + 10, VISION.CAMERA_SERVER.LIMELIGHTB.toString(), port);
+      PortForwarder.add(port, CAMERA_SERVER.limelightF.toString(), port);
+      PortForwarder.add(port + 10, CAMERA_SERVER.limelightB.toString(), port);
     }
   }
 
@@ -62,36 +71,46 @@ public class Vision extends SubsystemBase {
     m_fieldSim = fieldSim;
   }
 
-  public void setTrackingState(VISION.TRACKING_STATE state) {
-    trackingState = state;
+  public GAME_PIECE getSelectedGamePiece() {
+    return m_selectedGamePiece;
   }
 
-  public boolean isCameraConnected(PhotonCamera camera) {
-    return camera.isConnected();
+  public boolean isGamePieceCoral() {
+    return m_selectedGamePiece == GAME_PIECE.CORAL;
   }
 
-  private void updateAngleToBranch() {
-    DriverStation.getAlliance()
-        .ifPresent(
-            a -> {
-              Pose2d[] robotToBranch = {m_swerveDriveTrain.getState().Pose, new Pose2d()};
-              switch (a) {
-                case Red ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-                case Blue ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
-              }
-              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDriveTrain.setAngleToTarget(
-                  m_swerveDriveTrain
-                      .getState()
-                      .Pose
-                      .getTranslation()
-                      .minus(robotToBranch[1].getTranslation())
-                      .getAngle()
-                  // .minus(Rotation2d.k180deg)
-                  );
-            });
+  public boolean isGamePieceAlgae() {
+    return m_selectedGamePiece == GAME_PIECE.ALGAE;
+  }
+
+  public void setSelectedGamePiece(GAME_PIECE gamePiece) {
+    m_selectedGamePiece = gamePiece;
+  }
+
+  private void updateNearestScoringTarget() {
+    if (lockTarget) return;
+    robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
+    if (isGamePieceAlgae()) {
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+      } else {
+        nearestPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+      }
+      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
+    } else {
+      // TODO: add left/right logic for driver to select between branches?
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_BRANCHES);
+      } else {
+        nearestPose = robotToTarget[0].nearest(FIELD.RED_CORAL_BRANCHES);
+      }
+      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
+    }
+    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestTarget", robotToTarget);
+  }
+
+  public Pose2d getNearestTargetPose() {
+    return robotToTarget[1];
   }
 
   public boolean getInitialLocalization() {
@@ -100,93 +119,114 @@ public class Vision extends SubsystemBase {
 
   public void resetInitialLocalization() {
     m_localized = false;
+
+    // TODO: Set Swerve Pose to (0, 0) to reset it
+  }
+
+  public boolean processLimelight(String limelightName, StructPublisher<Pose2d> posePublisher) {
+    boolean rejectLimelightUpdate = false;
+
+    if (DriverStation.isDisabled()) {
+      LimelightHelpers.SetIMUMode(limelightName, 1);
+      // TODO: Set limelight camera position on disabled
+
+      // TODO: On disabled, use megaTag1 to reset the robotPose and gyro direction
+    }
+
+    LimelightHelpers.SetRobotOrientation(
+        limelightName,
+        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
+        0,
+        0,
+        0,
+        0,
+        0);
+    LimelightHelpers.PoseEstimate limelightMeasurement =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+
+    if (limelightMeasurement == null) {
+      rejectLimelightUpdate = true;
+      if (RobotBase.isReal())
+        DriverStation.reportWarning(limelightName + " is not connected", true);
+    } else {
+      posePublisher.set(limelightMeasurement.pose);
+      estTimeStamp.set(limelightMeasurement.timestampSeconds);
+
+      if (limelightMeasurement.tagCount <= 1) {
+        rejectLimelightUpdate = true;
+      }
+      if (!rejectLimelightUpdate) {
+        m_swerveDriveTrain.addVisionMeasurement(
+            limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+      }
+    }
+    SmartDashboard.putBoolean(limelightName + "UpdatedRejected", rejectLimelightUpdate);
+
+    return !rejectLimelightUpdate;
+  }
+
+  public void setTargetLock(boolean set) {
+    lockTarget = set;
+  }
+
+  public boolean isOnTarget() {
+    var delta =
+        m_swerveDriveTrain
+            .getState()
+            .Pose
+            .getTranslation()
+            .minus(robotToTarget[1].getTranslation())
+            .getNorm();
+    SmartDashboard.putNumber("Target delta", delta);
+    if (delta < Inches.of(2).in(Meters)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public void updateSmartDashboard() {
-    SmartDashboard.putBoolean("rejectionUpdateLLF", doRejectUpdateLLF);
-    SmartDashboard.putBoolean("rejectionUpdateLLB", doRejectUpdateLLB);
+    SmartDashboard.putBoolean("On target?", isOnTarget());
+    SmartDashboard.putBoolean("algae", isGamePieceAlgae());
+    SmartDashboard.putBoolean("coral", isGamePieceCoral());
   }
-
-  private void updateLog() {}
 
   @Override
   public void periodic() {
-    // limelight a
-    LimelightHelpers.SetIMUMode("limelight-f", 1);
-    LimelightHelpers.SetRobotOrientation(
-        "limelight-f",
-        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
-        0,
-        0,
-        0,
-        0,
-        0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam1 =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-
-    if (limelightMeasurementCam1 == null) {
-      DriverStation.reportWarning("LimelightA is not connected", true);
-    } else {
-      estPoseLLF.set(limelightMeasurementCam1.pose);
-      estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
-
-      if (limelightMeasurementCam1.tagCount == 0) {
-        doRejectUpdateLLF = true;
-      }
-      if (limelightMeasurementCam1.tagCount >= 1) {
-        doRejectUpdateLLF = false;
-      }
-      if (!doRejectUpdateLLF) {
-        m_swerveDriveTrain.addVisionMeasurement(
-            limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
-      }
-    }
+    // limelight f
+    boolean llaFSuccess = processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
 
     // limelight b
-    LimelightHelpers.SetIMUMode("limelight-b", 1);
-    LimelightHelpers.SetRobotOrientation(
-        "limelight-b",
-        m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
-        0,
-        0,
-        0,
-        0,
-        0);
-    LimelightHelpers.PoseEstimate limelightMeasurementCam2 =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    boolean llaBSuccess = processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
 
-    if (limelightMeasurementCam2 == null) {
-      DriverStation.reportWarning("LimelightB is not connected", true);
-    } else {
-      estPoseLLB.set(limelightMeasurementCam2.pose);
-      estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
-
-      if (limelightMeasurementCam2.tagCount == 0) {
-        doRejectUpdateLLB = true;
-      }
-      if (limelightMeasurementCam2.tagCount >= 1) {
-        doRejectUpdateLLB = false;
-      }
-      if (!doRejectUpdateLLB) {
-        m_swerveDriveTrain.addVisionMeasurement(
-            limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
-      }
+    if (!m_localized) {
+      // TODO: Change this to check if the robotPose and both limelight are all close to each other
+      m_localized = llaFSuccess && llaBSuccess;
     }
+
+    if (m_swerveDriveTrain != null) {
+      updateNearestScoringTarget();
+    }
+
     updateSmartDashboard();
+
+    // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) >
+    // 720)
+    // {
+    //   doRejectUpdateLLA = true;
+    // }
+    // if (limelightMeasurementCam1.tagCount == 0) {
+    //   doRejectUpdateLLA = true;
+    // }
   }
 
   @Override
   public void simulationPeriodic() {
     // if (m_swerveDriveTrain != null) {
-    //   visionSim.update(m_swerveDriveTrain.getState().Pose);
-    //   visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
+    // visionSim.update(m_swerveDriveTrain.getState().Pose);
+    // visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
     // }
-  }
-
-  public Field2d getSimDebugField() {
-    if (!Robot.isSimulation()) return null;
-    return visionSim.getDebugField();
   }
 }
