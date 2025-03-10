@@ -45,10 +45,10 @@
     "rotation": -126.193
   },
   "reversed": false,
-  "folder": "TwoPieceR",
+  "folder": "ThreePieceR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.0
   },
   "useDefaultConstraints": true
 }
