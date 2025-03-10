@@ -133,8 +133,13 @@ public class EndEffectorPivot extends SubsystemBase {
     // Configure the CANcoder
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
     if (RobotBase.isReal()) {
-      encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
-      encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+      if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
+        encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffsetV3.magnitude();
+        encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+      } else {
+        encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffsetV2.magnitude();
+        encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+      }
     }
     CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 

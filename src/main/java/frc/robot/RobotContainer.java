@@ -153,7 +153,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
+      // m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =

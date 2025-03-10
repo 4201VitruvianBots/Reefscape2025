@@ -69,7 +69,8 @@ public class ENDEFFECTOR {
     public static final Angle minAngle = Degrees.of(-10.0);
     public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
-    public static final Angle encoderOffset = Rotations.of(-0.47607421875);
+    public static final Angle encoderOffsetV2 = Rotations.of(-0.47607421875);
+    public static final Angle encoderOffsetV3 = Rotations.of(0.000732421875);
 
     public static final boolean limitOpenLoop = false;
 
