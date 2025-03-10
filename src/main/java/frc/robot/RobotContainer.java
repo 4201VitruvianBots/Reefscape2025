@@ -14,9 +14,9 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -603,10 +603,9 @@ public class RobotContainer {
 
   public void teleopPeriodic() {
     m_vision.setTargetLock(m_driverController.y().getAsBoolean());
-    if(m_vision.isOnTarget()) {
+    if (m_vision.isOnTarget()) {
       m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
-    }
-    else{
+    } else {
       m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
     }
   }

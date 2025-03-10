@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,10 +19,6 @@ import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
-
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-
 import org.photonvision.simulation.VisionSystemSim;
 import org.team4201.codex.simulation.FieldSim;
 
@@ -89,8 +88,7 @@ public class Vision extends SubsystemBase {
   }
 
   private void updateNearestScoringTarget() {
-    if(lockTarget)
-    return;
+    if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
     if (isGamePieceAlgae()) {
       if (Controls.isBlueAlliance()) {
@@ -173,7 +171,13 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isOnTarget() {
-    var delta = m_swerveDriveTrain.getState().Pose.getTranslation().minus(robotToTarget[1].getTranslation()).getNorm();
+    var delta =
+        m_swerveDriveTrain
+            .getState()
+            .Pose
+            .getTranslation()
+            .minus(robotToTarget[1].getTranslation())
+            .getNorm();
     SmartDashboard.putNumber("Target delta", delta);
     if (delta < Inches.of(2).in(Meters)) {
       return true;
