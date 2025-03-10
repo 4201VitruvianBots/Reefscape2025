@@ -121,13 +121,12 @@ public class Vision extends SubsystemBase {
       limelightMeasurementCam1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-f");
 
       if (limelightMeasurementCam1 != null && limelightMeasurementCam1.tagCount >= 2) {
-        m_swerveDriveTrain.resetGyro(limelightMeasurementCam1.pose.getRotation().getDegrees());
+        m_swerveDriveTrain.resetPose(limelightMeasurementCam1.pose);
+
         SmartDashboard.putBoolean("updateInitalPose",true);
-        
       }
       else{
         SmartDashboard.putBoolean("updateInitalPose",false);
-  
       }
     } else {
       limelightMeasurementCam1 =
@@ -142,11 +141,8 @@ public class Vision extends SubsystemBase {
       estPoseLLF.set(limelightMeasurementCam1.pose);
       estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
 
-      if (limelightMeasurementCam1.tagCount == 0) {
+      if (limelightMeasurementCam1.tagCount < 1) {
         doRejectUpdateLLF = true;
-      }
-      if (limelightMeasurementCam1.tagCount >= 1) {
-        doRejectUpdateLLF = false;
       }
       if (!doRejectUpdateLLF) {
         m_swerveDriveTrain.addVisionMeasurement(
@@ -163,7 +159,7 @@ public class Vision extends SubsystemBase {
       limelightMeasurementCam2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-b");
 
       if (limelightMeasurementCam2 != null && limelightMeasurementCam2.tagCount >= 2) {
-        m_swerveDriveTrain.resetGyro(limelightMeasurementCam2.pose.getRotation().getDegrees());
+        m_swerveDriveTrain.resetPose(limelightMeasurementCam2.pose);
       }
     } else {
       limelightMeasurementCam2 =
@@ -178,11 +174,8 @@ public class Vision extends SubsystemBase {
       estPoseLLB.set(limelightMeasurementCam2.pose);
       estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
 
-      if (limelightMeasurementCam2.tagCount == 0) {
+      if (limelightMeasurementCam2.tagCount < 1) {
         doRejectUpdateLLB = true;
-      }
-      if (limelightMeasurementCam2.tagCount >= 1) {
-        doRejectUpdateLLB = false;
       }
       if (!doRejectUpdateLLB) {
         m_swerveDriveTrain.addVisionMeasurement(
