@@ -3,14 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.HOPPERINTAKE.INTAKE_SPEED;
-import frc.robot.subsystems.HopperIntake;
+import frc.robot.subsystems.GroundIntake;
 
 public class RunHopperIntake extends Command {
 
-  private final HopperIntake m_hopperIntake;
+  private final GroundIntake m_hopperIntake;
   private final INTAKE_SPEED m_speed;
 
-  public RunHopperIntake(HopperIntake hopper, INTAKE_SPEED speed) {
+  public RunHopperIntake(GroundIntake hopper, INTAKE_SPEED speed) {
     m_hopperIntake = hopper;
     m_speed = speed;
     addRequirements(m_hopperIntake);
