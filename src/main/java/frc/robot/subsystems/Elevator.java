@@ -172,7 +172,7 @@ public class Elevator extends SubsystemBase {
 
   public LinearVelocity getVelocity() {
     return MetersPerSecond.of(
-        m_velocitySignal.getValue().in(RotationsPerSecond)
+        m_velocitySignal.refresh().getValue().in(RotationsPerSecond)
             * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
@@ -182,9 +182,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public LinearAcceleration getAcceleration() {
-    m_accelSignal.refresh();
     return MetersPerSecondPerSecond.of(
-        m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
+        m_accelSignal.refresh().getValue().in(RotationsPerSecondPerSecond)
             * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 

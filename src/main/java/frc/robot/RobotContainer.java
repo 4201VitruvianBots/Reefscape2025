@@ -136,7 +136,7 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
-    else configureV2Bindings();
+    else configureBindings();
 
     // Only keep joystick warnings when FMS is attached
     if (!DriverStation.isFMSAttached()) {
@@ -381,7 +381,7 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
-  private void configureV2Bindings() {
+  private void configureBindings() {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
 
