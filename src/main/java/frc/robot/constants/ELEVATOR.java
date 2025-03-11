@@ -9,8 +9,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ELEVATOR {
-  public static final Distance lowerLimitMeters = Inches.of(0);
-  public static final Distance upperLimitMeters = Inches.of(57.5);
+  public static final Distance lowerLimit = Inches.of(0);
+  public static final Distance upperLimit = Inches.of(57.5);
   public static final Distance superStructureHeight = Inches.of(36.25);
 
   // TODO: figure this out
@@ -47,10 +47,10 @@ public class ELEVATOR {
   public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
   public static final Distance kElevatorDrumDiameter = Inches.of(2.2557);
-  public static final Distance drumRotationsToMeters =
+  public static final Distance drumRotationsToDistance =
       kElevatorDrumDiameter.times(
           Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
-  // meters
+  // distance
   public static final double gearRatio = 48.0 / 10.0;
   public static DCMotor gearbox = DCMotor.getKrakenX60Foc(2);
   public static Mass kCarriageMass = Pounds.of(10);

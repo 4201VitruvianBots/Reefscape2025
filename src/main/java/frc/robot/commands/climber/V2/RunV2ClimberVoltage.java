@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.V2.V2Climber;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */

@@ -83,7 +83,7 @@ public class RobotContainer {
   // V2/V3 subsystems
   @Logged(name = "V2Climber", importance = Logged.Importance.INFO)
   private V2Climber m_v2Climber;
-  
+
   @Logged(name = "Climber", importance = Logged.Importance.INFO)
   private Climber m_climber;
 
@@ -528,12 +528,16 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+      m_driverController
+          .back()
+          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
     }
     if (m_v2Climber != null) {
-        m_driverController.back().whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
+      m_driverController
+          .back()
+          .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
     }
-    
+
     if (m_hopperIntake != null) {
       m_driverController
           .start()

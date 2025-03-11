@@ -23,13 +23,13 @@ public class SWERVE {
   public static final Map<MODULE_POSITION, Translation2d> kModuleTranslations =
       Map.of(
           MODULE_POSITION.FRONT_LEFT,
-          new Translation2d(kWheelBase.in(Meters) / 2.0, kTrackWidth.in(Meters) / 2.0),
+          new Translation2d(kWheelBase.div(2).in(Meters), kTrackWidth.div(2).in(Meters)),
           MODULE_POSITION.FRONT_RIGHT,
-          new Translation2d(kWheelBase.in(Meters) / 2.0, -kTrackWidth.in(Meters) / 2.0),
+          new Translation2d(kWheelBase.div(2).in(Meters), -kTrackWidth.div(2).in(Meters)),
           MODULE_POSITION.BACK_LEFT,
-          new Translation2d(-kWheelBase.in(Meters) / 2.0, kTrackWidth.in(Meters) / 2.0),
+          new Translation2d(-kWheelBase.div(2).in(Meters), kTrackWidth.div(2).in(Meters)),
           MODULE_POSITION.BACK_RIGHT,
-          new Translation2d(-kWheelBase.in(Meters) / 2.0, -kTrackWidth.in(Meters) / 2.0));
+          new Translation2d(-kWheelBase.div(2).in(Meters), -kTrackWidth.div(2).in(Meters)));
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =
