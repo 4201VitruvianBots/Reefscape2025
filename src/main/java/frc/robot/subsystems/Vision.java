@@ -131,7 +131,7 @@ public class Vision extends SubsystemBase {
       limelightMeasurementCam1 =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
     }
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
 
     if (limelightMeasurementCam1 == null) {
       DriverStation.reportWarning("LimelightA is not connected", true);
@@ -165,7 +165,7 @@ public class Vision extends SubsystemBase {
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
     }
 
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
 
     if (limelightMeasurementCam2 == null) {
       DriverStation.reportWarning("LimelightB is not connected", true);
