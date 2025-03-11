@@ -93,7 +93,7 @@ public class RobotContainer {
   private EndEffectorPivot m_endEffectorPivot;
 
   @Logged(name = "HopperIntake", importance = Logged.Importance.INFO)
-  private GroundIntake m_hopperIntake;
+  private HopperIntake m_hopperIntake;
 
   @NotLogged private final Robot2d m_robot2d = new Robot2d();
   private Pose2d nearestBranchPose = Pose2d.kZero;
@@ -154,7 +154,7 @@ public class RobotContainer {
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
       m_climber = new Climber();
-      m_hopperIntake = new GroundIntake();
+      m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
           V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -163,7 +163,7 @@ public class RobotContainer {
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
       m_climber = new Climber();
-      m_hopperIntake = new GroundIntake();
+      m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       MaxSpeed =
           AlphaBotConstants.kSpeedAt12Volts.in(
@@ -179,7 +179,7 @@ public class RobotContainer {
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
       m_climber = new Climber();
-      m_hopperIntake = new GroundIntake();
+      m_hopperIntake = new HopperIntake();
     } else {
       // Most likely, the code will crash later on if you get here, so send an error message
       DriverStation.reportError(

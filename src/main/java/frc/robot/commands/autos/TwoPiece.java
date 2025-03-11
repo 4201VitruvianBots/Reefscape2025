@@ -24,7 +24,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
-import frc.robot.subsystems.GroundIntake;
+import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
 public class TwoPiece extends SequentialCommandGroup {
@@ -35,7 +35,7 @@ public class TwoPiece extends SequentialCommandGroup {
       Elevator elevator,
       EndEffectorPivot endEffectorPivot,
       EndEffector endEffector,
-      GroundIntake hopperIntake) {
+      HopperIntake hopperIntake) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
