@@ -9,15 +9,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.elevator.SetElevatorSetpoint;
-import frc.robot.commands.endEffector.EndEffectorSetpoint;
-import frc.robot.commands.endEffector.RunEndEffectorIntake;
-import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
-import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
-import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
@@ -51,7 +44,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
-           new InstantCommand(
+          new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
     } catch (Exception e) {
