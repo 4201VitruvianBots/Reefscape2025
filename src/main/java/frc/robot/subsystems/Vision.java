@@ -38,10 +38,14 @@ public class Vision extends SubsystemBase {
   /* Robot swerve drive state */
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
   private final StructPublisher<Pose2d> estPoseLLF =
-      table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
+      table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
+  private final StructPublisher<Pose2d> lastUsedPoseLLF =
+      table.getStructTopic("lastUsedPoseLLF", Pose2d.struct).publish();
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
+  private final StructPublisher<Pose2d> lastUsedPoseLLB =
+      table.getStructTopic("lastUsedPoseLLB", Pose2d.struct).publish();
 
   public Vision() {
     // Port Forwarding to access limelight on USB Ethernet
@@ -144,6 +148,7 @@ public class Vision extends SubsystemBase {
         doRejectUpdateLLF = true;
       }
       if (!doRejectUpdateLLF) {
+        lastUsedPoseLLF.set(limelightMeasurementCam1.pose);
         m_swerveDriveTrain.addVisionMeasurement(
             limelightMeasurementCam1.pose, limelightMeasurementCam1.timestampSeconds);
       }
@@ -177,6 +182,7 @@ public class Vision extends SubsystemBase {
         doRejectUpdateLLB = true;
       }
       if (!doRejectUpdateLLB) {
+        lastUsedPoseLLB.set(limelightMeasurementCam2.pose);
         m_swerveDriveTrain.addVisionMeasurement(
             limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
       }
