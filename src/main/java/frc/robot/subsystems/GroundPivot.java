@@ -34,26 +34,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.ROBOT;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class GroundPivot extends SubsystemBase {
   /** Creates a new GroundPivot. */
   private final TalonFX m_pivotMotor = new TalonFX(CAN.groundPivotMotor);
 
-  private final TalonFXSimState m_simState = m_pivotMotor.getSimState();
-
   private final CANcoder m_pivotEncoder = new CANcoder(CAN.groundPivotCANcoder);
   private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
+  private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
+  private final StatusSignal<Voltage> m_supplyVoltageSignal =
+      m_pivotMotor.getSupplyVoltage().clone();
+  private final StatusSignal<Voltage> m_motorVoltageSignal = m_pivotMotor.getMotorVoltage().clone();
   private final StatusSignal<Current> m_currentSignal = m_pivotMotor.getTorqueCurrent().clone();
 
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private Angle m_desiredAngle = PIVOT.PIVOT_SETPOINT.STOWED.get();
 
-  private final MotionMagicTorqueCurrentFOC m_request =
-      new MotionMagicTorqueCurrentFOC(getCurrentAngle());
+  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getAngle());
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -66,6 +67,7 @@ public class GroundPivot extends SubsystemBase {
           PIVOT.maxAngle.in(Radians),
           false,
           PIVOT.minAngle.in(Radians));
+  private final TalonFXSimState m_simState = m_pivotMotor.getSimState();
 
   private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
 
@@ -153,13 +155,24 @@ public class GroundPivot extends SubsystemBase {
     return m_desiredAngle;
   }
 
-  public Angle getCurrentAngle() {
-    m_positionSignal.refresh();
-    return m_positionSignal.getValue();
+  public Angle getAngle() {
+    return m_positionSignal.refresh().getValue();
+  }
+
+  public AngularVelocity getRotationalVelocity() {
+    return m_velocitySignal.refresh().getValue();
   }
 
   public Angle getCANcoderAngle() {
-    return m_pivotEncoder.getAbsolutePosition().getValue();
+    return m_pivotEncoder.getAbsolutePosition().refresh().getValue();
+  }
+
+  public Voltage getInputVoltage() {
+    return m_supplyVoltageSignal.refresh().getValue();
+  }
+
+  public Voltage getMotorVoltage() {
+    return m_motorVoltageSignal.refresh().getValue();
   }
 
   public void setNeutralMode(NeutralModeValue mode) {
@@ -188,29 +201,13 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public void resetMotionMagicState() {
-    m_desiredAngle = getCurrentAngle();
+    m_desiredAngle = getAngle();
     m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
-  }
-
-  public TalonFX getMotor() {
-    return m_pivotMotor;
-  }
-
-  public SingleJointedArmSim getSim() {
-    return m_pivotSim;
-  }
-
-  public Voltage getInputVoltage() {
-    return m_pivotMotor.getMotorVoltage().getValue();
-  }
-
-  public AngularVelocity getRotationalVelocity() {
-    return m_pivotMotor.getVelocity().getValue();
   }
 
   private void updateLogger() {
     SmartDashboard.putString("GroundPivot/ControlMode", m_controlMode.toString());
-    SmartDashboard.putNumber("GroundPivot/CurrentAngle", getCurrentAngle().in(Degrees));
+    SmartDashboard.putNumber("GroundPivot/CurrentAngle", getAngle().in(Degrees));
     SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
     SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
     SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
@@ -229,7 +226,7 @@ public class GroundPivot extends SubsystemBase {
     m_pivotTab.getDoubleTopic("kCruiseVel").publish().set(PIVOT.kCruiseVel);
     m_pivotTab.getDoubleTopic("kJerk").publish().set(PIVOT.kJerk);
 
-    m_pivotTab.getDoubleTopic("kSetpoint").publish().set(getCurrentAngle().in(Degrees));
+    m_pivotTab.getDoubleTopic("kSetpoint").publish().set(getAngle().in(Degrees));
 
     m_kS_subscriber = m_pivotTab.getDoubleTopic("kS").subscribe(PIVOT.kS);
     m_kV_subscriber = m_pivotTab.getDoubleTopic("kV").subscribe(PIVOT.kV);
@@ -272,12 +269,12 @@ public class GroundPivot extends SubsystemBase {
 
   public void autonomousInit() {
     resetMotionMagicState();
-    setDesiredSetpoint(getCurrentAngle());
+    setDesiredSetpoint(getAngle());
   }
 
   public void teleopInit() {
     resetMotionMagicState();
-    setDesiredSetpoint(getCurrentAngle());
+    setDesiredSetpoint(getAngle());
   }
 
   @Override
@@ -289,8 +286,8 @@ public class GroundPivot extends SubsystemBase {
         if (DriverStation.isEnabled())
           m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
-      default:
       case OPEN_LOOP:
+      default:
         if (DriverStation.isDisabled()) {
           setPercentOutput(0.0);
         }
@@ -305,7 +302,7 @@ public class GroundPivot extends SubsystemBase {
     // Set supply voltage of pivot motor
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    m_pivotSim.setInputVoltage(MathUtil.clamp(m_simState.getMotorVoltage(), -12, 12));
+    m_pivotSim.setInputVoltage(m_simState.getMotorVoltage());
 
     m_pivotSim.update(0.020);
 

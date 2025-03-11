@@ -7,11 +7,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.constants.ROBOT.GAME_PIECE;
-import frc.robot.constants.ROBOT.SUPERSTRUCTURE_STATES;
+import edu.wpi.first.units.measure.Mass;
 
 public class ELEVATOR {
-  public static final double upperLimitMeters = Units.inchesToMeters(78);
+  public static final double upperLimitMeters = Units.inchesToMeters(57.5);
   public static final double lowerLimitMeters = Units.inchesToMeters(0);
   public static final Distance superStructureHeight = Inches.of(36.25);
 
@@ -36,53 +35,39 @@ public class ELEVATOR {
   public static final double kPercentOutputMultiplier = 1.0; // Upwards motion
   public static final double kLimitedPercentOutputMultiplier = 0.65; // Downwards motion
 
-  public static final double peakForwardOutput = 0.5; // Move up to 1.0 after testing
-  public static final double peakReverseOutput = -0.3; // Move up to -0.5-0.65 after testing
+  public static final double peakForwardOutput = 0.65; // Move up to 1.0 after testing
+  public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
   public static final double kElevatorDrumDiameter = Units.inchesToMeters(2.2557);
-  public static final double drumRotationsToMeters =
-      kElevatorDrumDiameter
-          * Math.PI; // Divide the setpoint in meters by this to get rotations. Vice versa to get
+  public static final Distance drumRotationsToMeters =
+      Meters.of(
+          kElevatorDrumDiameter
+              * Math
+                  .PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // meters
-  public static final double kCarriageMassPounds = 15.0;
+  public static final Mass kCarriageMass = Pounds.of(15.0);
   public static final double gearRatio = 48.0 / 10.0;
   public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
 
   public enum ELEVATOR_SETPOINT {
-    START_POSITION(Units.inchesToMeters(0.0), SUPERSTRUCTURE_STATES.STOWED),
-    ALGAE_REEF_INTAKE_LOWER(Units.inchesToMeters(13.5), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.ALGAE),
-    ALGAE_REEF_INTAKE_UPPER(Units.inchesToMeters(28), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.ALGAE),
-    PROCESSOR(Units.inchesToMeters(10), SUPERSTRUCTURE_STATES.L1, GAME_PIECE.ALGAE),
-    LEVEL_2(Units.inchesToMeters(13), SUPERSTRUCTURE_STATES.L2, GAME_PIECE.CORAL),
-    LEVEL_3(Units.inchesToMeters(27), SUPERSTRUCTURE_STATES.L3, GAME_PIECE.CORAL),
-    LEVEL_4(Units.inchesToMeters(56.5), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.CORAL),
-    NET(Units.inchesToMeters(78), SUPERSTRUCTURE_STATES.L4, GAME_PIECE.ALGAE);
+    START_POSITION(Inches.of(0.0)),
+    ALGAE_REEF_INTAKE_LOWER(Inches.of(21)),
+    ALGAE_REEF_INTAKE_UPPER(Inches.of(35)),
+    PROCESSOR(Inches.of(7.25)),
+    INTAKE_HOPPER(Inches.of(1.5)), // used to be 3.543
+    LEVEL_2(Inches.of(13)),
+    LEVEL_3(Inches.of(27)),
+    LEVEL_4(Inches.of(57)),
+    NET(Inches.of(57.5));
 
-    private final double setpointMeters;
-    private final SUPERSTRUCTURE_STATES superstructureState;
-    private final GAME_PIECE gamePiece;
+    private final Distance setpoint;
 
-    ELEVATOR_SETPOINT(
-        double setpointMeters, SUPERSTRUCTURE_STATES superstructureState, GAME_PIECE gamePiece) {
-      this.setpointMeters = setpointMeters;
-      this.superstructureState = superstructureState;
-      this.gamePiece = gamePiece;
+    ELEVATOR_SETPOINT(Distance setpoint) {
+      this.setpoint = setpoint;
     }
 
-    ELEVATOR_SETPOINT(double setpointMeters, SUPERSTRUCTURE_STATES superstructureState) {
-      this(setpointMeters, superstructureState, GAME_PIECE.NONE);
-    }
-
-    public double getSetpointMeters() {
-      return setpointMeters;
-    }
-
-    public SUPERSTRUCTURE_STATES getSuperstructureState() {
-      return superstructureState;
-    }
-
-    public GAME_PIECE getGamePiece() {
-      return gamePiece;
+    public Distance getSetpoint() {
+      return setpoint;
     }
   }
 

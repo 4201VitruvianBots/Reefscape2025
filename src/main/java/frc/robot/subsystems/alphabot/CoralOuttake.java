@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
@@ -27,11 +26,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.alphabot.CAN;
 import frc.robot.constants.alphabot.CORALOUTTAKE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
-  private LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
+  private final LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   private final DCMotorSim outtakeMotorSim =
       new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); // TODO implement sim code
@@ -41,7 +40,7 @@ public class CoralOuttake extends SubsystemBase {
   private final VoltageOut m_voltageRequest = new VoltageOut(0);
   private final TorqueCurrentFOC m_TorqueCurrentFOC = new TorqueCurrentFOC(0);
   private final VelocityTorqueCurrentFOC m_focVelocityControl = new VelocityTorqueCurrentFOC(0);
-  private TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
+  private final TalonFXSimState m_outtakeMotorSimState = outtakeMotor.getSimState();
   // Test mode setup
   private DoubleSubscriber m_kP_subscriber, m_kI_subscriber, m_kD_subscriber;
   private final NetworkTable coralOuttakeTab =
@@ -108,15 +107,14 @@ public class CoralOuttake extends SubsystemBase {
     CtreUtils.configureTalonFx(outtakeMotor, config);
   }
 
-  public double getRPMsetpoint() {
+  public double getRpmSetpoint() {
     return m_rpmSetpoint;
   }
 
   @Override
   public void simulationPeriodic() {
     m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    outtakeMotorSim.setInputVoltage(
-        MathUtil.clamp(m_outtakeMotorSimState.getMotorVoltage(), -12, 12));
+    outtakeMotorSim.setInputVoltage(m_outtakeMotorSimState.getMotorVoltage());
 
     // TODO Right now this thing has no idea what time it is, so gotta update that.
 

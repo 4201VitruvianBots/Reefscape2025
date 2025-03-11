@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -19,15 +17,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -37,7 +32,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
-import frc.robot.utils.CtreUtils;
+import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator */
@@ -45,38 +40,33 @@ public class Elevator extends SubsystemBase {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
 
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          ELEVATOR.gearbox,
-          ELEVATOR.gearRatio,
-          ELEVATOR.kCarriageMassPounds,
-          ELEVATOR.kElevatorDrumDiameter / 2,
-          ELEVATOR.lowerLimitMeters,
-          ELEVATOR.upperLimitMeters,
-          true,
-          0,
-          0.0,
-          0.0);
-
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
-  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
-  private final StatusSignal<Current> m_currentSignal =
-      elevatorMotors[0].getTorqueCurrent().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       elevatorMotors[0].getVelocity().clone();
   private final StatusSignal<AngularAcceleration> m_accelSignal =
       elevatorMotors[0].getAcceleration().clone();
+  private final StatusSignal<Voltage> m_voltageSignal = elevatorMotors[0].getMotorVoltage().clone();
+  private final StatusSignal<Current> m_supplyCurrentSignal =
+      elevatorMotors[0].getSupplyCurrent().clone();
+  private final StatusSignal<Current> m_statorCurrentSignal =
+      elevatorMotors[0].getStatorCurrent().clone();
+  private final StatusSignal<Current> m_torqueCurrentSignal =
+      elevatorMotors[0].getTorqueCurrent().clone();
 
-  private double m_desiredPositionMeters;
-  private double m_joystickInput;
+  private Distance m_desiredPosition = Inches.of(0);
+
+  @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
+  private double m_joystickInput = 0.0;
+
+  @Logged(name = "Control Mode", importance = Logged.Importance.INFO)
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
+
+  @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-  private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
 
-  private final TalonFXSimState m_motorSimState;
+  private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
 
   private DoubleSubscriber m_kP_subscriber,
       m_kI_subscriber,
@@ -84,10 +74,24 @@ public class Elevator extends SubsystemBase {
       m_kASubscriber,
       m_kVSubscriber,
       m_velocitySubscriber,
-      m_accelerationSubscriber,
-      m_jerkSubscriber;
+      m_accelerationSubscriber;
   private final NetworkTable elevatorTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
+
+  // Simulation classes help us simulate what's going on, including gravity.
+  private final ElevatorSim m_elevatorSim =
+      new ElevatorSim(
+          ELEVATOR.gearbox,
+          ELEVATOR.gearRatio,
+          ELEVATOR.kCarriageMass.in(Kilograms),
+          ELEVATOR.kElevatorDrumDiameter / 2,
+          ELEVATOR.lowerLimitMeters,
+          ELEVATOR.upperLimitMeters,
+          true,
+          0,
+          0.0,
+          0.0);
+  private final TalonFXSimState m_motorSimState;
 
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -107,6 +111,7 @@ public class Elevator extends SubsystemBase {
     config.CurrentLimits.StatorCurrentLimit = 40;
     config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
     CtreUtils.configureTalonFx(elevatorMotors[1], config);
@@ -116,23 +121,25 @@ public class Elevator extends SubsystemBase {
     elevatorMotors[0].setPosition(Rotations.of(0));
     elevatorMotors[1].setControl(new Follower(elevatorMotors[0].getDeviceID(), true));
 
+    setName("Elevator");
     SmartDashboard.putData(this);
   }
 
   public void holdElevator() {
-    setDesiredPosition(getHeightMeters());
+    setDesiredPosition(getHeight());
   }
 
   public void setPercentOutput(double output) {
     elevatorMotors[0].set(output);
   }
 
-  public double getPercentOutputMotor() {
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
+  public double getPercentOutput() {
     return elevatorMotors[0].get();
   }
 
-  public void setDesiredPosition(double desiredPosition) {
-    m_desiredPositionMeters = desiredPosition;
+  public void setDesiredPosition(Distance desiredPosition) {
+    m_desiredPosition = desiredPosition;
   }
 
   public void setDesiredAcceleration(double desiredAccel) {
@@ -151,38 +158,63 @@ public class Elevator extends SubsystemBase {
     return m_controlMode;
   }
 
-  public double getMotorRotations() {
+  @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
+  public Angle getRotations() {
     m_positionSignal.refresh();
-    return m_positionSignal.getValueAsDouble();
+    return m_positionSignal.refresh().getValue();
   }
 
-  public double getCurrent() {
-    m_currentSignal.refresh();
-    return m_currentSignal.getValueAsDouble();
+  public LinearVelocity getVelocity() {
+    return MetersPerSecond.of(
+        m_velocitySignal.getValue().in(RotationsPerSecond)
+            * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  public double getVelocityMps() {
-    m_velocitySignal.refresh();
-    return m_velocitySignal.getValue().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters;
+  @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)
+  public double getVelocityInches() {
+    return getVelocity().in(InchesPerSecond);
   }
 
-  public double getAccelMps() {
+  public LinearAcceleration getAcceleration() {
     m_accelSignal.refresh();
-    return m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
-        * ELEVATOR.drumRotationsToMeters;
+    return MetersPerSecondPerSecond.of(
+        m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
+            * ELEVATOR.drumRotationsToMeters.magnitude());
   }
 
-  public Double getMotorVoltage() {
-    m_voltageSignal.refresh();
-    return m_voltageSignal.getValueAsDouble();
+  @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
+  public double getAccelerationInches() {
+    return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
   }
 
-  public void setJoystickY(double m_joystickY) {
-    m_joystickInput = m_joystickY;
+  public Voltage getMotorVoltage() {
+    return m_voltageSignal.refresh().getValue();
   }
 
-  public double getHeightMeters() {
-    return getMotorRotations() * ELEVATOR.drumRotationsToMeters;
+  public Current getSupplyCurrent() {
+    return m_supplyCurrentSignal.refresh().getValue();
+  }
+
+  public Current getStatorCurrent() {
+    return m_statorCurrentSignal.refresh().getValue();
+  }
+
+  public Current getTorqueCurrent() {
+    return m_torqueCurrentSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Control Request", importance = Logged.Importance.DEBUG)
+  public String getCurrentControlRequestString() {
+    return elevatorMotors[0].getAppliedControl().toString();
+  }
+
+  public Distance getHeight() {
+    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.magnitude());
+  }
+
+  @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
+  public double getHeightInches() {
+    return getHeight().in(Inches);
   }
 
   public boolean isClosedLoopControl() {
@@ -199,13 +231,15 @@ public class Elevator extends SubsystemBase {
     return m_neutralMode;
   }
 
-  public double getDesiredHeight() {
-    return m_desiredPositionMeters;
+  @Logged(name = "Desired Height Inches", importance = Logged.Importance.INFO)
+  public double getDesiredHeightInches() {
+    return m_desiredPosition.in(Inches);
   }
 
   // Elevator is within 1 inch of its setpoint
+  @Logged(name = "At Setpoint", importance = Logged.Importance.DEBUG)
   public boolean atSetpoint() {
-    return Math.abs(m_desiredPositionMeters - getHeightMeters()) <= 0.0254;
+    return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
   }
 
   public void testInit() {
@@ -270,37 +304,6 @@ public class Elevator extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_elevatorSim.update(0.020);
-
-    m_elevatorSim.setInputVoltage(MathUtil.clamp(m_motorSimState.getMotorVoltage(), -12, 12));
-    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    m_motorSimState.setRawRotorPosition(
-        m_elevatorSim.getPositionMeters() * ELEVATOR.gearRatio / ELEVATOR.drumRotationsToMeters);
-    m_motorSimState.setRotorVelocity(
-        m_elevatorSim.getVelocityMetersPerSecond()
-            * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters);
-  }
-
-  private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Elevator/Elevator Height", getHeightMeters());
-    SmartDashboard.putNumber("Elevator/Elevator Desired Height", m_desiredPositionMeters);
-    SmartDashboard.putNumber("Elevator/Elevator Velocity Mps", getVelocityMps());
-    SmartDashboard.putNumber("Elevator/Motor Voltage", getMotorVoltage());
-    // SmartDashboard.putNumber("Elevator/Motor Rotations", getMotorRotations());
-    SmartDashboard.putNumber("Elevator/Joystick Input", m_joystickInput);
-    SmartDashboard.putBoolean("Elevator/Is Closed Loop", isClosedLoopControl());
-    SmartDashboard.putNumber("Elevator/Elevator Velocity Setpoint", m_requestVelocity.Velocity);
-    SmartDashboard.putNumber("Elevator/Elevator Torque Current", getCurrent());
-    // SmartDashboard.putString("Elevator/Neutral Mode", m_neutralMode.toString());
-    SmartDashboard.putNumber("Elevator/Acceleration", getAccelMps());
-  }
-
-  @Override
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
@@ -310,13 +313,13 @@ public class Elevator extends SubsystemBase {
         break;
       case CLOSED_LOOP:
         if (atSetpoint()
-            && Math.abs(
-                    m_desiredPositionMeters - ELEVATOR_SETPOINT.START_POSITION.getSetpointMeters())
-                <= 0.0254) {
+            && m_desiredPosition.minus(ELEVATOR_SETPOINT.START_POSITION.getSetpoint()).abs(Inches)
+                <= 1) {
           elevatorMotors[0].set(0); // Don't move the elevator if already at stowed
         } else {
           elevatorMotors[0].setControl(
-              m_request.withPosition(m_desiredPositionMeters / ELEVATOR.drumRotationsToMeters));
+              m_request.withPosition(
+                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.magnitude()));
         }
         break;
       case OPEN_LOOP:
@@ -331,6 +334,22 @@ public class Elevator extends SubsystemBase {
         setPercentOutput(percentOutput);
         break;
     }
-    updateSmartDashboard();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    m_elevatorSim.setInputVoltage(m_motorSimState.getMotorVoltage());
+
+    m_elevatorSim.update(0.020);
+
+    m_motorSimState.setRawRotorPosition(
+        m_elevatorSim.getPositionMeters()
+            * ELEVATOR.gearRatio
+            / ELEVATOR.drumRotationsToMeters.magnitude());
+    m_motorSimState.setRotorVelocity(
+        m_elevatorSim.getVelocityMetersPerSecond()
+            * ELEVATOR.gearRatio
+            / ELEVATOR.drumRotationsToMeters.magnitude());
   }
 }

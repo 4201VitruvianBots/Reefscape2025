@@ -39,7 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
   private int m_red = 0;
   private int m_green = 0; // setting all LED colors to none: there is no color when robot activates
   private int m_blue = 0;
-  private int m_white = 0; // we have a seperate bulb in our LED strips for white
+  private int m_white = 0; // we have a separate bulb in our LED strips for white
   private double m_brightness = 0;
   private double m_speed = 0;
   private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED;
