@@ -53,7 +53,7 @@ public class ENDEFFECTOR {
     public static double kI = 0.0;
     public static double kD = 0.01;
     public static double kG = 0.06;
-    public static double kV = 1.96;
+    public static double kV = 0.0;
     public static double kA = 0.0;
     public static double kMotionMagicVelocity = 360;
     public static double kMotionMagicAcceleration = 600;

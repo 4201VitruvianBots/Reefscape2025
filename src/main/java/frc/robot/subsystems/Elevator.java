@@ -196,7 +196,7 @@ public class Elevator extends SubsystemBase {
   public LinearAcceleration getAcceleration() {
     return MetersPerSecondPerSecond.of(
         m_accelSignal.refresh().getValue().in(RotationsPerSecondPerSecond)
-            * ELEVATOR.drumRotationsToMeters.magnitude());
+            * ELEVATOR.drumRotationsToMeters.in(Meters));
   }
 
   @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
@@ -226,7 +226,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getHeight() {
-    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.magnitude());
+    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.in(Meters));
   }
 
   @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
@@ -346,7 +346,7 @@ public class Elevator extends SubsystemBase {
         } else {
           elevatorMotors[0].setControl(
               m_request.withPosition(
-                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.magnitude()));
+                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.in(Meters)));
         }
         break;
       case OPEN_LOOP:
@@ -373,10 +373,10 @@ public class Elevator extends SubsystemBase {
     m_motorSimState.setRawRotorPosition(
         m_elevatorSim.getPositionMeters()
             * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+            / ELEVATOR.drumRotationsToMeters.in(Meters));
     m_motorSimState.setRotorVelocity(
         m_elevatorSim.getVelocityMetersPerSecond()
             * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+            / ELEVATOR.drumRotationsToMeters.in(Meters));
   }
 }

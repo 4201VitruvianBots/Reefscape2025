@@ -19,7 +19,7 @@ public class ELEVATOR {
 
   public static double kG = 0.36;
   public static double kS = 0.0;
-  public static double kV = 0.6306;
+  public static double kV = 0.0;
   public static double kA = 0.2;
   public static double kP = 18.5;
   public static double kI = 0.0;
