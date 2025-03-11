@@ -185,7 +185,7 @@ public class Elevator extends SubsystemBase {
 
   public LinearVelocity getVelocity() {
     return MetersPerSecond.of(
-        getMotorVelocity().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters.magnitude());
+        getMotorVelocity().in(RotationsPerSecond) * ELEVATOR.drumRotationsToMeters.in(Meters));
   }
 
   @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)

@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
+import frc.robot.constants.PWM;
+
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
   private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final Servo m_hopperServo = new Servo(9);
+  private final Servo m_hopperServo = new Servo(PWM.servo);
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_hopperIntakeMotor.getVelocity().clone();

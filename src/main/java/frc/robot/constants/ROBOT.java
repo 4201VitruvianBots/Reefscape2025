@@ -104,6 +104,8 @@ public class ROBOT {
     ENDEFFECTOR.PIVOT.mass = Pounds.of(15); // TODO: Get actual values
     ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(-0.47607421875);
     ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.CounterClockwise_Positive;
+    
+    PWM.servo = 9;
   }
 
   public static void initV3() {
