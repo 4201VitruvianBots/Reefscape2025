@@ -27,6 +27,7 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
+import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
@@ -49,6 +50,7 @@ import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.generated.V3Constants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.V2.V2Climber;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
@@ -79,6 +81,9 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2/V3 subsystems
+  @Logged(name = "V2Climber", importance = Logged.Importance.INFO)
+  private V2Climber m_v2Climber;
+  
   @Logged(name = "Climber", importance = Logged.Importance.INFO)
   private Climber m_climber;
 
@@ -161,7 +166,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
+      m_v2Climber = new V2Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       MaxSpeed =
@@ -523,7 +528,13 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(2.5)));
+      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+    }
+    if (m_v2Climber != null) {
+        m_driverController.back().whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
+    }
+    
+    if (m_hopperIntake != null) {
       m_driverController
           .start()
           .whileTrue(

@@ -48,7 +48,8 @@ public class ELEVATOR {
 
   public static final Distance kElevatorDrumDiameter = Inches.of(2.2557);
   public static final Distance drumRotationsToMeters =
-      kElevatorDrumDiameter.times(Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
+      kElevatorDrumDiameter.times(
+          Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // meters
   public static final double gearRatio = 48.0 / 10.0;
   public static DCMotor gearbox = DCMotor.getKrakenX60Foc(2);
