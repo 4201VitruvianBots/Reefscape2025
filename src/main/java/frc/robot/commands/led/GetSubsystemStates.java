@@ -15,7 +15,7 @@ public class GetSubsystemStates extends Command {
   private final Climber m_climber;
   private final EndEffector
       m_endEffector; // Importing all the subsystems we'll need for this don't worry we'll use this
-  // stuff. I hope
+  // stuff. I hope.
 
   private boolean isEndgame;
   private boolean isLinedUpToReef;
@@ -51,7 +51,15 @@ public class GetSubsystemStates extends Command {
   @Override
   public void execute() {
     // TODO: get/make the states.
-
+    // States:
+    //Endgame (done)
+    //Reef Lineup
+    //Coral Owned
+    //Algae Owned
+    //Coral
+    //Algae
+    //Enabled (done)
+    //Disabled (done)
     isEndgame = m_climber.getClimbState();
     isLinedUpToReef = false; // Later
     isHoldingCoral = false; // ignore these for now

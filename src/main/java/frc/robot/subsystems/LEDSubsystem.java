@@ -37,25 +37,25 @@ public class LEDSubsystem extends SubsystemBase {
 
   private Color8Bit m_color = new Color8Bit();
   private int m_red = 0;
-  private int m_green = 0; // setting all LED colors to none: there is no color when robot activates
+  private int m_green = 0; // Setting all LED colors to none: there is no color when robot activates.
   private int m_blue = 0;
-  private int m_white = 0; // we have a separate bulb in our LED strips for white
+  private int m_white = 0; // We have a separate bulb in our LED strips for white.
   private double m_brightness = 0;
   private double m_speed = 0;
   private SUBSYSTEM_STATES currentRobotState = SUBSYSTEM_STATES.DISABLED;
-  private boolean setSolid; // this stops the animation
+  private boolean setSolid; // This stops the animation.
   private Animation m_toAnimate = null;
 
   public LEDSubsystem() {
     m_candle.configFactoryDefault();
-    // sets up LED strip
+    // Sets up LED strip.
     CANdleConfiguration configAll = new CANdleConfiguration();
-    configAll.statusLedOffWhenActive = true; // sets lights of when the LEDs are activated
-    configAll.disableWhenLOS = false; // disables LEDs when there is no signal for control
+    configAll.statusLedOffWhenActive = true; // Sets lights of when the LEDs are activated.
+    configAll.disableWhenLOS = false; // Disables LEDs when there is no signal for control.
     configAll.stripType = LEDStripType.GRB;
     configAll.brightnessScalar =
-        0.5; // 1 is highest we can go we don't want to blind everyone at the event
-    configAll.vBatOutputMode = VBatOutputMode.Modulated; // Modulate
+        0.5; // 1 is highest we can go we don't want to blind everyone at the event.
+    configAll.vBatOutputMode = VBatOutputMode.Modulated; // Modulate.
     m_candle.configAllSettings(configAll, 100);
     m_candle.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_1_General, 255);
     m_candle.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_2_Startup, 255);
@@ -68,7 +68,7 @@ public class LEDSubsystem extends SubsystemBase {
     m_candle.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_7_TopPixels, 255);
   }
 
-  // will create LED patterns
+  // These will create the LED patterns.
   public void setPattern(Color8Bit color, int white, double speed, ANIMATION_TYPE toChange) {
     m_color = color;
     m_red = color.red;
@@ -77,48 +77,47 @@ public class LEDSubsystem extends SubsystemBase {
     m_white = white;
     m_speed = speed;
     switch (toChange) {
-      case ColorFlow: // stripe of color flowing through the LED strip
+      case ColorFlow: // Stripe of color flowing through the LED strip.
         m_toAnimate =
             new ColorFlowAnimation(
                 m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount, Direction.Forward);
         break;
-      case ColorFlowLong: // stripe of color flowing through the LED strip
+      case ColorFlowLong: // Stripe of color flowing through the LED strip.
         m_toAnimate =
             new ColorFlowAnimation(
                 m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount + 15, Direction.Forward);
         break;
-
-      case Fire: // red and orange LEDs flaming up and down the LED strip
+      case Fire: // Red and orange LEDs flaming up and down the LED strip.
         m_brightness = 0.5;
         m_speed = 0.7;
         m_toAnimate = new FireAnimation(m_brightness, m_speed, LED.LEDcount, 0.7, 0.5);
         break;
-      case Larson: // a line bouncing back and forth with its width determined by size
+      case Larson: // A line bouncing back and forth with its width determined by size.
         m_toAnimate =
             new LarsonAnimation(
                 m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount, BounceMode.Front, 7);
         break;
-      case Rainbow: // neon cat type beat
+      case Rainbow: // Neon cat type beat.
         m_brightness = 1;
         m_toAnimate = new RainbowAnimation(m_brightness, m_speed, LED.LEDcount);
         break;
-      case RgbFade: // cycling between red, greed, and blue
+      case RgbFade: // Cycling between red, greed, and blue.
         m_brightness = 1;
         m_toAnimate = new RgbFadeAnimation(m_brightness, m_speed, LED.LEDcount);
         break;
-      case SingleFade: // slowly turn all LEDs from solid color to off
+      case SingleFade: // Slowly turn all LEDs from solid color to off.
         m_toAnimate =
             new SingleFadeAnimation(m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount);
         break;
-      case Strobe: // switching between solid color and full off at high speed
+      case Strobe: // switching between solid color and full off at high speed.
         m_toAnimate = new StrobeAnimation(m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount);
         break;
-      case Twinkle: // random LEDs turning on and off with certain color
+      case Twinkle: // Random LEDs turning on and off with certain color.
         m_toAnimate =
             new TwinkleAnimation(
                 m_red, m_green, m_blue, m_white, m_speed, LED.LEDcount, TwinklePercent.Percent6);
         break;
-      case TwinkleOff: // twinkle in reverse
+      case TwinkleOff: // Twinkle in reverse.
         m_toAnimate =
             new TwinkleOffAnimation(
                 m_red,
@@ -139,7 +138,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  // will set LEDs a coordinated color for an action
+  // Will set the LEDs a coordinated color for an action.
   public void expressState(SUBSYSTEM_STATES state) {
     if (state != currentRobotState) {
       switch (state) {
