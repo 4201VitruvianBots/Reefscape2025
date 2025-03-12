@@ -45,6 +45,7 @@ public class Climber extends SubsystemBase {
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private boolean m_isClimbing = false;
 
   // Simulation classes help us simulate what's going on
   private final FlywheelSim m_climberSim =
@@ -150,6 +151,10 @@ public class Climber extends SubsystemBase {
     m_buttonInput = buttonInput;
   }
 
+  public boolean getClimbState() {
+    return m_isClimbing;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -167,6 +172,7 @@ public class Climber extends SubsystemBase {
         }
         break;
     }
+    m_isClimbing = climberMotor.get() != 0; // LED Code temp fix.
   }
 
   public void simulationPeriodic() {

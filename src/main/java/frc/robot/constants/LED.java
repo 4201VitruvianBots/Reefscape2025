@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
 public class LED {
-  public static final int LEDcount = 34; // TODO: change the amount od LEDs we have
+  public static final int LEDcount = 34; // TODO: change the amount of LEDs we have.
 
   public static final double LEDstripLength = Units.inchesToMeters(7); // meters
 
@@ -34,8 +34,8 @@ public class LED {
   public static final Color8Bit yellow = new Color8Bit(150, 120, 0); // Coral Mode
   public static final Color8Bit green = new Color8Bit(0, 255, 0); // Enabled
   public static final Color8Bit cyan = new Color8Bit(24, 94, 89); // Algae Mode
-  public static final Color8Bit blue = new Color8Bit(0, 0, 255); // Lined up for Reef
-  public static final Color8Bit purple = new Color8Bit(128, 0, 128);
+  public static final Color8Bit blue = new Color8Bit(0, 0, 255); // Left Reef Lineup
+  public static final Color8Bit purple = new Color8Bit(128, 0, 128); // Right Reef Lineup
   public static final Color8Bit pink = new Color8Bit(190, 30, 35);
   public static final Color8Bit white = new Color8Bit(125, 125, 125);
 
@@ -43,14 +43,16 @@ public class LED {
   // instead.
 
   public enum SUBSYSTEM_STATES {
-    DISABLED, //
-    ENABLED, //
-    INTAKING, //
-    CORAL,
+    ENDGAME,
+    LEFT_REEF_LININGUP,
+    RIGHT_REEF_LININGUP,
+    LEFT_REEF_LINEDUP,
+    RIGHT_REEF_LINEDUP,
     CORAL_OWNED,
-    ALGAE,
     ALGAE_OWNED,
-    REEF_LINEUP,
-    ENDGAME
+    CORAL,
+    ALGAE,
+    ENABLED,
+    DISABLED;
   }
 }

@@ -4,13 +4,52 @@
 
 package frc.robot.commands.led;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.LED;
+import frc.robot.constants.ROBOT;
+import frc.robot.subsystems.*;
+import java.util.function.Supplier;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class GetSubsystemStates extends Command {
-  /** Creates a new GerSubsystemStates. */
-  public GetSubsystemStates() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  // Importing the subsystems we need for this.
+  private final Supplier<ROBOT.GAME_PIECE> m_getGamePiece;
+  private final LEDSubsystem m_led;
+  private final Vision m_vision; // will use this.
+  private final Climber m_climber;
+  private final EndEffector m_endEffector;
+
+  // Putting in the Booleans we need.
+  private boolean isEndgame;
+  private boolean isLinedUpToLeftReef;
+  private boolean isLinedUpToRightReef;
+  private boolean isLiningUpToLeftReef;
+  private boolean isLiningUpToRightReef;
+  private boolean isHoldingCoral;
+  private boolean isHoldingAlgae;
+  private boolean isCoralMode;
+  private boolean isAlgaeMode;
+  private boolean isEnabled;
+  private boolean isDisabled;
+
+  public GetSubsystemStates(
+      LEDSubsystem led,
+      Vision vision,
+      Climber climber,
+      EndEffector endEffector,
+      Supplier<ROBOT.GAME_PIECE> getGamePiece) {
+    m_getGamePiece = getGamePiece;
+    m_led = led;
+    m_vision = vision;
+    m_climber = climber;
+    m_endEffector = endEffector;
+
+    addRequirements(m_led);
+  }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
   }
 
   // Called when the command is initially scheduled.
@@ -19,7 +58,48 @@ public class GetSubsystemStates extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+
+    // States:
+    isEndgame = m_climber.getClimbState();
+    isLinedUpToLeftReef = false; // TODO: Reef Lineup
+    isLinedUpToRightReef = false; //
+    isLiningUpToLeftReef = false; //
+    isLiningUpToRightReef = false; //
+    isHoldingCoral = m_endEffector.hasCoral();
+    isHoldingAlgae = false; // TODO: Algae Owned
+    isCoralMode = m_getGamePiece.get() == ROBOT.GAME_PIECE.CORAL;
+    isAlgaeMode = m_getGamePiece.get() == ROBOT.GAME_PIECE.ALGAE;
+    isEnabled = DriverStation.isEnabled();
+    isDisabled = DriverStation.isDisabled();
+
+    // the prioritized state to be expressed to the LEDs
+    // set in order of priority to be expressed from the least priority to the
+    // highest priority
+    if (isEndgame) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ENDGAME);
+    } else if (isLinedUpToLeftReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.LEFT_REEF_LINEDUP);
+    } else if (isLinedUpToRightReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.RIGHT_REEF_LINEDUP);
+    } else if (isLiningUpToLeftReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.LEFT_REEF_LININGUP);
+    } else if (isLiningUpToRightReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.RIGHT_REEF_LININGUP);
+    } else if (isHoldingCoral) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.CORAL_OWNED);
+    } else if (isHoldingAlgae) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ALGAE_OWNED);
+    } else if (isCoralMode) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.CORAL);
+    } else if (isAlgaeMode) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ALGAE);
+    } else if (isEnabled) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.ENABLED);
+    } else if (isDisabled) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.DISABLED);
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
