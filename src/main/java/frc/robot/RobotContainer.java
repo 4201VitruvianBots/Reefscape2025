@@ -84,13 +84,11 @@ public class RobotContainer {
   private AlgaeIntake m_algaeIntake;
 
   // V2/V3 subsystems
-//  @NotLogged(name = "V2Climber", importance = Logged.Importance.INFO)
-  @NotLogged
-  private V2Climber m_v2Climber;
+  //  @NotLogged(name = "V2Climber", importance = Logged.Importance.INFO)
+  @NotLogged private V2Climber m_v2Climber;
 
-//  @Logged(name = "Climber", importance = Logged.Importance.INFO)
-  @NotLogged
-  private Climber m_climber;
+  //  @Logged(name = "Climber", importance = Logged.Importance.INFO)
+  @NotLogged private Climber m_climber;
 
   @Logged(name = "Elevator", importance = Logged.Importance.INFO)
   private Elevator m_elevator;
