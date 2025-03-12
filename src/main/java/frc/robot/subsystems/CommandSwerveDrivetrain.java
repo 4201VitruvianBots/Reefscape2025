@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -38,6 +39,7 @@ import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.CtreUtils;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
+import org.team4201.codex.utils.TrajectoryUtils.TrajectoryUtilsConfig;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -155,7 +157,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
 
     try {
-      m_trajectoryUtils = new TrajectoryUtils(this);
+      m_trajectoryUtils =
+          new TrajectoryUtils(this, new TrajectoryUtilsConfig().withResetPoseOnAuto(false));
     } catch (Exception ex) {
       DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
     }
@@ -239,6 +242,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
             .withSpeeds(chassisSpeeds)
             .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
             .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+  }
+
+  public AngularVelocity getGyroYawRate() {
+    return getPigeon2().getAngularVelocityZWorld().refresh().getValue().unaryMinus();
   }
 
   public void resetGyro(double angle) {

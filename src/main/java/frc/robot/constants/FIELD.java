@@ -213,6 +213,7 @@ public class FIELD {
     /** Pose2d we want the robot to go to relative to the branch's location */
     private final Pose2d targetPose;
 
+    /** If the branch is a left branch (When facing the Reef) */
     private final boolean isLeftBranch;
 
     /** Map to convert the coral's Pose2d to the target Pose2d */

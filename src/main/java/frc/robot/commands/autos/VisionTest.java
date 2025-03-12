@@ -18,9 +18,9 @@ import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
 import org.team4201.codex.simulation.FieldSim;
 
-public class TwoPiece extends SequentialCommandGroup {
+public class VisionTest extends SequentialCommandGroup {
   /** Creates a new TwoPiece. */
-  public TwoPiece(
+  public VisionTest(
       CommandSwerveDrivetrain swerveDrive,
       FieldSim fieldSim,
       Elevator elevator,
@@ -28,15 +28,9 @@ public class TwoPiece extends SequentialCommandGroup {
       EndEffector endEffector,
       HopperIntake hopperIntake) {
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
+      PathPlannerPath path = PathPlannerPath.fromPathFile("VisionTest");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt1");
-      var m_ppCommand2 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLback");
-      var m_ppCommand3 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt2");
-      var m_ppCommand4 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt3");
-      var m_ppCommand5 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt4");
-      var m_ppCommand6 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt5");
-      var m_ppCommand7 = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("2PieceLPt6");
+      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("VisionTest");
 
       var point = new SwerveRequest.PointWheelsAt();
       var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -49,17 +43,11 @@ public class TwoPiece extends SequentialCommandGroup {
       addCommands(
           new PlotAutoPath(swerveDrive, fieldSim, path),
           m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand6.andThen(() -> swerveDrive.setControl(stopRequest)),
-          m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
               .withTimeout(0.1));
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load path for Score2", e.getStackTrace());
+      DriverStation.reportError("Failed to load path for Score1", e.getStackTrace());
       addCommands(new WaitCommand(0));
     }
   }

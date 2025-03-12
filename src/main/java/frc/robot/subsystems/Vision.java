@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -19,7 +19,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
-import org.photonvision.simulation.VisionSystemSim;
+import frc.robot.utils.LimelightSim;
 import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
@@ -27,31 +27,30 @@ public class Vision extends SubsystemBase {
   @NotLogged private FieldSim m_fieldSim;
 
   // TODO: Re-add this
-  @NotLogged private VisionSystemSim visionSim;
+  @NotLogged private LimelightSim visionSim;
 
   private boolean m_localized = false;
 
   // TODO: Maybe move GAME_PIECE logic to Controls?
   // @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+  private boolean m_useLeftTarget;
 
-  private Pose2d nearestPose = Pose2d.kZero;
+  private Pose2d nearestObjectPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
-  private final Pose2d[] robotToLeftTarget = {Pose2d.kZero, Pose2d.kZero};
-  private final Pose2d[] robotToRightTarget = {Pose2d.kZero, Pose2d.kZero};
   private boolean lockTarget = false;
+
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-  /* Robot swerve drive state */
   @NotLogged private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
 
   @NotLogged
-  private final StructPublisher<Pose2d> estPoseLLF =
-      table.getStructTopic("estPoseLLA", Pose2d.struct).publish();
+  private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
 
   @NotLogged
-  private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
+  private final StructPublisher<Pose2d> estPoseLLF =
+      table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
 
   @NotLogged
   private final StructPublisher<Pose2d> estPoseLLB =
@@ -89,82 +88,41 @@ public class Vision extends SubsystemBase {
     m_selectedGamePiece = gamePiece;
   }
 
+  public void setLeftTarget(boolean value) {
+    m_useLeftTarget = value;
+  }
+
   private void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
     if (isGamePieceAlgae()) {
       if (Controls.isBlueAlliance()) {
-        nearestPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+        nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
       } else {
-        nearestPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+        nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
       }
-      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
+      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestObjectPose);
     } else {
-      // TODO: add left/right logic for driver to select between branches?
       if (Controls.isBlueAlliance()) {
-        nearestPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_BRANCHES);
+        if (m_useLeftTarget) {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+        } else {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+        }
       } else {
-        nearestPose = robotToTarget[0].nearest(FIELD.RED_CORAL_BRANCHES);
+        if (m_useLeftTarget) {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_BRANCHES);
+        } else {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+        }
       }
-      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
+      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
     }
     if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
   }
 
-  private void updateNearestLeftScoringTarget() {
-    if (lockTarget) return;
-    robotToLeftTarget[0] = m_swerveDriveTrain.getState().Pose;
-    if (isGamePieceAlgae()) {
-      if (Controls.isBlueAlliance()) {
-        nearestPose = robotToLeftTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
-      } else {
-        nearestPose = robotToLeftTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
-      }
-      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
-    } else {
-      // TODO: add left/right logic for driver to select between branches?
-      if (Controls.isBlueAlliance()) {
-        nearestPose = robotToLeftTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
-      } else {
-        nearestPose = robotToLeftTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
-      }
-      robotToLeftTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
-    }
-    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestLeftTarget", robotToLeftTarget);
-  }
-
-  private void updateNearestRightScoringTarget() {
-    if (lockTarget) return;
-    robotToRightTarget[0] = m_swerveDriveTrain.getState().Pose;
-    if (isGamePieceAlgae()) {
-      if (Controls.isBlueAlliance()) {
-        nearestPose = robotToRightTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
-      } else {
-        nearestPose = robotToRightTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
-      }
-      robotToRightTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
-    } else {
-      // TODO: add left/right logic for driver to select between branches?
-      if (Controls.isBlueAlliance()) {
-        nearestPose = robotToRightTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
-      } else {
-        nearestPose = robotToRightTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
-      }
-      robotToRightTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
-    }
-    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestRightTarget", robotToTarget);
-  }
-
   public Pose2d getNearestTargetPose() {
     return robotToTarget[1];
-  }
-
-  public Pose2d getNearestLeftTargetPose() {
-    return robotToLeftTarget[1];
-  }
-
-  public Pose2d getNearestRightTargetPose() {
-    return robotToRightTarget[1];
   }
 
   public boolean getInitialLocalization() {
@@ -174,18 +132,34 @@ public class Vision extends SubsystemBase {
   public void resetInitialLocalization() {
     m_localized = false;
 
-    // TODO: Set Swerve Pose to (0, 0) to reset it
+    // Set Swerve Pose to (0, 0) to reset it
+    if (m_swerveDriveTrain != null) {
+      m_swerveDriveTrain.resetPose(Pose2d.kZero);
+    }
   }
 
   public boolean processLimelight(String limelightName, StructPublisher<Pose2d> posePublisher) {
-    boolean rejectLimelightUpdate = false;
-
     if (DriverStation.isDisabled()) {
+      // TODO: Determine if we change IMUMode to 0 when not disabled for MegaTag2
       LimelightHelpers.SetIMUMode(limelightName, 1);
-      // TODO: Set limelight camera position on disabled
-      LimelightHelpers.setCameraPose_RobotSpace("limelight-f", 0, 0, 0, 0, 0, 0);
-      LimelightHelpers.setCameraPose_RobotSpace("limelight-b", 0, 0, 0, 0, 0, 180);
-      // TODO: On disabled, use megaTag1 to reset the robotPose and gyro direction
+
+      // TODO: Update code values before using this
+      //      LimelightHelpers.setCameraPose_RobotSpace(
+      //          "limelight-f",
+      //          VISION.limelightFPosition.getX(),
+      //          VISION.limelightFPosition.getY(),
+      //          VISION.limelightFPosition.getZ(),
+      //          VISION.limelightFPosition.getRotation().getMeasureX().in(Degrees),
+      //          VISION.limelightFPosition.getRotation().getMeasureY().in(Degrees),
+      //          VISION.limelightFPosition.getRotation().getMeasureZ().in(Degrees));
+      //      LimelightHelpers.setCameraPose_RobotSpace(
+      //          "limelight-b",
+      //          VISION.limelightBPosition.getX(),
+      //          VISION.limelightBPosition.getY(),
+      //          VISION.limelightBPosition.getZ(),
+      //          VISION.limelightBPosition.getRotation().getMeasureX().in(Degrees),
+      //          VISION.limelightBPosition.getRotation().getMeasureY().in(Degrees),
+      //          VISION.limelightBPosition.getRotation().getMeasureZ().in(Degrees));
     }
 
     LimelightHelpers.SetRobotOrientation(
@@ -198,27 +172,54 @@ public class Vision extends SubsystemBase {
         0);
     LimelightHelpers.PoseEstimate limelightMeasurement =
         LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
 
     if (limelightMeasurement == null) {
-      rejectLimelightUpdate = true;
       if (RobotBase.isReal())
         DriverStation.reportWarning(limelightName + " is not connected", true);
+      return true;
     } else {
-      posePublisher.set(limelightMeasurement.pose);
-      estTimeStamp.set(limelightMeasurement.timestampSeconds);
-
-      if (limelightMeasurement.tagCount <= 1) {
-        rejectLimelightUpdate = true;
+      // Filter out bad AprilTag vision estimates
+      if (limelightMeasurement.timestampSeconds == 0) {
+        return true;
+      } else if (limelightMeasurement.pose.getTranslation().equals(Translation2d.kZero)) {
+        return true;
+      } else if (limelightMeasurement.tagCount == 0) {
+        return true;
       }
-      if (!rejectLimelightUpdate) {
-        m_swerveDriveTrain.addVisionMeasurement(
-            limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+
+      if (!limelightMeasurement.isMegaTag2) {
+        // Filter out bad AprilTag vision estimates
+        if (limelightMeasurement.tagCount == 1) {
+          if (limelightMeasurement.rawFiducials[0].ambiguity > .7) {
+            return true;
+          } else if (limelightMeasurement.rawFiducials[0].distToCamera > 3) {
+            return true;
+          }
+          // Set Standard Deviations for MegaTag1
+          m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+        } else {
+          // Filter out bad AprilTag vision estimates
+          if (m_swerveDriveTrain.getGyroYawRate().abs(DegreesPerSecond) > 720.0) {
+            return true;
+          } else if (limelightMeasurement.tagCount == 0) {
+            return true;
+          }
+          // Set Standard Deviations for MegaTag2
+          m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+        }
       }
     }
-    SmartDashboard.putBoolean(limelightName + "UpdatedRejected", rejectLimelightUpdate);
+    posePublisher.set(limelightMeasurement.pose);
+    estTimeStamp.set(limelightMeasurement.timestampSeconds);
+    m_swerveDriveTrain.addVisionMeasurement(
+        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
 
-    return !rejectLimelightUpdate;
+    // Reset the Swerve Pose with MegaTag1 if we are disabled
+    if (DriverStation.isDisabled() && !limelightMeasurement.isMegaTag2) {
+      m_swerveDriveTrain.resetPose(limelightMeasurement.pose);
+    }
+
+    return false;
   }
 
   public void setTargetLock(boolean set) {
@@ -226,19 +227,17 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isOnTarget() {
-    var delta =
+    var translationDelta =
         m_swerveDriveTrain
             .getState()
             .Pose
             .getTranslation()
             .minus(robotToTarget[1].getTranslation())
             .getNorm();
-    SmartDashboard.putNumber("Target delta", delta);
-    if (delta < Inches.of(2).in(Meters)) {
-      return true;
-    } else {
-      return false;
-    }
+    // TODO: Add Rotation delta
+    SmartDashboard.putNumber("Target Translation Delta", translationDelta);
+
+    return translationDelta < Inches.of(2).in(Meters);
   }
 
   public void updateSmartDashboard() {
@@ -250,10 +249,12 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // limelight f
-    boolean llaFSuccess = processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
+    boolean llaFSuccess = !processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
+    SmartDashboard.putBoolean(CAMERA_SERVER.limelightF + " UpdatedRejected", llaFSuccess);
 
     // limelight b
-    boolean llaBSuccess = processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
+    boolean llaBSuccess = !processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
+    SmartDashboard.putBoolean(CAMERA_SERVER.limelightB + " UpdatedRejected", llaBSuccess);
 
     if (!m_localized) {
       // TODO: Change this to check if the robotPose and both limelight are all close to each other
@@ -261,22 +262,10 @@ public class Vision extends SubsystemBase {
     }
 
     if (m_swerveDriveTrain != null) {
-      // updateNearestScoringTarget();
-      updateNearestLeftScoringTarget();
-      updateNearestRightScoringTarget();
+      updateNearestScoringTarget();
     }
 
     updateSmartDashboard();
-
-    // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-    // if(Math.abs(m_swerveDriveTrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()) >
-    // 720)
-    // {
-    //   doRejectUpdateLLA = true;
-    // }
-    // if (limelightMeasurementCam1.tagCount == 0) {
-    //   doRejectUpdateLLA = true;
-    // }
   }
 
   @Override

@@ -35,25 +35,26 @@ public final class VISION {
     }
   }
 
-  public static final Angle kLimelightHFOV = Degrees.of(63.12);
-  public static final Angle kLimelightVFOV = Degrees.of(49.54);
-  public static final Angle kLimelightDFOV = Degrees.of(75.07);
+  public static final Angle kLimelight4HFOV = Degrees.of(82.0);
+  public static final Angle kLimelight4VFOV = Degrees.of(56.2);
+  public static final Angle kLimelight4DFOV = Degrees.of(75.07);
 
-  // Camera offset from robot center. Camera F is facing out of the front of the robot (Facing the
-  // Hopper)
+  // TODO: Update values
+  // Camera offset from robot center. Camera F is positioned on the hopper
   public static final Transform3d limelightFPosition =
       new Transform3d(
           new Translation3d(
               Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(180)));
 
-  // Camera offset from robot center. Camera B is facing out of the rear of the robot (Facing the
-  // EndEffector)
+  // TODO: Update values
+  // Camera offset from robot center. Camera B is facing out of the rear of the robot (On the
+  // EndEffector side)
   public static final Transform3d limelightBPosition =
       new Transform3d(
           new Translation3d(
               Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(180)));
 
   public static final Distance poseXTolerance = Inches.of(4);
   public static final Distance poseYTolerance = Inches.of(4);

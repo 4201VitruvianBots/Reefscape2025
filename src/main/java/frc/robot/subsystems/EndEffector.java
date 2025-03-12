@@ -72,9 +72,14 @@ public class EndEffector extends SubsystemBase {
     return m_endEffectorMotor.get();
   }
 
+  public boolean getSensorInput1() {
+    // Disabled until sensor installed
+    return !m_beamBreakSensor.get();
+  }
+
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
-    return !m_beamBreakSensor.get() && ENDEFFECTOR.enableBeamBreak;
+    return !m_beamBreakSensor.get();
   }
 
   public AngularVelocity getVelocity() {

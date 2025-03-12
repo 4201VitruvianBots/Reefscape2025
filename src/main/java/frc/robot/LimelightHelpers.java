@@ -679,6 +679,7 @@ public class LimelightHelpers {
     if (inData.length < position + 1) {
       return 0;
     }
+
     return inData[position];
   }
 

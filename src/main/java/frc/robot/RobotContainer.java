@@ -241,6 +241,16 @@ public class RobotContainer {
             m_hopperIntake));
 
     m_chooser.addOption(
+        "ThreePieceRight",
+        new ThreePieceRight(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
+
+    m_chooser.addOption(
         "TwoPiece",
         new TwoPiece(
             m_swerveDrive,
@@ -260,9 +270,28 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
+    // m_chooser.addOption(
+    //     "OnePieceRight",
+    //     new OnePieceRight(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
+
     m_chooser.addOption(
-        "OnePieceRight",
-        new OnePieceRight(
+        "ThreePieceLeft",
+        new ThreePieceLeft(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
+    m_chooser.addOption(
+        "VisionTest",
+        new VisionTest(
             m_swerveDrive,
             m_fieldSim,
             m_elevator,
