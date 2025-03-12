@@ -155,15 +155,15 @@ public class Vision extends SubsystemBase {
       if (limelightMeasurementCam1.pose.getTranslation().equals(Translation2d.kZero)) {
         doRejectUpdateLLF = true;
       }
-      if(limelightMeasurementCam1.tagCount == 1) {
-        if(limelightMeasurementCam1.rawFiducials[0].ambiguity > 0.7) {
+      if (limelightMeasurementCam1.tagCount == 1) {
+        if (limelightMeasurementCam1.rawFiducials[0].ambiguity > 0.7) {
           doRejectUpdateLLF = true;
         }
-        if(limelightMeasurementCam1.rawFiducials[0].distToCamera > 3.0) {
+        if (limelightMeasurementCam1.rawFiducials[0].distToCamera > 3.0) {
           doRejectUpdateLLF = true;
         }
       }
-      if(m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
+      if (m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
         doRejectUpdateLLF = true;
       }
 
@@ -207,15 +207,15 @@ public class Vision extends SubsystemBase {
       if (limelightMeasurementCam2.pose.getTranslation().equals(Translation2d.kZero)) {
         doRejectUpdateLLB = true;
       }
-      if(limelightMeasurementCam2.tagCount == 1) {
-        if(limelightMeasurementCam2.rawFiducials[0].ambiguity > 0.7) {
+      if (limelightMeasurementCam2.tagCount == 1) {
+        if (limelightMeasurementCam2.rawFiducials[0].ambiguity > 0.7) {
           doRejectUpdateLLB = true;
         }
-        if(limelightMeasurementCam2.rawFiducials[0].distToCamera > 3.0) {
+        if (limelightMeasurementCam2.rawFiducials[0].distToCamera > 3.0) {
           doRejectUpdateLLB = true;
         }
       }
-      if(m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
+      if (m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
         doRejectUpdateLLB = true;
       }
 
