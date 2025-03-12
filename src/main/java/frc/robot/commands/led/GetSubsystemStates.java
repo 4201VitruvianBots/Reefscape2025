@@ -4,13 +4,12 @@
 
 package frc.robot.commands.led;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.LED;
 import frc.robot.constants.ROBOT;
 import frc.robot.subsystems.*;
+import java.util.function.Supplier;
 
 public class GetSubsystemStates extends Command {
   // Importing the subsystems we need for this.
@@ -32,7 +31,11 @@ public class GetSubsystemStates extends Command {
   private boolean isDisabled;
 
   public GetSubsystemStates(
-      LEDSubsystem led, Vision vision, Climber climber, EndEffector endEffector, Supplier<ROBOT.GAME_PIECE> getGamePiece) {
+      LEDSubsystem led,
+      Vision vision,
+      Climber climber,
+      EndEffector endEffector,
+      Supplier<ROBOT.GAME_PIECE> getGamePiece) {
     m_getGamePiece = getGamePiece;
     m_led = led;
     m_vision = vision;
@@ -57,10 +60,10 @@ public class GetSubsystemStates extends Command {
 
     // States:
     isEndgame = m_climber.getClimbState();
-    isLinedUpToReef = false; //TODO: Reef Lineup
+    isLinedUpToReef = false; // TODO: Reef Lineup
     isLiningUpToReef = false; //
     isHoldingCoral = m_endEffector.hasCoral();
-    isHoldingAlgae = false; //TODO: Algae Owned
+    isHoldingAlgae = false; // TODO: Algae Owned
     isCoralMode = m_getGamePiece.get() == ROBOT.GAME_PIECE.CORAL;
     isAlgaeMode = m_getGamePiece.get() == ROBOT.GAME_PIECE.ALGAE;
     isEnabled = DriverStation.isEnabled();
