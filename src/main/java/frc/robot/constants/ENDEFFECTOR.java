@@ -34,7 +34,7 @@ public class ENDEFFECTOR {
       // Algae
       // INTAKE_ALGAE_GROUND(0.35),
       INTAKE_ALGAE_REEF(0.35),
-      OUTTAKE_ALGAE_BARGE(0.35),
+      OUTTAKE_ALGAE_BARGE(1.00),
       OUTTAKE_ALGAE_PROCESSOR(-0.35);
 
       private final double speed;
@@ -92,7 +92,8 @@ public class ENDEFFECTOR {
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
-      BARGE(Degrees.of(150.0)),
+      BARGE(Degrees.of(170.0)),
+      BARGEFLICK(Degrees.of(60.0)), // IDK what this is supposed to be bro
       OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint
 
       private final Angle angle;

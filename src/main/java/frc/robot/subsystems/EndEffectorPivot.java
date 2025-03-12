@@ -219,6 +219,11 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_voltageSignal.refresh().getValue();
   }
 
+  @Logged(name = "At Midpoint", importance = Logged.Importance.INFO)
+  public boolean atMidpoint() {
+    return (m_desiredRotation.abs(Degree) / 2) - (getAngle()).abs(Degree) <= 1.0;
+  }
+
   public Current getSupplyCurrent() {
     return m_supplyCurrentSignal.refresh().getValue();
   }

@@ -226,8 +226,8 @@ public class RobotContainer {
       //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
     if (m_climber != null) {
-      m_climber.setDefaultCommand(
-          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+      // m_climber.setDefaultCommand(
+      //     new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(
@@ -536,7 +536,12 @@ public class RobotContainer {
           .povDown()
           .whileTrue(
               new ConditionalCommand(
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
+                  new SequentialCommandGroup(
+                      new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGEFLICK)
+                          .withTimeout(0.4),
+                      new RunEndEffectorIntake(
+                          m_endEffector,
+                          ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
@@ -544,8 +549,11 @@ public class RobotContainer {
                           ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
                   m_vision::isGamePieceAlgae))
           .onFalse(
-              moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                  .withTimeout(1));
+              new ConditionalCommand(
+                  new WaitCommand(3),
+                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
+                      .withTimeout(1),
+                  m_vision::isGamePieceAlgae));
     }
 
     if (m_endEffector != null) {
