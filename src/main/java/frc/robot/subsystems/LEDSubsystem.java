@@ -37,7 +37,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   private Color8Bit m_color = new Color8Bit();
   private int m_red = 0;
-  private int m_green = 0; // Setting all LED colors to none: there is no color when robot activates.
+  private int m_green =
+      0; // Setting all LED colors to none: there is no color when robot activates.
   private int m_blue = 0;
   private int m_white = 0; // We have a separate bulb in our LED strips for white.
   private double m_brightness = 0;
