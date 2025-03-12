@@ -27,6 +27,7 @@ import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
+import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
@@ -220,14 +221,14 @@ public class RobotContainer {
               return drive;
             }));
     if (m_elevator != null) {
-      m_elevator.setDefaultCommand(
-          new RunElevatorJoystick(
-              m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
+    //   m_elevator.setDefaultCommand(
+    //       new RunElevatorJoystick(
+    //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
-    // if (m_climber != null) {
-    //   m_climber.setDefaultCommand(
-    //       new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
-    // }
+    if (m_climber != null) {
+      m_climber.setDefaultCommand(
+          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+    }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(
           new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
@@ -561,6 +562,10 @@ public class RobotContainer {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
     }
+    
+    if (m_climber != null) {
+        m_climber.disabledInit();
+    }
 
     // A bit messy, but it works
   }
@@ -577,6 +582,10 @@ public class RobotContainer {
       m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
       m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
     }
+    
+    if (m_climber != null) {
+        m_climber.disabledPeriodic();
+    }
   }
 
   public void autonomousInit() {
@@ -588,6 +597,7 @@ public class RobotContainer {
     if (m_elevator != null) m_elevator.teleopInit();
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
+    if (m_climber != null) m_climber.teleopInit();
   }
 
   public void testInit() {
