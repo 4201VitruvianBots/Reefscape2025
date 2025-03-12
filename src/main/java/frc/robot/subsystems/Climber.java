@@ -33,7 +33,7 @@ public class Climber extends SubsystemBase {
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private IdleMode m_neutralMode = IdleMode.kBrake;
-  
+
   private Timer m_disabledTimer = new Timer();
 
   // Simulation classes help us simulate what's going on
@@ -119,7 +119,7 @@ public class Climber extends SubsystemBase {
   public void setButtonInput(double buttonInput) {
     m_buttonInput = buttonInput;
   }
-  
+
   private void setNeutralMode(IdleMode neutralMode) {
     SparkMaxConfig config = new SparkMaxConfig();
 
@@ -127,22 +127,23 @@ public class Climber extends SubsystemBase {
 
     m_climberMotor.configure(
         config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        
+
     m_neutralMode = neutralMode;
   }
-  
+
   public void teleopInit() {
     setNeutralMode(IdleMode.kBrake);
   }
-  
+
   public void disabledInit() {
     m_disabledTimer.restart();
   }
-  
+
   public void disabledPeriodic() {
     // Keep the climber in brake until the buzzer turns off
     // I don't wanna be the reason we lose out on an RP...
-    if (m_disabledTimer.get() > 3.0 && m_neutralMode != IdleMode.kCoast) setNeutralMode(IdleMode.kCoast);
+    if (m_disabledTimer.get() > 3.0 && m_neutralMode != IdleMode.kCoast)
+      setNeutralMode(IdleMode.kCoast);
   }
 
   @Override

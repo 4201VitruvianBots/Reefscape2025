@@ -29,7 +29,6 @@ import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
-import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -221,9 +220,9 @@ public class RobotContainer {
               return drive;
             }));
     if (m_elevator != null) {
-    //   m_elevator.setDefaultCommand(
-    //       new RunElevatorJoystick(
-    //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
+      //   m_elevator.setDefaultCommand(
+      //       new RunElevatorJoystick(
+      //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
     if (m_climber != null) {
       m_climber.setDefaultCommand(
@@ -562,9 +561,9 @@ public class RobotContainer {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
     }
-    
+
     if (m_climber != null) {
-        m_climber.disabledInit();
+      m_climber.disabledInit();
     }
 
     // A bit messy, but it works
@@ -582,9 +581,9 @@ public class RobotContainer {
       m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
       m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
     }
-    
+
     if (m_climber != null) {
-        m_climber.disabledPeriodic();
+      m_climber.disabledPeriodic();
     }
   }
 
