@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -41,7 +42,8 @@ public class Vision extends SubsystemBase {
       table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
   private final StructPublisher<Pose2d> lastUsedPoseLLF =
       table.getStructTopic("lastUsedPoseLLF", Pose2d.struct).publish();
-  private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
+  private final DoublePublisher estTimeStampLLF = table.getDoubleTopic("estTimeStampLLF").publish();
+  private final DoublePublisher estTimeStampLLB = table.getDoubleTopic("estTimeStampLLB").publish();
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
   private final StructPublisher<Pose2d> lastUsedPoseLLB =
@@ -135,18 +137,36 @@ public class Vision extends SubsystemBase {
       limelightMeasurementCam1 =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-f");
     }
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, 9999999));
 
     if (limelightMeasurementCam1 == null) {
       DriverStation.reportWarning("LimelightA is not connected", true);
 
     } else {
       estPoseLLF.set(limelightMeasurementCam1.pose);
-      estTimeStamp.set(limelightMeasurementCam1.timestampSeconds);
+      estTimeStampLLF.set(limelightMeasurementCam1.timestampSeconds);
 
-      if (limelightMeasurementCam1.tagCount < 1) {
+      if (limelightMeasurementCam1.tagCount == 0) {
         doRejectUpdateLLF = true;
       }
+      if (limelightMeasurementCam1.timestampSeconds == 0) {
+        doRejectUpdateLLF = true;
+      }
+      if (limelightMeasurementCam1.pose.getTranslation().equals(Translation2d.kZero)) {
+        doRejectUpdateLLF = true;
+      }
+      if(limelightMeasurementCam1.tagCount == 1) {
+        if(limelightMeasurementCam1.rawFiducials[0].ambiguity > 0.7) {
+          doRejectUpdateLLF = true;
+        }
+        if(limelightMeasurementCam1.rawFiducials[0].distToCamera > 3.0) {
+          doRejectUpdateLLF = true;
+        }
+      }
+      if(m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
+        doRejectUpdateLLF = true;
+      }
+
       if (!doRejectUpdateLLF) {
         lastUsedPoseLLF.set(limelightMeasurementCam1.pose);
         m_swerveDriveTrain.addVisionMeasurement(
@@ -170,24 +190,42 @@ public class Vision extends SubsystemBase {
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
     }
 
-    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
+    m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.2, .2, 9999999));
 
     if (limelightMeasurementCam2 == null) {
       DriverStation.reportWarning("LimelightB is not connected", true);
     } else {
       estPoseLLB.set(limelightMeasurementCam2.pose);
-      estTimeStamp.set(limelightMeasurementCam2.timestampSeconds);
+      estTimeStampLLB.set(limelightMeasurementCam2.timestampSeconds);
 
-      if (limelightMeasurementCam2.tagCount < 1) {
+      if (limelightMeasurementCam2.tagCount == 0) {
         doRejectUpdateLLB = true;
       }
+      if (limelightMeasurementCam2.timestampSeconds == 0) {
+        doRejectUpdateLLB = true;
+      }
+      if (limelightMeasurementCam2.pose.getTranslation().equals(Translation2d.kZero)) {
+        doRejectUpdateLLB = true;
+      }
+      if(limelightMeasurementCam2.tagCount == 1) {
+        if(limelightMeasurementCam2.rawFiducials[0].ambiguity > 0.7) {
+          doRejectUpdateLLB = true;
+        }
+        if(limelightMeasurementCam2.rawFiducials[0].distToCamera > 3.0) {
+          doRejectUpdateLLB = true;
+        }
+      }
+      if(m_swerveDriveTrain.getPigeon2().getRate() > 360.0) {
+        doRejectUpdateLLB = true;
+      }
+
       if (!doRejectUpdateLLB) {
         lastUsedPoseLLB.set(limelightMeasurementCam2.pose);
         m_swerveDriveTrain.addVisionMeasurement(
             limelightMeasurementCam2.pose, limelightMeasurementCam2.timestampSeconds);
       }
     }
-    LimelightHelpers.SetIMUMode("limelight-f", 1);
+    LimelightHelpers.SetIMUMode("limelight-f", 0);
     LimelightHelpers.SetRobotOrientation(
         "limelight-f",
         m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
@@ -197,7 +235,7 @@ public class Vision extends SubsystemBase {
         0,
         0);
 
-    LimelightHelpers.SetIMUMode("limelight-b", 1);
+    LimelightHelpers.SetIMUMode("limelight-b", 0);
     LimelightHelpers.SetRobotOrientation(
         "limelight-b",
         m_swerveDriveTrain.getState().Pose.getRotation().getDegrees(),
