@@ -39,7 +39,7 @@ public class HopperIntake extends SubsystemBase {
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
+              HOPPERINTAKE.gearbox, HOPPERINTAKE.kInertia, HOPPERINTAKE.gearRatio),
           HOPPERINTAKE.gearbox);
   private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
 

@@ -16,17 +16,17 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
-  public static final double kG = 0.34; // output to overcome gravity (output)
-  public static final double kS = 0.0; // output to overcome static friction (output)
-  public static final double kV = 3.2; // output per unit of target velocity (output/rps)
-  public static final double kA = 0.01; // output per unit of target acceleration (output/(rps/s))
-  public static final double kP = 200; // output per unit of error in position (output/rotation)
-  public static final double kI =
+  public static double kG = 0.34; // output to overcome gravity (output)
+  public static double kS = 0.0; // output to overcome static friction (output)
+  public static double kV = 3.2; // output per unit of target velocity (output/rps)
+  public static double kA = 0.01; // output per unit of target acceleration (output/(rps/s))
+  public static double kP = 200; // output per unit of error in position (output/rotation)
+  public static double kI =
       0.0; // output per unit of integrated error in position (output/rotations*s))
-  public static final double kD = 0.0; // output per unit of error in velocity (output/rps)
-  public static final double motionMagicCruiseVelocity = 2000; // target cruise velocity of 10 rps
-  public static final double motionMagicAcceleration = 4000; // target acceleration of 20 rps/s
-  public static final double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
+  public static double kD = 0.0; // output per unit of error in velocity (output/rps)
+  public static double motionMagicCruiseVelocity = 2000; // target cruise velocity of 10 rps
+  public static double motionMagicAcceleration = 4000; // target acceleration of 20 rps/s
+  public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
 
   public static final double offset = kG / 12.0; // joystick output to overcome gravity
 
@@ -36,17 +36,17 @@ public class ELEVATOR {
   public static final double peakForwardOutput = 0.65; // Move up to 1.0 after testing
   public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
-  public static final Mass kCarriageMass = Pounds.of(15.0);
-  public static final DCMotor gearbox = DCMotor.getKrakenX60(2);
-  public static final double gearRatio = 48.0 / 10.0;
-
   public static final Distance kElevatorDrumDiameter = Inches.of(2.2557);
-  public static final Distance drumCircumference =
+  public static final Distance drumRotationsToDistance =
       kElevatorDrumDiameter.times(
-          2 * Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
-  // meters
+          Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
+  // distance
+  public static final double gearRatio = 48.0 / 10.0;
+  public static DCMotor gearbox = DCMotor.getKrakenX60Foc(2);
+  public static Mass kCarriageMass = Pounds.of(10);
+
   public static final Per<AngleUnit, DistanceUnit> rotationsToMeters =
-      Rotations.of(1).times(gearRatio).div(drumCircumference);
+      Rotations.of(1).times(gearRatio).div(drumRotationsToDistance);
 
   public enum ELEVATOR_SETPOINT {
     START_POSITION(Inches.of(0.0)),
