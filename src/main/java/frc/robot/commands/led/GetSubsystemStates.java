@@ -54,7 +54,7 @@ public class GetSubsystemStates extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+
     // States:
     isEndgame = m_climber.getClimbState();
     isLinedUpToReef = false; //TODO: Reef Lineup
@@ -74,7 +74,7 @@ public class GetSubsystemStates extends Command {
     } else if (isLinedUpToReef) {
       m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LINEDUP);
     } else if (isLiningUpToReef) {
-      m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LINEUP);
+      m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LININGUP);
     } else if (isHoldingCoral) {
       m_led.expressState(LED.SUBSYSTEM_STATES.CORAL_OWNED);
     } else if (isHoldingAlgae) {

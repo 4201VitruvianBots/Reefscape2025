@@ -44,7 +44,7 @@ public class LED {
 
   public enum SUBSYSTEM_STATES {
     ENDGAME,
-    REEF_LINEUP,
+    REEF_LININGUP,
     REEF_LINEDUP,
     CORAL_OWNED,
     ALGAE_OWNED,

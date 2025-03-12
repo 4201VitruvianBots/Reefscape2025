@@ -163,7 +163,7 @@ public class LEDSubsystem extends SubsystemBase {
         case REEF_LINEDUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
-        case REEF_LINEUP:
+        case REEF_LININGUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Strobe); // Flashing Blue
           break;
         case ENDGAME:
