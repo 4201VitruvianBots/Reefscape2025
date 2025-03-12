@@ -29,8 +29,8 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
+   * FollowPathCommand.warmupCommand().schedule() This function is run when the robot is first
+   * started up and should be used for any initialization code.
    */
   public Robot() {
     // Disable LiveWindow, since we don't use it
@@ -56,10 +56,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    FollowPathCommand.warmupCommand().schedule();
     // Instantiate our RobotContainer. This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   /**

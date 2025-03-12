@@ -89,13 +89,11 @@ public class Elevator extends SubsystemBase {
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
           ELEVATOR.kCarriageMass.in(Kilograms),
-          ELEVATOR.kElevatorDrumDiameter.in(Meters) / 2,
+          ELEVATOR.kElevatorDrumDiameter.div(2).in(Meters),
           ELEVATOR.lowerLimit.in(Meters),
           ELEVATOR.upperLimit.in(Meters),
           true,
-          0,
-          0.0,
-          0.0);
+          1);
   private final TalonFXSimState m_motorSimState;
 
   public Elevator() {
@@ -111,11 +109,10 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
+    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
-    config.CurrentLimits.StatorCurrentLimit = 40;
-    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
-    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
@@ -195,7 +192,7 @@ public class Elevator extends SubsystemBase {
 
   public LinearAcceleration getAcceleration() {
     return MetersPerSecondPerSecond.of(
-        m_accelSignal.refresh().getValue().in(RotationsPerSecondPerSecond)
+        getMotorAcceleration().in(RotationsPerSecondPerSecond)
             * ELEVATOR.drumRotationsToDistance.in(Meters));
   }
 
@@ -204,6 +201,7 @@ public class Elevator extends SubsystemBase {
     return Units.metersToInches(getAcceleration().in(MetersPerSecondPerSecond));
   }
 
+  @Logged(name = "Motor Voltage", importance = Logged.Importance.DEBUG)
   public Voltage getMotorVoltage() {
     return m_voltageSignal.refresh().getValue();
   }

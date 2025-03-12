@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLPt1"
+            "pathName": "3PieceLPt1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLback"
+            "pathName": "3PieceLback"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLPt2"
+            "pathName": "3PieceLPt2"
           }
         },
         {
@@ -31,19 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLPt4"
+            "pathName": "3PieceLPt4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLPt5"
+            "pathName": "3PieceLPt5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2PieceLPt6"
+            "pathName": "3PieceLPt6"
           }
         }
       ]

@@ -24,7 +24,7 @@ public class AlphaBotConstants {
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
       new Slot0Configs()
-          .withKP(100)
+          .withKP(80)
           .withKI(0) // 0
           .withKD(0.5) // 0.5
           .withKS(0.1) // 0.1

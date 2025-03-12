@@ -14,7 +14,9 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -33,8 +35,8 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
-import frc.robot.commands.swerve.SetTrackingState;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
@@ -45,7 +47,6 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
-import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.generated.V3Constants;
@@ -56,7 +57,6 @@ import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
-import java.util.Arrays;
 import org.team4201.codex.simulation.FieldSim;
 
 /**
@@ -74,17 +74,22 @@ public class RobotContainer {
 
   @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
-  private final Vision m_vision = new Vision();
+
+  // Logging this crashes the code?
+  // @Logged(name = "Vision", importance = Logged.Importance.INFO)
+  @NotLogged private final Vision m_vision = new Vision();
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
 
   // V2/V3 subsystems
-  @Logged(name = "V2Climber", importance = Logged.Importance.INFO)
+//  @NotLogged(name = "V2Climber", importance = Logged.Importance.INFO)
+  @NotLogged
   private V2Climber m_v2Climber;
 
-  @Logged(name = "Climber", importance = Logged.Importance.INFO)
+//  @Logged(name = "Climber", importance = Logged.Importance.INFO)
+  @NotLogged
   private Climber m_climber;
 
   @Logged(name = "Elevator", importance = Logged.Importance.INFO)
@@ -100,11 +105,6 @@ public class RobotContainer {
   private HopperIntake m_hopperIntake;
 
   @NotLogged private final Robot2d m_robot2d = new Robot2d();
-  private Pose2d nearestBranchPose = Pose2d.kZero;
-  private final Pose2d[] robotToBranch = {Pose2d.kZero, Pose2d.kZero};
-
-  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
-  private ROBOT.GAME_PIECE m_selectedGamePiece = ROBOT.GAME_PIECE.CORAL;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   @Logged(name = "AutoChooser")
@@ -132,6 +132,8 @@ public class RobotContainer {
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
+
+  @NotLogged boolean isInit = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -177,8 +179,8 @@ public class RobotContainer {
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       MaxSpeed =
-          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-      m_swerveDrive = V3Constants.createDrivetrain();
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
@@ -192,6 +194,7 @@ public class RobotContainer {
     // Register subsystems for cross-subsystem communication
     m_swerveDrive.registerTelemetry(m_telemetry::telemeterize);
     m_vision.registerSwerveDrive(m_swerveDrive);
+    m_vision.registerFieldSim(m_fieldSim);
 
     m_telemetry.registerFieldSim(m_fieldSim);
 
@@ -205,10 +208,10 @@ public class RobotContainer {
         m_swerveDrive.applyRequest(
             () -> {
               var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
-              // if heading target
-              if (m_swerveDrive.isTrackingState()) {
-                rotationRate = m_swerveDrive.calculateRotationToTarget();
-              }
+              // // if heading target
+              // if (m_swerveDrive.isTrackingState()) {
+              //   rotationRate = m_swerveDrive.calculateRotationToTarget();
+              // }
               drive
                   .withVelocityX(
                       leftJoystick.getRawAxis(1)
@@ -255,6 +258,16 @@ public class RobotContainer {
             m_hopperIntake));
 
     m_chooser.addOption(
+        "ThreePieceRight",
+        new ThreePieceRight(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
+
+    m_chooser.addOption(
         "TwoPiece",
         new TwoPiece(
             m_swerveDrive,
@@ -274,9 +287,28 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
+    // m_chooser.addOption(
+    //     "OnePieceRight",
+    //     new OnePieceRight(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
+
     m_chooser.addOption(
-        "OnePieceRight",
-        new OnePieceRight(
+        "ThreePieceLeft",
+        new ThreePieceLeft(
+            m_swerveDrive,
+            m_fieldSim,
+            m_elevator,
+            m_endEffectorPivot,
+            m_endEffector,
+            m_hopperIntake));
+    m_chooser.addOption(
+        "VisionTest",
+        new VisionTest(
             m_swerveDrive,
             m_fieldSim,
             m_elevator,
@@ -341,6 +373,12 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
+    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    targetTrackingButton.onTrue(driveToTarget.generateCommand());
+
+    m_driverController.y().whileTrue(driveToTarget.generateCommand());
+
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
       m_driverController
@@ -388,12 +426,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    targetTrackingButton.whileTrue(driveToTarget.generateCommand());
 
     // Algae Toggle
-    m_driverController
-        .leftBumper()
-        .onTrue(new ToggleGamePiece(() -> m_selectedGamePiece, gp -> m_selectedGamePiece = gp));
+    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_vision));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
@@ -404,7 +441,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
+                  m_vision::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -412,7 +449,8 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
+
       m_driverController
           .x()
           .whileTrue(
@@ -422,7 +460,7 @@ public class RobotContainer {
                       PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
+                  m_vision::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -430,7 +468,8 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
+
       m_driverController
           .y()
           .whileTrue(
@@ -439,7 +478,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
                   moveSuperStructureDelayed(
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
+                  m_vision::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new SequentialCommandGroup(
@@ -452,7 +491,8 @@ public class RobotContainer {
                               .withTimeout(0.7),
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
                       .withTimeout(1),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
+
       m_driverController
           .b()
           .whileTrue(
@@ -461,7 +501,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_HIGH), // Algae L3
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
+                  m_vision::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -469,7 +509,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -492,6 +532,7 @@ public class RobotContainer {
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                   .withTimeout(1));
+
       // Coral Reverse / Algae Outtake
       m_driverController
           .povDown()
@@ -503,7 +544,7 @@ public class RobotContainer {
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
                       moveSuperStructure(
                           ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE))
+                  m_vision::isGamePieceAlgae))
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                   .withTimeout(1));
@@ -517,14 +558,15 @@ public class RobotContainer {
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
+
       m_driverController
           .rightBumper()
           .whileTrue(
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
     }
 
     if (m_climber != null) {
@@ -544,7 +586,7 @@ public class RobotContainer {
           .whileTrue(
               Commands.startEnd(
                   () -> m_hopperIntake.moveServo(1.0),
-                  () -> m_hopperIntake.stopServo())); // mvoe hopper out of the way
+                  () -> m_hopperIntake.stopServo())); // move hopper out of the way
     }
   }
 
@@ -555,6 +597,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
+  }
+
+  public void robotPeriodic() {
+    // m_questNav.periodic();
   }
 
   public void disabledInit() {
@@ -570,16 +616,39 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    if (Controls.isRedAlliance()) {
-      m_fieldSim.initializePoses("Red Branches", FIELD.RED_BRANCHES);
-      m_fieldSim.initializePoses("Red Branch Targets", FIELD.RED_BRANCH_TARGETS);
-      m_fieldSim.initializePoses("Blue Branches", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Blue Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+    if (RobotBase.isReal()) {
+      if (Controls.isRedAlliance()) {
+        // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+        // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+        // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+        // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+        m_fieldSim.initializePoses("Blue Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Blue Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses("Blue Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Blue Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+      } else {
+        m_fieldSim.initializePoses("Red Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Red Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses("Red Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
+        m_fieldSim.initializePoses(
+            "Red Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
+        // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+        // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+        // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+        // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
+      }
     } else {
-      m_fieldSim.initializePoses("Red Branches", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Red Branch Targets", new Pose2d(-5, -5, Rotation2d.kZero));
-      m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
-      m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
+      // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
+      // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
+      // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
+      // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
+      // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
+      // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
+      // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
+      // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
     }
 
     if (m_climber != null) {
@@ -597,6 +666,15 @@ public class RobotContainer {
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
     if (m_climber != null) m_climber.teleopInit();
+  }
+
+  public void teleopPeriodic() {
+    m_vision.setTargetLock(m_driverController.y().getAsBoolean());
+    if (m_vision.isOnTarget()) {
+      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
+    } else {
+      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
+    }
   }
 
   public void testInit() {
@@ -623,53 +701,22 @@ public class RobotContainer {
   }
 
   public void simulationInit() {
-    // m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
-    m_fieldSim.initializePoses("AprilTags", FIELD.APRIL_TAG.getAllAprilTagPoses());
-    m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
-    m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+    try {
+      // This crashes code if used in Robot::simulationInit() due to race condition
+      // m_fieldSim.addStaticPoses("ReefBranches", FIELD.REEF_BRANCHES.getAllPose2d());
+      m_fieldSim.initializePoses("AprilTags", FIELD.APRIL_TAG.getAllAprilTagPoses());
+      m_fieldSim.initializePoses("Red Zones", FIELD.RED_ZONES);
+      m_fieldSim.initializePoses("Blue Zones", FIELD.BLUE_ZONES);
+      isInit = true;
+    } catch (Exception e) {
+      DriverStation.reportWarning("[RobotContainer] Could not run simulationInit()", false);
+    }
   }
-
-  boolean isInit = false;
 
   public void simulationPeriodic() {
     if (!isInit) {
       simulationInit();
-      isInit = true;
     }
     m_robot2d.updateRobot2d();
-    DriverStation.getAlliance()
-        .ifPresent(
-            a -> {
-              Pose2d[] robotToBranch = {m_swerveDrive.getState().Pose, new Pose2d()};
-              switch (a) {
-                case Red ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-                case Blue ->
-                    robotToBranch[1] = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
-              }
-              m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
-              m_swerveDrive.setAngleToTarget(
-                  m_swerveDrive
-                      .getState()
-                      .Pose
-                      .getTranslation()
-                      .minus(robotToBranch[1].getTranslation())
-                      .getAngle()
-                      .minus(Rotation2d.k180deg));
-            });
-  }
-
-  public void robotPeriodic() {
-    // m_questNav.periodic();
-
-    // TODO: Implement code to drive to this Pose2d
-    robotToBranch[0] = m_swerveDrive.getState().Pose;
-    if (Controls.isBlueAlliance()) {
-      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.RED_BRANCHES));
-    } else {
-      nearestBranchPose = robotToBranch[0].nearest(Arrays.asList(FIELD.BLUE_BRANCHES));
-    }
-    robotToBranch[1] = FIELD.REEF_BRANCHES.getBranchPoseToTargetPose(nearestBranchPose);
-    m_fieldSim.addPoses("LineToNearestBranch", robotToBranch);
   }
 }

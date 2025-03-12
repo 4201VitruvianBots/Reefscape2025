@@ -4,63 +4,62 @@
 
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 
 public final class VISION {
-  public static final double kLimelightHFOV = 63.12;
-  public static final double kLimelightVFOV = 49.54;
-  public static final double kLimelightDFOV = 75.07;
-
-  // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d limelightAPosition =
-      new Transform3d(
-          new Translation3d(
-              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
-
-  // Camera offset from robot center. Camera A is on the left side of the robot from front view.
-  public static final Transform3d limelightBPosition =
-      new Transform3d(
-          new Translation3d(
-              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
-          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(0)));
-
-  public static final double poseXTolerance = Units.inchesToMeters(4);
-  public static final double poseYTolerance = Units.inchesToMeters(4);
-  public static final double poseZTolerance = Units.inchesToMeters(4);
-  public static final double posePitchTolerance = Units.degreesToRadians(4);
-  public static final double poseRollTolerance = Units.degreesToRadians(4);
-  public static final double poseYawTolerance = Units.degreesToRadians(4);
-
-  public enum CAMERA_TYPE {
-    LIMELIGHT,
-    PHOTONVISION
-  }
-
   public enum CAMERA_SERVER {
-    LIMELIGHTF("10.42.1.11"),
-    LIMELIGHTB("10.42.1.12"),
-    ;
+    limelightF("limelight-f", "10.42.1.11"),
+    limelightB("limelight-b", "10.42.1.12");
+
+    private final String name;
     private final String ip;
 
-    CAMERA_SERVER(final String ip) {
+    CAMERA_SERVER(final String name, final String ip) {
+      this.name = name;
       this.ip = ip;
+    }
+
+    public String getIp() {
+      return ip;
     }
 
     @Override
     public String toString() {
-      return ip;
+      return name;
     }
   }
 
-  public enum TRACKING_STATE {
-    NONE,
-    BRANCH
-  }
+  public static final Angle kLimelight4HFOV = Degrees.of(82.0);
+  public static final Angle kLimelight4VFOV = Degrees.of(56.2);
+  public static final Angle kLimelight4DFOV = Degrees.of(75.07);
+
+  // TODO: Update values
+  // Camera offset from robot center. Camera F is positioned on the hopper
+  public static final Transform3d limelightFPosition =
+      new Transform3d(
+          new Translation3d(
+              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(180)));
+
+  // TODO: Update values
+  // Camera offset from robot center. Camera B is facing out of the rear of the robot (On the
+  // EndEffector side)
+  public static final Transform3d limelightBPosition =
+      new Transform3d(
+          new Translation3d(
+              Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
+          new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(180)));
+
+  public static final Distance poseXTolerance = Inches.of(4);
+  public static final Distance poseYTolerance = Inches.of(4);
+  public static final Distance poseZTolerance = Inches.of(4);
+  public static final Angle posePitchTolerance = Degrees.of(4);
+  public static final Angle poseRollTolerance = Degrees.of(4);
+  public static final Angle poseYawTolerance = Degrees.of(4);
 }
