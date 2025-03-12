@@ -214,7 +214,7 @@ public class FIELD {
     private final Pose2d targetPose;
 
     private final boolean isLeftBranch;
-    
+
     /** Map to convert the coral's Pose2d to the target Pose2d */
     private static final Map<Pose2d, Pose2d> coralPoseToTargetPose = new HashMap<>();
 
@@ -270,16 +270,16 @@ public class FIELD {
 
     public static Pose2d[] getAllLeftPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-      .filter(CORAL_TARGETS::getSide)
-      .map(CORAL_TARGETS::getPose2d)
-      .toArray(Pose2d[]::new);
+          .filter(CORAL_TARGETS::getSide)
+          .map(CORAL_TARGETS::getPose2d)
+          .toArray(Pose2d[]::new);
     }
 
     public static Pose2d[] getAllRightPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-      .filter(c-> !c.getSide())
-      .map(CORAL_TARGETS::getPose2d)
-      .toArray(Pose2d[]::new);
+          .filter(c -> !c.getSide())
+          .map(CORAL_TARGETS::getPose2d)
+          .toArray(Pose2d[]::new);
     }
 
     /** 2d array of coral positions by Alliance color */
@@ -308,7 +308,7 @@ public class FIELD {
         return Arrays.stream(getAllRightPose2d()).skip(6).limit(6).toArray(Pose2d[]::new);
       }
     }
-    
+
     /** 2d array of all coral targets */
     public static Pose2d[] getAllTargetPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())

@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.FIELD.CORAL_TARGETS;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import org.photonvision.simulation.VisionSystemSim;
