@@ -148,9 +148,6 @@ public class LEDSubsystem extends SubsystemBase {
         case DISABLED:
           setPattern(LED.red, 0, 0, ANIMATION_TYPE.Solid); // Solid Red
           break;
-          // case INTAKING:
-          //   setPattern(LED.orange, 0, 0.5, ANIMATION_TYPE.Larson); // Unknown
-          //   break; // TODo:? Get the colour and possible animation for this LED?
         case CORAL:
           setPattern(LED.yellow, 0, 0, ANIMATION_TYPE.Solid); // Solid Yellow
           break;
@@ -163,8 +160,11 @@ public class LEDSubsystem extends SubsystemBase {
         case ALGAE_OWNED:
           setPattern(LED.cyan, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Cyan
           break; // TODO: Adjust flashing speed.
-        case REEF_LINEUP:
+        case REEF_LINEDUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
+          break;
+        case REEF_LINEUP:
+          setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Strobe); // Flashing Blue
           break;
         case ENDGAME:
           setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); // Rainbow
