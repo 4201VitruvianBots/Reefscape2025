@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
+import frc.robot.constants.FIELD.CORAL_TARGETS;
 import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import org.photonvision.simulation.VisionSystemSim;
@@ -37,6 +38,8 @@ public class Vision extends SubsystemBase {
 
   private Pose2d nearestPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
+  private final Pose2d[] robotToLeftTarget = {Pose2d.kZero, Pose2d.kZero};
+  private final Pose2d[] robotToRightTarget = {Pose2d.kZero, Pose2d.kZero};
   private boolean lockTarget = false;
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -106,11 +109,63 @@ public class Vision extends SubsystemBase {
       }
       robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
     }
-    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestTarget", robotToTarget);
+    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
+  }
+
+  private void updateNearestLeftScoringTarget() {
+    if (lockTarget) return;
+    robotToLeftTarget[0] = m_swerveDriveTrain.getState().Pose;
+    if (isGamePieceAlgae()) {
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToLeftTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+      } else {
+        nearestPose = robotToLeftTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+      }
+      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
+    } else {
+      // TODO: add left/right logic for driver to select between branches?
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToLeftTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+      } else {
+        nearestPose = robotToLeftTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
+      }
+      robotToLeftTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
+    }
+    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestLeftTarget", robotToLeftTarget);
+  }
+
+  private void updateNearestRightScoringTarget() {
+    if (lockTarget) return;
+    robotToRightTarget[0] = m_swerveDriveTrain.getState().Pose;
+    if (isGamePieceAlgae()) {
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToRightTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+      } else {
+        nearestPose = robotToRightTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+      }
+      robotToRightTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestPose);
+    } else {
+      // TODO: add left/right logic for driver to select between branches?
+      if (Controls.isBlueAlliance()) {
+        nearestPose = robotToRightTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+      } else {
+        nearestPose = robotToRightTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+      }
+      robotToRightTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestPose);
+    }
+    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestRightTarget", robotToTarget);
   }
 
   public Pose2d getNearestTargetPose() {
     return robotToTarget[1];
+  }
+
+  public Pose2d getNearestLeftTargetPose() {
+    return robotToLeftTarget[1];
+  }
+
+  public Pose2d getNearestRightTargetPose() {
+    return robotToRightTarget[1];
   }
 
   public boolean getInitialLocalization() {
@@ -129,7 +184,8 @@ public class Vision extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       LimelightHelpers.SetIMUMode(limelightName, 1);
       // TODO: Set limelight camera position on disabled
-
+      LimelightHelpers.setCameraPose_RobotSpace("limelight-f", 0, 0, 0, 0, 0, 0);
+      LimelightHelpers.setCameraPose_RobotSpace("limelight-b", 0, 0, 0, 0, 0, 180);
       // TODO: On disabled, use megaTag1 to reset the robotPose and gyro direction
     }
 
@@ -206,7 +262,9 @@ public class Vision extends SubsystemBase {
     }
 
     if (m_swerveDriveTrain != null) {
-      updateNearestScoringTarget();
+      // updateNearestScoringTarget();
+      updateNearestLeftScoringTarget();
+      updateNearestRightScoringTarget();
     }
 
     updateSmartDashboard();

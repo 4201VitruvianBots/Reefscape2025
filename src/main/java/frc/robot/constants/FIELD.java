@@ -213,12 +213,15 @@ public class FIELD {
     /** Pose2d we want the robot to go to relative to the branch's location */
     private final Pose2d targetPose;
 
+    private final boolean isLeftBranch;
+    
     /** Map to convert the coral's Pose2d to the target Pose2d */
     private static final Map<Pose2d, Pose2d> coralPoseToTargetPose = new HashMap<>();
 
     CORAL_TARGETS(final int aprilTagId, boolean isLeft, Distance offset) {
       Pose2d branchPose = Pose2d.kZero;
       Pose2d targetPose = Pose2d.kZero;
+      boolean isLeftBranch = isLeft;
 
       var branchOffset = isLeft ? leftReefCoralOffset : rightReefCoralOffset;
       branchOffset.plus(new Translation2d(0, offset.in(Meters)));
@@ -234,6 +237,7 @@ public class FIELD {
       }
       this.pose = branchPose;
       this.targetPose = targetPose;
+      this.isLeftBranch = isLeft;
     }
 
     /** Map the coral pose to the target pose */
@@ -253,11 +257,29 @@ public class FIELD {
       return targetPose;
     }
 
+    public boolean getSide() {
+      return isLeftBranch;
+    }
+
     /** 2d array of all coral positions */
     public static Pose2d[] getAllPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
           .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
+    }
+
+    public static Pose2d[] getAllLeftPose2d() {
+      return Arrays.stream(CORAL_TARGETS.values())
+      .filter(CORAL_TARGETS::getSide)
+      .map(CORAL_TARGETS::getPose2d)
+      .toArray(Pose2d[]::new);
+    }
+
+    public static Pose2d[] getAllRightPose2d() {
+      return Arrays.stream(CORAL_TARGETS.values())
+      .filter(c-> !c.getSide())
+      .map(CORAL_TARGETS::getPose2d)
+      .toArray(Pose2d[]::new);
     }
 
     /** 2d array of coral positions by Alliance color */
@@ -269,6 +291,24 @@ public class FIELD {
       }
     }
 
+    /** 2d array of left coral positions by Alliance color */
+    public static Pose2d[] getAllianceLeftPose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllLeftPose2d()).limit(6).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllLeftPose2d()).skip(6).limit(6).toArray(Pose2d[]::new);
+      }
+    }
+
+    /** 2d array of right coral positions by Alliance color */
+    public static Pose2d[] getAllianceRightPose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllRightPose2d()).limit(6).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllRightPose2d()).skip(6).limit(6).toArray(Pose2d[]::new);
+      }
+    }
+    
     /** 2d array of all coral targets */
     public static Pose2d[] getAllTargetPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
@@ -311,6 +351,22 @@ public class FIELD {
   /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
   public static final List<Pose2d> BLUE_CORAL_TARGETS =
       Arrays.asList(CORAL_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue));
+
+  /** Static array of all Red Alliance Left Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> RED_CORAL_LEFT_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAllianceLeftPose2d(DriverStation.Alliance.Red));
+
+  /** Static array of all Red Alliance Right Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> RED_CORAL_RIGHT_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAllianceRightPose2d(DriverStation.Alliance.Red));
+
+  /** Static array of all Blue Alliance Left Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> BLUE_CORAL_LEFT_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAllianceLeftPose2d(DriverStation.Alliance.Blue));
+
+  /** Static array of all Blue Alliance Right Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> BLUE_CORAL_RIGHT_BRANCHES =
+      Arrays.asList(CORAL_TARGETS.getAllianceRightPose2d(DriverStation.Alliance.Blue));
 
   //
   // Algae Branch constants
