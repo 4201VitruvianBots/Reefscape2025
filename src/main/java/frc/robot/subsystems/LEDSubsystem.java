@@ -154,19 +154,25 @@ public class LEDSubsystem extends SubsystemBase {
           break;
         case CORAL_OWNED:
           setPattern(LED.yellow, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Yellow
-          break; // TODO: Adjust flashing speed.
+          break; // TODO: Adjust yellow flashing speed.
         case ALGAE:
           setPattern(LED.cyan, 0, 0, ANIMATION_TYPE.Solid); // Solid Cyan
           break;
         case ALGAE_OWNED:
           setPattern(LED.cyan, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Cyan
-          break; // TODO: Adjust flashing speed.
-        case REEF_LINEDUP:
+          break; // TODO: Adjust cyan flashing speed.
+        case LEFT_REEF_LINEDUP:
           setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Solid); // Solid Blue
           break;
-        case REEF_LININGUP:
-          setPattern(LED.blue, 0, 0, ANIMATION_TYPE.Strobe); // Flashing Blue
+        case RIGHT_REEF_LINEDUP:
+          setPattern(LED.purple, 0, 0, ANIMATION_TYPE.Solid); // Solid Purple
           break;
+        case LEFT_REEF_LININGUP:
+          setPattern(LED.blue, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Blue
+          break; // TODO: Adjust blue flashing speed.
+        case RIGHT_REEF_LININGUP:
+          setPattern(LED.purple, 0, 0.5, ANIMATION_TYPE.Strobe); // Flashing Purple
+          break; // TODO: Adjust purple flashing speed.
         case ENDGAME:
           setPattern(LED.white, 0, 0.5, ANIMATION_TYPE.Rainbow); // Rainbow
           break; // TODO: Adjust rainbow speed.

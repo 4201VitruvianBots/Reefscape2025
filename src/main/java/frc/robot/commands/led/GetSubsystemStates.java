@@ -21,8 +21,10 @@ public class GetSubsystemStates extends Command {
 
   // Putting in the Booleans we need.
   private boolean isEndgame;
-  private boolean isLinedUpToReef;
-  private boolean isLiningUpToReef;
+  private boolean isLinedUpToLeftReef;
+  private boolean isLinedUpToRightReef;
+  private boolean isLiningUpToLeftReef;
+  private boolean isLiningUpToRightReef;
   private boolean isHoldingCoral;
   private boolean isHoldingAlgae;
   private boolean isCoralMode;
@@ -60,8 +62,10 @@ public class GetSubsystemStates extends Command {
 
     // States:
     isEndgame = m_climber.getClimbState();
-    isLinedUpToReef = false; // TODO: Reef Lineup
-    isLiningUpToReef = false; //
+    isLinedUpToLeftReef = false; // TODO: Reef Lineup
+    isLinedUpToRightReef = false; //
+    isLiningUpToLeftReef = false; //
+    isLiningUpToRightReef = false; //
     isHoldingCoral = m_endEffector.hasCoral();
     isHoldingAlgae = false; // TODO: Algae Owned
     isCoralMode = m_getGamePiece.get() == ROBOT.GAME_PIECE.CORAL;
@@ -74,10 +78,14 @@ public class GetSubsystemStates extends Command {
     // highest priority
     if (isEndgame) {
       m_led.expressState(LED.SUBSYSTEM_STATES.ENDGAME);
-    } else if (isLinedUpToReef) {
-      m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LINEDUP);
-    } else if (isLiningUpToReef) {
-      m_led.expressState(LED.SUBSYSTEM_STATES.REEF_LININGUP);
+    } else if (isLinedUpToLeftReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.LEFT_REEF_LINEDUP);
+    } else if (isLinedUpToRightReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.RIGHT_REEF_LINEDUP);
+    } else if (isLiningUpToLeftReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.LEFT_REEF_LININGUP);
+    } else if (isLiningUpToRightReef) {
+      m_led.expressState(LED.SUBSYSTEM_STATES.RIGHT_REEF_LININGUP);
     } else if (isHoldingCoral) {
       m_led.expressState(LED.SUBSYSTEM_STATES.CORAL_OWNED);
     } else if (isHoldingAlgae) {
