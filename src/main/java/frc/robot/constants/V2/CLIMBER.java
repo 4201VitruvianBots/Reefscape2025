@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot.constants.V2;
 
 import static edu.wpi.first.units.Units.Meters;
 
@@ -19,7 +19,7 @@ public class CLIMBER {
   public static final double gearRatio = 1.0 / 16.0;
 
   // public static final double kElevatorDrumRadius = Units.inchesToMeters(0.25);
-  public static final DCMotor gearbox = DCMotor.getNeo550(1);
+  public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
 
   public enum CLIMBER_SETPOINT {
     START_POSITION(Units.inchesToMeters(19.356)),

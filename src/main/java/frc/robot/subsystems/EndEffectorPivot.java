@@ -8,18 +8,22 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -27,6 +31,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
@@ -37,10 +42,10 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
-  @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
-  private final NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
-
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
+  //  private final MotionMagicVoltage m_request = new
+  // MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
+  private final MotionMagicTorqueCurrentFOC m_request =
+      new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
@@ -80,6 +85,19 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
   private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
+  private DoubleSubscriber m_kG_subscriber,
+      m_kS_subscriber,
+      m_kV_Subscriber,
+      m_kA_Subscriber,
+      m_kP_subscriber,
+      m_kI_subscriber,
+      m_kD_subscriber,
+      m_velocitySubscriber,
+      m_accelerationSubscriber,
+      m_setpointSubscriber;
+  private final NetworkTable endEffectorPivotTab =
+      NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("EndEffectorPivot");
+
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
     // Configure the Motor
@@ -89,15 +107,16 @@ public class EndEffectorPivot extends SubsystemBase {
     } else {
       motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
-    motorConfig.Slot0.kP = PIVOT.kPivotP;
-    motorConfig.Slot0.kI = PIVOT.kPivotI;
-    motorConfig.Slot0.kD = PIVOT.kPivotD;
-    motorConfig.Slot0.kG = PIVOT.kGPositive;
+    motorConfig.Slot0.kP = PIVOT.kP;
+    motorConfig.Slot0.kI = PIVOT.kI;
+    motorConfig.Slot0.kD = PIVOT.kD;
+    motorConfig.Slot0.kG = PIVOT.kG;
     motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;
-    motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kPivotMotionMagicVelocity;
-    motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kPivotMotionMagicAcceleration;
-    motorConfig.MotorOutput.NeutralMode = m_neutralMode;
-    //    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    motorConfig.ClosedLoopGeneral.ContinuousWrap = false;
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
+    motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
+    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
@@ -113,11 +132,11 @@ public class EndEffectorPivot extends SubsystemBase {
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
     if (RobotBase.isReal()) {
       encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
-      encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+      encoderConfig.MagnetSensor.SensorDirection = PIVOT.encoderDirection;
     }
     CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
-    //    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
+    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
 
     setName("EndEffectorPivot");
@@ -130,7 +149,6 @@ public class EndEffectorPivot extends SubsystemBase {
           Degrees.of(
               MathUtil.clamp(
                   rotations.in(Degrees), PIVOT.minAngle.in(Degrees), PIVOT.maxAngle.in(Degrees)));
-
     } else {
       m_desiredRotation = rotations;
     }
@@ -162,7 +180,6 @@ public class EndEffectorPivot extends SubsystemBase {
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
-    m_canCoderAbsolutePositionSignal.refresh();
     return m_canCoderAbsolutePositionSignal.refresh().getValue();
   }
 
@@ -172,7 +189,6 @@ public class EndEffectorPivot extends SubsystemBase {
   }
 
   public Angle getAngle() {
-    m_positionSignal.refresh();
     return m_positionSignal.refresh().getValue();
   }
 
@@ -243,6 +259,65 @@ public class EndEffectorPivot extends SubsystemBase {
 
   public void teleopInit() {
     resetMotionMagicState();
+  }
+
+  public void testInit() {
+    endEffectorPivotTab.getDoubleTopic("kP").publish().set(PIVOT.kP);
+    endEffectorPivotTab.getDoubleTopic("kI").publish().set(PIVOT.kI);
+    endEffectorPivotTab.getDoubleTopic("kD").publish().set(PIVOT.kD);
+    endEffectorPivotTab
+        .getDoubleTopic("MotionMagicCruiseVelocity")
+        .publish()
+        .set(PIVOT.kMotionMagicVelocity);
+    endEffectorPivotTab
+        .getDoubleTopic("MotionMagicAcceleration")
+        .publish()
+        .set(PIVOT.kMotionMagicAcceleration);
+    endEffectorPivotTab
+        .getDoubleTopic("Setpoint Degrees")
+        .publish()
+        .set(m_desiredRotation.in(Degrees));
+    m_kP_subscriber = endEffectorPivotTab.getDoubleTopic("kP").subscribe(PIVOT.kP);
+    m_kI_subscriber = endEffectorPivotTab.getDoubleTopic("kI").subscribe(PIVOT.kI);
+    m_kD_subscriber = endEffectorPivotTab.getDoubleTopic("kD").subscribe(PIVOT.kD);
+    m_velocitySubscriber =
+        endEffectorPivotTab
+            .getDoubleTopic("MotionMagicCruiseVelocity")
+            .subscribe(PIVOT.kMotionMagicVelocity);
+    m_accelerationSubscriber =
+        endEffectorPivotTab
+            .getDoubleTopic("MotionMagicAcceleration")
+            .subscribe(PIVOT.kMotionMagicAcceleration);
+
+    m_setpointSubscriber =
+        endEffectorPivotTab
+            .getDoubleTopic("Setpoint Degrees")
+            .subscribe(m_desiredRotation.in(Degrees));
+  }
+
+  public void testPeriodic() {
+    Slot0Configs slot0Configs = new Slot0Configs();
+
+    slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
+    slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
+    slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
+
+    m_pivotMotor.getConfigurator().apply(slot0Configs);
+
+    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+
+    motionMagicConfigs.MotionMagicCruiseVelocity =
+        m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
+    motionMagicConfigs.MotionMagicAcceleration =
+        m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
+
+    m_pivotMotor.getConfigurator().apply(motionMagicConfigs);
+
+    double newSetpoint = m_setpointSubscriber.get(m_desiredRotation.in(Degrees));
+    if (newSetpoint != m_desiredRotation.in(Degrees)) {
+      setPosition(Degrees.of(newSetpoint));
+      setControlMode(CONTROL_MODE.CLOSED_LOOP);
+    }
   }
 
   @Override

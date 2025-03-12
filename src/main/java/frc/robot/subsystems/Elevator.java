@@ -10,9 +10,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -64,17 +62,24 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
-  private final MotionMagicVelocityVoltage m_requestVelocity = new MotionMagicVelocityVoltage(0);
+  //  private final MotionMagicVelocityVoltage m_requestVelocity = new
+  // MotionMagicVelocityVoltage(0).withEnableFOC(true);
+  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
-  private DoubleSubscriber m_kP_subscriber,
+  private DoubleSubscriber m_kG_subscriber,
+      m_kS_subscriber,
+      m_kV_Subscriber,
+      m_kA_Subscriber,
+      m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
-      m_kASubscriber,
-      m_kVSubscriber,
       m_velocitySubscriber,
-      m_accelerationSubscriber;
+      m_accelerationSubscriber,
+      m_setpointSubscriber;
   private final NetworkTable elevatorTab =
       NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("Elevator");
 
@@ -84,9 +89,9 @@ public class Elevator extends SubsystemBase {
           ELEVATOR.gearbox,
           ELEVATOR.gearRatio,
           ELEVATOR.kCarriageMass.in(Kilograms),
-          ELEVATOR.kElevatorDrumDiameter / 2,
-          ELEVATOR.lowerLimitMeters,
-          ELEVATOR.upperLimitMeters,
+          ELEVATOR.kElevatorDrumDiameter.in(Meters) / 2,
+          ELEVATOR.lowerLimit.in(Meters),
+          ELEVATOR.upperLimit.in(Meters),
           true,
           0,
           0.0,
@@ -160,14 +165,27 @@ public class Elevator extends SubsystemBase {
 
   @Logged(name = "Motor Rotations", importance = Logged.Importance.DEBUG)
   public Angle getRotations() {
-    m_positionSignal.refresh();
     return m_positionSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Velocity", importance = Logged.Importance.DEBUG)
+  public AngularVelocity getMotorVelocity() {
+    return m_velocitySignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Acceleration", importance = Logged.Importance.DEBUG)
+  public AngularAcceleration getMotorAcceleration() {
+    return m_accelSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Motor Reference", importance = Logged.Importance.DEBUG)
+  public Angle getReference() {
+    return Rotations.of(elevatorMotors[0].getClosedLoopReference().refresh().getValue());
   }
 
   public LinearVelocity getVelocity() {
     return MetersPerSecond.of(
-        m_velocitySignal.getValue().in(RotationsPerSecond)
-            * ELEVATOR.drumRotationsToMeters.magnitude());
+        getMotorVelocity().in(RotationsPerSecond) * ELEVATOR.drumRotationsToDistance.in(Meters));
   }
 
   @Logged(name = "Velocity Inches-s", importance = Logged.Importance.INFO)
@@ -176,10 +194,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public LinearAcceleration getAcceleration() {
-    m_accelSignal.refresh();
     return MetersPerSecondPerSecond.of(
-        m_accelSignal.getValue().in(RotationsPerSecondPerSecond)
-            * ELEVATOR.drumRotationsToMeters.magnitude());
+        m_accelSignal.refresh().getValue().in(RotationsPerSecondPerSecond)
+            * ELEVATOR.drumRotationsToDistance.in(Meters));
   }
 
   @Logged(name = "Acceleration Inches-s^2", importance = Logged.Importance.INFO)
@@ -209,7 +226,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getHeight() {
-    return Meters.of(getRotations().in(Rotations) * ELEVATOR.drumRotationsToMeters.magnitude());
+    return ELEVATOR.drumRotationsToDistance.times(getRotations().magnitude());
   }
 
   @Logged(name = "Height Inches", importance = Logged.Importance.INFO)
@@ -243,11 +260,13 @@ public class Elevator extends SubsystemBase {
   }
 
   public void testInit() {
+    elevatorTab.getDoubleTopic("kG").publish().set(ELEVATOR.kG);
+    elevatorTab.getDoubleTopic("kS").publish().set(ELEVATOR.kS);
+    elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
+    elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
     elevatorTab.getDoubleTopic("kP").publish().set(ELEVATOR.kP);
     elevatorTab.getDoubleTopic("kI").publish().set(ELEVATOR.kI);
     elevatorTab.getDoubleTopic("kD").publish().set(ELEVATOR.kD);
-    elevatorTab.getDoubleTopic("kA").publish().set(ELEVATOR.kA);
-    elevatorTab.getDoubleTopic("kV").publish().set(ELEVATOR.kV);
     elevatorTab
         .getDoubleTopic("MotionMagicCruiseVelocity")
         .publish()
@@ -256,12 +275,14 @@ public class Elevator extends SubsystemBase {
         .getDoubleTopic("MotionMagicAcceleration")
         .publish()
         .set(ELEVATOR.motionMagicAcceleration);
-    // elevatorTab.getDoubleTopic("MotionMagicJerk").publish().set(ELEVATOR.motionMagicJerk);
+    elevatorTab.getDoubleTopic("Setpoint Inches").publish().set(m_desiredPosition.in(Inches));
+    m_kG_subscriber = elevatorTab.getDoubleTopic("kG").subscribe(ELEVATOR.kG);
+    m_kS_subscriber = elevatorTab.getDoubleTopic("kS").subscribe(ELEVATOR.kS);
+    m_kV_Subscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
+    m_kA_Subscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
     m_kP_subscriber = elevatorTab.getDoubleTopic("kP").subscribe(ELEVATOR.kP);
     m_kI_subscriber = elevatorTab.getDoubleTopic("kI").subscribe(ELEVATOR.kI);
     m_kD_subscriber = elevatorTab.getDoubleTopic("kD").subscribe(ELEVATOR.kD);
-    m_kASubscriber = elevatorTab.getDoubleTopic("kA").subscribe(ELEVATOR.kA);
-    m_kVSubscriber = elevatorTab.getDoubleTopic("kV").subscribe(ELEVATOR.kV);
     m_velocitySubscriber =
         elevatorTab
             .getDoubleTopic("MotionMagicCruiseVelocity")
@@ -270,33 +291,39 @@ public class Elevator extends SubsystemBase {
         elevatorTab
             .getDoubleTopic("MotionMagicAcceleration")
             .subscribe(ELEVATOR.motionMagicAcceleration);
-    // m_jerkSubscriber =
-    //     elevatorTab.getDoubleTopic("MotionMagicJerk").subscribe(ELEVATOR.motionMagicJerk);
+
+    m_setpointSubscriber =
+        elevatorTab.getDoubleTopic("Setpoint Inches").subscribe(m_desiredPosition.in(Inches));
   }
 
   public void testPeriodic() {
     Slot0Configs slot0Configs = new Slot0Configs();
 
+    slot0Configs.kG = m_kG_subscriber.get(ELEVATOR.kG);
+    slot0Configs.kS = m_kS_subscriber.get(ELEVATOR.kS);
+    slot0Configs.kV = m_kV_Subscriber.get(ELEVATOR.kV);
+    slot0Configs.kA = m_kA_Subscriber.get(ELEVATOR.kA);
     slot0Configs.kP = m_kP_subscriber.get(ELEVATOR.kP);
     slot0Configs.kI = m_kI_subscriber.get(ELEVATOR.kI);
     slot0Configs.kD = m_kD_subscriber.get(ELEVATOR.kD);
-    slot0Configs.kA = m_kASubscriber.get(ELEVATOR.kA);
-    slot0Configs.kV = m_kVSubscriber.get(ELEVATOR.kV);
 
     elevatorMotors[0].getConfigurator().apply(slot0Configs);
     elevatorMotors[1].getConfigurator().apply(slot0Configs);
 
     MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
 
-    // Who on earth knows if this part works, I was guessing that it would.
     motionMagicConfigs.MotionMagicCruiseVelocity =
         m_velocitySubscriber.get(ELEVATOR.motionMagicCruiseVelocity);
     motionMagicConfigs.MotionMagicAcceleration =
         m_accelerationSubscriber.get(ELEVATOR.motionMagicAcceleration);
-    // motionMagicConfigs.MotionMagicJerk = m_jerkSubscriber.get(ELEVATOR.motionMagicJerk);
 
     elevatorMotors[0].getConfigurator().apply(motionMagicConfigs);
     elevatorMotors[1].getConfigurator().apply(motionMagicConfigs);
+
+    double newSetpoint = m_setpointSubscriber.get(m_desiredPosition.in(Inches));
+    if (newSetpoint != m_desiredPosition.in(Inches)) {
+      setDesiredPosition(Inches.of(newSetpoint));
+    }
   }
 
   public void teleopInit() {
@@ -319,7 +346,7 @@ public class Elevator extends SubsystemBase {
         } else {
           elevatorMotors[0].setControl(
               m_request.withPosition(
-                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToMeters.magnitude()));
+                  m_desiredPosition.in(Meters) / ELEVATOR.drumRotationsToDistance.in(Meters)));
         }
         break;
       case OPEN_LOOP:
@@ -346,10 +373,10 @@ public class Elevator extends SubsystemBase {
     m_motorSimState.setRawRotorPosition(
         m_elevatorSim.getPositionMeters()
             * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+            / ELEVATOR.drumRotationsToDistance.in(Meters));
     m_motorSimState.setRotorVelocity(
         m_elevatorSim.getVelocityMetersPerSecond()
             * ELEVATOR.gearRatio
-            / ELEVATOR.drumRotationsToMeters.magnitude());
+            / ELEVATOR.drumRotationsToDistance.in(Meters));
   }
 }

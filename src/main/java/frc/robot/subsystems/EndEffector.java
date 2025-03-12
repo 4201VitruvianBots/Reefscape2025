@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,6 +17,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +44,7 @@ public class EndEffector extends SubsystemBase {
 
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
+          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.kInertia, ROLLERS.gearRatio),
           ROLLERS.gearbox);
   private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
 
@@ -76,7 +79,12 @@ public class EndEffector extends SubsystemBase {
   }
 
   public AngularVelocity getVelocity() {
-    return m_velocitySignal.refresh().getValue();
+    if (RobotBase.isSimulation()) {
+      return RotationsPerSecond.of(
+          m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+    } else {
+      return m_velocitySignal.refresh().getValue();
+    }
   }
 
   public Voltage getMotorVoltage() {

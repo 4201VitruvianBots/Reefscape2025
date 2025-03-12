@@ -54,7 +54,8 @@ public class GroundPivot extends SubsystemBase {
 
   private Angle m_desiredAngle = PIVOT.PIVOT_SETPOINT.STOWED.get();
 
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getAngle());
+  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =

@@ -28,6 +28,8 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
+import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
+import frc.robot.commands.elevator.RunElevatorJoystick;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -47,7 +49,9 @@ import frc.robot.constants.USB;
 import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
+import frc.robot.generated.V3Constants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.V2.V2Climber;
 import frc.robot.subsystems.alphabot.AlgaeIntake;
 import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
@@ -77,7 +81,10 @@ public class RobotContainer {
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
 
-  // V2 subsystems
+  // V2/V3 subsystems
+  @Logged(name = "V2Climber", importance = Logged.Importance.INFO)
+  private V2Climber m_v2Climber;
+
   @Logged(name = "Climber", importance = Logged.Importance.INFO)
   private Climber m_climber;
 
@@ -134,7 +141,7 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
-    else configureV2Bindings();
+    else configureBindings();
 
     // Only keep joystick warnings when FMS is attached
     if (!DriverStation.isFMSAttached()) {
@@ -144,14 +151,23 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     // Initialize Subsystem classes
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
+      MaxSpeed =
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V3Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_endEffector = new EndEffector();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
           V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
       m_swerveDrive = V2Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
+      m_v2Climber = new V2Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       MaxSpeed =
@@ -162,8 +178,8 @@ public class RobotContainer {
       // m_algaeIntake = new AlgaeIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       MaxSpeed =
-          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-      m_swerveDrive = V2Constants.createDrivetrain();
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
@@ -204,11 +220,11 @@ public class RobotContainer {
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
             }));
-    // if (m_elevator != null) {
+    if (m_elevator != null) {
     //   m_elevator.setDefaultCommand(
-    //       new RunElevatorJoystick(m_elevator, () -> -m_driverController.getLeftY())); // Elevator
-    // open loop control
-    // }
+    //       new RunElevatorJoystick(
+    //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
+    }
     if (m_climber != null) {
       m_climber.setDefaultCommand(
           new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
@@ -371,7 +387,7 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
-  private void configureV2Bindings() {
+  private void configureBindings() {
     Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     targetTrackingButton.whileTrue(new SetTrackingState(m_swerveDrive, TRACKING_STATE.BRANCH));
 
@@ -513,7 +529,17 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController.back().whileTrue(new RunClimberVoltage(m_climber, Volts.of(2.5)));
+      m_driverController
+          .back()
+          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+    }
+    if (m_v2Climber != null) {
+      m_driverController
+          .back()
+          .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
+    }
+
+    if (m_hopperIntake != null) {
       m_driverController
           .start()
           .whileTrue(
@@ -536,6 +562,10 @@ public class RobotContainer {
     if (!DriverStation.isFMSAttached()) {
       m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Coast);
     }
+    
+    if (m_climber != null) {
+        m_climber.disabledInit();
+    }
 
     // A bit messy, but it works
   }
@@ -552,6 +582,10 @@ public class RobotContainer {
       m_fieldSim.initializePoses("Blue Branches", FIELD.BLUE_BRANCHES);
       m_fieldSim.initializePoses("Blue Branch Targets", FIELD.BLUE_BRANCH_TARGETS);
     }
+    
+    if (m_climber != null) {
+        m_climber.disabledPeriodic();
+    }
   }
 
   public void autonomousInit() {
@@ -563,6 +597,7 @@ public class RobotContainer {
     if (m_elevator != null) m_elevator.teleopInit();
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
+    if (m_climber != null) m_climber.teleopInit();
   }
 
   public void testInit() {
@@ -572,6 +607,8 @@ public class RobotContainer {
       DriverStation.reportWarning(
           "[RobotContainer] testInit() could not run coralOuttake.testInit()!", e.getStackTrace());
     }
+    if (m_elevator != null) m_elevator.testInit();
+    if (m_endEffectorPivot != null) m_endEffectorPivot.testInit();
   }
 
   public void testPeriodic() {
@@ -582,6 +619,8 @@ public class RobotContainer {
           "[RobotContainer] testPeriodic() could not run coralOuttake.testPeriodic()!",
           e.getStackTrace());
     }
+    if (m_elevator != null) m_elevator.testPeriodic();
+    if (m_endEffectorPivot != null) m_endEffectorPivot.testPeriodic();
   }
 
   public void simulationInit() {

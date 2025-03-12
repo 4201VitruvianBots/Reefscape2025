@@ -40,12 +40,10 @@ public class FIELD {
 
   public static final Distance APRILTAG_SIZE = Inches.of(6.5);
 
-  public static final Distance CORAL_STATION_HEIGHT =
-      Inches.of(55.25 + APRILTAG_SIZE.in(Inches) / 2.0);
-  public static final Distance PROCESSOR_HEIGHT =
-      Inches.of(47.875 + APRILTAG_SIZE.in(Inches) / 2.0);
-  public static final Distance BARGE_HEIGHT = Inches.of(70.75 + APRILTAG_SIZE.in(Inches) / 2.0);
-  public static final Distance REEF_HEIGHT = Inches.of(8.75 + APRILTAG_SIZE.in(Inches) / 2.0);
+  public static final Distance CORAL_STATION_HEIGHT = Inches.of(55.25).plus(APRILTAG_SIZE).div(2.0);
+  public static final Distance PROCESSOR_HEIGHT = Inches.of(47.875).plus(APRILTAG_SIZE).div(2.0);
+  public static final Distance BARGE_HEIGHT = Inches.of(70.75).plus(APRILTAG_SIZE).div(2.0);
+  public static final Distance REEF_HEIGHT = Inches.of(8.75).plus(APRILTAG_SIZE).div(2.0);
 
   /** Enum describing all AprilTags on the field by ID and their Pose3d positions. */
   public enum APRIL_TAG {
