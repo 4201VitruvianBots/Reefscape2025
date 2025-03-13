@@ -41,6 +41,7 @@ public class Vision extends SubsystemBase {
   private Pose2d nearestObjectPose = Pose2d.kZero;
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
   private boolean lockTarget = false;
+  private final int[] reefAprilTags = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -58,7 +59,7 @@ public class Vision extends SubsystemBase {
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
 
   public Vision() {
-    // Port Forwarding to access limelight on USB Ethernet
+    // Port Forwarding to access limelight web UI on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port, CAMERA_SERVER.limelightF.toString(), port);
       PortForwarder.add(port + 10, CAMERA_SERVER.limelightB.toString(), port);
@@ -139,11 +140,17 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  /**
+   * Process measurements from a limelight. Return true if the given vision measurement is used,
+   * otherwise return false to indicate that it was rejected.
+   */
   public boolean processLimelight(String limelightName, StructPublisher<Pose2d> posePublisher) {
     if (DriverStation.isDisabled()) {
       // TODO: Determine if we change IMUMode to 0 when not disabled for MegaTag2
       LimelightHelpers.SetIMUMode(limelightName, 1);
 
+      // Only use Reef AprilTags for localization
+      LimelightHelpers.SetFiducialIDFiltersOverride(limelightName, reefAprilTags);
       // TODO: Update code values before using this
       //      LimelightHelpers.setCameraPose_RobotSpace(
       //          "limelight-f",
@@ -173,44 +180,48 @@ public class Vision extends SubsystemBase {
         0);
     LimelightHelpers.PoseEstimate limelightMeasurement;
     if (DriverStation.isDisabled()) {
+      // Use MegaTag1 when the robot is disabled to set the initial robot pose
       limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     } else {
+      // Use MegaTag2 when the robot is running for more accurate pose updates
       limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     }
 
     if (limelightMeasurement == null) {
       if (RobotBase.isReal())
         DriverStation.reportWarning(limelightName + " is not connected", true);
-      return true;
+      return false;
     } else {
-      // Filter out bad AprilTag vision estimates
+      // Filter out bad AprilTag vision estimates for both MegaTag1 and MegaTag2
       if (limelightMeasurement.timestampSeconds == 0) {
-        return true;
+        return false;
       } else if (limelightMeasurement.pose.getTranslation().equals(Translation2d.kZero)) {
-        return true;
+        return false;
       } else if (limelightMeasurement.tagCount == 0) {
-        return true;
+        return false;
       }
 
       if (!limelightMeasurement.isMegaTag2) {
-        // Filter out bad AprilTag vision estimates
+        // Filter out bad AprilTag vision estimates for MegaTag1
         // TODO: Check 1 tag from center?
         if (limelightMeasurement.tagCount < 2) {
-            return true;
+          return false;
         }
 
         // Set Standard Deviations for MegaTag1
         m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
       } else {
-        // Filter out bad AprilTag vision estimates
+        // Ignore MegaTag2 updates if the robot is spinning too fast
         if (m_swerveDriveTrain.getGyroYawRate().abs(DegreesPerSecond) > 720.0) {
-          return true;
+          return false;
         }
 
         // Set Standard Deviations for MegaTag2
         m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
       }
     }
+
+    // Only good updates reach this point, so use them for updating the robot pose
     posePublisher.set(limelightMeasurement.pose);
     estTimeStamp.set(limelightMeasurement.timestampSeconds);
     m_swerveDriveTrain.addVisionMeasurement(
@@ -221,9 +232,10 @@ public class Vision extends SubsystemBase {
       m_swerveDriveTrain.resetPose(limelightMeasurement.pose);
     }
 
-    return false;
+    return true;
   }
 
+  /** Stop the nearest target from updating when we want to score to avoid target switching */
   public void setTargetLock(boolean set) {
     lockTarget = set;
   }
@@ -246,11 +258,11 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // limelight f
-    boolean llaFSuccess = !processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
+    boolean llaFSuccess = processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightF + " UpdatedRejected", llaFSuccess);
 
     // limelight b
-    boolean llaBSuccess = !processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
+    boolean llaBSuccess = processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightB + " UpdatedRejected", llaBSuccess);
 
     if (!m_localized) {
