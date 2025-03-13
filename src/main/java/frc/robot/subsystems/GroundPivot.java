@@ -277,7 +277,7 @@ public class GroundPivot extends SubsystemBase {
     resetMotionMagicState();
     setDesiredSetpoint(getAngle());
   }
-  
+
   public boolean isConnected() {
     return m_pivotMotor.isConnected();
   }

@@ -35,6 +35,7 @@ public class Vision extends SubsystemBase {
   // TODO: Maybe move GAME_PIECE logic to Controls?
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+
   private boolean m_useLeftTarget;
 
   private Pose2d nearestObjectPose = Pose2d.kZero;
@@ -80,11 +81,11 @@ public class Vision extends SubsystemBase {
   public boolean isGamePieceCoral() {
     return m_selectedGamePiece == GAME_PIECE.CORAL;
   }
-  
+
   public boolean isGamePieceAlgae() {
     return m_selectedGamePiece == GAME_PIECE.ALGAE;
   }
-  
+
   public void setSelectedGamePiece(GAME_PIECE gamePiece) {
     m_selectedGamePiece = gamePiece;
   }

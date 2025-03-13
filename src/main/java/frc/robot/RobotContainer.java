@@ -707,7 +707,7 @@ public class RobotContainer {
     }
     m_robot2d.updateRobot2d();
   }
-  
+
   public Controls getControls() {
     return m_controls;
   }

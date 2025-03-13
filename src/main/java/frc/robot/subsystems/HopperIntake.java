@@ -98,7 +98,7 @@ public class HopperIntake extends SubsystemBase {
   public void teleopInit() {
     stopServo();
   }
-  
+
   public boolean isConnected() {
     return m_hopperIntakeMotor.isConnected();
   }

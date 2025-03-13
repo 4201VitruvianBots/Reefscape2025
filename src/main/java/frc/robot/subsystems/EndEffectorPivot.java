@@ -265,7 +265,7 @@ public class EndEffectorPivot extends SubsystemBase {
   public void teleopInit() {
     resetMotionMagicState();
   }
-  
+
   public boolean isConnected() {
     return m_pivotMotor.isConnected();
   }
