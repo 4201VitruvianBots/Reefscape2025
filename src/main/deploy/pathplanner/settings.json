@@ -4,10 +4,11 @@
   "holonomicMode": true,
   "pathFolders": [
     "4PieceL",
+    "4PieceR",
     "OnePieceMiddle",
     "ThreePieceL",
-    "TwoPieceL",
-    "ThreePieceR"
+    "ThreePieceR",
+    "TwoPieceL"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
