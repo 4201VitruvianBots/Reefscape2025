@@ -32,6 +32,7 @@ import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
+import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
@@ -523,8 +524,7 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   new SequentialCommandGroup(
-                      new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGEFLICK)
-                          .withTimeout(0.4),
+                      new EndEffectorBarge(m_endEffectorPivot).withTimeout(0.4),
                       new RunEndEffectorIntake(
                           m_endEffector,
                           ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR)), // Net scoring binding here
