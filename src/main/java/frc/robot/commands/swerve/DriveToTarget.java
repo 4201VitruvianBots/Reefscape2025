@@ -44,6 +44,7 @@ public class DriveToTarget {
         () -> {
           // figure out where we need to drive to
           m_vision.setLeftTarget(useLeft);
+          m_vision.updateNearestScoringTarget();
           var targetPose = m_vision.getNearestTargetPose();
 
           // publish the position we want to drive to

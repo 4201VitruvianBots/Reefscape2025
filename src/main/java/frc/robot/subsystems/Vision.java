@@ -93,7 +93,7 @@ public class Vision extends SubsystemBase {
     m_useLeftTarget = value;
   }
 
-  private void updateNearestScoringTarget() {
+  public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
     if (isGamePieceAlgae()) {

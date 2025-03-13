@@ -37,7 +37,6 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
-import frc.robot.commands.swerve.SetBranchTarget;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
