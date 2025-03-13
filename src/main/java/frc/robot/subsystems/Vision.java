@@ -112,7 +112,7 @@ public class Vision extends SubsystemBase {
         }
       } else {
         if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_BRANCHES);
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
         } else {
           nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
         }

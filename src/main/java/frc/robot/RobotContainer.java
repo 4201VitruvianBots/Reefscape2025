@@ -37,6 +37,7 @@ import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
+import frc.robot.commands.swerve.SetBranchTarget;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
@@ -47,6 +48,7 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
+import frc.robot.constants.VISION.BRANCH_TARGET;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.generated.V3Constants;
@@ -152,7 +154,7 @@ public class RobotContainer {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
       MaxSpeed =
-          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,waeedAt12Volts desired top speed
       m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -371,11 +373,19 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
-    targetTrackingButton.onTrue(driveToTarget.generateCommand());
 
-    m_driverController.y().whileTrue(driveToTarget.generateCommand());
+    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
+    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
+
+    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
+    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
+
+    
+    m_driverController.y().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.x().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
@@ -409,9 +419,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
-    targetTrackingButton.whileTrue(driveToTarget.generateCommand());
+
+    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
+    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
+
+    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
+    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
     m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_vision));
