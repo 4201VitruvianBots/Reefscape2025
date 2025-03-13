@@ -94,7 +94,7 @@ public class Vision extends SubsystemBase {
     m_useLeftTarget = value;
   }
 
-  private void updateNearestScoringTarget() {
+  public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
     if (isGamePieceAlgae()) {
@@ -113,7 +113,7 @@ public class Vision extends SubsystemBase {
         }
       } else {
         if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_BRANCHES);
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
         } else {
           nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
         }
