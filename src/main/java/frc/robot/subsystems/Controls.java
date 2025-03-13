@@ -36,7 +36,7 @@ public class Controls extends SubsystemBase {
   private static double m_brownoutLastUpdatedTime = 0.0;
   
   /** Map of subsystems for Controls to update */
-  private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
+  @NotLogged private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   @NotLogged private final Map<String, Alert> alertMap = new HashMap<>();
 
