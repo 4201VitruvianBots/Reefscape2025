@@ -62,13 +62,13 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
-  //  private final MotionMagicVelocityVoltage m_requestVelocity = new
-  // MotionMagicVelocityVoltage(0).withEnableFOC(true);
-  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityVoltage m_requestVelocity = new
+    MotionMagicVelocityVoltage(0).withEnableFOC(true);
+//   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+//       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private DoubleSubscriber m_kG_subscriber,
       m_kS_subscriber,
