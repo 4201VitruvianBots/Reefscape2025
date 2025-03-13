@@ -44,7 +44,6 @@ public class Vision extends SubsystemBase {
 
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
   @NotLogged private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
 
   @NotLogged
@@ -172,8 +171,12 @@ public class Vision extends SubsystemBase {
         0,
         0,
         0);
-    LimelightHelpers.PoseEstimate limelightMeasurement =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    LimelightHelpers.PoseEstimate limelightMeasurement;
+    if (DriverStation.isDisabled()) {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    } else {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+    }
 
     if (limelightMeasurement == null) {
       if (RobotBase.isReal())

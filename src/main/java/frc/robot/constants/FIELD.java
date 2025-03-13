@@ -256,7 +256,7 @@ public class FIELD {
       return targetPose;
     }
 
-    public boolean getSide() {
+    public boolean isLeftBranch() {
       return isLeftBranch;
     }
 
@@ -269,14 +269,14 @@ public class FIELD {
 
     public static Pose2d[] getAllLeftPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-          .filter(CORAL_TARGETS::getSide)
+          .filter(CORAL_TARGETS::isLeftBranch)
           .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
     }
 
     public static Pose2d[] getAllRightPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-          .filter(c -> !c.getSide())
+          .filter(c -> !c.isLeftBranch())
           .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
     }

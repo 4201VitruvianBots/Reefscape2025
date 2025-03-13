@@ -83,7 +83,7 @@ public class ROBOT {
 
   public static void initV3() {
     robotID = ROBOT_ID.V3;
-    
+
     ELEVATOR.kG = 0.34;
     ELEVATOR.kS = 0.0;
     ELEVATOR.kV = 3.2;
@@ -96,7 +96,7 @@ public class ROBOT {
     // ELEVATOR.motionMagicJerk = 2000;
     ELEVATOR.gearbox = DCMotor.getKrakenX60Foc(2);
     ELEVATOR.kCarriageMass = Pounds.of(10.0);
-    
+
     ENDEFFECTOR.PIVOT.kP = 100.0;
     ENDEFFECTOR.PIVOT.kI = 0.0;
     ENDEFFECTOR.PIVOT.kD = 0.01;
@@ -109,7 +109,7 @@ public class ROBOT {
     ENDEFFECTOR.PIVOT.mass = Pounds.of(7); // TODO: Get actual values
     ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(0.00341796875);
     ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.Clockwise_Positive;
-    
+
     PWM.servo = 0;
   }
 

@@ -111,8 +111,10 @@ public class Elevator extends SubsystemBase {
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
-    //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    // TODO: Re-tune values before removing these
+    config.CurrentLimits.StatorCurrentLimit = 40;
+    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
