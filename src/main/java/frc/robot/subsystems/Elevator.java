@@ -109,7 +109,7 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
-    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
     //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;

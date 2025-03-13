@@ -27,7 +27,7 @@ public class ELEVATOR {
   public static double motionMagicCruiseVelocity = 20; // target cruise velocity of 10 rps
   public static double motionMagicAcceleration = 40; // target acceleration of 20 rps/s
   
-  public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
+  // public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
 
   public static final double offset = kG / 12.0; // joystick output to overcome gravity
 
