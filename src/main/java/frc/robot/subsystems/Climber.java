@@ -120,6 +120,10 @@ public class Climber extends SubsystemBase {
   public void setButtonInput(double buttonInput) {
     m_buttonInput = buttonInput;
   }
+  
+  public boolean isConnected() {
+    return climberMotor.isConnected();
+  }
 
   private void setNeutralMode(IdleMode neutralMode) {
     SparkMaxConfig config = new SparkMaxConfig();

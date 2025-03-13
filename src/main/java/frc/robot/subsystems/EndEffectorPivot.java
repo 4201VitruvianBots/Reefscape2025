@@ -265,6 +265,10 @@ public class EndEffectorPivot extends SubsystemBase {
   public void teleopInit() {
     resetMotionMagicState();
   }
+  
+  public boolean isConnected() {
+    return m_pivotMotor.isConnected();
+  }
 
   public void testInit() {
     endEffectorPivotTab.getDoubleTopic("kP").publish().set(PIVOT.kP);

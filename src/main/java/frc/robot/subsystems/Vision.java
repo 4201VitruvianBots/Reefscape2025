@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,10 +30,10 @@ public class Vision extends SubsystemBase {
   // TODO: Re-add this
   @NotLogged private LimelightSim visionSim;
 
-  private boolean m_localized = false;
+  private boolean m_localized;
 
   // TODO: Maybe move GAME_PIECE logic to Controls?
-  // @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
   private boolean m_useLeftTarget;
 
@@ -79,11 +80,11 @@ public class Vision extends SubsystemBase {
   public boolean isGamePieceCoral() {
     return m_selectedGamePiece == GAME_PIECE.CORAL;
   }
-
+  
   public boolean isGamePieceAlgae() {
     return m_selectedGamePiece == GAME_PIECE.ALGAE;
   }
-
+  
   public void setSelectedGamePiece(GAME_PIECE gamePiece) {
     m_selectedGamePiece = gamePiece;
   }
@@ -226,6 +227,7 @@ public class Vision extends SubsystemBase {
     lockTarget = set;
   }
 
+  @Logged(name = "On Target", importance = Logged.Importance.CRITICAL)
   public boolean isOnTarget() {
     var translationDelta =
         m_swerveDriveTrain
@@ -238,12 +240,6 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("Target Translation Delta", translationDelta);
 
     return translationDelta < Inches.of(2).in(Meters);
-  }
-
-  public void updateSmartDashboard() {
-    SmartDashboard.putBoolean("On target?", isOnTarget());
-    SmartDashboard.putBoolean("algae", isGamePieceAlgae());
-    SmartDashboard.putBoolean("coral", isGamePieceCoral());
   }
 
   @Override
@@ -264,8 +260,6 @@ public class Vision extends SubsystemBase {
     if (m_swerveDriveTrain != null) {
       updateNearestScoringTarget();
     }
-
-    updateSmartDashboard();
   }
 
   @Override

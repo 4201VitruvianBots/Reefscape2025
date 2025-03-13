@@ -30,9 +30,12 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.CAN;
 import frc.robot.constants.SWERVE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
 import org.team4201.codex.subsystems.SwerveSubsystem;
@@ -356,6 +359,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineToApply.dynamic(direction);
+  }
+  
+  // Return a map of which motors are connected and their names
+  public Map<String, Boolean> isConnected() {
+      Map<String, Boolean> motorConnectionStatus = new HashMap<>();
+        for (int i = 0; i < driveMotors.length; i++) {
+            // Identify which motor this is based on its CAN ID
+            if (driveMotors[i].getDeviceID() == CAN.backLeftDriveMotor) {
+            motorConnectionStatus.put("Back Left Drive Motor (" + CAN.backLeftDriveMotor + ")", driveMotors[i].isConnected());
+            } else if (driveMotors[i].getDeviceID() == CAN.frontLeftDriveMotor) {
+            motorConnectionStatus.put("Front Left Drive Motor (" + CAN.frontLeftDriveMotor + ")", driveMotors[i].isConnected());
+            } else if (driveMotors[i].getDeviceID() == CAN.frontRightDriveMotor) {
+            motorConnectionStatus.put("Front Right Drive Motor (" + CAN.frontRightDriveMotor + ")", driveMotors[i].isConnected());
+            } else if (driveMotors[i].getDeviceID() == CAN.backRightDriveMotor) {
+            motorConnectionStatus.put("Back Right Drive Motor (" + CAN.backRightDriveMotor + ")", driveMotors[i].isConnected());
+            }
+        }
+        for (int i = 0; i < steerMotors.length; i++) {
+            // Identify which motor this is based on its CAN ID
+            if (steerMotors[i].getDeviceID() == CAN.backLeftTurnMotor) {
+            motorConnectionStatus.put("Back Left Turn Motor (" + CAN.backLeftTurnMotor + ")", steerMotors[i].isConnected());
+            } else if (steerMotors[i].getDeviceID() == CAN.frontLeftTurnMotor) {
+            motorConnectionStatus.put("Front Left Turn Motor (" + CAN.frontLeftTurnMotor + ")", steerMotors[i].isConnected());
+            } else if (steerMotors[i].getDeviceID() == CAN.frontRightTurnMotor) {
+            motorConnectionStatus.put("Front Right Turn Motor (" + CAN.frontRightTurnMotor + ")", steerMotors[i].isConnected());
+            } else if (steerMotors[i].getDeviceID() == CAN.backRightTurnMotor) {
+            motorConnectionStatus.put("Back Right Turn Motor (" + CAN.backRightTurnMotor + ")", steerMotors[i].isConnected());
+            }
+        }
+      return motorConnectionStatus;
   }
 
   @Override

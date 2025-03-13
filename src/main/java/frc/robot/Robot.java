@@ -60,6 +60,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     FollowPathCommand.warmupCommand().schedule();
+    
+    // Update the alerts 4 times a second
+    addPeriodic(() -> m_robotContainer.getControls().updateAlerts(), 0.25);
   }
 
   /**
