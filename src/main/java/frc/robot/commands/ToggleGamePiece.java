@@ -6,14 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.ROBOT.GAME_PIECE;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Controls;
 
 public class ToggleGamePiece extends InstantCommand {
-  private final Vision m_vision;
+  private final Controls m_controls;
 
   /** Creates a new ToggleGamePiece. */
-  public ToggleGamePiece(Vision vision) {
-    m_vision = vision;
+  public ToggleGamePiece(Controls controls) {
+    m_controls = controls;
   }
 
   @Override
@@ -24,10 +24,10 @@ public class ToggleGamePiece extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_vision.isGamePieceCoral()) {
-      m_vision.setSelectedGamePiece(GAME_PIECE.ALGAE);
+    if (m_controls.isGamePieceCoral()) {
+      m_controls.setSelectedGamePiece(GAME_PIECE.ALGAE);
     } else {
-      m_vision.setSelectedGamePiece(GAME_PIECE.CORAL);
+      m_controls.setSelectedGamePiece(GAME_PIECE.CORAL);
     }
   }
 }

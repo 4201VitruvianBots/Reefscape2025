@@ -18,23 +18,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import frc.robot.utils.LimelightSim;
 import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
-  @NotLogged private CommandSwerveDrivetrain m_swerveDriveTrain;
-  @NotLogged private FieldSim m_fieldSim;
+  private CommandSwerveDrivetrain m_swerveDriveTrain;
+  private FieldSim m_fieldSim;
 
   // TODO: Re-add this
-  @NotLogged private LimelightSim visionSim;
+  private LimelightSim visionSim;
+  private Controls m_controls;
 
   private boolean m_localized;
-
-  // TODO: Maybe move GAME_PIECE logic to Controls?
-  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
-  private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
 
   private boolean m_useLeftTarget;
 
@@ -44,21 +40,20 @@ public class Vision extends SubsystemBase {
   private final int[] reefAprilTags = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 
   // NetworkTables publisher setup
-  @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  @NotLogged private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
-
-  @NotLogged
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
+  
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
-
-  @NotLogged
+  
   private final StructPublisher<Pose2d> estPoseLLF =
       table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
-
-  @NotLogged
+  
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
 
-  public Vision() {
+  public Vision(Controls controls) {
+    m_controls = controls;
+    
     // Port Forwarding to access limelight web UI on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port, CAMERA_SERVER.limelightF.toString(), port);
@@ -74,30 +69,24 @@ public class Vision extends SubsystemBase {
     m_fieldSim = fieldSim;
   }
 
-  public GAME_PIECE getSelectedGamePiece() {
-    return m_selectedGamePiece;
-  }
-
-  public boolean isGamePieceCoral() {
-    return m_selectedGamePiece == GAME_PIECE.CORAL;
-  }
-
-  public boolean isGamePieceAlgae() {
-    return m_selectedGamePiece == GAME_PIECE.ALGAE;
-  }
-
-  public void setSelectedGamePiece(GAME_PIECE gamePiece) {
-    m_selectedGamePiece = gamePiece;
-  }
-
   public void setLeftTarget(boolean value) {
     m_useLeftTarget = value;
+  }
+  
+  @Logged(name = "Left Target", importance = Logged.Importance.CRITICAL)
+  public boolean isTargetingLeft() {
+    return m_useLeftTarget;
+  }
+  
+  @Logged(name = "Right Target", importance = Logged.Importance.CRITICAL)
+  public boolean isTargetingRight() {
+    return !m_useLeftTarget;
   }
 
   public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
-    if (isGamePieceAlgae()) {
+    if (m_controls.isGamePieceAlgae()) {
       if (Controls.isBlueAlliance()) {
         nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
       } else {

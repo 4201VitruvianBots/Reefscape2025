@@ -77,9 +77,8 @@ public class RobotContainer {
   @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
 
-  // Logging this crashes the code?
-  // @Logged(name = "Vision", importance = Logged.Importance.INFO)
-  @NotLogged private final Vision m_vision = new Vision();
+  @Logged(name = "Vision", importance = Logged.Importance.INFO)
+  private final Vision m_vision = new Vision(m_controls);
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
@@ -430,7 +429,7 @@ public class RobotContainer {
     rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
-    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_vision));
+    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
@@ -441,7 +440,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -449,7 +448,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .x()
@@ -460,7 +459,7 @@ public class RobotContainer {
                       PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -468,7 +467,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .y()
@@ -478,7 +477,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
                   moveSuperStructureDelayed(
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new SequentialCommandGroup(
@@ -491,7 +490,7 @@ public class RobotContainer {
                               .withTimeout(0.7),
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .b()
@@ -501,7 +500,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_HIGH), // Algae L3
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -509,7 +508,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -548,13 +547,13 @@ public class RobotContainer {
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
                       moveSuperStructure(
                           ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new WaitCommand(3),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
     }
 
     if (m_endEffector != null) {
@@ -565,7 +564,7 @@ public class RobotContainer {
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .rightBumper()
@@ -573,7 +572,7 @@ public class RobotContainer {
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
     }
 
     if (m_climber != null) {
