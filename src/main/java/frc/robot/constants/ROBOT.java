@@ -48,7 +48,7 @@ public class ROBOT {
 
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
-    V2("0382381FB"), // 23-1 Rio 2.0
+    V2("032381FB"), // 23-1 Rio 2.0
     V3("32398ed"), // 23-2 Rio 2.0
 
     SIM("");
@@ -79,37 +79,38 @@ public class ROBOT {
 
   public static void initV2() {
     robotID = ROBOT_ID.V2;
-
-    ELEVATOR.kG = 0.36;
-    ELEVATOR.kS = 0.0;
-    ELEVATOR.kV = 0.6306;
-    ELEVATOR.kA = 0.2;
-    ELEVATOR.kP = 18.5;
-    ELEVATOR.kI = 0.0;
-    ELEVATOR.kD = 0.1;
-    ELEVATOR.motionMagicCruiseVelocity = 20;
-    ELEVATOR.motionMagicAcceleration = 40;
-    ELEVATOR.gearbox = DCMotor.getKrakenX60(2);
-    ELEVATOR.kCarriageMass = Pounds.of(15.0);
-
-    ENDEFFECTOR.PIVOT.kP = 100.0;
-    ENDEFFECTOR.PIVOT.kI = 0.0;
-    ENDEFFECTOR.PIVOT.kD = 0.01;
-    ENDEFFECTOR.PIVOT.kG = 0.0;
-    ENDEFFECTOR.PIVOT.kV = 0.0;
-    ENDEFFECTOR.PIVOT.kA = 0.0;
-    ENDEFFECTOR.PIVOT.kMotionMagicVelocity = 360;
-    ENDEFFECTOR.PIVOT.kMotionMagicAcceleration = 600;
-    ENDEFFECTOR.PIVOT.pivotGearBox = DCMotor.getKrakenX60(1);
-    ENDEFFECTOR.PIVOT.mass = Pounds.of(15); // TODO: Get actual values
-    ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(-0.47607421875);
-    ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.CounterClockwise_Positive;
-
-    PWM.servo = 9;
   }
 
   public static void initV3() {
     robotID = ROBOT_ID.V3;
+    
+    ELEVATOR.kG = 0.34;
+    ELEVATOR.kS = 0.0;
+    ELEVATOR.kV = 3.2;
+    ELEVATOR.kA = 0.01;
+    ELEVATOR.kP = 200;
+    ELEVATOR.kI = 0.0;
+    ELEVATOR.kD = 0.0;
+    ELEVATOR.motionMagicCruiseVelocity = 2000;
+    ELEVATOR.motionMagicAcceleration = 4000;
+    // ELEVATOR.motionMagicJerk = 2000;
+    ELEVATOR.gearbox = DCMotor.getKrakenX60Foc(2);
+    ELEVATOR.kCarriageMass = Pounds.of(10.0);
+    
+    ENDEFFECTOR.PIVOT.kP = 100.0;
+    ENDEFFECTOR.PIVOT.kI = 0.0;
+    ENDEFFECTOR.PIVOT.kD = 0.01;
+    ENDEFFECTOR.PIVOT.kG = 0.06;
+    ENDEFFECTOR.PIVOT.kV = 0.0;
+    ENDEFFECTOR.PIVOT.kA = 0.0;
+    ENDEFFECTOR.PIVOT.kMotionMagicVelocity = 360;
+    ENDEFFECTOR.PIVOT.kMotionMagicAcceleration = 600;
+    ENDEFFECTOR.PIVOT.pivotGearBox = DCMotor.getKrakenX60Foc(1);
+    ENDEFFECTOR.PIVOT.mass = Pounds.of(7); // TODO: Get actual values
+    ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(0.00341796875);
+    ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.Clockwise_Positive;
+    
+    PWM.servo = 0;
   }
 
   public static void initSim() {
