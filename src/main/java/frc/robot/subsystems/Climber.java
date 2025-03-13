@@ -20,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
@@ -72,7 +73,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setInputVoltage(Voltage voltage) {
-    m_climberMotor.setVoltage(voltage.in(Volts));
+    m_climberMotor.setVoltage(voltage);
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -169,6 +170,7 @@ public class Climber extends SubsystemBase {
         }
         break;
     }
+    SmartDashboard.putNumber("Climber Joystick Input", m_joystickInput);
   }
 
   public void simulationPeriodic() {

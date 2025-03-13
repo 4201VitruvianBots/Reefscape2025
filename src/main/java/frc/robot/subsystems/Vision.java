@@ -173,9 +173,9 @@ public class Vision extends SubsystemBase {
         0);
     LimelightHelpers.PoseEstimate limelightMeasurement;
     if (DriverStation.isDisabled()) {
-      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-    } else {
       limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+    } else {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     }
 
     if (limelightMeasurement == null) {
@@ -194,24 +194,21 @@ public class Vision extends SubsystemBase {
 
       if (!limelightMeasurement.isMegaTag2) {
         // Filter out bad AprilTag vision estimates
-        if (limelightMeasurement.tagCount == 1) {
-          if (limelightMeasurement.rawFiducials[0].ambiguity > .7) {
+        // TODO: Check 1 tag from center?
+        if (limelightMeasurement.tagCount < 2) {
             return true;
-          } else if (limelightMeasurement.rawFiducials[0].distToCamera > 3) {
-            return true;
-          }
-          // Set Standard Deviations for MegaTag1
-          m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-        } else {
-          // Filter out bad AprilTag vision estimates
-          if (m_swerveDriveTrain.getGyroYawRate().abs(DegreesPerSecond) > 720.0) {
-            return true;
-          } else if (limelightMeasurement.tagCount == 0) {
-            return true;
-          }
-          // Set Standard Deviations for MegaTag2
-          m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
         }
+
+        // Set Standard Deviations for MegaTag1
+        m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+      } else {
+        // Filter out bad AprilTag vision estimates
+        if (m_swerveDriveTrain.getGyroYawRate().abs(DegreesPerSecond) > 720.0) {
+          return true;
+        }
+
+        // Set Standard Deviations for MegaTag2
+        m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.4, .4, 9999999));
       }
     }
     posePublisher.set(limelightMeasurement.pose);

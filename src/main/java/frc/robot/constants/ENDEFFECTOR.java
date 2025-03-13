@@ -51,7 +51,7 @@ public class ENDEFFECTOR {
 
   public static class PIVOT {
     // Pivot motor stuff
-    public static double kP = 100.0;
+    public static double kP = 80.0;
     public static double kI = 0.0;
     public static double kD = 0.01;
     public static double kG = 0.0;
