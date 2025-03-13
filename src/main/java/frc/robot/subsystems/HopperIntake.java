@@ -99,6 +99,10 @@ public class HopperIntake extends SubsystemBase {
     stopServo();
   }
 
+  public boolean isConnected() {
+    return m_hopperIntakeMotor.isConnected();
+  }
+
   @Override
   public void periodic() {}
 

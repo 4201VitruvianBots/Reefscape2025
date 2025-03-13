@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,11 +30,12 @@ public class Vision extends SubsystemBase {
   // TODO: Re-add this
   @NotLogged private LimelightSim visionSim;
 
-  private boolean m_localized = false;
+  private boolean m_localized;
 
   // TODO: Maybe move GAME_PIECE logic to Controls?
-  // @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+
   private boolean m_useLeftTarget;
 
   private Pose2d nearestObjectPose = Pose2d.kZero;
@@ -42,7 +44,6 @@ public class Vision extends SubsystemBase {
 
   // NetworkTables publisher setup
   @NotLogged private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
   @NotLogged private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
 
   @NotLogged
@@ -170,8 +171,12 @@ public class Vision extends SubsystemBase {
         0,
         0,
         0);
-    LimelightHelpers.PoseEstimate limelightMeasurement =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    LimelightHelpers.PoseEstimate limelightMeasurement;
+    if (DriverStation.isDisabled()) {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    } else {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+    }
 
     if (limelightMeasurement == null) {
       if (RobotBase.isReal())
@@ -226,6 +231,7 @@ public class Vision extends SubsystemBase {
     lockTarget = set;
   }
 
+  @Logged(name = "On Target", importance = Logged.Importance.CRITICAL)
   public boolean isOnTarget() {
     var translationDelta =
         m_swerveDriveTrain
@@ -238,12 +244,6 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("Target Translation Delta", translationDelta);
 
     return translationDelta < Inches.of(2).in(Meters);
-  }
-
-  public void updateSmartDashboard() {
-    SmartDashboard.putBoolean("On target?", isOnTarget());
-    SmartDashboard.putBoolean("algae", isGamePieceAlgae());
-    SmartDashboard.putBoolean("coral", isGamePieceCoral());
   }
 
   @Override
@@ -264,8 +264,6 @@ public class Vision extends SubsystemBase {
     if (m_swerveDriveTrain != null) {
       updateNearestScoringTarget();
     }
-
-    updateSmartDashboard();
   }
 
   @Override

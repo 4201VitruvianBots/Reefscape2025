@@ -62,13 +62,13 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
-  //  private final MotionMagicVelocityVoltage m_requestVelocity = new
-  // MotionMagicVelocityVoltage(0).withEnableFOC(true);
-  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityVoltage m_requestVelocity = new
+    MotionMagicVelocityVoltage(0).withEnableFOC(true);
+//   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+//       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private DoubleSubscriber m_kG_subscriber,
       m_kS_subscriber,
@@ -109,10 +109,12 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
-    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
-    //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    // TODO: Re-tune values before removing these
+    config.CurrentLimits.StatorCurrentLimit = 40;
+    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
@@ -255,6 +257,10 @@ public class Elevator extends SubsystemBase {
   @Logged(name = "At Setpoint", importance = Logged.Importance.DEBUG)
   public boolean atSetpoint() {
     return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
+  }
+
+  public boolean[] isConnected() {
+    return new boolean[] {elevatorMotors[0].isConnected(), elevatorMotors[1].isConnected()};
   }
 
   public void testInit() {

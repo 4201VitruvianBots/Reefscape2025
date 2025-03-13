@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -42,10 +43,10 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
   private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
-  //  private final MotionMagicVoltage m_request = new
-  // MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
-  private final MotionMagicTorqueCurrentFOC m_request =
-      new MotionMagicTorqueCurrentFOC(Rotations.of(0));
+   private final MotionMagicVoltage m_request = new
+  MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
+ // private final MotionMagicTorqueCurrentFOC m_request =
+     // new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
@@ -264,6 +265,10 @@ public class EndEffectorPivot extends SubsystemBase {
 
   public void teleopInit() {
     resetMotionMagicState();
+  }
+
+  public boolean isConnected() {
+    return m_pivotMotor.isConnected();
   }
 
   public void testInit() {

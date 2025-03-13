@@ -157,7 +157,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
+      m_v2Climber = new V2Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
@@ -166,7 +166,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_v2Climber = new V2Climber();
+      m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       MaxSpeed =
@@ -226,8 +226,8 @@ public class RobotContainer {
       //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
     if (m_climber != null) {
-      // m_climber.setDefaultCommand(
-      //     new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+      m_climber.setDefaultCommand(
+          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
       m_endEffectorPivot.setDefaultCommand(
@@ -387,20 +387,6 @@ public class RobotContainer {
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
 
-    if (m_endEffectorPivot != null) {
-      //   m_driverController
-      //       .a()
-      //       .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
-    }
-    if (m_endEffector != null) {
-      //   m_driverController
-      //       .leftTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-      //   m_driverController
-      //       .rightTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
-    }
-
     if (m_algaeIntake != null) {
       // TODO: Make speeds into enum setpoints
       m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
@@ -553,7 +539,7 @@ public class RobotContainer {
                   new WaitCommand(3),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  () -> m_selectedGamePiece == ROBOT.GAME_PIECE.ALGAE));
+                  m_vision::isGamePieceAlgae));
     }
 
     if (m_endEffector != null) {
@@ -603,10 +589,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
-  }
-
-  public void robotPeriodic() {
-    // m_questNav.periodic();
   }
 
   public void disabledInit() {
@@ -724,5 +706,9 @@ public class RobotContainer {
       simulationInit();
     }
     m_robot2d.updateRobot2d();
+  }
+
+  public Controls getControls() {
+    return m_controls;
   }
 }

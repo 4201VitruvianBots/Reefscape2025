@@ -121,6 +121,11 @@ public class Climber extends SubsystemBase {
     m_buttonInput = buttonInput;
   }
 
+  public boolean isConnected() {
+    // See if the NEO 550 motor is connected
+    return m_climberMotor.getFirmwareVersion() != 0;
+  }
+
   private void setNeutralMode(IdleMode neutralMode) {
     SparkMaxConfig config = new SparkMaxConfig();
 
