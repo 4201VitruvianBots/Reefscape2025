@@ -33,6 +33,18 @@
           "data": {
             "pathName": "2PieceLPt4"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2PieceLPt5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2PieceLPt6"
+          }
         }
       ]
     }

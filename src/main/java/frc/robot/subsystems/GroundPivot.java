@@ -54,7 +54,8 @@ public class GroundPivot extends SubsystemBase {
 
   private Angle m_desiredAngle = PIVOT.PIVOT_SETPOINT.STOWED.get();
 
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(getAngle());
+  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -306,14 +307,12 @@ public class GroundPivot extends SubsystemBase {
 
     m_pivotSim.update(0.020);
 
-    m_simState.setRawRotorPosition(
-        Units.radiansToRotations(m_pivotSim.getAngleRads()) * PIVOT.gearRatio);
-
+    m_simState.setRawRotorPosition(Radians.of(m_pivotSim.getAngleRads()).times(PIVOT.gearRatio));
     m_simState.setRotorVelocity(
-        Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()) * PIVOT.gearRatio);
+        RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()).times(PIVOT.gearRatio));
 
-    m_pivotEncoderSimState.setRawPosition(Units.radiansToRotations(m_pivotSim.getAngleRads()));
-    m_pivotEncoderSimState.setVelocity(Units.radiansToRotations(m_pivotSim.getVelocityRadPerSec()));
+    m_pivotEncoderSimState.setRawPosition(Radian.of(m_pivotSim.getAngleRads()));
+    m_pivotEncoderSimState.setVelocity(RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()));
 
     SmartDashboard.putNumber(
         "GroundPivot/Model Angle", Units.radiansToDegrees(m_pivotSim.getAngleRads()));

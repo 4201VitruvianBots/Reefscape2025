@@ -11,19 +11,19 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.SWERVE;
-import frc.robot.constants.VISION;
-import frc.robot.constants.VISION.TRACKING_STATE;
 import frc.robot.generated.V2Constants.TunerSwerveDrivetrain;
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -41,14 +39,13 @@ import org.team4201.codex.subsystems.SwerveSubsystem;
 import org.team4201.codex.utils.CtreUtils;
 import org.team4201.codex.utils.ModuleMap;
 import org.team4201.codex.utils.TrajectoryUtils;
+import org.team4201.codex.utils.TrajectoryUtils.TrajectoryUtilsConfig;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
  * be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements SwerveSubsystem {
-  private Vision m_vision;
-
   private final TalonFX[] driveMotors = {
     getModule(0).getDriveMotor(),
     getModule(1).getDriveMotor(),
@@ -75,6 +72,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   private boolean m_hasAppliedOperatorPerspective = false;
 
   private TrajectoryUtils m_trajectoryUtils;
+
+  private final PIDController m_pidController = new PIDController(10.0, 0.0, 0.0);
+  private Rotation2d m_targetAngle = Rotation2d.kZero;
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -140,12 +140,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-  private final PIDController m_pidController = new PIDController(11.0, 0.0, 0.0);
-  private Rotation2d m_targetAngle = new Rotation2d();
-  private Rotation2d m_angleToTarget = new Rotation2d();
-  private VISION.TRACKING_STATE m_trackingState = VISION.TRACKING_STATE.NONE;
-  private SwerveDriveKinematics m_kinematics;
-
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -161,10 +155,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
 
     try {
-      m_trajectoryUtils = new TrajectoryUtils(this);
+      m_trajectoryUtils =
+          new TrajectoryUtils(this, new TrajectoryUtilsConfig().withResetPoseOnAuto(false));
     } catch (Exception ex) {
       DriverStation.reportError("Failed to configure TrajectoryUtils", ex.getStackTrace());
     }
@@ -203,7 +197,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
   }
 
   /**
@@ -236,7 +229,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configureAutoBuilder();
+  }
+
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setControl(m_pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
   }
 
   public void setChassisSpeedsAuto(
@@ -246,6 +242,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
             .withSpeeds(chassisSpeeds)
             .withWheelForceFeedforwardsX(driveFeedforwards.robotRelativeForcesXNewtons())
             .withWheelForceFeedforwardsY(driveFeedforwards.robotRelativeForcesYNewtons()));
+  }
+
+  public AngularVelocity getGyroYawRate() {
+    return getPigeon2().getAngularVelocityZWorld().refresh().getValue().unaryMinus();
   }
 
   public void resetGyro(double angle) {
@@ -273,38 +273,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     }
   }
 
-  private void configureAutoBuilder() {
-    try {
-      var config = RobotConfig.fromGUISettings();
-      AutoBuilder.configure(
-          () -> getState().Pose, // Supplier of current robot pose
-          this::resetPose, // Consumer for seeding pose against auto
-          () -> getState().Speeds, // Supplier of current robot speeds
-          // Consumer of ChassisSpeeds and feedforwards to drive the robot
-          (speeds, feedforwards) ->
-              setControl(
-                  m_pathApplyRobotSpeeds
-                      .withSpeeds(speeds)
-                      .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                      .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-          new PPHolonomicDriveController(
-              // PID constants for translation
-              new PIDConstants(10, 0, 0),
-              // PID constants for rotation
-              new PIDConstants(7, 0, 0)),
-          config,
-          // Assume the path needs to be flipped for Red vs Blue, this is normally the case
-          () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-          this // Subsystem for requirements
-          );
-    } catch (Exception ex) {
-      DriverStation.reportError(
-          "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
-    }
+  public LinearVelocity getVelocityMagnitude(ChassisSpeeds cs) {
+    return MetersPerSecond.of(
+        new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());
   }
 
-  public ChassisSpeeds getChassisSpeed() {
-    return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  public Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target) {
+    if (getVelocityMagnitude(cs).in(MetersPerSecond) < 0.25) {
+      var diff = target.minus(getState().Pose).getTranslation();
+      return (diff.getNorm() < 0.01)
+          ? target.getRotation()
+          : diff.getAngle(); // .rotateBy(Rotation2d.k180deg);
+    }
+    return new Rotation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond);
   }
 
   public TrajectoryUtils getTrajectoryUtils() {
@@ -328,14 +309,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   @Override
   public PIDConstants getAutoTranslationPIDConstants() {
-    // TODO: Move PID constants to variables under SWERVE.java
-    return new PIDConstants(10, 0, 0);
+    return SWERVE.kTranslationPID;
   }
 
   @Override
   public PIDConstants getAutoRotationPIDConstants() {
-    // TODO: Move PID constants to variables under SWERVE.java
-    return new PIDConstants(7, 0, 0);
+    return SWERVE.kRotationPID;
   }
 
   /**
@@ -348,40 +327,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
-  public void setAngleToTarget(Rotation2d angle) {
-    m_angleToTarget = angle;
-  }
-
-  public void setTrackingState(VISION.TRACKING_STATE state) {
-    if (m_trackingState != state) {
-      m_pidController.reset();
-      m_trackingState = state;
-    }
+  public void setTargetAngle(Rotation2d angle) {
+    m_targetAngle = angle;
   }
 
   public double calculateRotationToTarget() {
     return m_pidController.calculate(
         getState().Pose.getRotation().getRadians(), m_targetAngle.getRadians());
-  }
-
-  private void updateTargetAngle() {
-    switch (m_trackingState) {
-      case BRANCH:
-        m_targetAngle = m_angleToTarget;
-        if (m_vision != null) m_vision.setTrackingState(m_trackingState);
-        break;
-      default:
-      case NONE:
-        break;
-    }
-  }
-
-  public boolean isTrackingState() {
-    if (m_trackingState == TRACKING_STATE.BRANCH) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   /**
@@ -408,7 +360,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
 
   @Override
   public void periodic() {
-    updateTargetAngle();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

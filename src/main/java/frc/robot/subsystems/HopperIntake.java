@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -12,16 +14,16 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
+import frc.robot.utils.RevSmartServo;
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
   private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final Servo m_hopperServo = new Servo(9);
+  private final RevSmartServo m_hopperServo = new RevSmartServo(9);
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_hopperIntakeMotor.getVelocity().clone();
@@ -37,7 +39,7 @@ public class HopperIntake extends SubsystemBase {
   private final DCMotorSim m_hopperIntakeMotorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              HOPPERINTAKE.gearbox, HOPPERINTAKE.gearRatio, HOPPERINTAKE.kInertia),
+              HOPPERINTAKE.gearbox, HOPPERINTAKE.kInertia, HOPPERINTAKE.gearRatio),
           HOPPERINTAKE.gearbox);
   private final TalonFXSimState m_hopperIntakeMotorSimState = m_hopperIntakeMotor.getSimState();
 
@@ -52,6 +54,8 @@ public class HopperIntake extends SubsystemBase {
     config.MotorOutput.PeakReverseDutyCycle = HOPPERINTAKE.peakReverseOutput;
     config.MotorOutput.PeakForwardDutyCycle = HOPPERINTAKE.peakForwardOutput;
     CtreUtils.configureTalonFx(m_hopperIntakeMotor, config);
+
+    m_hopperServo.setBoundsMicroseconds(2500, 0, 0, 0, 500);
   }
 
   public void setPercentOutput(double speed) {
@@ -101,14 +105,14 @@ public class HopperIntake extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     m_hopperIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
     m_hopperIntakeMotorSim.setInputVoltage(m_hopperIntakeMotorSimState.getMotorVoltage());
 
-    m_hopperIntakeMotorSim.update(0.02); // TODO update this later maybe?
+    m_hopperIntakeMotorSim.update(0.02);
 
     m_hopperIntakeMotorSimState.setRawRotorPosition(
-        m_hopperIntakeMotorSim.getAngularPositionRotations() * HOPPERINTAKE.gearRatio);
+        Rotations.of(m_hopperIntakeMotorSim.getAngularPositionRotations())
+            .times(HOPPERINTAKE.gearRatio));
     m_hopperIntakeMotorSimState.setRotorVelocity(
-        m_hopperIntakeMotorSim.getAngularVelocityRPM() * HOPPERINTAKE.gearRatio / 60.0);
+        RPM.of(m_hopperIntakeMotorSim.getAngularVelocityRPM()).times(HOPPERINTAKE.gearRatio));
   }
 }

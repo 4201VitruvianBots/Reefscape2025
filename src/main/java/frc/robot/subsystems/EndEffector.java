@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,6 +17,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +44,7 @@ public class EndEffector extends SubsystemBase {
 
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.gearRatio, ROLLERS.kInertia),
+          LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.kInertia, ROLLERS.gearRatio),
           ROLLERS.gearbox);
   private final TalonFXSimState m_simState = m_endEffectorMotor.getSimState();
 
@@ -70,13 +73,23 @@ public class EndEffector extends SubsystemBase {
     return m_endEffectorMotor.get();
   }
 
+  public boolean getSensorInput1() {
+    // Disabled until sensor installed
+    return !m_beamBreakSensor.get();
+  }
+
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
-    return !m_beamBreakSensor.get() && ENDEFFECTOR.enableBeamBreak;
+    return !m_beamBreakSensor.get();
   }
 
   public AngularVelocity getVelocity() {
-    return m_velocitySignal.refresh().getValue();
+    if (RobotBase.isSimulation()) {
+      return RotationsPerSecond.of(
+          m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+    } else {
+      return m_velocitySignal.refresh().getValue();
+    }
   }
 
   public Voltage getMotorVoltage() {
@@ -106,8 +119,8 @@ public class EndEffector extends SubsystemBase {
     m_endEffectorSim.update(0.02);
 
     m_simState.setRawRotorPosition(
-        m_endEffectorSim.getAngularPositionRotations() * ROLLERS.gearRatio);
+        Rotations.of(m_endEffectorSim.getAngularPositionRotations()).times(ROLLERS.gearRatio));
     m_simState.setRotorVelocity(
-        m_endEffectorSim.getAngularVelocityRPM() * ROLLERS.gearRatio / 60.0);
+        RPM.of(m_endEffectorSim.getAngularVelocityRPM()).times(ROLLERS.gearRatio));
   }
 }

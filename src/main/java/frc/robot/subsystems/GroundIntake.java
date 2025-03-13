@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -69,9 +71,10 @@ public class GroundIntake extends SubsystemBase {
     m_groundIntakeMotorSim.update(0.02);
 
     m_groundIntakeMotorSimState.setRawRotorPosition(
-        m_groundIntakeMotorSim.getAngularPositionRotations() * GROUND.INTAKE.gearRatio);
+        Rotations.of(m_groundIntakeMotorSim.getAngularPositionRotations())
+            .times(GROUND.INTAKE.gearRatio));
     m_groundIntakeMotorSimState.setRotorVelocity(
-        m_groundIntakeMotorSim.getAngularVelocityRPM() * GROUND.INTAKE.gearRatio / 60.0);
+        RPM.of(m_groundIntakeMotorSim.getAngularVelocityRPM()).times(GROUND.INTAKE.gearRatio));
   }
 
   @Override

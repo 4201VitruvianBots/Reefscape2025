@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.908863636363636,
-        "y": 2.8034801136363625
+        "x": 3.9786647727272726,
+        "y": 2.8633096590909086
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.072596270968096,
-        "y": 2.9924023843338174
+        "x": 4.218217361159856,
+        "y": 3.122831681978327
       },
       "isLocked": false,
       "linkedName": "Pt3 end"
     },
     {
       "anchor": {
-        "x": 3.380369318181818,
-        "y": 2.1254119318181814
+        "x": 3.610244205298013,
+        "y": 2.434168046357615
       },
       "prevControl": {
-        "x": 3.6196875,
-        "y": 2.384673295454543
+        "x": 3.4325060928535964,
+        "y": 2.258358025640092
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2PieceLpt4end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 49.763641690726224
+    "rotation": 54.64000000000001
   },
   "reversed": false,
   "folder": "TwoPieceL",

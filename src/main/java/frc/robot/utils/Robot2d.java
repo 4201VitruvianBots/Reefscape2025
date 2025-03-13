@@ -19,8 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.team4201.codex.simulation.visualization.Arm2d;
 import org.team4201.codex.simulation.visualization.Elevator2d;
+import org.team4201.codex.simulation.visualization.Flywheel2d;
 import org.team4201.codex.simulation.visualization.configs.Arm2dConfig;
 import org.team4201.codex.simulation.visualization.configs.Elevator2dConfig;
+import org.team4201.codex.simulation.visualization.configs.Flywheel2dConfig;
 
 /**
  * Class to handle all Mechanism2d updates. The width/height of the Mechanism2d is scaled based on
@@ -32,6 +34,7 @@ public class Robot2d {
    * Image dimensions 657/830, which ends up being 29 pixels/2 inches. Use this to scale the
    * lineWidth of MechanismLigament2d appropriately
    */
+  // TODO: No longer accurate? Review/fix
   private final double pixelsPerInch = 29.0 / 2.0;
 
   private final Distance robotCanvasX = Inches.of(45.31034);
@@ -46,7 +49,7 @@ public class Robot2d {
 
   private final MechanismRoot2d m_superStructureRoot =
       m_robot.getRoot("SuperStructureRoot", Inches.of(23.25).magnitude(), Inches.of(3).magnitude());
-  final MechanismLigament2d m_superStructure =
+  final MechanismLigament2d m_superStructure2d =
       new MechanismLigament2d(
           "superStructure2d",
           ELEVATOR.superStructureHeight.in(Inches),
@@ -55,7 +58,7 @@ public class Robot2d {
           new Color8Bit(0, 127, 0));
 
   /** Use a line (MechanismLigament2d) to represent the robot chassis */
-  final MechanismLigament2d m_robotChassis =
+  final MechanismLigament2d m_robotChassis2d =
       new MechanismLigament2d(
           "chassis2d",
           SWERVE.kWheelBase.in(Inches),
@@ -68,17 +71,18 @@ public class Robot2d {
       m_robot.getRoot("ElevatorRoot", Inches.of(23.25).magnitude(), Inches.of(3).magnitude());
 
   /** Create an Elevator2d to represent an elevator, and then attach it to the m_elevatorRoot */
-  private final Elevator2d m_elevator =
+  private final Elevator2d m_elevator2d =
       new Elevator2d(
           new Elevator2dConfig("Elevator2d", new Color8Bit(0, 128, 0), Inches.of(0), Degrees.of(90))
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch)
               .withSuperStructureOffset(Inches.of(3))
-              .withStageMaxLengths(Meters.of(ELEVATOR.upperLimitMeters))
+              .withStageMaxLengths(ELEVATOR.upperLimit)
               .withStageColors(new Color8Bit(0, 0, 255)),
           m_elevatorRoot);
 
-  final MechanismLigament2d m_endEffectorAttachment =
-      m_elevator
+  // TODO: Clean this up?
+  private final MechanismLigament2d m_endEffectorAttachment =
+      m_elevator2d
           .getLastStageLigament()
           .append(
               new MechanismLigament2d(
@@ -89,7 +93,7 @@ public class Robot2d {
                   new Color8Bit(0, 127, 0)));
 
   /** Create an Arm2d to represent the endEffector */
-  private final Arm2d m_endEffector =
+  private final Arm2d m_endEffector2d =
       new Arm2d(
           new Arm2dConfig(
                   "EndEffector2d",
@@ -99,6 +103,7 @@ public class Robot2d {
               .withLineWidth(Inches.of(2).magnitude() * pixelsPerInch),
           m_endEffectorAttachment);
 
+  // TODO: Just turn this into a ligament2d to avoid complexity
   /** Another Arm2d to represent the other half of the endEffector */
   private final Arm2d m_endEffectorBack =
       new Arm2d(
@@ -111,7 +116,7 @@ public class Robot2d {
           m_endEffectorAttachment);
 
   final MechanismLigament2d m_endEffectorIntake =
-      m_endEffector
+      m_endEffector2d
           .getLigament()
           .append(
               new MechanismLigament2d(
@@ -121,13 +126,16 @@ public class Robot2d {
                   Inches.of(1.9675).magnitude() * pixelsPerInch,
                   new Color8Bit(0, 0, 255)));
 
+  final Flywheel2d m_endEffectorRoller =
+      new Flywheel2d(new Flywheel2dConfig("endEffectorRoller2d"), m_endEffectorIntake);
+
   /** Map of subsystems for Robot2d to update */
   private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   public Robot2d() {
     // Attach the robotChassis to the chassisRoot
-    m_chassisRoot.append(m_robotChassis);
-    m_superStructureRoot.append(m_superStructure);
+    m_chassisRoot.append(m_robotChassis2d);
+    m_superStructureRoot.append(m_superStructure2d);
 
     // Publish Robot2d to SmartDashboard
     SmartDashboard.putData("Robot2d", m_robot);
@@ -135,7 +143,7 @@ public class Robot2d {
     // For simulation, create a sub-mechanism display for each mechanism.
     // Avoid doing this with the real robot to reduce bandwidth usage.
     if (RobotBase.isSimulation()) {
-      m_elevator.generateSubDisplay();
+      m_elevator2d.generateSubDisplay();
     }
   }
 
@@ -151,16 +159,15 @@ public class Robot2d {
   public void updateRobot2d() {
     if (m_subsystemMap.containsKey("Elevator")) {
       var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
-      m_elevator.update(elevatorSubsystem.getHeight());
-      // TODO: Add LinearVelocity function in elevator
-      //   m_elevator.update(Meters.of(elevatorSubsystem.getHeightMeters()), velocity);
+      m_elevator2d.update(elevatorSubsystem.getHeight());
+      m_elevator2d.update(elevatorSubsystem.getHeight(), elevatorSubsystem.getVelocity());
     }
 
     if (m_subsystemMap.containsKey("EndEffectorPivot")) {
       var endEffectorPivotSubsystem = (EndEffectorPivot) m_subsystemMap.get("EndEffectorPivot");
       // Visually, this will go opposite of the actual angle, so we just negate it here so it looks
       // correct
-      m_endEffector.update(
+      m_endEffector2d.update(
           endEffectorPivotSubsystem.getCANcoderAngle().minus(Degrees.of(25.676)).unaryMinus());
       m_endEffectorBack.update(
           endEffectorPivotSubsystem
@@ -172,6 +179,8 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("EndEffector")) {
       var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffector");
+
+      m_endEffectorRoller.update(endEffectorSubsystem.getVelocity());
     }
 
     if (m_subsystemMap.containsKey("GroundPivot")) {

@@ -88,7 +88,7 @@ public class Telemetry {
 
     if (m_fieldSim != null) {
       // TODO: Re-implement
-      //            for (ModuleMap.MODULE_POSITION i : ModuleMap.MODULE_POSITION.values()) {
+      //            for (MODULE_POSITION i : MODULE_POSITION.values()) {
       //                m_moduleVisualizer[i.ordinal()].update(state.ModuleStates[i.ordinal()]);
       //                m_moduleTransforms[i.ordinal()] = new
       // Transform2d(SWERVE.DRIVE.kModuleTranslations.get(i),
