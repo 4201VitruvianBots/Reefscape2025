@@ -416,8 +416,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
     // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
