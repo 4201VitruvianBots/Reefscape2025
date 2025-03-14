@@ -48,7 +48,7 @@
   "folder": "TwoPieceL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 115.0
+    "rotation": 119.29136217098417
   },
   "useDefaultConstraints": true
 }

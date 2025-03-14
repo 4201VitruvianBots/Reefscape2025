@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.USB;
 import java.io.File;
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public class Controls extends SubsystemBase {
   //   private Vision m_vision;
   private static boolean m_allianceInit;
   private static DriverStation.Alliance m_allianceColor = DriverStation.Alliance.Red;
+  
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
+  private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
 
   private static Alert m_usbAlert =
       new Alert("USB connection alert not properly initialized", AlertType.kError);
@@ -71,6 +75,24 @@ public class Controls extends SubsystemBase {
 
   public static boolean isBlueAlliance() {
     return getAllianceColor() == DriverStation.Alliance.Blue;
+  }
+  
+  @Logged(name = "Coral Mode", importance = Logged.Importance.CRITICAL)
+  public boolean isGamePieceCoral() {
+    return m_selectedGamePiece == GAME_PIECE.CORAL;
+  }
+
+  @Logged(name = "Algae Mode", importance = Logged.Importance.CRITICAL)
+  public boolean isGamePieceAlgae() {
+    return m_selectedGamePiece == GAME_PIECE.ALGAE;
+  }
+  
+  public static void setSelectedGamePiece(GAME_PIECE gamePiece) {
+    m_selectedGamePiece = gamePiece;
+  }
+  
+  public static GAME_PIECE getSelectedGamePiece() {
+    return m_selectedGamePiece;
   }
 
   private void initSmartDashboard() {

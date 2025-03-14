@@ -33,10 +33,17 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
-  /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
+
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
+  private final MotionMagicVelocityVoltage m_requestVelocity =
+      new MotionMagicVelocityVoltage(0).withEnableFOC(true);
+  //   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+  //       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
@@ -61,14 +68,6 @@ public class Elevator extends SubsystemBase {
 
   @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
-
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-
-  private final MotionMagicVelocityVoltage m_requestVelocity = new
-    MotionMagicVelocityVoltage(0).withEnableFOC(true);
-//   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
-//       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private DoubleSubscriber m_kG_subscriber,
       m_kS_subscriber,
@@ -96,6 +95,7 @@ public class Elevator extends SubsystemBase {
           1);
   private final TalonFXSimState m_motorSimState;
 
+  /** Creates a new Elevator */
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kG = ELEVATOR.kG;
