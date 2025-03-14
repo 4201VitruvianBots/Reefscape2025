@@ -239,21 +239,21 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", m_chooser);
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
-    m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
-    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
+    // m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
+    // m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
-        "OnePiece",
+        "OnePieceMiddle",
         new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
 
-    m_chooser.addOption(
-        "HopperTest",
-        new TestHopperAuto(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffector,
-            m_endEffectorPivot,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "HopperTest",
+    //     new TestHopperAuto(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffector,
+    //         m_endEffectorPivot,
+    //         m_hopperIntake));
 
     m_chooser.addOption(
         "ThreePieceRight",
@@ -265,25 +265,25 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
-    m_chooser.addOption(
-        "TwoPiece",
-        new TwoPiece(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "TwoPiece",
+    //     new TwoPiece(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
 
-    m_chooser.addOption(
-        "OnePieceLeft",
-        new OnePieceLeft(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "OnePieceLeft",
+    //     new OnePieceLeft(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
 
     // m_chooser.addOption(
     //     "OnePieceRight",
@@ -304,15 +304,15 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-    m_chooser.addOption(
-        "VisionTest",
-        new VisionTest(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "VisionTest",
+    //     new VisionTest(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -479,9 +479,9 @@ public class RobotContainer {
           .onFalse(
               new ConditionalCommand(
                   new SequentialCommandGroup(
-                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)
+                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
                               .withTimeout(0.7),
-                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
+                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR))
                       .withTimeout(1),
                   new SequentialCommandGroup(
                           new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)

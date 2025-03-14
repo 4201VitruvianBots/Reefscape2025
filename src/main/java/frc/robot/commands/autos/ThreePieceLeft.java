@@ -55,19 +55,19 @@ public class ThreePieceLeft extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
-          new PlotAutoPath(swerveDrive, fieldSim, path),
+          new PlotAutoPath(swerveDrive, fieldSim, path).withName("Start auto path"),
           new ParallelCommandGroup(
               m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
               new ParallelCommandGroup(
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
                       .until(elevator::atSetpoint),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                      .until(endEffectorPivot::atSetpoint))),
-          new WaitCommand(0.25),
+                      .until(endEffectorPivot::atSetpoint))).withName("Move to L4 setpoint"),
+          new WaitCommand(0.25).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-              new WaitCommand(0.5)),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new WaitCommand(0.5)).withName("Run end effector for 0.5 secs"),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
                   m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
@@ -76,21 +76,21 @@ public class ThreePieceLeft extends SequentialCommandGroup {
                       new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL),
                       new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)))
-              .until(endEffector::hasCoral),
-          new WaitCommand(0.25),
+              .until(endEffector::hasCoral).withName("Intake from HP station"),
+          new WaitCommand(0.25).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)).withName("Stop hopper & end effector"),
           new ParallelCommandGroup(
               m_ppCommand4.andThen(() -> swerveDrive.setControl(stopRequest)),
               new ParallelCommandGroup(
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
                       .until(elevator::atSetpoint),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                      .until(endEffectorPivot::atSetpoint))),
+                      .until(endEffectorPivot::atSetpoint))).withName("Move to L4 setpoint"),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-              new WaitCommand(0.2)),
+              new WaitCommand(0.2)).withName("Run end effector for 0.2 seconds"),
           new ParallelCommandGroup(
                   m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
                   new ParallelCommandGroup(
@@ -98,31 +98,31 @@ public class ThreePieceLeft extends SequentialCommandGroup {
                       new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.INTAKE_HOPPER),
                       new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                       new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL)))
-              .until(endEffector::hasCoral),
-          new WaitCommand(0.25),
+              .until(endEffector::hasCoral).withName("Intake from HP station"),
+          new WaitCommand(0.25).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
-              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)),
+              new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO)).withName("Stop hopper & end effector"),
           new ParallelCommandGroup(
               m_ppCommand6.andThen(() -> swerveDrive.setControl(stopRequest)),
               new ParallelCommandGroup(
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.LEVEL_4)
                       .until(elevator::atSetpoint),
                   new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.L4)
-                      .until(endEffectorPivot::atSetpoint))),
+                      .until(endEffectorPivot::atSetpoint))).withName("Move to L4 setpoint"),
           new ParallelCommandGroup(
               new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-              new WaitCommand(0.2)),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
+              new WaitCommand(0.2)).withName("Run end effector for 0.2 secs"),
+          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
           m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
               new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
                   .until(elevator::atSetpoint),
               new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.STOWED)
-                  .until(endEffectorPivot::atSetpoint)),
+                  .until(endEffectorPivot::atSetpoint)).withName("Move to stowed"),
           new InstantCommand(
                   () -> swerveDrive.applyRequest(() -> point.withModuleDirection(Rotation2d.kZero)))
-              .withTimeout(0.1));
+              .withTimeout(0.1).withName("Stop drive"));
     } catch (Exception e) {
       DriverStation.reportError("Failed to load path for Score2", e.getStackTrace());
       addCommands(new WaitCommand(0));
