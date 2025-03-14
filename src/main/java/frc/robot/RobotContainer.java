@@ -243,7 +243,7 @@ public class RobotContainer {
     // m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
         "OnePieceMiddle",
-        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
+        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector, m_vision));
 
     // m_chooser.addOption(
     //     "HopperTest",

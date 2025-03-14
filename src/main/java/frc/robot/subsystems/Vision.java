@@ -37,7 +37,7 @@ public class Vision extends SubsystemBase {
   private final Pose2d[] robotToTarget = {Pose2d.kZero, Pose2d.kZero};
   private boolean lockTarget = false;
   private final int[] reefAprilTags = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
-
+  private boolean hasInitialPose = false;
   // NetworkTables publisher setup
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
@@ -196,6 +196,7 @@ public class Vision extends SubsystemBase {
           return false;
         }
 
+        hasInitialPose = true;
         // Set Standard Deviations for MegaTag1
         m_swerveDriveTrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
       } else {
@@ -223,6 +224,9 @@ public class Vision extends SubsystemBase {
     return true;
   }
 
+  public boolean getInitalPose() {
+    return this.hasInitialPose;
+  }
   /** Stop the nearest target from updating when we want to score to avoid target switching */
   public void setTargetLock(boolean set) {
     lockTarget = set;

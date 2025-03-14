@@ -159,7 +159,7 @@ public class FIELD {
   /**
    * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
    */
-  static final Distance baseReefTranslation = Inches.of(6);
+  static final Distance baseReefTranslation = Inches.of(7);
 
   static final Translation2d leftReefCoralOffset =
       new Translation2d(-baseReefDepth.in(Meters), baseReefTranslation.in(Meters));
