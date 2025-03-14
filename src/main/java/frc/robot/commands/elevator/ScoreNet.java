@@ -19,7 +19,7 @@ public class ScoreNet extends Command {
 
   @Override
   public void initialize() {
-    m_elevator.setControlMode(CONTROL_MODE.CLOSED_LOOP_NET);
+    m_elevator.setControlMode(CONTROL_MODE.NET);
   }
 
   @Override

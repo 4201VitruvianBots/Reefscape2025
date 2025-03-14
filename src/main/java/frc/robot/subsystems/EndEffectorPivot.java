@@ -333,6 +333,8 @@ public class EndEffectorPivot extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
+      case NET:
+        break;
       case CLOSED_LOOP:
         m_pivotMotor.setControl(m_request.withPosition(m_desiredRotation));
         break;

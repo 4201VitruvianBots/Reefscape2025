@@ -338,7 +338,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
-      case CLOSED_LOOP_NET:
+      case NET:
         // m_requestVelocity.Acceleration = 100; TODO: figure out where to put this.
         elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
         break;
