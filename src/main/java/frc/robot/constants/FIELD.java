@@ -229,7 +229,9 @@ public class FIELD {
         branchPose = aprilTagPose.plus(new Transform2d(branchOffset, Rotation2d.kZero));
 
         targetPose = aprilTagPose.plus(new Transform2d(targetOffset, Rotation2d.kZero));
-        targetPose = new Pose2d(targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.k180deg));
+        targetPose =
+            new Pose2d(
+                targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.k180deg));
       } catch (Exception e) {
         System.out.printf(
             "[FIELD] Could not get AprilTag %d Pose for CORAL_TARGET generation!\n", aprilTagId);

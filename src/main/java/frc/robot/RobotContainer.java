@@ -479,7 +479,8 @@ public class RobotContainer {
           .onFalse(
               new ConditionalCommand(
                   new SequentialCommandGroup(
-                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
+                          new EndEffectorSetpoint(
+                                  m_endEffectorPivot, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
                               .withTimeout(0.7),
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR))
                       .withTimeout(1),

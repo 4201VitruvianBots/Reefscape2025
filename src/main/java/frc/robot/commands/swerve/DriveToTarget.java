@@ -64,7 +64,7 @@ public class DriveToTarget {
                 m_swerveDrive.getPathVelocityHeading(
                     m_swerveDrive.getState().Speeds, targetWaypoint)),
             targetWaypoint);
-//TODO:adjust the threshold if needed
+    // TODO:adjust the threshold if needed
     if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.1) {
       return Commands.sequence(
           Commands.print("start position PID loop"),
