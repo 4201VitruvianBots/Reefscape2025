@@ -48,7 +48,6 @@ import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
 import frc.robot.constants.USB;
-import frc.robot.constants.VISION.BRANCH_TARGET;
 import frc.robot.generated.AlphaBotConstants;
 import frc.robot.generated.V2Constants;
 import frc.robot.generated.V3Constants;
@@ -383,7 +382,6 @@ public class RobotContainer {
     // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
     rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
 
-    
     m_driverController.y().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.x().whileTrue(driveToTarget.generateCommand(false));
 
