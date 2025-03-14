@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -42,18 +42,18 @@ public class Vision extends SubsystemBase {
   // NetworkTables publisher setup
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("LimelightPoseEstimate");
-  
+
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
-  
+
   private final StructPublisher<Pose2d> estPoseLLF =
       table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
-  
+
   private final StructPublisher<Pose2d> estPoseLLB =
       table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
 
   public Vision(Controls controls) {
     m_controls = controls;
-    
+
     // Port Forwarding to access limelight web UI on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port, CAMERA_SERVER.limelightF.toString(), port);
@@ -72,12 +72,12 @@ public class Vision extends SubsystemBase {
   public void setLeftTarget(boolean value) {
     m_useLeftTarget = value;
   }
-  
+
   @Logged(name = "Left Target", importance = Logged.Importance.CRITICAL)
   public boolean isTargetingLeft() {
     return m_useLeftTarget;
   }
-  
+
   @Logged(name = "Right Target", importance = Logged.Importance.CRITICAL)
   public boolean isTargetingRight() {
     return !m_useLeftTarget;

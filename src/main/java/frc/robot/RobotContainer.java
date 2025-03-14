@@ -421,10 +421,10 @@ public class RobotContainer {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
     // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
-    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
+    leftTargetTrackingButton.whileTrue(driveToTarget.generateCommand(true));
 
     // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
-    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
+    rightTargetTrackingButton.whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
     m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_controls));

@@ -89,7 +89,8 @@ public class ENDEFFECTOR {
     public enum PIVOT_SETPOINT {
       INTAKE_ALGAE_LOW(Degrees.of(170.0)),
       INTAKE_ALGAE_HIGH(Degrees.of(165)),
-      INTAKE_HOPPER(Degrees.of(-3.0)),
+      // INTAKE_HOPPER(Degrees.of(-3.0)),
+      INTAKE_HOPPER(Degrees.of(0.0)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),

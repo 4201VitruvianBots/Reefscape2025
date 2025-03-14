@@ -26,7 +26,7 @@ public class Controls extends SubsystemBase {
   //   private Vision m_vision;
   private static boolean m_allianceInit;
   private static DriverStation.Alliance m_allianceColor = DriverStation.Alliance.Red;
-  
+
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
 
@@ -76,7 +76,7 @@ public class Controls extends SubsystemBase {
   public static boolean isBlueAlliance() {
     return getAllianceColor() == DriverStation.Alliance.Blue;
   }
-  
+
   @Logged(name = "Coral Mode", importance = Logged.Importance.CRITICAL)
   public boolean isGamePieceCoral() {
     return m_selectedGamePiece == GAME_PIECE.CORAL;
@@ -86,11 +86,11 @@ public class Controls extends SubsystemBase {
   public boolean isGamePieceAlgae() {
     return m_selectedGamePiece == GAME_PIECE.ALGAE;
   }
-  
+
   public static void setSelectedGamePiece(GAME_PIECE gamePiece) {
     m_selectedGamePiece = gamePiece;
   }
-  
+
   public static GAME_PIECE getSelectedGamePiece() {
     return m_selectedGamePiece;
   }

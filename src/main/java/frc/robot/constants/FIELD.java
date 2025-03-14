@@ -220,7 +220,6 @@ public class FIELD {
     CORAL_TARGETS(final int aprilTagId, boolean isLeft, Distance offset) {
       Pose2d branchPose = Pose2d.kZero;
       Pose2d targetPose = Pose2d.kZero;
-      boolean isLeftBranch = isLeft;
 
       var branchOffset = isLeft ? leftReefCoralOffset : rightReefCoralOffset;
       branchOffset.plus(new Translation2d(0, offset.in(Meters)));
@@ -230,6 +229,7 @@ public class FIELD {
         branchPose = aprilTagPose.plus(new Transform2d(branchOffset, Rotation2d.kZero));
 
         targetPose = aprilTagPose.plus(new Transform2d(targetOffset, Rotation2d.kZero));
+        targetPose = new Pose2d(targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.k180deg));
       } catch (Exception e) {
         System.out.printf(
             "[FIELD] Could not get AprilTag %d Pose for CORAL_TARGET generation!\n", aprilTagId);
