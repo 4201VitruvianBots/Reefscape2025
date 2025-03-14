@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.555568181818182,
-        "y": 7.290696022727272
+        "x": 3.7194034090909094,
+        "y": 5.06703125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2722714193746825,
-        "y": 6.642632933274954
+        "x": 3.5715624931840293,
+        "y": 5.268632498963926
       },
       "isLocked": false,
-      "linkedName": "3RT3END"
+      "linkedName": "3PieceRt6END"
     },
     {
       "anchor": {
-        "x": 3.9886363636363638,
-        "y": 5.216605113636364
+        "x": 3.450170454545455,
+        "y": 5.5955255681818175
       },
       "prevControl": {
-        "x": 3.471792202966507,
-        "y": 5.655466932999528
+        "x": 3.4991994883300017,
+        "y": 5.3503803992590875
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3pieceRightPart4end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": "ThreePieceR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -52.696000000000005
+    "rotation": -60.945
   },
   "useDefaultConstraints": true
 }
