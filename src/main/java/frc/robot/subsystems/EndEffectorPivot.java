@@ -334,6 +334,12 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
+        double bargePercentOutput = 0.9;
+        if (getCANcoderAngleDegrees() <= 10.0) {
+          setPercentOutput(0.0);
+        } else {
+          setPercentOutput(-bargePercentOutput);
+        }
         break;
       case CLOSED_LOOP:
         m_pivotMotor.setControl(m_request.withPosition(m_desiredRotation));

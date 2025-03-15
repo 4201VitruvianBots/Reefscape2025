@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
-import frc.robot.utils.RevSmartServo;
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {

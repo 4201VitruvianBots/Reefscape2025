@@ -23,7 +23,6 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.Vision;
-
 import org.team4201.codex.simulation.FieldSim;
 
 public class OnePiece extends SequentialCommandGroup {

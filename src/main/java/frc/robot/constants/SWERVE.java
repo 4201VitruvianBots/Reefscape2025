@@ -45,14 +45,14 @@ public class SWERVE {
 
   // Auto-alignment constants
   // TODO: Tune values
-  public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(10, 0, 0);
-  public static final PIDConstants kAutoAlignRotationPID = new PIDConstants(7, 0, 0);
+  public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(15, 0, 0);
+  public static final PIDConstants kAutoAlignRotationPID = new PIDConstants(9, 0, 0);
   public static final PPHolonomicDriveController kDriveController =
       new PPHolonomicDriveController(kAutoAlignTranslationPID, kAutoAlignRotationPID);
   // TODO:adjust this if needed
   public static final PathConstraints kAutoAlignPathConstraints =
       new PathConstraints(
-          1.25, 1.25, 1.0 / 2 * Math.PI, 1 * Math.PI); // The constraints for this path.
+          1.75, 1.25, 1.0 / 2 * Math.PI, 1 * Math.PI); // The constraints for this path.
   public static final Time kEndTriggerDebounce = Seconds.of(0.04);
   public static final Time kAlignmentAdjustmentTimeout = Seconds.of(0.075);
 

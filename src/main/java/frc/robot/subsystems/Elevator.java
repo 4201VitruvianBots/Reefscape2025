@@ -339,9 +339,6 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
-        // m_requestVelocity.Acceleration = 100; TODO: figure out where to put this.
-        elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
-        break;
       case CLOSED_LOOP:
         if (atSetpoint()
             && m_desiredPosition.minus(ELEVATOR_SETPOINT.START_POSITION.getSetpoint()).abs(Inches)

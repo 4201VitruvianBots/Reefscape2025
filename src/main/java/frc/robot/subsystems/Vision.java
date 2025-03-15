@@ -224,9 +224,11 @@ public class Vision extends SubsystemBase {
     return true;
   }
 
+  @Logged(name = "Has Initial Pose", importance = Logged.Importance.INFO)
   public boolean getInitalPose() {
     return this.hasInitialPose;
   }
+
   /** Stop the nearest target from updating when we want to score to avoid target switching */
   public void setTargetLock(boolean set) {
     lockTarget = set;

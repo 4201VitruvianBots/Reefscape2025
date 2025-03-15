@@ -243,7 +243,8 @@ public class RobotContainer {
     // m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
         "OnePieceMiddle",
-        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector, m_vision));
+        new OnePiece(
+            m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector, m_vision));
 
     // m_chooser.addOption(
     //     "HopperTest",
@@ -536,11 +537,13 @@ public class RobotContainer {
           .povDown()
           .whileTrue(
               new ConditionalCommand(
-                  new SequentialCommandGroup(
-                      new EndEffectorBarge(m_endEffectorPivot).withTimeout(0.4),
-                      new RunEndEffectorIntake(
-                          m_endEffector,
-                          ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR)), // Net scoring binding here
+                  new ParallelCommandGroup(
+                      new SequentialCommandGroup(
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)
+                              .withTimeout(0.1),
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
+                              .withTimeout(0.5)),
+                      new EndEffectorBarge(m_endEffectorPivot).withTimeout(0.4)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
@@ -549,7 +552,7 @@ public class RobotContainer {
                   m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
-                  new WaitCommand(3),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGE),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));

@@ -30,13 +30,7 @@ public class EndEffectorBarge extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    if (m_endEffectorPivot.getAngleDegrees() >= 170.0) {
-      m_endEffectorPivot.setPercentOutput(0.0);
-    } else {
-      m_endEffectorPivot.setPercentOutput(0.3);
-    }
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
