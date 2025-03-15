@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4757954545454544,
-        "y": 7.360497159090909
+        "x": 1.545596590909091,
+        "y": 7.320610795454545
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.86867974735508,
-        "y": 6.8851089467255076
+        "x": 1.9384808837187166,
+        "y": 6.845222583089144
       },
       "isLocked": false,
       "linkedName": "3PieceRPt5END"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

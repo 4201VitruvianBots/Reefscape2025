@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.783304176299067,
-        "y": 5.397680233626572
+        "x": 5.783832773443256,
+        "y": 5.390290243078535
       },
       "isLocked": false,
       "linkedName": "3RT2END"
@@ -20,8 +20,8 @@
         "y": 7.280724431818181
       },
       "prevControl": {
-        "x": 1.7350886659200373,
-        "y": 7.299129039079986
+        "x": 1.8535474305359045,
+        "y": 7.2161733601840155
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4067495559502655,
+      "waypointRelativePos": 0.41,
       "rotationDegrees": -59.99999999999999
     }
   ],
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.15,
-    "maxAcceleration": 4.15,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
