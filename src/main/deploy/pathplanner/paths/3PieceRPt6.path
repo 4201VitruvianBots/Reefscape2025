@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9384808837187166,
-        "y": 6.845222583089144
+        "x": 1.89132268802862,
+        "y": 6.960679902519157
       },
       "isLocked": false,
       "linkedName": "3PieceRPt5END"
@@ -20,8 +20,8 @@
         "y": 5.06703125
       },
       "prevControl": {
-        "x": 3.5601041362567067,
-        "y": 5.259706473302049
+        "x": 3.5489662584316832,
+        "y": 5.25005263729874
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
