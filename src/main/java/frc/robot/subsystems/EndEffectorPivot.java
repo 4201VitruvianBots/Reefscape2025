@@ -334,7 +334,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
-        double bargePercentOutput = 0.9;
+        double bargePercentOutput = 1.0;
         if (getCANcoderAngleDegrees() <= 10.0) {
           setPercentOutput(0.0);
         } else {
