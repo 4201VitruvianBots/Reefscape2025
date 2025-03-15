@@ -539,11 +539,10 @@ public class RobotContainer {
               new ConditionalCommand(
                   new ParallelCommandGroup(
                       new SequentialCommandGroup(
-                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.HOLD_ALGAE_BARGE_FLICK)
                               .withTimeout(0.1),
-                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
-                              .withTimeout(0.5)),
-                      new EndEffectorBarge(m_endEffectorPivot).withTimeout(0.4)), // Net scoring binding here
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE).withTimeout(0.5)),
+                      new EndEffectorBarge(m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
@@ -552,9 +551,9 @@ public class RobotContainer {
                   m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
-                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.BARGE),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_HIGH).withTimeout(1.0),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      .withTimeout(1),
+                      .withTimeout(1.0),
                   m_controls::isGamePieceAlgae));
     }
 

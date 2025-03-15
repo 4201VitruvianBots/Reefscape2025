@@ -34,7 +34,8 @@ public class ENDEFFECTOR {
       // Algae
       // INTAKE_ALGAE_GROUND(0.35),
       INTAKE_ALGAE_REEF(0.35),
-      OUTTAKE_ALGAE_BARGE(1.00),
+      HOLD_ALGAE_BARGE_FLICK(0.15),
+      OUTTAKE_ALGAE_BARGE(-1.0),
       OUTTAKE_ALGAE_PROCESSOR(-0.35);
 
       private final double speed;
