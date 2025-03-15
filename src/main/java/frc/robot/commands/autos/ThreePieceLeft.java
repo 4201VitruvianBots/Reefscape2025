@@ -67,8 +67,8 @@ public class ThreePieceLeft extends SequentialCommandGroup {
           new WaitCommand(0.25).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-                  new WaitCommand(0.5))
-              .withName("Run end effector for 0.5 secs"),
+                  new WaitCommand(0.3))
+              .withName("Run end effector for 0.3 secs"),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
