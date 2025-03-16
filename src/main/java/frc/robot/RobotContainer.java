@@ -421,6 +421,8 @@ public class RobotContainer {
     Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
+    m_driverController.povLeft().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.povRight().whileTrue(driveToTarget.generateCommand(false));
     // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
     leftTargetTrackingButton.whileTrue(driveToTarget.generateCommand(true));
 
