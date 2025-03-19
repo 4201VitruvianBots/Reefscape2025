@@ -313,6 +313,13 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
+
+    // schedule and then cancel the command to pre-load it. This should remove the initial 0.5 sec delay.
+    m_chooser.onChange(
+        selectedAutoCommand -> {
+          selectedAutoCommand.schedule();
+          selectedAutoCommand.cancel();
+        });
   }
 
   private void initSmartDashboard() {
