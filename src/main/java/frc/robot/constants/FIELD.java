@@ -159,7 +159,7 @@ public class FIELD {
   /**
    * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
    */
-  static final Distance baseReefTranslation = Inches.of(8);
+  static final Distance baseReefTranslation = Inches.of(7);
 
   static final Translation2d leftReefCoralOffset =
       new Translation2d(-baseReefDepth.in(Meters), baseReefTranslation.in(Meters));
@@ -220,7 +220,6 @@ public class FIELD {
     CORAL_TARGETS(final int aprilTagId, boolean isLeft, Distance offset) {
       Pose2d branchPose = Pose2d.kZero;
       Pose2d targetPose = Pose2d.kZero;
-      boolean isLeftBranch = isLeft;
 
       var branchOffset = isLeft ? leftReefCoralOffset : rightReefCoralOffset;
       branchOffset.plus(new Translation2d(0, offset.in(Meters)));
@@ -230,6 +229,9 @@ public class FIELD {
         branchPose = aprilTagPose.plus(new Transform2d(branchOffset, Rotation2d.kZero));
 
         targetPose = aprilTagPose.plus(new Transform2d(targetOffset, Rotation2d.kZero));
+        targetPose =
+            new Pose2d(
+                targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.k180deg));
       } catch (Exception e) {
         System.out.printf(
             "[FIELD] Could not get AprilTag %d Pose for CORAL_TARGET generation!\n", aprilTagId);
@@ -256,7 +258,7 @@ public class FIELD {
       return targetPose;
     }
 
-    public boolean getSide() {
+    public boolean isLeftBranch() {
       return isLeftBranch;
     }
 
@@ -269,14 +271,14 @@ public class FIELD {
 
     public static Pose2d[] getAllLeftPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-          .filter(CORAL_TARGETS::getSide)
+          .filter(CORAL_TARGETS::isLeftBranch)
           .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
     }
 
     public static Pose2d[] getAllRightPose2d() {
       return Arrays.stream(CORAL_TARGETS.values())
-          .filter(c -> !c.getSide())
+          .filter(c -> !c.isLeftBranch())
           .map(CORAL_TARGETS::getPose2d)
           .toArray(Pose2d[]::new);
     }

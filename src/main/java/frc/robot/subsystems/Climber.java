@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -19,7 +20,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.CLIMBER;
@@ -27,6 +31,7 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class Climber extends SubsystemBase {
   private final SparkMax m_climberMotor = new SparkMax(CAN.climberMotor, MotorType.kBrushless);
+  // TODO: Add Rev Through Bore Encoder
 
   private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
@@ -39,15 +44,15 @@ public class Climber extends SubsystemBase {
   // Simulation classes help us simulate what's going on
   private final DCMotorSim m_climberSim =
       new DCMotorSim(
-          (LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, CLIMBER.gearRatio)),
+          (LinearSystemId.createDCMotorSystem(CLIMBER.gearbox, 0.001, CLIMBER.gearRatio)),
           CLIMBER.gearbox);
-  private Angle motorSimPosition = Rotations.of(0);
+  SparkMaxSim m_climberMotorSim = new SparkMaxSim(m_climberMotor, DCMotor.getNeo550(1));
+
   private double m_buttonInput = 0.0;
 
   /** Creates a new climber */
   public Climber() {
     SparkMaxConfig config = new SparkMaxConfig();
-
     config.idleMode(m_neutralMode);
 
     m_climberMotor.configure(
@@ -72,7 +77,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setInputVoltage(Voltage voltage) {
-    m_climberMotor.setVoltage(voltage.in(Volts));
+    m_climberMotor.setVoltage(voltage);
   }
 
   public void setDesiredPosition(double desiredPosition) {
@@ -121,6 +126,11 @@ public class Climber extends SubsystemBase {
     m_buttonInput = buttonInput;
   }
 
+  public boolean isConnected() {
+    // See if the NEO 550 motor is connected
+    return m_climberMotor.getFirmwareVersion() != 0;
+  }
+
   private void setNeutralMode(IdleMode neutralMode) {
     SparkMaxConfig config = new SparkMaxConfig();
 
@@ -164,21 +174,15 @@ public class Climber extends SubsystemBase {
         }
         break;
     }
+    SmartDashboard.putNumber("Climber Joystick Input", m_joystickInput);
   }
 
   public void simulationPeriodic() {
-    // TODO: Update with RevLib sim
-    //    m_motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    //    m_climberSim.setInputVoltage(m_motorSimState.getMotorVoltage());
-    //
-    //    m_climberSim.update(0.02);
-    //
-    //    motorSimPosition =
-    //        motorSimPosition.plus(
-    //
-    // m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio).times(Seconds.of(0.02)));
-    //    m_motorSimState.setRawRotorPosition(motorSimPosition);
-    //
-    // m_motorSimState.setRotorVelocity(m_climberSim.getAngularVelocity().times(CLIMBER.gearRatio));
+    m_climberSim.setInputVoltage(m_climberMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    m_climberSim.update(0.02);
+    m_climberMotorSim.iterate(
+        m_climberSim.getAngularVelocity().in(RPM), RoboRioSim.getVInVoltage(), 0.02);
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_climberSim.getCurrentDrawAmps()));
   }
 }

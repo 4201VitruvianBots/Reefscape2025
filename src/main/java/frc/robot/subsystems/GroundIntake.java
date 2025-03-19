@@ -62,6 +62,10 @@ public class GroundIntake extends SubsystemBase {
     SmartDashboard.putNumber("Ground Intake/Motor Current", m_currentSignal.getValueAsDouble());
   }
 
+  public boolean isConnected() {
+    return m_groundIntakeMotor.isConnected();
+  }
+
   @Override
   public void simulationPeriodic() {
     m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());

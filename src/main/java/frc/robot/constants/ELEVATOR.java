@@ -16,16 +16,17 @@ public class ELEVATOR {
   // public static final double kMaxVel = Units.inchesToMeters(10);
   // public static final double kMaxAccel = Units.inchesToMeters(18);
 
-  public static double kG = 0.34; // output to overcome gravity (output)
+  public static double kG = 0.36; // output to overcome gravity (output)
   public static double kS = 0.0; // output to overcome static friction (output)
-  public static double kV = 3.2; // output per unit of target velocity (output/rps)
-  public static double kA = 0.01; // output per unit of target acceleration (output/(rps/s))
-  public static double kP = 200; // output per unit of error in position (output/rotation)
+  public static double kV = 0.6306; // output per unit of target velocity (output/rps)
+  public static double kA = 0.2; // output per unit of target acceleration (output/(rps/s))
+  public static double kP = 18.5; // output per unit of error in position (output/rotation)
   public static double kI =
       0.0; // output per unit of integrated error in position (output/rotations*s))
-  public static double kD = 0.0; // output per unit of error in velocity (output/rps)
-  public static double motionMagicCruiseVelocity = 2000; // target cruise velocity of 10 rps
-  public static double motionMagicAcceleration = 4000; // target acceleration of 20 rps/s
+  public static double kD = 0.1; // output per unit of error in velocity (output/rps)
+  public static double motionMagicCruiseVelocity = 20; // target cruise velocity of 10 rps
+  public static double motionMagicAcceleration = 40; // target acceleration of 20 rps/s
+
   public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
 
   public static final double offset = kG / 12.0; // joystick output to overcome gravity
@@ -42,8 +43,8 @@ public class ELEVATOR {
           Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
   // distance
   public static final double gearRatio = 48.0 / 10.0;
-  public static DCMotor gearbox = DCMotor.getKrakenX60Foc(2);
-  public static Mass kCarriageMass = Pounds.of(10);
+  public static DCMotor gearbox = DCMotor.getKrakenX60(2);
+  public static Mass kCarriageMass = Pounds.of(15);
 
   public static final Per<AngleUnit, DistanceUnit> rotationsToMeters =
       Rotations.of(1).times(gearRatio).div(drumRotationsToDistance);

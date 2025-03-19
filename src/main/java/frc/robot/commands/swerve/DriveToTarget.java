@@ -24,7 +24,7 @@ import java.util.Set;
 public class DriveToTarget {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Vision m_vision;
-
+  private boolean m_targetType;
   private final StructPublisher<Pose2d> desiredTargetPublisher =
       NetworkTableInstance.getDefault()
           .getTable("Vision")
@@ -37,10 +37,13 @@ public class DriveToTarget {
     m_vision = vision;
   }
 
-  public Command generateCommand() {
+  public Command generateCommand(boolean useLeft) {
+    m_targetType = useLeft;
     return Commands.defer(
         () -> {
           // figure out where we need to drive to
+          m_vision.setLeftTarget(useLeft);
+          m_vision.updateNearestScoringTarget();
           var targetPose = m_vision.getNearestTargetPose();
 
           // publish the position we want to drive to
@@ -61,7 +64,7 @@ public class DriveToTarget {
                 m_swerveDrive.getPathVelocityHeading(
                     m_swerveDrive.getState().Speeds, targetWaypoint)),
             targetWaypoint);
-
+    // TODO:adjust the threshold if needed
     if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.01) {
       return Commands.sequence(
           Commands.print("start position PID loop"),

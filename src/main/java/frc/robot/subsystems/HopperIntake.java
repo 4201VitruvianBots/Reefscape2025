@@ -14,16 +14,16 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.HOPPERINTAKE;
-import frc.robot.utils.RevSmartServo;
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
   private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
-  private final RevSmartServo m_hopperServo = new RevSmartServo(9);
+  private final Servo m_hopperServo = new Servo(9);
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_hopperIntakeMotor.getVelocity().clone();
@@ -97,6 +97,10 @@ public class HopperIntake extends SubsystemBase {
 
   public void teleopInit() {
     stopServo();
+  }
+
+  public boolean isConnected() {
+    return m_hopperIntakeMotor.isConnected();
   }
 
   @Override

@@ -62,4 +62,19 @@ public final class VISION {
   public static final Angle posePitchTolerance = Degrees.of(4);
   public static final Angle poseRollTolerance = Degrees.of(4);
   public static final Angle poseYawTolerance = Degrees.of(4);
+
+  public enum BRANCH_TARGET {
+    LEFT(true),
+    RIGHT(false);
+
+    private final boolean m_useLeft;
+
+    BRANCH_TARGET(final boolean useLeft) {
+      this.m_useLeft = useLeft;
+    }
+
+    public boolean getTargetType() {
+      return m_useLeft;
+    }
+  }
 }

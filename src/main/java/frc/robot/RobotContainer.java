@@ -32,6 +32,7 @@ import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
+import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
@@ -75,9 +76,8 @@ public class RobotContainer {
   @NotLogged private final Telemetry m_telemetry = new Telemetry();
   private final FieldSim m_fieldSim = new FieldSim();
 
-  // Logging this crashes the code?
-  // @Logged(name = "Vision", importance = Logged.Importance.INFO)
-  @NotLogged private final Vision m_vision = new Vision();
+  @Logged(name = "Vision", importance = Logged.Importance.INFO)
+  private final Vision m_vision = new Vision(m_controls);
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
@@ -152,12 +152,12 @@ public class RobotContainer {
     // Initialize Subsystem classes
     if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
       MaxSpeed =
-          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,waeedAt12Volts desired top speed
       m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
+      //      m_v2Climber = new V2Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
@@ -166,7 +166,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      m_v2Climber = new V2Climber();
+      m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) {
       MaxSpeed =
@@ -240,20 +240,21 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
-    m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
+    // m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
-        "OnePiece",
-        new OnePiece(m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector));
+        "OnePieceMiddle",
+        new OnePiece(
+            m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector, m_vision));
 
-    m_chooser.addOption(
-        "HopperTest",
-        new TestHopperAuto(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffector,
-            m_endEffectorPivot,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "HopperTest",
+    //     new TestHopperAuto(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffector,
+    //         m_endEffectorPivot,
+    //         m_hopperIntake));
 
     m_chooser.addOption(
         "ThreePieceRight",
@@ -265,25 +266,25 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
-    m_chooser.addOption(
-        "TwoPiece",
-        new TwoPiece(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "TwoPiece",
+    //     new TwoPiece(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
 
-    m_chooser.addOption(
-        "OnePieceLeft",
-        new OnePieceLeft(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "OnePieceLeft",
+    //     new OnePieceLeft(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
 
     // m_chooser.addOption(
     //     "OnePieceRight",
@@ -304,15 +305,15 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-    m_chooser.addOption(
-        "VisionTest",
-        new VisionTest(
-            m_swerveDrive,
-            m_fieldSim,
-            m_elevator,
-            m_endEffectorPivot,
-            m_endEffector,
-            m_hopperIntake));
+    // m_chooser.addOption(
+    //     "VisionTest",
+    //     new VisionTest(
+    //         m_swerveDrive,
+    //         m_fieldSim,
+    //         m_elevator,
+    //         m_endEffectorPivot,
+    //         m_endEffector,
+    //         m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -371,11 +372,18 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
-    targetTrackingButton.onTrue(driveToTarget.generateCommand());
 
-    m_driverController.y().whileTrue(driveToTarget.generateCommand());
+    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
+    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
+
+    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
+    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
+
+    m_driverController.y().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.x().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
@@ -385,20 +393,6 @@ public class RobotContainer {
       m_driverController
           .rightBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
-    }
-
-    if (m_endEffectorPivot != null) {
-      //   m_driverController
-      //       .a()
-      //       .whileTrue(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.L3_L2));
-    }
-    if (m_endEffector != null) {
-      //   m_driverController
-      //       .leftTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, 0.4414)); // intake
-      //   m_driverController
-      //       .rightTrigger()
-      //       .whileTrue(new RunEndEffectorIntake(m_endEffector, -0.4414)); // outtake?
     }
 
     if (m_algaeIntake != null) {
@@ -423,12 +417,20 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Trigger targetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
+    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
+    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
-    targetTrackingButton.whileTrue(driveToTarget.generateCommand());
+
+    m_driverController.povLeft().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.povRight().whileTrue(driveToTarget.generateCommand(false));
+    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
+    leftTargetTrackingButton.whileTrue(driveToTarget.generateCommand(true));
+
+    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
+    rightTargetTrackingButton.whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
-    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_vision));
+    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_driverController
@@ -439,7 +441,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -447,7 +449,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .x()
@@ -458,7 +460,7 @@ public class RobotContainer {
                       PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -466,7 +468,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .y()
@@ -476,20 +478,21 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
                   moveSuperStructureDelayed(
                       ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new SequentialCommandGroup(
-                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)
+                          new EndEffectorSetpoint(
+                                  m_endEffectorPivot, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
                               .withTimeout(0.7),
-                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
+                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR))
                       .withTimeout(1),
                   new SequentialCommandGroup(
                           new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)
                               .withTimeout(0.7),
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .b()
@@ -499,7 +502,7 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_HIGH), // Algae L3
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   moveSuperStructure(
@@ -507,7 +510,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                       .withTimeout(1),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -536,16 +539,27 @@ public class RobotContainer {
           .povDown()
           .whileTrue(
               new ConditionalCommand(
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
+                  new ParallelCommandGroup(
+                      new SequentialCommandGroup(
+                          new RunEndEffectorIntake(
+                                  m_endEffector, ROLLER_SPEED.HOLD_ALGAE_BARGE_FLICK)
+                              .withTimeout(0.15),
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
+                              .withTimeout(0.5)),
+                      new EndEffectorBarge(m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
                       moveSuperStructure(
                           ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)),
-                  m_vision::isGamePieceAlgae))
+                  m_controls::isGamePieceAlgae))
           .onFalse(
-              moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                  .withTimeout(1));
+              new ConditionalCommand(
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_HIGH)
+                      .withTimeout(1.0),
+                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
+                      .withTimeout(1.0),
+                  m_controls::isGamePieceAlgae));
     }
 
     if (m_endEffector != null) {
@@ -556,7 +570,7 @@ public class RobotContainer {
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
 
       m_driverController
           .rightBumper()
@@ -564,7 +578,7 @@ public class RobotContainer {
               new ConditionalCommand(
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_PROCESSOR),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
-                  m_vision::isGamePieceAlgae));
+                  m_controls::isGamePieceAlgae));
     }
 
     if (m_climber != null) {
@@ -595,10 +609,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
-  }
-
-  public void robotPeriodic() {
-    // m_questNav.periodic();
   }
 
   public void disabledInit() {
@@ -716,5 +726,9 @@ public class RobotContainer {
       simulationInit();
     }
     m_robot2d.updateRobot2d();
+  }
+
+  public Controls getControls() {
+    return m_controls;
   }
 }

@@ -60,6 +60,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     FollowPathCommand.warmupCommand().schedule();
+
+    // Update the alerts 4 times a second
+    addPeriodic(() -> m_robotContainer.getControls().updateAlerts(), 0.25);
   }
 
   /**
@@ -76,7 +79,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.robotPeriodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

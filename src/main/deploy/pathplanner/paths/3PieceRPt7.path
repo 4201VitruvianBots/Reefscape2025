@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.04,
-        "y": 1.029
+        "x": 3.7194034090909094,
+        "y": 5.06703125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.101475834984525,
-        "y": 1.4905670096486143
+        "x": 3.4254367082714676,
+        "y": 5.552372212115469
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3PieceRt6END"
     },
     {
       "anchor": {
-        "x": 4.966,
-        "y": 2.843
+        "x": 3.5299431818181817,
+        "y": 5.376150568181817
       },
       "prevControl": {
-        "x": 5.264840460230084,
-        "y": 2.705239959418914
+        "x": 3.796911498287351,
+        "y": 4.936820920018327
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2Pieceend1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.29136217098417
+    "rotation": -60.945
   },
   "reversed": false,
-  "folder": "ThreePieceL",
+  "folder": "ThreePieceR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 135.0
+    "rotation": -60.945
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

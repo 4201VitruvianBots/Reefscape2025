@@ -7,18 +7,45 @@ package frc.robot.subsystems;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CAN;
+import frc.robot.constants.ROBOT.GAME_PIECE;
+import frc.robot.constants.USB;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 @Logged
 public class Controls extends SubsystemBase {
-  private Vision m_vision;
+  //   private Vision m_vision;
   private static boolean m_allianceInit;
   private static DriverStation.Alliance m_allianceColor = DriverStation.Alliance.Red;
+
+  @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
+  private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+
+  private static Alert m_usbAlert =
+      new Alert("USB connection alert not properly initialized", AlertType.kError);
+  private static Alert m_brownoutAlert =
+      new Alert("Brownout alert not properly initialized", AlertType.kWarning);
+  private static Alert m_storageAlert =
+      new Alert("Storage space alert not properly initialized", AlertType.kWarning);
+  private static Alert m_canAlert =
+      new Alert("CAN bus alert not properly initialized", AlertType.kError);
+  // private static Alert m_visionAlert = new Alert("Vision alert not properly initialized",
+  // AlertType.kWarning);
+
+  private static Timer m_brownoutTimer = new Timer();
+  private static double m_brownoutLastUpdatedTime = 0.0;
+
+  /** Map of subsystems for Controls to update */
+  @NotLogged private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
   @NotLogged private final Map<String, Alert> alertMap = new HashMap<>();
 
@@ -50,8 +77,198 @@ public class Controls extends SubsystemBase {
     return getAllianceColor() == DriverStation.Alliance.Blue;
   }
 
+  @Logged(name = "Coral Mode", importance = Logged.Importance.CRITICAL)
+  public boolean isGamePieceCoral() {
+    return m_selectedGamePiece == GAME_PIECE.CORAL;
+  }
+
+  @Logged(name = "Algae Mode", importance = Logged.Importance.CRITICAL)
+  public boolean isGamePieceAlgae() {
+    return m_selectedGamePiece == GAME_PIECE.ALGAE;
+  }
+
+  public static void setSelectedGamePiece(GAME_PIECE gamePiece) {
+    m_selectedGamePiece = gamePiece;
+  }
+
+  public static GAME_PIECE getSelectedGamePiece() {
+    return m_selectedGamePiece;
+  }
+
   private void initSmartDashboard() {
     SmartDashboard.putString("Controls/Serial Number", RobotController.getSerialNumber());
+  }
+
+  public void registerSubsystem(Subsystem subsystem) {
+    if (subsystem != null) {
+      m_subsystemMap.put(subsystem.getName(), subsystem);
+    } else {
+      DriverStation.reportWarning("[Controls] Attempting to register null subsystem!", true);
+    }
+  }
+
+  public void updateAlerts() {
+    // Update USB alerts
+    m_usbAlert.set(false);
+
+    // String for USB alert message
+    String usbAlertMessage = "The following USB devices are not connected: ";
+
+    if (!DriverStation.isJoystickConnected(USB.leftJoystick)) {
+      usbAlertMessage += "Left Joystick, ";
+      m_usbAlert.set(true);
+    }
+    if (!DriverStation.isJoystickConnected(USB.rightJoystick)) {
+      usbAlertMessage += "Right Joystick, ";
+      m_usbAlert.set(true);
+    }
+    if (!DriverStation.isJoystickConnected(USB.xBoxController)) {
+      usbAlertMessage += "Xbox Controller, ";
+      m_usbAlert.set(true);
+    }
+
+    // Remove the last comma and space
+    if (usbAlertMessage.endsWith(", ")) {
+      usbAlertMessage = usbAlertMessage.substring(0, usbAlertMessage.length() - 2);
+    }
+    m_usbAlert.setText(usbAlertMessage);
+
+    // Update brownout alert state
+    if (RobotController.isBrownedOut()) {
+      m_brownoutAlert.setText(
+          "A brownout occured less than a minute ago. Please ensure that a fresh battery has been plugged in.");
+      m_brownoutAlert.set(true);
+      m_brownoutTimer.restart();
+      m_brownoutLastUpdatedTime = 0.0;
+    }
+
+    // Update brownout alert timing once a minute
+    if (m_brownoutTimer.get() - m_brownoutLastUpdatedTime > 60.0) {
+      int minutesCount = (int) Math.round(m_brownoutTimer.get() / 60.0);
+      m_brownoutAlert.setText(
+          "A brownout occured "
+              + minutesCount
+              + " minute"
+              + (minutesCount == 1 ? "" : "s")
+              + " ago. Please ensure that a fresh battery has been plugged in."); // this condition
+      // being flipped
+      // makes NO SENSE
+      // but whatever
+      m_brownoutLastUpdatedTime = m_brownoutTimer.get();
+    }
+
+    // Get the amount of storage space left
+    File root = new File("/");
+    long freeSpaceMB = root.getFreeSpace() / 1048576;
+    if (!m_storageAlert.get() && freeSpaceMB < 512.0) {
+      m_storageAlert.setText(
+          "There is only "
+              + freeSpaceMB
+              + " MB of storage space left on the RoboRIO. Consider deleting old logs to free up space.");
+      m_storageAlert.set(true);
+    }
+
+    // Update CAN alerts
+    m_canAlert.set(false);
+
+    // String for CAN alert message
+    String canAlertMessage = "The following CAN devices are not connected: ";
+
+    if (m_subsystemMap.containsKey("Climber")) {
+      var climberSubsystem = (Climber) m_subsystemMap.get("Climber");
+      if (!climberSubsystem.isConnected()) {
+        canAlertMessage += "Climber (" + CAN.climberMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("Elevator")) {
+      var elevatorSubsystem = (Elevator) m_subsystemMap.get("Elevator");
+      if (!(elevatorSubsystem.isConnected()[0] || elevatorSubsystem.isConnected()[1])) {
+        canAlertMessage += "Elevator (" + CAN.elevatorMotor1 + ", " + CAN.elevatorMotor2 + "), ";
+        m_canAlert.set(true);
+      } else if (!elevatorSubsystem.isConnected()[0]) {
+        canAlertMessage += "Elevator (" + CAN.elevatorMotor1 + "), ";
+        m_canAlert.set(true);
+      } else if (!elevatorSubsystem.isConnected()[1]) {
+        canAlertMessage += "Elevator (" + CAN.elevatorMotor2 + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("EndEffector")) {
+      var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffector");
+      if (!endEffectorSubsystem.isConnected()) {
+        canAlertMessage += "End Effector (" + CAN.endEffectorMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("EndEffectorPivot")) {
+      var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffectorPivot");
+      if (!endEffectorSubsystem.isConnected()) {
+        canAlertMessage += "End Effector Pivot (" + CAN.endEffectorPivotMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("GroundIntake")) {
+      var groundIntakeSubsystem = (GroundIntake) m_subsystemMap.get("GroundIntake");
+      if (!groundIntakeSubsystem.isConnected()) {
+        canAlertMessage += "End Effector (" + CAN.groundRollerMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("GroundPivot")) {
+      var groundPivotSubsystem = (EndEffector) m_subsystemMap.get("GroundPivot");
+      if (!groundPivotSubsystem.isConnected()) {
+        canAlertMessage += "Ground Pivot (" + CAN.groundPivotMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("HopperIntake")) {
+      var hopperIntakeSubsystem = (HopperIntake) m_subsystemMap.get("HopperIntake");
+      if (!hopperIntakeSubsystem.isConnected()) {
+        canAlertMessage += "Hopper Intake (" + CAN.hopperIntakeMotor + "), ";
+        m_canAlert.set(true);
+      }
+    }
+
+    if (m_subsystemMap.containsKey("CommandSwerveDrivetrain")) {
+      var swerveSubsystem = (CommandSwerveDrivetrain) m_subsystemMap.get("CommandSwerveDrivetrain");
+      for (Map.Entry<String, Boolean> connectionStatus : swerveSubsystem.isConnected().entrySet()) {
+        if (!connectionStatus.getValue()) {
+          canAlertMessage += connectionStatus.getKey() + ", ";
+          m_canAlert.set(true);
+        }
+      }
+    }
+
+    // Remove the last comma and space
+    if (canAlertMessage.endsWith(", ")) {
+      canAlertMessage = canAlertMessage.substring(0, usbAlertMessage.length() - 2);
+    }
+    m_canAlert.setText(canAlertMessage);
+
+    // // Update vision alerts
+    // m_visionAlert.set(false);
+
+    // if (m_subsystemMap.containsKey("Vision")) {
+    //     var visionSubsystem = (Vision) m_subsystemMap.get("Vision");
+    //     if (!visionSubsystem.isLimelightFConnected() && !visionSubsystem.isLimelightBConnected())
+    // {
+    //         m_visionAlert.setText("Both Limelights are disconnected");
+    //         m_visionAlert.set(true);
+    //     } else if (!visionSubsystem.isLimelightFConnected()) {
+    //         m_visionAlert.setText("The front Limelight is disconnected");
+    //         m_visionAlert.set(true);
+    //     } else if (!visionSubsystem.isLimelightBConnected()) {
+    //         m_visionAlert.setText("The back Limelight is disconnected");
+    //         m_visionAlert.set(true);
+    //     }
+    // }
   }
 
   @Override
