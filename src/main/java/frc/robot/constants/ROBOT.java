@@ -67,6 +67,15 @@ public class ROBOT {
       return name();
     }
 
+    public static ROBOT_ID fromSerial(String serial) {
+      for (var id : ROBOT_ID.values()) {
+        if (id.getSerial().equals(serial)) {
+          return id;
+        }
+      }
+      throw new IllegalArgumentException("Given serial number is not defined!");
+    }
+
     @Override
     public String toString() {
       return value;
@@ -122,7 +131,7 @@ public class ROBOT {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
     try {
-      switch (ROBOT_ID.valueOf(RobotController.getSerialNumber())) {
+      switch (ROBOT_ID.fromSerial(RobotController.getSerialNumber())) {
         case ALPHABOT -> initAlphaBot();
         case V2 -> initV2();
         case V3 -> initV3();
