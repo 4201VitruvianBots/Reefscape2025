@@ -75,7 +75,7 @@ public class ENDEFFECTOR {
     public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
 
-    public static Angle encoderOffset = Rotations.of(0.406494140625);
+    public static Angle encoderOffset = Rotations.of(-0.257568359375);
     public static SensorDirectionValue encoderDirection =
         SensorDirectionValue.CounterClockwise_Positive;
 

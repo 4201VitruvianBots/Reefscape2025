@@ -230,8 +230,8 @@ public class RobotContainer {
           new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
-      m_endEffectorPivot.setDefaultCommand(
-          new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+      // m_endEffectorPivot.setDefaultCommand(
+      //     new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
     }
   }
 
