@@ -116,8 +116,8 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
       motorConfig.Feedback.SensorToMechanismRatio = PIVOT.pivotGearRatio;
