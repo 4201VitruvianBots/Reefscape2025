@@ -31,7 +31,6 @@ import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
-import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.DriveToTarget;
@@ -373,8 +372,8 @@ public class RobotContainer {
   private void configureAlphaBotBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
-    m_operatorController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
-    m_operatorController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
@@ -410,8 +409,8 @@ public class RobotContainer {
   private void configureBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
-    m_operatorController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
-    m_operatorController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
     m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
