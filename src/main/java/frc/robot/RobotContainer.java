@@ -203,17 +203,18 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
             () -> {
-              var rotationRate = m_driverController.getRightX() * MaxAngularRate;
+              var rotationRate = -m_driverController.getRightX() * MaxAngularRate;
               // // if heading target
               // if (m_swerveDrive.isTrackingState()) {
               //   rotationRate = m_swerveDrive.calculateRotationToTarget();
               // }
               drive
                   .withVelocityX(
-                      m_driverController.getLeftY()
+                      -m_driverController.getLeftY()
                           * MaxSpeed) // Drive forward with negative Y (forward)
                   .withVelocityY(
-                      m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                      -m_driverController.getLeftX()
+                          * MaxSpeed) // Drive left with negative X (left)
                   .withRotationalRate(
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
