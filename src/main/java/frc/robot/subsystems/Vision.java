@@ -19,11 +19,14 @@ import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import frc.robot.utils.LimelightSim;
+import frc.robot.utils.QuestNav;
+
 import org.team4201.codex.simulation.FieldSim;
 
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
+  private QuestNav questNav;
 
   // TODO: Re-add this
   private LimelightSim visionSim;
@@ -114,6 +117,8 @@ public class Vision extends SubsystemBase {
   public Pose2d getNearestTargetPose() {
     return robotToTarget[1];
   }
+
+
 
   public boolean getInitialLocalization() {
     return m_localized;
@@ -211,10 +216,10 @@ public class Vision extends SubsystemBase {
     }
 
     // Only good updates reach this point, so use them for updating the robot pose
-    posePublisher.set(limelightMeasurement.pose);
+    posePublisher.set(questNav.getPose());
     estTimeStamp.set(limelightMeasurement.timestampSeconds);
     m_swerveDriveTrain.addVisionMeasurement(
-        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+      questNav.getPose(), limelightMeasurement.timestampSeconds);
 
     // Reset the Swerve Pose with MegaTag1 if we are disabled
     if (DriverStation.isDisabled() && !limelightMeasurement.isMegaTag2) {
