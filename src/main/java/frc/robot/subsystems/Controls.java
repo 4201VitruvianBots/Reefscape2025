@@ -114,16 +114,12 @@ public class Controls extends SubsystemBase {
     // String for USB alert message
     String usbAlertMessage = "The following USB devices are not connected: ";
 
-    if (!DriverStation.isJoystickConnected(USB.leftJoystick)) {
-      usbAlertMessage += "Left Joystick, ";
+    if (!DriverStation.isJoystickConnected(USB.driver_xBoxController)) {
+      usbAlertMessage += "Driver Xbox Controller, ";
       m_usbAlert.set(true);
     }
-    if (!DriverStation.isJoystickConnected(USB.rightJoystick)) {
-      usbAlertMessage += "Right Joystick, ";
-      m_usbAlert.set(true);
-    }
-    if (!DriverStation.isJoystickConnected(USB.xBoxController)) {
-      usbAlertMessage += "Xbox Controller, ";
+    if (!DriverStation.isJoystickConnected(USB.operator_xBoxController)) {
+      usbAlertMessage += "Operator Xbox Controller, ";
       m_usbAlert.set(true);
     }
 
