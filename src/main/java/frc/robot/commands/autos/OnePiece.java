@@ -22,6 +22,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
+import frc.robot.subsystems.Vision;
 import org.team4201.codex.simulation.FieldSim;
 
 public class OnePiece extends SequentialCommandGroup {
@@ -31,7 +32,8 @@ public class OnePiece extends SequentialCommandGroup {
       FieldSim fieldSim,
       Elevator elevator,
       EndEffectorPivot endEffectorpivot,
-      EndEffector endEffector) {
+      EndEffector endEffector,
+      Vision vision) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Score1");
 
@@ -43,6 +45,11 @@ public class OnePiece extends SequentialCommandGroup {
 
       // Will throw an exception if the starting pose is not present
       var starting_pose = path.getStartingHolonomicPose().orElseThrow();
+      var validStartingPose = vision.getInitalPose();
+
+      if (!validStartingPose) {
+        swerveDrive.resetPose(starting_pose);
+      }
 
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());

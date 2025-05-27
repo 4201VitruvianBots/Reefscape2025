@@ -33,10 +33,17 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
-  /** Creates a new Elevator */
   private final TalonFX[] elevatorMotors = {
     new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
   };
+
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
+  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
+  private final MotionMagicVelocityVoltage m_requestVelocity =
+      new MotionMagicVelocityVoltage(0).withEnableFOC(true);
+  //   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
+  //       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
@@ -61,14 +68,6 @@ public class Elevator extends SubsystemBase {
 
   @Logged(name = "Neutral Mode", importance = Logged.Importance.INFO)
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
-
-  //  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-
-  //  private final MotionMagicVelocityVoltage m_requestVelocity = new
-  // MotionMagicVelocityVoltage(0).withEnableFOC(true);
-  private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private DoubleSubscriber m_kG_subscriber,
       m_kS_subscriber,
@@ -96,6 +95,7 @@ public class Elevator extends SubsystemBase {
           1);
   private final TalonFXSimState m_motorSimState;
 
+  /** Creates a new Elevator */
   public Elevator() {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kG = ELEVATOR.kG;
@@ -109,10 +109,12 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
-    config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
+    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
-    //    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
+    // TODO: Re-tune values before removing these
+    config.CurrentLimits.StatorCurrentLimit = 40;
+    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
     CtreUtils.configureTalonFx(elevatorMotors[0], config);
@@ -257,6 +259,10 @@ public class Elevator extends SubsystemBase {
     return m_desiredPosition.minus(getHeight()).abs(Inches) <= 1; // RIP the 254 reference
   }
 
+  public boolean[] isConnected() {
+    return new boolean[] {elevatorMotors[0].isConnected(), elevatorMotors[1].isConnected()};
+  }
+
   public void testInit() {
     elevatorTab.getDoubleTopic("kG").publish().set(ELEVATOR.kG);
     elevatorTab.getDoubleTopic("kS").publish().set(ELEVATOR.kS);
@@ -332,10 +338,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
-      case CLOSED_LOOP_NET:
-        // m_requestVelocity.Acceleration = 100; TODO: figure out where to put this.
-        elevatorMotors[0].setControl(m_requestVelocity.withVelocity(80));
-        break;
+      case NET:
       case CLOSED_LOOP:
         if (atSetpoint()
             && m_desiredPosition.minus(ELEVATOR_SETPOINT.START_POSITION.getSetpoint()).abs(Inches)

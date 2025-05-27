@@ -278,6 +278,10 @@ public class GroundPivot extends SubsystemBase {
     setDesiredSetpoint(getAngle());
   }
 
+  public boolean isConnected() {
+    return m_pivotMotor.isConnected();
+  }
+
   @Override
   public void periodic() {
     switch (m_controlMode) {
