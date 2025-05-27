@@ -118,7 +118,7 @@ public class Controls extends SubsystemBase {
       usbAlertMessage += "Driver Xbox Controller, ";
       m_usbAlert.set(true);
     }
-    if (!DriverStation.isJoystickConnected(USB.operator_xBoxController)) {
+    if (!DriverStation.isJoystickConnected(USB.operator_buttonBoard)) {
       usbAlertMessage += "Operator Xbox Controller, ";
       m_usbAlert.set(true);
     }

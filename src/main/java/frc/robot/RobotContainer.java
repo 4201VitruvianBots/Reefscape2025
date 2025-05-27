@@ -39,6 +39,7 @@ import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
+import frc.robot.constants.ROBOT.GAME_PIECE;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
@@ -55,6 +56,7 @@ import frc.robot.subsystems.alphabot.CoralOuttake;
 import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
+import frc.robot.utils.CommandButtonBoard;
 import org.team4201.codex.simulation.FieldSim;
 
 /**
@@ -112,8 +114,8 @@ public class RobotContainer {
       new CommandXboxController(USB.driver_xBoxController);
 
   @NotLogged
-  private final CommandXboxController m_operatorController =
-      new CommandXboxController(USB.operator_xBoxController);
+  private final CommandButtonBoard m_operatorController =
+      new CommandButtonBoard(USB.operator_buttonBoard);
 
   @NotLogged private double MaxSpeed;
 
@@ -225,8 +227,8 @@ public class RobotContainer {
       //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
     }
     if (m_climber != null) {
-      m_climber.setDefaultCommand(
-          new RunClimberVoltageJoystick(m_climber, () -> -m_operatorController.getLeftY()));
+    //   m_climber.setDefaultCommand(
+    //       new RunClimberVoltageJoystick(m_climber, () -> -m_operatorController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
       // m_endEffectorPivot.setDefaultCommand(
@@ -379,30 +381,32 @@ public class RobotContainer {
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
       m_operatorController
-          .leftBumper()
+          .intakeReverse()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
       m_operatorController
-          .rightBumper()
+          .intakeRun()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
 
     if (m_algaeIntake != null) {
       // TODO: Make speeds into enum setpoints
-      m_operatorController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-      m_operatorController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+      m_operatorController.outtake().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+      m_operatorController.outtakeReverse().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     }
   }
 
   private ParallelCommandGroup moveSuperStructure(
-      ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
+      ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint, GAME_PIECE gamePiece) {
     return new ParallelCommandGroup(
+        new InstantCommand(() -> Controls.setSelectedGamePiece(gamePiece)),
         new SetElevatorSetpoint(m_elevator, elevatorSetpoint),
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
   private SequentialCommandGroup moveSuperStructureDelayed(
-      ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
+      ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint, GAME_PIECE gamePiece) {
     return new SequentialCommandGroup(
+        new InstantCommand(() -> Controls.setSelectedGamePiece(gamePiece)),
         new SetElevatorSetpoint(m_elevator, elevatorSetpoint).withTimeout(0.4),
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
@@ -413,88 +417,53 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
-    // Algae Toggle
-    m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
-
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
-          .a()
-          .whileTrue(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER,
-                      PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
-                  moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
-                  m_controls::isGamePieceAlgae))
-          .onFalse(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                          ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-                      .withTimeout(1),
-                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      .withTimeout(1),
-                  m_controls::isGamePieceAlgae));
-
+            .coralStowed()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED, GAME_PIECE.CORAL))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED, GAME_PIECE.CORAL).withTimeout(1));
       m_operatorController
-          .x()
-          .whileTrue(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.PROCESSOR,
-                      PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
-                  m_controls::isGamePieceAlgae))
-          .onFalse(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                          ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-                      .withTimeout(1),
-                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      .withTimeout(1),
-                  m_controls::isGamePieceAlgae));
-
+            .coralL2()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2, GAME_PIECE.CORAL))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED, GAME_PIECE.CORAL).withTimeout(1));
       m_operatorController
-          .y()
-          .whileTrue(
-              new ConditionalCommand(
-                  moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
-                  moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
-                  m_controls::isGamePieceAlgae))
-          .onFalse(
-              new ConditionalCommand(
-                  new SequentialCommandGroup(
+            .coralL3()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2, GAME_PIECE.CORAL))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED, GAME_PIECE.CORAL).withTimeout(1));
+      m_operatorController
+            .coralL4()
+            .whileTrue(moveSuperStructureDelayed(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4, GAME_PIECE.CORAL))
+            .onFalse(
+                new SequentialCommandGroup(
+                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)
+                              .withTimeout(0.7),
+                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
+                      .withTimeout(1)
+            );
+    
+      m_operatorController
+            .algaeStowedProcessor()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR, GAME_PIECE.ALGAE))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED, GAME_PIECE.ALGAE).withTimeout(1));
+      m_operatorController
+            .algaeLow()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER, PIVOT_SETPOINT.INTAKE_ALGAE_LOW, GAME_PIECE.ALGAE))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR, GAME_PIECE.ALGAE).withTimeout(1));
+      m_operatorController
+            .algaeHigh()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER, PIVOT_SETPOINT.INTAKE_ALGAE_HIGH, GAME_PIECE.ALGAE))
+            .onFalse(moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR, GAME_PIECE.ALGAE).withTimeout(1));
+      m_operatorController
+            .algaeBarge()
+            .whileTrue(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE, GAME_PIECE.ALGAE))
+            .onFalse(
+                new SequentialCommandGroup(
                           new EndEffectorSetpoint(
                                   m_endEffectorPivot, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
                               .withTimeout(0.7),
                           new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.PROCESSOR))
-                      .withTimeout(1),
-                  new SequentialCommandGroup(
-                          new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)
-                              .withTimeout(0.7),
-                          new SetElevatorSetpoint(m_elevator, ELEVATOR_SETPOINT.START_POSITION))
-                      .withTimeout(1),
-                  m_controls::isGamePieceAlgae));
-
-      m_operatorController
-          .b()
-          .whileTrue(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_UPPER,
-                      PIVOT_SETPOINT.INTAKE_ALGAE_HIGH), // Algae L3
-                  moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_3, PIVOT_SETPOINT.L3_L2), // Coral L3
-                  m_controls::isGamePieceAlgae))
-          .onFalse(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                          ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-                      .withTimeout(1),
-                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      .withTimeout(1),
-                  m_controls::isGamePieceAlgae));
+                      .withTimeout(1)
+            );
     }
 
     // Ground intake on left trigger, TODO: implement
@@ -565,25 +534,27 @@ public class RobotContainer {
                   m_controls::isGamePieceAlgae));
     }
 
-    if (m_climber != null) {
-      m_operatorController
-          .back()
-          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
-    }
-    if (m_v2Climber != null) {
-      m_operatorController
-          .back()
-          .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
-    }
+    // Climber control will be implemented later
+    
+    // if (m_climber != null) {
+    //   m_operatorController
+    //       .back()
+    //       .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+    // }
+    // if (m_v2Climber != null) {
+    //   m_operatorController
+    //       .back()
+    //       .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
+    // }
 
-    if (m_hopperIntake != null) {
-      m_operatorController
-          .start()
-          .whileTrue(
-              Commands.startEnd(
-                  () -> m_hopperIntake.moveServo(1.0),
-                  () -> m_hopperIntake.stopServo())); // move hopper out of the way
-    }
+    // if (m_hopperIntake != null) {
+    //   m_operatorController
+    //       .start()
+    //       .whileTrue(
+    //           Commands.startEnd(
+    //               () -> m_hopperIntake.moveServo(1.0),
+    //               () -> m_hopperIntake.stopServo())); // move hopper out of the way
+    // }
   }
 
   /**
