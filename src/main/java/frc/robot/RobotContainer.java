@@ -15,13 +15,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
@@ -33,7 +31,6 @@ import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
-import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.swerve.DriveToTarget;
@@ -110,12 +107,13 @@ public class RobotContainer {
 
   @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
 
-  @NotLogged private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
-  @NotLogged private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
-
   @NotLogged
   private final CommandXboxController m_driverController =
-      new CommandXboxController(USB.xBoxController);
+      new CommandXboxController(USB.driver_xBoxController);
+
+  @NotLogged
+  private final CommandXboxController m_operatorController =
+      new CommandXboxController(USB.operator_xBoxController);
 
   @NotLogged private double MaxSpeed;
 
@@ -205,17 +203,18 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
             () -> {
-              var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
+              var rotationRate = -m_driverController.getRightX() * MaxAngularRate;
               // // if heading target
               // if (m_swerveDrive.isTrackingState()) {
               //   rotationRate = m_swerveDrive.calculateRotationToTarget();
               // }
               drive
                   .withVelocityX(
-                      leftJoystick.getRawAxis(1)
+                      -m_driverController.getLeftY()
                           * MaxSpeed) // Drive forward with negative Y (forward)
                   .withVelocityY(
-                      leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                      -m_driverController.getLeftX()
+                          * MaxSpeed) // Drive left with negative X (left)
                   .withRotationalRate(
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
@@ -227,11 +226,11 @@ public class RobotContainer {
     }
     if (m_climber != null) {
       m_climber.setDefaultCommand(
-          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+          new RunClimberVoltageJoystick(m_climber, () -> -m_operatorController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
-      m_endEffectorPivot.setDefaultCommand(
-          new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+      // m_endEffectorPivot.setDefaultCommand(
+      //     new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
     }
   }
 
@@ -372,33 +371,25 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
-    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
-    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
-    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
-
-    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
-    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
-
-    m_driverController.y().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.x().whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
-      m_driverController
+      m_operatorController
           .leftBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
-      m_driverController
+      m_operatorController
           .rightBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
 
     if (m_algaeIntake != null) {
       // TODO: Make speeds into enum setpoints
-      m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-      m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+      m_operatorController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+      m_operatorController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     }
   }
 
@@ -417,23 +408,16 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
-    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
-    m_driverController.povLeft().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.povRight().whileTrue(driveToTarget.generateCommand(false));
-    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
-    leftTargetTrackingButton.whileTrue(driveToTarget.generateCommand(true));
-
-    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
-    rightTargetTrackingButton.whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
-    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
+    m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
-      m_driverController
+      m_operatorController
           .a()
           .whileTrue(
               new ConditionalCommand(
@@ -451,7 +435,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .x()
           .whileTrue(
               new ConditionalCommand(
@@ -470,7 +454,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .y()
           .whileTrue(
               new ConditionalCommand(
@@ -494,7 +478,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .b()
           .whileTrue(
               new ConditionalCommand(
@@ -521,7 +505,7 @@ public class RobotContainer {
         && m_endEffector != null
         && m_elevator != null) {
       // Ready hopper
-      m_driverController
+      m_operatorController
           .povUp()
           .whileTrue(
               new ParallelCommandGroup(
@@ -535,7 +519,7 @@ public class RobotContainer {
                   .withTimeout(1));
 
       // Coral Reverse / Algae Outtake
-      m_driverController
+      m_operatorController
           .povDown()
           .whileTrue(
               new ConditionalCommand(
@@ -564,7 +548,7 @@ public class RobotContainer {
 
     if (m_endEffector != null) {
       // Score Coral / Algae Intake
-      m_driverController
+      m_operatorController
           .rightTrigger()
           .whileTrue(
               new ConditionalCommand(
@@ -572,7 +556,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .rightBumper()
           .whileTrue(
               new ConditionalCommand(
@@ -582,18 +566,18 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController
+      m_operatorController
           .back()
           .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
     }
     if (m_v2Climber != null) {
-      m_driverController
+      m_operatorController
           .back()
           .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
     }
 
     if (m_hopperIntake != null) {
-      m_driverController
+      m_operatorController
           .start()
           .whileTrue(
               Commands.startEnd(
@@ -677,11 +661,11 @@ public class RobotContainer {
   }
 
   public void teleopPeriodic() {
-    m_vision.setTargetLock(m_driverController.y().getAsBoolean());
+    m_vision.setTargetLock(m_operatorController.y().getAsBoolean());
     if (m_vision.isOnTarget()) {
-      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
+      m_operatorController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
     } else {
-      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
+      m_operatorController.getHID().setRumble(RumbleType.kBothRumble, 0);
     }
   }
 
