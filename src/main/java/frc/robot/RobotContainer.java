@@ -33,6 +33,7 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.ground.GroundPivotSetpoint;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
@@ -41,6 +42,7 @@ import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.HOPPERINTAKE;
+import frc.robot.constants.GROUND;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -75,6 +77,10 @@ public class RobotContainer {
 
   @Logged(name = "Vision", importance = Logged.Importance.INFO)
   private final Vision m_vision = new Vision(m_controls);
+
+  private GroundPivot m_groundPivot;
+ 
+  private GroundIntake m_groundIntake;
 
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
@@ -157,6 +163,8 @@ public class RobotContainer {
       m_endEffectorPivot = new EndEffectorPivot();
       //      m_v2Climber = new V2Climber();
       m_hopperIntake = new HopperIntake();
+      m_groundPivot = new GroundPivot();
+      m_groundIntake = new GroundIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
           V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -415,6 +423,10 @@ public class RobotContainer {
 
     // Algae Toggle
     m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
+
+    if (m_groundIntake != null && m_groundPivot != null){
+      m_operatorController.leftTrigger().whileTrue(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.PIVOT_SETPOINT.ALGAE));
+    }
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
