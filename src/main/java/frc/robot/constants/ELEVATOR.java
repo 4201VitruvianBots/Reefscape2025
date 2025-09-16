@@ -24,8 +24,8 @@ public class ELEVATOR {
   public static double kI =
       0.0; // output per unit of integrated error in position (output/rotations*s))
   public static double kD = 0.1; // output per unit of error in velocity (output/rps)
-  public static double motionMagicCruiseVelocity = 20; // target cruise velocity of 10 rps
-  public static double motionMagicAcceleration = 40; // target acceleration of 20 rps/s
+  public static double motionMagicCruiseVelocity = 10; // target cruise velocity of 10 rps
+  public static double motionMagicAcceleration = 20; // target acceleration of 20 rps/s
 
   public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
 

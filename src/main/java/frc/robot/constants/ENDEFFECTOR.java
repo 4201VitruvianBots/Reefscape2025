@@ -58,8 +58,8 @@ public class ENDEFFECTOR {
     public static double kG = 0.0;
     public static double kV = 0.0;
     public static double kA = 0.0;
-    public static double kMotionMagicVelocity = 360;
-    public static double kMotionMagicAcceleration = 600;
+    public static double kMotionMagicVelocity = 7;
+    public static double kMotionMagicAcceleration = 7;
     public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
 
     public static DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
@@ -75,9 +75,8 @@ public class ENDEFFECTOR {
     public static final Angle maxAngle = Degrees.of(180.0);
     public static final Angle startingAngle = minAngle;
 
-    public static Angle encoderOffset = Rotations.of(0.016357421875);
-    public static SensorDirectionValue encoderDirection =
-        SensorDirectionValue.Clockwise_Positive;
+    public static Angle encoderOffset = Rotations.of(-0.009521484375);
+    public static SensorDirectionValue encoderDirection = SensorDirectionValue.Clockwise_Positive;
 
     public static final boolean limitOpenLoop = false;
 

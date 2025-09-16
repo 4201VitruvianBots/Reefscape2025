@@ -41,8 +41,8 @@ import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
-import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.GROUND;
+import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
 import frc.robot.constants.SWERVE.ROUTINE_TYPE;
@@ -79,7 +79,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision(m_controls);
 
   private GroundPivot m_groundPivot;
- 
+
   private GroundIntake m_groundIntake;
 
   // AlphaBot subsystems
@@ -424,8 +424,10 @@ public class RobotContainer {
     // Algae Toggle
     m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
 
-    if (m_groundIntake != null && m_groundPivot != null){
-      m_operatorController.leftTrigger().whileTrue(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.PIVOT_SETPOINT.ALGAE));
+    if (m_groundIntake != null && m_groundPivot != null) {
+      m_operatorController
+          .leftTrigger()
+          .whileTrue(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.PIVOT_SETPOINT.ALGAE));
     }
 
     if (m_elevator != null && m_endEffectorPivot != null) {

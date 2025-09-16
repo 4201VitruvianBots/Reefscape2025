@@ -70,6 +70,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
 
+  @Logged(name = "Encoder Latency", importance = Logged.Importance.INFO)
+  private double enocderLatency = 0;
+
   // Simulation Code
   private final SingleJointedArmSim m_endEffectorSim =
       new SingleJointedArmSim(
@@ -100,6 +103,15 @@ public class EndEffectorPivot extends SubsystemBase {
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
+    // Configure the CANcoder
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    if (RobotBase.isReal()) {
+      encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
+      encoderConfig.MagnetSensor.SensorDirection = PIVOT.encoderDirection;
+      // encoderConfig.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(0.73611);
+    }
+    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
+
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     if (RobotBase.isReal()) {
@@ -127,14 +139,6 @@ public class EndEffectorPivot extends SubsystemBase {
       motorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
     }
     CtreUtils.configureTalonFx(m_pivotMotor, motorConfig);
-
-    // Configure the CANcoder
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    if (RobotBase.isReal()) {
-      encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
-      encoderConfig.MagnetSensor.SensorDirection = PIVOT.encoderDirection;
-    }
-    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
     if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
@@ -180,7 +184,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
-    return m_canCoderAbsolutePositionSignal.refresh().getValue();
+    m_canCoderAbsolutePositionSignal.refresh();
+    enocderLatency = m_canCoderAbsolutePositionSignal.getTimestamp().getLatency();
+    return m_canCoderAbsolutePositionSignal.getValue();
   }
 
   @Logged(name = "CANcoder Angle Degrees", importance = Logged.Importance.INFO)
