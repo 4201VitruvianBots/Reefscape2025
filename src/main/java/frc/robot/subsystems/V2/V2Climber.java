@@ -27,7 +27,7 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class V2Climber extends SubsystemBase {
-  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor);
+  private final TalonFX climberMotor = new TalonFX(CAN.climberMotor, CAN.driveBaseCanbus);
 
   private final StatusSignal<Angle> m_positionSignal = climberMotor.getPosition().clone();
   private final StatusSignal<Voltage> m_voltageSignal = climberMotor.getMotorVoltage().clone();

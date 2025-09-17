@@ -31,7 +31,7 @@ import frc.robot.constants.LED.*;
 
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
-  private final CANdle m_candle = new CANdle(CAN.CANdle);
+  private final CANdle m_candle = new CANdle(CAN.CANdle, CAN.driveBaseCanbus);
 
   private Color8Bit m_color = new Color8Bit();
   private int m_red = 0;
