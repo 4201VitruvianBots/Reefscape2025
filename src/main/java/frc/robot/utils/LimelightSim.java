@@ -21,34 +21,34 @@ import org.photonvision.simulation.VisionSystemSim;
 public class LimelightSim {
   CommandSwerveDrivetrain m_swerveDrive;
 
-  private PhotonPoseEstimator photonEstimatorLlf;
-  private PhotonPoseEstimator photonEstimatorLLb;
-  private PhotonCamera limelightF;
-  private PhotonCamera limelightB;
+  private PhotonPoseEstimator photonEstimatorLLr;
+  private PhotonPoseEstimator photonEstimatorLLl;
+  private PhotonCamera limelightR;
+  private PhotonCamera limelightL;
 
   private VisionSystemSim visionSim;
 
-  private PhotonCameraSim llfSim;
-  private PhotonCameraSim llbSim;
+  private PhotonCameraSim llrSim;
+  private PhotonCameraSim lllSim;
 
   public LimelightSim(CommandSwerveDrivetrain swerveDrive) {
     m_swerveDrive = swerveDrive;
 
-    limelightF = new PhotonCamera(VISION.CAMERA_SERVER.limelightF.toString());
-    limelightB = new PhotonCamera(VISION.CAMERA_SERVER.limelightB.toString());
-    photonEstimatorLlf =
+    limelightR = new PhotonCamera(VISION.CAMERA_SERVER.limelightR.toString());
+    limelightL = new PhotonCamera(VISION.CAMERA_SERVER.limelightL.toString());
+    photonEstimatorLLr =
         new PhotonPoseEstimator(
             FIELD.aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             VISION.limelightFPosition);
-    photonEstimatorLlf.setMultiTagFallbackStrategy(
+    photonEstimatorLLr.setMultiTagFallbackStrategy(
         PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
-    photonEstimatorLLb =
+    photonEstimatorLLl =
         new PhotonPoseEstimator(
             FIELD.aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             VISION.limelightFPosition);
-    photonEstimatorLLb.setMultiTagFallbackStrategy(
+    photonEstimatorLLl.setMultiTagFallbackStrategy(
         PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
     visionSim = new VisionSystemSim("limelightSim");
@@ -61,31 +61,31 @@ public class LimelightSim {
     cameraProp.setCalibError(0.35, 0.10);
     cameraProp.setAvgLatencyMs(50);
     cameraProp.setLatencyStdDevMs(15);
-    llfSim = new PhotonCameraSim(limelightF, cameraProp);
-    llbSim = new PhotonCameraSim(limelightB, cameraProp);
-    visionSim.addCamera(llfSim, VISION.limelightFPosition);
-    visionSim.addCamera(llfSim, VISION.limelightBPosition);
+    llrSim = new PhotonCameraSim(limelightR, cameraProp);
+    lllSim = new PhotonCameraSim(limelightL, cameraProp);
+    visionSim.addCamera(llrSim, VISION.limelightFPosition);
+    visionSim.addCamera(lllSim, VISION.limelightBPosition);
 
-    llfSim.enableDrawWireframe(true);
-    llbSim.enableDrawWireframe(true);
+    llrSim.enableDrawWireframe(true);
+    lllSim.enableDrawWireframe(true);
   }
 
   public LimelightHelpers.PoseEstimate getSimulatedResultsLimelightF() {
     //        LimelightHelpers.PoseEstimate results = null;
     LimelightHelpers.PoseEstimate results = new LimelightHelpers.PoseEstimate();
     Optional<EstimatedRobotPose> visionEst = Optional.empty();
-    for (var change : limelightF.getAllUnreadResults()) {
-      visionEst = photonEstimatorLlf.update(change);
+    for (var change : limelightR.getAllUnreadResults()) {
+      visionEst = photonEstimatorLLr.update(change);
       change.metadata.getLatencyMillis();
 
       if (RobotBase.isSimulation()) {
         visionEst.ifPresentOrElse(
             est ->
                 getSimDebugField()
-                    .getObject("VisionEstimationLLf")
+                    .getObject("VisionEstimationLLr")
                     .setPose(est.estimatedPose.toPose2d()),
             () -> {
-              getSimDebugField().getObject("VisionEstimationLLf").setPoses();
+              getSimDebugField().getObject("VisionEstimationLLr").setPoses();
             });
       }
     }
