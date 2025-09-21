@@ -29,7 +29,7 @@ import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
   private final TalonFX m_endEffectorMotor =
-      new TalonFX(CAN.endEffectorOuttakeMotor, CAN.driveBaseCanbus);
+      new TalonFX(CAN.endEffectorOuttakeMotor);
   private final DigitalInput m_beamBreakSensor = new DigitalInput(0);
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =

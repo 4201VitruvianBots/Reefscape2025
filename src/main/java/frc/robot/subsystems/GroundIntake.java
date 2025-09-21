@@ -27,7 +27,7 @@ import org.team4201.codex.utils.CtreUtils;
 public class GroundIntake extends SubsystemBase {
 
   private final TalonFX m_groundIntakeMotor =
-      new TalonFX(CAN.groundRollerMotor, CAN.driveBaseCanbus);
+      new TalonFX(CAN.groundRollerMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_groundIntakeMotor.getVelocity().clone();
   private final StatusSignal<Voltage> m_voltageSignal =

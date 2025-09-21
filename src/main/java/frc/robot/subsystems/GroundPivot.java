@@ -35,7 +35,7 @@ import org.team4201.codex.utils.CtreUtils;
 
 public class GroundPivot extends SubsystemBase {
   /** Creates a new GroundPivot. */
-  private final TalonFX m_pivotMotor = new TalonFX(CAN.groundPivotMotor, CAN.driveBaseCanbus);
+  private final TalonFX m_pivotMotor = new TalonFX(CAN.groundPivotMotor);
 
   // private final CANcoder m_pivotEncoder = new CANcoder(CAN.groundPivotCANcoder);
   // private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
