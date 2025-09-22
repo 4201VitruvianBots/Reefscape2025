@@ -7,13 +7,12 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -24,11 +23,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
+import frc.robot.constants.GROUND;
 import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.ROBOT;
 import org.team4201.codex.utils.CtreUtils;
@@ -36,9 +37,6 @@ import org.team4201.codex.utils.CtreUtils;
 public class GroundPivot extends SubsystemBase {
   /** Creates a new GroundPivot. */
   private final TalonFX m_pivotMotor = new TalonFX(CAN.groundPivotMotor);
-
-  // private final CANcoder m_pivotEncoder = new CANcoder(CAN.groundPivotCANcoder);
-  // private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
@@ -49,21 +47,20 @@ public class GroundPivot extends SubsystemBase {
 
   private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
 
-  private Angle m_desiredAngle = PIVOT.PIVOT_SETPOINT.STOWED.get();
+  private Angle m_desiredAngle = GROUND.PIVOT.SETPOINT.STOWED.get();
 
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
       new SingleJointedArmSim(
           PIVOT.gearBox,
           PIVOT.gearRatio,
-          SingleJointedArmSim.estimateMOI(PIVOT.pivotLength, PIVOT.mass),
-          PIVOT.pivotLength,
+          SingleJointedArmSim.estimateMOI(PIVOT.pivotLength.in(Meters), PIVOT.mass.in(Kilograms)),
+          PIVOT.pivotLength.in(Meters),
           PIVOT.minAngle.in(Radians),
           PIVOT.maxAngle.in(Radians),
-          false,
+          true,
           PIVOT.minAngle.in(Radians));
   private final TalonFXSimState m_simState = m_pivotMotor.getSimState();
 
@@ -88,8 +85,8 @@ public class GroundPivot extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO update
     config.MotorOutput.NeutralMode = m_neutralMode;
     config.Feedback.RotorToSensorRatio = PIVOT.gearRatio;
-    config.Feedback.FeedbackRemoteSensorID = CAN.groundPivotCANcoder;
-    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.kG = PIVOT.kG; // Feedfordward value for Gravity
     config.Slot0.kS = PIVOT.kS;
     config.Slot0.kV = PIVOT.kV;
     config.Slot0.kP = PIVOT.kP;
@@ -109,26 +106,9 @@ public class GroundPivot extends SubsystemBase {
     config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
     CtreUtils.configureTalonFx(m_pivotMotor, config);
 
-    // CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
-    // canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5; // TODO update
-    // canCoderConfig.MagnetSensor.SensorDirection =
-    //     SensorDirectionValue.Clockwise_Positive; // TODO update
-    // canCoderConfig.MagnetSensor.MagnetOffset = PIVOT.canCoderOffset;
-    // CtreUtils.configureCANCoder(m_pivotEncoder, canCoderConfig);
-
-    // m_pivotEncoder.setPosition(m_pivotEncoder.getAbsolutePosition().getValue());
-
-    // // TODO determine if we still need this
-    // if (RobotBase.isSimulation()) {
-    //   m_pivotEncoder.setPosition(Units.degreesToRotations(180));
-    //   m_pivotMotor.setPosition(Units.degreesToRotations(180));
-    //   CANcoderConfiguration simCanCoderConfig = new CANcoderConfiguration();
-    //   simCanCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5; // TODO update
-    //   simCanCoderConfig.MagnetSensor.SensorDirection =
-    //       SensorDirectionValue.CounterClockwise_Positive; // TODO update
-    //   simCanCoderConfig.MagnetSensor.MagnetOffset = PIVOT.canCoderOffset;
-    //   CtreUtils.configureCANCoder(m_pivotEncoder, simCanCoderConfig);
-    // }
+    if (RobotBase.isSimulation()) {
+      //resetSensorPosition(GROUND.PIVOT.SETPOINT.STOWED.get());
+    }
 
     SmartDashboard.putData(this);
   }
@@ -153,8 +133,18 @@ public class GroundPivot extends SubsystemBase {
     return m_desiredAngle;
   }
 
+  @Logged(name = "Ground Pivot Setpoint", importance = Logged.Importance.INFO)
+  public double getDesiredSetpointDegrees() {
+    return getDesiredSetpoint().in(Degrees);
+  }
+
   public Angle getAngle() {
     return m_positionSignal.refresh().getValue();
+  }
+
+  @Logged(name = "Ground Pivot Angle", importance = Logged.Importance.INFO)
+  public double getAngleDegrees() {
+    return getAngle().in(Degrees);
   }
 
   public AngularVelocity getRotationalVelocity() {
@@ -209,7 +199,8 @@ public class GroundPivot extends SubsystemBase {
     SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
     SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
     SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
-    // SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360", getCANcoderAngle().in(Degrees));
+    // SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360",
+    // getCANcoderAngle().in(Degrees));
   }
 
   public void testInit() {
@@ -303,17 +294,13 @@ public class GroundPivot extends SubsystemBase {
   public void simulationPeriodic() {
     // Set supply voltage of pivot motor
     m_simState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
     m_pivotSim.setInputVoltage(m_simState.getMotorVoltage());
 
     m_pivotSim.update(0.020);
 
-    m_simState.setRawRotorPosition(Radians.of(m_pivotSim.getAngleRads()).times(PIVOT.gearRatio));
+    m_simState.setRawRotorPosition(Radians.of(m_pivotSim.getAngleRads()));
     m_simState.setRotorVelocity(
-        RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()).times(PIVOT.gearRatio));
-
-    // m_pivotEncoderSimState.setRawPosition(Radian.of(m_pivotSim.getAngleRads()));
-    // m_pivotEncoderSimState.setVelocity(RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()));
+        RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()));
 
     SmartDashboard.putNumber(
         "GroundPivot/Model Angle", Units.radiansToDegrees(m_pivotSim.getAngleRads()));

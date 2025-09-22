@@ -26,8 +26,7 @@ import org.team4201.codex.utils.CtreUtils;
 
 public class GroundIntake extends SubsystemBase {
 
-  private final TalonFX m_groundIntakeMotor =
-      new TalonFX(CAN.groundRollerMotor);
+  private final TalonFX m_groundIntakeMotor = new TalonFX(CAN.groundRollerMotor);
   private final StatusSignal<AngularVelocity> m_velocitySignal =
       m_groundIntakeMotor.getVelocity().clone();
   private final StatusSignal<Voltage> m_voltageSignal =
@@ -68,6 +67,9 @@ public class GroundIntake extends SubsystemBase {
   }
 
   @Override
+  public void periodic() {}
+
+  @Override
   public void simulationPeriodic() {
     m_groundIntakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
@@ -81,7 +83,4 @@ public class GroundIntake extends SubsystemBase {
     m_groundIntakeMotorSimState.setRotorVelocity(
         RPM.of(m_groundIntakeMotorSim.getAngularVelocityRPM()).times(GROUND.INTAKE.gearRatio));
   }
-
-  @Override
-  public void periodic() {}
 }

@@ -7,12 +7,21 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
 
 public class GROUND {
   public static class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
+
+    /* Gravity Feedforward Gain
+    This is added to the closed loop output to counteract the effect of gravity.
+    For an arm, the actual force required is proportional to the angle of the arm,
+    the CTRE library simplifies this for us by only requiring us to feed it a single value,
+    which it uses to determine how much force to apply */
+    public static final double kG = 0;
+
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
     The unit for this constant is dependent on the control mode,
@@ -52,37 +61,20 @@ public class GROUND {
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
 
-    public enum PIVOT_SETPOINT {
-      STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      ALGAE(Degrees.of(30.0)),
-      GROUND_INTAKE(Degrees.of(60.0));
-
-      private final Angle angle;
-
-      PIVOT_SETPOINT(final Angle angle) {
-        // this.sucks = taxes;
-        this.angle = angle;
-      }
-
-      public Angle get() {
-        return angle;
-      }
-    }
-
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
     // TODO update all of these
     public static final double gearRatio = 180.0 / 1.0;
 
-    public static final double jointLength = Units.inchesToMeters(5);
-    public static final double pivotVisualizerLength = Units.inchesToMeters(17);
-    public static final double pivotLength = Units.inchesToMeters(21.5);
+    public static final Distance jointLength = Inches.of(5);
+    public static final Distance pivotVisualizerLength = Inches.of(17);
+    public static final Distance pivotLength = Inches.of(21.5);
 
-    public static final double mass = Units.lbsToKilograms(7.0);
+    public static final Mass mass = Pounds.of(12.0);
 
-    public static final Angle minAngle = Degrees.of(-40);
+    public static final Angle minAngle = Degrees.of(0);
 
-    public static final Angle maxAngle = Degrees.of(150);
+    public static final Angle maxAngle = Degrees.of(90);
 
     public static final Angle startingAngle = minAngle;
 
@@ -93,10 +85,28 @@ public class GROUND {
     public static final double joystickMultiplier = maxOutput;
 
     public static final boolean limitOpenLoop = false;
+
+    public enum SETPOINT {
+      STOWED(Degrees.of(60.0)), // TODO: test setpoints
+      INTAKE_ALGAE(Degrees.of(40.0)),
+      GROUND_INTAKE(Degrees.of(0.0)),
+      ALGAE_PROCESSOR(Degrees.of(40.0)),
+      CORAL_L1(Degrees.of(50.0));
+
+      private final Angle angle;
+
+      SETPOINT(final Angle angle) {
+        // this.sucks = taxes;
+        this.angle = angle;
+      }
+
+      public Angle get() {
+        return angle;
+      }
+    }
   }
 
   public static class INTAKE {
-
     public static final double kP = 0.10; // change these
     public static final double kI = 0.00;
     public static final double kD = 0.00;

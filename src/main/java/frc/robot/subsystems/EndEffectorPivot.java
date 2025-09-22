@@ -40,8 +40,7 @@ import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffectorPivot extends SubsystemBase {
   private final TalonFX m_pivotMotor = new TalonFX(CAN.endEffectorPivotMotor);
-  private final CANcoder m_pivotEncoder =
-      new CANcoder(CAN.endEffectorPivotCanCoder);
+  private final CANcoder m_pivotEncoder = new CANcoder(CAN.endEffectorPivotCanCoder);
 
   private final MotionMagicVoltage m_request =
       new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);

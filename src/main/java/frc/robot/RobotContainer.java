@@ -33,7 +33,7 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
-import frc.robot.commands.ground.GroundPivotSetpoint;
+import frc.robot.commands.ground.SetGroundPivotSetpoint;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
@@ -143,8 +143,11 @@ public class RobotContainer {
     initSmartDashboard();
 
     // Configure the trigger bindings
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
-    else configureBindings();
+    switch (ROBOT.robotID) {
+      case ALPHABOT -> configureAlphaBotBindings();
+      //case SIM -> configureSimBindings();
+      default -> configureBindings();
+    }
 
     // Only keep joystick warnings when FMS is attached
     if (!DriverStation.isFMSAttached()) {
@@ -154,9 +157,9 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     // Initialize Subsystem classes
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3) || ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
       MaxSpeed =
-          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,waeedAt12Volts desired top speed
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,speedAt12Volts desired top speed
       m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -181,15 +184,6 @@ public class RobotContainer {
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
-    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
-      MaxSpeed =
-          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-      m_swerveDrive = V2Constants.createDrivetrain();
-      m_elevator = new Elevator();
-      m_endEffector = new EndEffector();
-      m_endEffectorPivot = new EndEffectorPivot();
-      m_climber = new Climber();
-      m_hopperIntake = new HopperIntake();
     } else {
       // Most likely, the code will crash later on if you get here, so send an error message
       DriverStation.reportError(
@@ -205,6 +199,8 @@ public class RobotContainer {
     m_robot2d.registerSubsystem(m_elevator);
     m_robot2d.registerSubsystem(m_endEffectorPivot);
     m_robot2d.registerSubsystem(m_endEffector);
+    m_robot2d.registerSubsystem(m_groundPivot);
+    m_robot2d.registerSubsystem(m_groundIntake);
 
     // Set Subsystem DefaultCommands
     m_swerveDrive.setDefaultCommand(
@@ -378,6 +374,11 @@ public class RobotContainer {
             m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_DYNAMIC));
   }
 
+  public void configureSimBindings() {
+    m_groundPivot.setDefaultCommand(
+        new RunCommand(() -> m_groundPivot.setPercentOutput(-m_operatorController.getLeftY()), m_groundPivot));
+  }
+
   private void configureAlphaBotBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
@@ -427,7 +428,7 @@ public class RobotContainer {
     if (m_groundIntake != null && m_groundPivot != null) {
       m_operatorController
           .leftTrigger()
-          .whileTrue(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.PIVOT_SETPOINT.ALGAE));
+          .whileTrue(new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE));
     }
 
     if (m_elevator != null && m_endEffectorPivot != null) {

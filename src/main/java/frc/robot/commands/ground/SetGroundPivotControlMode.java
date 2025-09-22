@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import frc.robot.subsystems.GroundPivot;
 
-public class GroundPivotControlMode extends InstantCommand {
+public class SetGroundPivotControlMode extends InstantCommand {
   private final GroundPivot m_groundPivot;
   private CONTROL_MODE m_controlMode;
 
   /** Set control mode directly */
-  public GroundPivotControlMode(GroundPivot groundPivot, CONTROL_MODE controlMode) {
+  public SetGroundPivotControlMode(GroundPivot groundPivot, CONTROL_MODE controlMode) {
     m_groundPivot = groundPivot;
     m_controlMode = controlMode;
   }
 
   /** Toggle control mode */
-  public GroundPivotControlMode(GroundPivot groundPivot) {
+  public SetGroundPivotControlMode(GroundPivot groundPivot) {
     this(
         groundPivot,
         groundPivot.getControlMode() == CONTROL_MODE.CLOSED_LOOP

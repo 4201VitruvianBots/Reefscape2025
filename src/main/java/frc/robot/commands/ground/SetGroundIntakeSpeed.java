@@ -9,12 +9,12 @@ import frc.robot.constants.GROUND.INTAKE.INTAKE_SPEED;
 import frc.robot.subsystems.GroundIntake;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetGroundIntake extends Command {
+public class SetGroundIntakeSpeed extends Command {
 
   private final GroundIntake m_groundIntake;
   private final INTAKE_SPEED m_speed;
 
-  public SetGroundIntake(GroundIntake ground, INTAKE_SPEED speed) {
+  public SetGroundIntakeSpeed(GroundIntake ground, INTAKE_SPEED speed) {
     m_groundIntake = ground;
     m_speed = speed;
     addRequirements(m_groundIntake);

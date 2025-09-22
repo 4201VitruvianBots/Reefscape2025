@@ -22,8 +22,7 @@ import frc.robot.constants.HOPPERINTAKE;
 import org.team4201.codex.utils.CtreUtils;
 
 public class HopperIntake extends SubsystemBase {
-  private final TalonFX m_hopperIntakeMotor =
-      new TalonFX(CAN.hopperIntakeMotor);
+  private final TalonFX m_hopperIntakeMotor = new TalonFX(CAN.hopperIntakeMotor);
   private final Servo m_hopperServo = new Servo(9);
 
   private final StatusSignal<AngularVelocity> m_velocitySignal =
