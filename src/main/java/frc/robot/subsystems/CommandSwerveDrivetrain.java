@@ -26,6 +26,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -252,7 +253,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
   }
 
   public void resetGyro(double angle) {
-    getPigeon2().setYaw(angle);
+    getPigeon2().setYaw(-angle);
   }
 
   public void setNeutralMode(SWERVE.MOTOR_TYPE type, NeutralModeValue neutralModeValue) {
@@ -424,6 +425,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
               });
     }
     // poseEstimator.update(getPigeon2().getRotation2d(), getModulePositions());
+    SmartDashboard.putNumber("gyro angle", getPigeon2().getYaw().getValueAsDouble());
   }
 
   private void startSimThread() {
