@@ -58,7 +58,6 @@ public class GROUND {
     /* D is generally used to 'predict' the next output using the slope of the error,
     so it is usually used with P to get a fast, but accurate response. */
     public static final double kD = 30.0;
-    public static final double kG = 12.0;
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
@@ -90,11 +89,11 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
 
     public enum SETPOINT {
-      STOWED(Degrees.of(60.0)), // TODO: test setpoints
+      STOWED(Degrees.of(0.0)), // TODO: test setpoints
       INTAKE_ALGAE(Degrees.of(40.0)),
       GROUND_INTAKE(Degrees.of(0.0)),
       ALGAE_PROCESSOR(Degrees.of(40.0)),
-      CORAL_L1(Degrees.of(50.0));
+      CORAL_L1(Degrees.of(-0.351562));
 
       private final Angle angle;
 
