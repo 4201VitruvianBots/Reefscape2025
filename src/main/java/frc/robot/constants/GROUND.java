@@ -6,6 +6,8 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -56,10 +58,11 @@ public class GROUND {
     /* D is generally used to 'predict' the next output using the slope of the error,
     so it is usually used with P to get a fast, but accurate response. */
     public static final double kD = 30.0;
-
+    public static final double kG = 12.0;
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
+    public static final GravityTypeValue  K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
 
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 

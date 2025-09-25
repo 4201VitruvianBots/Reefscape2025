@@ -92,6 +92,7 @@ public class GroundPivot extends SubsystemBase {
     config.Slot0.kP = PIVOT.kP;
     config.Slot0.kI = PIVOT.kI;
     config.Slot0.kD = PIVOT.kD;
+    config.Slot0.kG = PIVOT.kG;
     config.ClosedLoopGeneral.ContinuousWrap = false;
     config.MotorOutput.PeakForwardDutyCycle = PIVOT.maxOutput;
     config.MotorOutput.PeakReverseDutyCycle = -PIVOT.maxOutput;
