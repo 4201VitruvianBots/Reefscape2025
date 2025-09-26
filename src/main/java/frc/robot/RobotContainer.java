@@ -42,6 +42,7 @@ import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.GROUND;
+import frc.robot.constants.GROUND.PIVOT.SETPOINT;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
@@ -428,7 +429,7 @@ public class RobotContainer {
     if (m_groundIntake != null && m_groundPivot != null) {
       m_operatorController
           .leftTrigger()
-          .whileTrue(new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE));
+          .whileTrue(new SetGroundPivotSetpoint(m_groundPivot, SETPOINT.INTAKE_ALGAE));
     }
 
     if (m_elevator != null && m_endEffectorPivot != null) {

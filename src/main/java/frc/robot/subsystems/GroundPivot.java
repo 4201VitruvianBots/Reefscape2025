@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -49,7 +50,7 @@ public class GroundPivot extends SubsystemBase {
 
   private Angle m_desiredAngle = GROUND.PIVOT.SETPOINT.STOWED.get();
 
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -85,6 +86,7 @@ public class GroundPivot extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO update
     config.MotorOutput.NeutralMode = m_neutralMode;
     config.Feedback.RotorToSensorRatio = PIVOT.gearRatio;
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder; 
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = PIVOT.kG; // Feedfordward value for Gravity
     config.Slot0.kS = PIVOT.kS;
@@ -92,19 +94,18 @@ public class GroundPivot extends SubsystemBase {
     config.Slot0.kP = PIVOT.kP;
     config.Slot0.kI = PIVOT.kI;
     config.Slot0.kD = PIVOT.kD;
-    config.Slot0.kG = PIVOT.kG;
     config.ClosedLoopGeneral.ContinuousWrap = false;
     config.MotorOutput.PeakForwardDutyCycle = PIVOT.maxOutput;
     config.MotorOutput.PeakReverseDutyCycle = -PIVOT.maxOutput;
 
     // Ramp rates TODO: determine if we still need these
-    config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 2.0;
-    config.OpenLoopRamps.TorqueOpenLoopRampPeriod = 2.0;
-    config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 2.0;
+    // config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 2.0;
+    // config.OpenLoopRamps.TorqueOpenLoopRampPeriod = 2.0;
+    // config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 2.0;
 
     config.MotionMagic.MotionMagicAcceleration = PIVOT.kAccel;
     config.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kCruiseVel;
-    config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
+    // config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
     CtreUtils.configureTalonFx(m_pivotMotor, config);
 
     if (RobotBase.isSimulation()) {
@@ -275,8 +276,8 @@ public class GroundPivot extends SubsystemBase {
   public void periodic() {
     switch (m_controlMode) {
       case CLOSED_LOOP:
-        // This method will be called once per scheduler run
-        // periodic, update the profile setpoint for 20 ms loop time
+        /* This method will be called once per scheduler run
+        periodic, update the profile setpoint for 20 ms loop time */
         if (DriverStation.isEnabled())
           m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;

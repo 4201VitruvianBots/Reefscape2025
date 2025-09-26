@@ -66,7 +66,7 @@ public class GROUND {
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
     // TODO update all of these
-    public static final double gearRatio = 180.0 / 1.0;
+    public static final double gearRatio = 1683.0 / 32.0;
 
     public static final Distance jointLength = Inches.of(5);
     public static final Distance pivotVisualizerLength = Inches.of(17);
@@ -74,9 +74,9 @@ public class GROUND {
 
     public static final Mass mass = Pounds.of(12.0);
 
-    public static final Angle minAngle = Degrees.of(0);
+    public static final Angle minAngle = Degrees.of(0.0);
 
-    public static final Angle maxAngle = Degrees.of(90);
+    public static final Angle maxAngle = Degrees.of(90.0);
 
     public static final Angle startingAngle = minAngle;
 
@@ -90,10 +90,9 @@ public class GROUND {
 
     public enum SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      INTAKE_ALGAE(Degrees.of(40.0)),
-      GROUND_INTAKE(Degrees.of(0.0)),
-      ALGAE_PROCESSOR(Degrees.of(40.0)),
-      CORAL_L1(Degrees.of(-0.351562));
+      INTAKE_ALGAE(Degrees.of(-65.39)),
+      GROUND_INTAKE(Degrees.of(-20.235)),
+      CORAL_L1(Degrees.of(-0.341562));
 
       private final Angle angle;
 
