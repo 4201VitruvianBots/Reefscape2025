@@ -10,8 +10,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ENDEFFECTOR {
-  public static final boolean enableBeamBreak = false;
-
+  
   public static class ROLLERS {
     public static final double kP = 0.0; // Why are there PID values on rollers T_T
     public static final double kI = 0.0;
@@ -90,7 +89,7 @@ public class ENDEFFECTOR {
       INTAKE_ALGAE_LOW(Degrees.of(170.0)),
       INTAKE_ALGAE_HIGH(Degrees.of(165)),
       // INTAKE_HOPPER(Degrees.of(-3.0)),
-      INTAKE_HOPPER(Degrees.of(0.0)),
+      INTAKE_HOPPER(Degrees.of(5.0)),
       INTAKE_ALGAE_GROUND(Degrees.of(-15.0)), // TODO: find out the correct setpoint
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),

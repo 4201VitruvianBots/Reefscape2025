@@ -580,13 +580,13 @@ public class RobotContainer {
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                      .until(m_endEffector::hasCoral),
+                      .until(m_endEffector::hasCoral).andThen(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).withTimeout(0.2)),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                   .withTimeout(1));
-
+            
       // Coral Reverse / Algae Outtake
       m_operatorController
           .povDown()
