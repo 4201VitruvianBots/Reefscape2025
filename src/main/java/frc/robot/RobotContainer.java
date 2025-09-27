@@ -33,6 +33,7 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.ground.SetGroundIntakeSpeed;
 import frc.robot.commands.ground.SetGroundPivotSetpoint;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
@@ -42,6 +43,7 @@ import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.GROUND;
+import frc.robot.constants.GROUND.INTAKE;
 import frc.robot.constants.GROUND.PIVOT.SETPOINT;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
@@ -144,11 +146,8 @@ public class RobotContainer {
     initSmartDashboard();
 
     // Configure the trigger bindings
-    switch (ROBOT.robotID) {
-      case ALPHABOT -> configureAlphaBotBindings();
-      //case SIM -> configureSimBindings();
-      default -> configureBindings();
-    }
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.ALPHABOT)) configureAlphaBotBindings();
+    else configureBindings();
 
     // Only keep joystick warnings when FMS is attached
     if (!DriverStation.isFMSAttached()) {
@@ -158,9 +157,9 @@ public class RobotContainer {
 
   private void initializeSubSystems() {
     // Initialize Subsystem classes
-    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3) || ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+    if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V3)) {
       MaxSpeed =
-          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,speedAt12Volts desired top speed
+          V3Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSp,m,waeedAt12Volts desired top speed
       m_swerveDrive = V3Constants.createDrivetrain();
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
@@ -185,6 +184,15 @@ public class RobotContainer {
       m_swerveDrive = AlphaBotConstants.createDrivetrain();
       // m_coralOuttake = new CoralOuttake();
       // m_algaeIntake = new AlgaeIntake();
+    } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.SIM)) {
+      MaxSpeed =
+          V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      m_swerveDrive = V2Constants.createDrivetrain();
+      m_elevator = new Elevator();
+      m_endEffector = new EndEffector();
+      m_endEffectorPivot = new EndEffectorPivot();
+      m_climber = new Climber();
+      m_hopperIntake = new HopperIntake();
     } else {
       // Most likely, the code will crash later on if you get here, so send an error message
       DriverStation.reportError(
@@ -200,8 +208,6 @@ public class RobotContainer {
     m_robot2d.registerSubsystem(m_elevator);
     m_robot2d.registerSubsystem(m_endEffectorPivot);
     m_robot2d.registerSubsystem(m_endEffector);
-    m_robot2d.registerSubsystem(m_groundPivot);
-    m_robot2d.registerSubsystem(m_groundIntake);
 
     // Set Subsystem DefaultCommands
     m_swerveDrive.setDefaultCommand(
@@ -375,11 +381,6 @@ public class RobotContainer {
             m_swerveDrive, SysIdRoutine.Direction.kReverse, ROUTINE_TYPE.TURN_DYNAMIC));
   }
 
-  public void configureSimBindings() {
-    m_groundPivot.setDefaultCommand(
-        new RunCommand(() -> m_groundPivot.setPercentOutput(-m_operatorController.getLeftY()), m_groundPivot));
-  }
-
   private void configureAlphaBotBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
@@ -417,6 +418,13 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
+  private ParallelCommandGroup moveGround(
+      SETPOINT groundPivotSetpoint, INTAKE.INTAKE_SPEED intakeSpeed) {
+    return new ParallelCommandGroup(
+        new SetGroundPivotSetpoint(m_groundPivot, groundPivotSetpoint),
+        new SetGroundIntakeSpeed(m_groundIntake, intakeSpeed));
+  }
+
   private void configureBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
 
@@ -424,13 +432,7 @@ public class RobotContainer {
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
-    m_operatorController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
-
-    if (m_groundIntake != null && m_groundPivot != null) {
-      m_operatorController
-          .leftTrigger()
-          .whileTrue(new SetGroundPivotSetpoint(m_groundPivot, SETPOINT.INTAKE_ALGAE));
-    }
+    m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
@@ -513,8 +515,59 @@ public class RobotContainer {
                   m_controls::isGamePieceAlgae));
     }
 
-    // Ground intake on left trigger, TODO: implement
-    // Ground intake algae on povDown, TODO: implement
+    // Ground intake
+    if (m_groundIntake != null && m_groundPivot != null) {
+      m_operatorController
+          .leftTrigger()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new ConditionalCommand(
+                      moveGround(
+                          GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
+                      moveGround(
+                          GROUND.PIVOT.SETPOINT.INTAKE_CORAL, GROUND.INTAKE.INTAKE_SPEED.CORAL),
+                      m_controls::isGamePieceAlgae)))
+          .onFalse(
+              new ConditionalCommand(
+                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  m_controls::isGamePieceAlgae));
+
+      m_operatorController
+          .leftBumper()
+          .whileTrue(
+              new ConditionalCommand(
+                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.L1),
+                  m_controls::isGamePieceAlgae))
+          .onFalse(new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED));
+
+      m_operatorController
+          .povLeft()
+          .whileTrue(
+              new ConditionalCommand(
+                  new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
+                  new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_L1),
+                  m_controls::isGamePieceAlgae));
+    }
+
+    // Ground intake pass to end effector
+    if (m_groundIntake != null
+        && m_groundPivot != null
+        && m_endEffectorPivot != null
+        && m_endEffector != null) {
+      m_operatorController
+          .povRight()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  moveGround(GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
+          .onFalse(
+            new ParallelCommandGroup(
+              new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+              new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
+    }
 
     if (m_hopperIntake != null
         && m_endEffectorPivot != null

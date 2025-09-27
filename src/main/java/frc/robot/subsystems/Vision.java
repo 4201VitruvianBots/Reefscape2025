@@ -251,11 +251,11 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // limelight f
+    // limelight r
     boolean llaRSuccess = processLimelight(CAMERA_SERVER.limelightR.toString(), estPoseLLR);
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightR + " UpdatedRejected", llaRSuccess);
 
-    // limelight b
+    // limelight l
     boolean llaLSuccess = processLimelight(CAMERA_SERVER.limelightL.toString(), estPoseLLL);
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightL + " UpdatedRejected", llaLSuccess);
 

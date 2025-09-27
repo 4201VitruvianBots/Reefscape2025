@@ -44,7 +44,7 @@ public class GroundIntake extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kP = GROUND.INTAKE.kP;
     config.Slot0.kI = GROUND.INTAKE.kI;
-    config.Slot0.kD = GROUND.INTAKE.kD; // Nah why do we have PID values for an intake motor 
+    config.Slot0.kD = GROUND.INTAKE.kD; // Nah why do we have PID values for an intake motor
     config.Feedback.SensorToMechanismRatio = GROUND.INTAKE.gearRatio;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

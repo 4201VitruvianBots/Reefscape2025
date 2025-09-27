@@ -7,7 +7,6 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -57,11 +56,11 @@ public class GROUND {
 
     /* D is generally used to 'predict' the next output using the slope of the error,
     so it is usually used with P to get a fast, but accurate response. */
-    public static final double kD = 30.0;
+    public static final double kD = 1.0;
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
-    public static final GravityTypeValue  K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
 
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
@@ -76,7 +75,7 @@ public class GROUND {
 
     public static final Angle minAngle = Degrees.of(0.0);
 
-    public static final Angle maxAngle = Degrees.of(90.0);
+    public static final Angle maxAngle = Degrees.of(120.0);
 
     public static final Angle startingAngle = minAngle;
 
@@ -90,9 +89,9 @@ public class GROUND {
 
     public enum SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      INTAKE_ALGAE(Degrees.of(-65.39)),
-      GROUND_INTAKE(Degrees.of(-20.235)),
-      CORAL_L1(Degrees.of(-0.341562));
+      INTAKE_ALGAE(Degrees.of(54.61)),
+      INTAKE_CORAL(Degrees.of(99.765)),
+      L1(Degrees.of(15));
 
       private final Angle angle;
 
@@ -115,11 +114,12 @@ public class GROUND {
     public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
 
+    // TODO: update speeds later
     public enum INTAKE_SPEED {
-      INTAKING(0.5),
-      HOLDING_CORAL(0.5), // TODO: update speeds later
-      OUTTAKING(0.5),
-      OUTTAKE_TO_END_EFFECTOR(0.5);
+      CORAL(0.5),
+      ALGAE(0.5),
+      SCORE_L1(0.5),
+      SCORE_ALGAE(0.5);
 
       private final double value;
 

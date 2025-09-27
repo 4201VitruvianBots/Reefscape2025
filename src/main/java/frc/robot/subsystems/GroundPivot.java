@@ -83,10 +83,10 @@ public class GroundPivot extends SubsystemBase {
 
   public GroundPivot() {
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO update
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // TODO update
     config.MotorOutput.NeutralMode = m_neutralMode;
     config.Feedback.RotorToSensorRatio = PIVOT.gearRatio;
-    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder; 
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = PIVOT.kG; // Feedfordward value for Gravity
     config.Slot0.kS = PIVOT.kS;
@@ -109,7 +109,7 @@ public class GroundPivot extends SubsystemBase {
     CtreUtils.configureTalonFx(m_pivotMotor, config);
 
     if (RobotBase.isSimulation()) {
-      //resetSensorPosition(GROUND.PIVOT.SETPOINT.STOWED.get());
+      // resetSensorPosition(GROUND.PIVOT.SETPOINT.STOWED.get());
     }
 
     SmartDashboard.putData(this);
@@ -195,15 +195,7 @@ public class GroundPivot extends SubsystemBase {
     m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
   }
 
-  private void updateLogger() {
-    SmartDashboard.putString("GroundPivot/ControlMode", m_controlMode.toString());
-    SmartDashboard.putNumber("GroundPivot/CurrentAngle", getAngle().in(Degrees));
-    SmartDashboard.putNumber("GroundPivot/CurrentOutput", m_currentSignal.getValueAsDouble());
-    SmartDashboard.putNumber("GroundPivot/DesiredAngle", m_desiredAngle.in(Degrees));
-    SmartDashboard.putNumber("GroundPivot/PercentOutput", m_pivotMotor.get());
-    // SmartDashboard.putNumber("GroundPivot/CanCoderAbsolutePos360",
-    // getCANcoderAngle().in(Degrees));
-  }
+  private void updateLogger() {}
 
   public void testInit() {
     m_pivotTab.getDoubleTopic("kS").publish().set(PIVOT.kS);
@@ -301,8 +293,7 @@ public class GroundPivot extends SubsystemBase {
     m_pivotSim.update(0.020);
 
     m_simState.setRawRotorPosition(Radians.of(m_pivotSim.getAngleRads()));
-    m_simState.setRotorVelocity(
-        RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()));
+    m_simState.setRotorVelocity(RadiansPerSecond.of(m_pivotSim.getVelocityRadPerSec()));
 
     SmartDashboard.putNumber(
         "GroundPivot/Model Angle", Units.radiansToDegrees(m_pivotSim.getAngleRads()));
