@@ -50,7 +50,7 @@ public class GroundPivot extends SubsystemBase {
 
   private Angle m_desiredAngle = GROUND.PIVOT.SETPOINT.STOWED.get();
 
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0));
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -65,7 +65,7 @@ public class GroundPivot extends SubsystemBase {
           PIVOT.minAngle.in(Radians));
   private final TalonFXSimState m_simState = m_pivotMotor.getSimState();
 
-  private ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
+  ROBOT.CONTROL_MODE m_controlMode = ROBOT.CONTROL_MODE.CLOSED_LOOP;
 
   // Test mode setup
   private DoubleSubscriber m_kS_subscriber,
@@ -120,6 +120,7 @@ public class GroundPivot extends SubsystemBase {
     m_pivotMotor.set(speed);
   }
 
+  @Logged(name = "Motor Output", importance = Logged.Importance.INFO)
   public double getPercentOutput() {
     return m_pivotMotor.get();
   }
@@ -131,20 +132,16 @@ public class GroundPivot extends SubsystemBase {
                 angle.in(Degrees), PIVOT.minAngle.in(Degrees), PIVOT.maxAngle.in(Degrees)));
   }
 
-  public Angle getDesiredSetpoint() {
-    return m_desiredAngle;
-  }
-
-  @Logged(name = "Ground Pivot Setpoint", importance = Logged.Importance.INFO)
+  @Logged(name = "Desired Angle Degrees", importance = Logged.Importance.INFO)
   public double getDesiredSetpointDegrees() {
-    return getDesiredSetpoint().in(Degrees);
+    return m_desiredAngle.in(Degrees);
   }
 
   public Angle getAngle() {
     return m_positionSignal.refresh().getValue();
   }
 
-  @Logged(name = "Ground Pivot Angle", importance = Logged.Importance.INFO)
+  @Logged(name = "Current Angle Degrees", importance = Logged.Importance.INFO)
   public double getAngleDegrees() {
     return getAngle().in(Degrees);
   }
@@ -157,10 +154,6 @@ public class GroundPivot extends SubsystemBase {
   //   return m_pivotEncoder.getAbsolutePosition().refresh().getValue();
   // }
 
-  public Voltage getInputVoltage() {
-    return m_supplyVoltageSignal.refresh().getValue();
-  }
-
   public Voltage getMotorVoltage() {
     return m_motorVoltageSignal.refresh().getValue();
   }
@@ -172,8 +165,6 @@ public class GroundPivot extends SubsystemBase {
   }
 
   public void setControlMode(ROBOT.CONTROL_MODE mode) {
-    if (mode == ROBOT.CONTROL_MODE.CLOSED_LOOP && m_controlMode == ROBOT.CONTROL_MODE.OPEN_LOOP)
-      resetMotionMagicState();
     m_controlMode = mode;
   }
 
@@ -195,7 +186,6 @@ public class GroundPivot extends SubsystemBase {
     m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
   }
 
-  private void updateLogger() {}
 
   public void testInit() {
     m_pivotTab.getDoubleTopic("kS").publish().set(PIVOT.kS);
@@ -266,22 +256,16 @@ public class GroundPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
+    // periodic, update the profile setpoint for 20 ms loop time
     switch (m_controlMode) {
       case CLOSED_LOOP:
-        /* This method will be called once per scheduler run
-        periodic, update the profile setpoint for 20 ms loop time */
-        if (DriverStation.isEnabled())
           m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
       case OPEN_LOOP:
       default:
-        if (DriverStation.isDisabled()) {
-          setPercentOutput(0.0);
-        }
         break;
     }
-
-    if (ROBOT.logMode.get() <= ROBOT.LOG_MODE.NORMAL.get()) updateLogger();
   }
 
   @Override

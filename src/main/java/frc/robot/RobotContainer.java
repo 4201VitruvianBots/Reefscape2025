@@ -81,8 +81,10 @@ public class RobotContainer {
   @Logged(name = "Vision", importance = Logged.Importance.INFO)
   private final Vision m_vision = new Vision(m_controls);
 
+  @Logged(name = "Ground Pivot", importance = Logged.Importance.INFO)
   private GroundPivot m_groundPivot;
 
+  @Logged(name = "Ground Intake", importance = Logged.Importance.INFO)
   private GroundIntake m_groundIntake;
 
   // AlphaBot subsystems
