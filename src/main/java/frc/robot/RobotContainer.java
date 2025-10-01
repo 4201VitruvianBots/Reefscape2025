@@ -384,7 +384,7 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
@@ -428,7 +428,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
@@ -566,9 +566,9 @@ public class RobotContainer {
                   new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
           .onFalse(
-            new ParallelCommandGroup(
-              new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
-              new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
+              new ParallelCommandGroup(
+                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
     }
 
     if (m_hopperIntake != null
@@ -582,13 +582,16 @@ public class RobotContainer {
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                      .until(m_endEffector::hasCoral).andThen(new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL).withTimeout(0.2)),
+                      .until(m_endEffector::hasCoral)
+                      .andThen(
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
+                              .withTimeout(0.2)),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
                   .withTimeout(1));
-            
+
       // Coral Reverse / Algae Outtake
       m_operatorController
           .povDown()
@@ -729,6 +732,7 @@ public class RobotContainer {
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
     if (m_climber != null) m_climber.teleopInit();
+    if (m_groundPivot != null) m_groundPivot.teleopInit();
   }
 
   public void teleopPeriodic() {

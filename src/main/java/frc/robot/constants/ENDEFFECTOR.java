@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public class ENDEFFECTOR {
-  
+
   public static class ROLLERS {
     public static final double kP = 0.0; // Why are there PID values on rollers T_T
     public static final double kI = 0.0;

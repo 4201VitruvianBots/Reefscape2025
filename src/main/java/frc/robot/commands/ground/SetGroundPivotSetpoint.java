@@ -12,7 +12,6 @@ import frc.robot.subsystems.GroundPivot;
 public class SetGroundPivotSetpoint extends Command {
   private final GroundPivot m_groundPivot;
   private final SETPOINT m_setpoint;
-  private boolean m_auto;
 
   /** Creates a new GroundPivotSetpoint. */
   public SetGroundPivotSetpoint(GroundPivot groundPivot, SETPOINT setpoint) {
@@ -25,7 +24,6 @@ public class SetGroundPivotSetpoint extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // TODO: Check why this isn't setting the setpoint correctly
     m_groundPivot.setControlMode(CONTROL_MODE.CLOSED_LOOP);
     m_groundPivot.setDesiredSetpoint(m_setpoint.get());
   }
@@ -41,6 +39,6 @@ public class SetGroundPivotSetpoint extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_auto;
+    return false;
   }
 }

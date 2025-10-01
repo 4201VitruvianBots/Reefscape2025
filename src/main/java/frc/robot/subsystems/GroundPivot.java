@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -23,7 +22,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -83,10 +81,9 @@ public class GroundPivot extends SubsystemBase {
 
   public GroundPivot() {
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // TODO update
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.MotorOutput.NeutralMode = m_neutralMode;
-    config.Feedback.RotorToSensorRatio = PIVOT.gearRatio;
-    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    config.Feedback.SensorToMechanismRatio = PIVOT.gearRatio;
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = PIVOT.kG; // Feedfordward value for Gravity
     config.Slot0.kS = PIVOT.kS;
@@ -247,7 +244,6 @@ public class GroundPivot extends SubsystemBase {
 
   public void teleopInit() {
     resetMotionMagicState();
-    setDesiredSetpoint(getAngle());
   }
 
   public boolean isConnected() {
