@@ -47,7 +47,7 @@ public class GROUND {
 
     /* A higher P value means you will put more effort into correcting the measured error,
     but it means you can overshoot your target and then the response will look like an oscillating graph. */
-    public static final double kP = 100.0;
+    public static final double kP = 35.0;
 
     /* I value is generally used to correct steady-state error
     (e.g. your goal is 100, but you are at 99, so the sum of error
@@ -90,8 +90,8 @@ public class GROUND {
     public enum SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
       INTAKE_ALGAE(Degrees.of(54.61)),
-      INTAKE_CORAL(Degrees.of(99.765)),
-      L1(Degrees.of(15));
+      INTAKE_CORAL(Degrees.of(110)),
+      L1(Degrees.of(40));
 
       private final Angle angle;
 
@@ -116,10 +116,10 @@ public class GROUND {
 
     // TODO: update speeds later
     public enum INTAKE_SPEED {
-      CORAL(0.5),
+      CORAL(-0.60),
       ALGAE(0.5),
-      SCORE_L1(0.5),
-      SCORE_ALGAE(0.5);
+      SCORE_L1(0.12),
+      SCORE_ALGAE(-0.5);
 
       private final double value;
 

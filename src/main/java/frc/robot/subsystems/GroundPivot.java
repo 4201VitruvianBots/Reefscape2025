@@ -48,7 +48,8 @@ public class GroundPivot extends SubsystemBase {
 
   private Angle m_desiredAngle = GROUND.PIVOT.SETPOINT.STOWED.get();
 
-  private final MotionMagicVoltage m_request = new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
+  private final MotionMagicVoltage m_request =
+      new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
 
   // Simulation setup
   private final SingleJointedArmSim m_pivotSim =
@@ -183,7 +184,6 @@ public class GroundPivot extends SubsystemBase {
     m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
   }
 
-
   public void testInit() {
     m_pivotTab.getDoubleTopic("kS").publish().set(PIVOT.kS);
     m_pivotTab.getDoubleTopic("kV").publish().set(PIVOT.kV);
@@ -256,7 +256,7 @@ public class GroundPivot extends SubsystemBase {
     // periodic, update the profile setpoint for 20 ms loop time
     switch (m_controlMode) {
       case CLOSED_LOOP:
-          m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
+        m_pivotMotor.setControl(m_request.withPosition(m_desiredAngle));
         break;
       case OPEN_LOOP:
       default:

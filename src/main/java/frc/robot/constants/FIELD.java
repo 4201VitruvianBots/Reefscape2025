@@ -431,7 +431,7 @@ public class FIELD {
           aprilTagPose.plus(
               new Transform2d(
                   baseAlgaeTargetOffset.plus(new Translation2d(offset.in(Meters), 0)),
-                  Rotation2d.kZero));
+                  Rotation2d.k180deg));
 
       this.pose = aprilTagPose;
       this.targetPose = targetPose;
