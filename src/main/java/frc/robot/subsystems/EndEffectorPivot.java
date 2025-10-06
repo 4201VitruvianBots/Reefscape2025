@@ -341,7 +341,7 @@ public class EndEffectorPivot extends SubsystemBase {
     switch (m_controlMode) {
       case NET:
         double bargePercentOutput = 1.0;
-        if (getCANcoderAngleDegrees() <= 10.0) {
+        if (getCANcoderAngleDegrees() <= 5.0) {
           setPercentOutput(0.0);
         } else {
           setPercentOutput(-bargePercentOutput);

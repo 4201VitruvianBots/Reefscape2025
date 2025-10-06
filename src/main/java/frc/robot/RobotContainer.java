@@ -601,9 +601,9 @@ public class RobotContainer {
                       new SequentialCommandGroup(
                           new RunEndEffectorIntake(
                                   m_endEffector, ROLLER_SPEED.HOLD_ALGAE_BARGE_FLICK)
-                              .withTimeout(0.15),
+                              .withTimeout(0.14),
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
-                              .withTimeout(0.5)),
+                              .withTimeout(0.46)),
                       new EndEffectorBarge(m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
