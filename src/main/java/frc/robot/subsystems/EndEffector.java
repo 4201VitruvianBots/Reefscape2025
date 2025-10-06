@@ -58,6 +58,7 @@ public class EndEffector extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ROLLERS.gearRatio;
     config.MotorOutput.PeakForwardDutyCycle = ENDEFFECTOR.ROLLERS.peakForwardOutput;
     config.MotorOutput.PeakReverseDutyCycle = ENDEFFECTOR.ROLLERS.peakReverseOutput;
+    config.CurrentLimits.StatorCurrentLimit = 45;
     CtreUtils.configureTalonFx(m_endEffectorMotor, config);
 
     setName("EndEffector");

@@ -18,8 +18,8 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
-    public static final double peakForwardOutput = 0.2;
-    public static final double peakReverseOutput = -0.4;
+    public static final double peakForwardOutput = 0.25;
+    public static final double peakReverseOutput = -1.0;
 
     public enum ROLLER_SPEED {
       // Coral
