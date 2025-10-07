@@ -18,7 +18,7 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
-    public static final double peakForwardOutput = 0.25;
+    public static final double peakForwardOutput = 0.35;
     public static final double peakReverseOutput = -1.0;
 
     public enum ROLLER_SPEED {
@@ -32,7 +32,7 @@ public class ENDEFFECTOR {
 
       // Algae
       // INTAKE_ALGAE_GROUND(0.35),
-      INTAKE_ALGAE_REEF(0.5),
+      INTAKE_ALGAE_REEF(0.55),
       HOLD_ALGAE_BARGE_FLICK(0.35),
       OUTTAKE_ALGAE_BARGE(-1.0),
       OUTTAKE_ALGAE_PROCESSOR(-0.35);
