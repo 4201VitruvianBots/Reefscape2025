@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
@@ -341,7 +342,7 @@ public class EndEffectorPivot extends SubsystemBase {
     switch (m_controlMode) {
       case NET:
         double bargePercentOutput = 1.0;
-        if (getCANcoderAngleDegrees() <= 5.0) {
+        if (getCANcoderAngleDegrees() <= ENDEFFECTOR.PIVOT.flickStopAngle) {
           setPercentOutput(0.0);
         } else {
           setPercentOutput(-bargePercentOutput);

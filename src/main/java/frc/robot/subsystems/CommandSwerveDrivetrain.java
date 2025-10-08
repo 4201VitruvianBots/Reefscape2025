@@ -425,7 +425,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Sw
               });
     }
     // poseEstimator.update(getPigeon2().getRotation2d(), getModulePositions());
-    SmartDashboard.putNumber("gyro angle", getPigeon2().getYaw().getValueAsDouble());
+    SmartDashboard.putNumber("Gyro Angle", getPigeon2().getYaw().getValueAsDouble());
   }
 
   private void startSimThread() {

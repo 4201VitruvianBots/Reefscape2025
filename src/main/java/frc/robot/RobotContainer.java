@@ -33,8 +33,8 @@ import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.ground.GroundPivotSetpoint;
 import frc.robot.commands.ground.SetGroundIntakeSpeed;
-import frc.robot.commands.ground.SetGroundPivotSetpoint;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
@@ -423,7 +423,7 @@ public class RobotContainer {
   private ParallelCommandGroup moveGround(
       SETPOINT groundPivotSetpoint, INTAKE.INTAKE_SPEED intakeSpeed) {
     return new ParallelCommandGroup(
-        new SetGroundPivotSetpoint(m_groundPivot, groundPivotSetpoint),
+        new GroundPivotSetpoint(m_groundPivot, groundPivotSetpoint),
         new SetGroundIntakeSpeed(m_groundIntake, intakeSpeed));
   }
 
@@ -531,18 +531,18 @@ public class RobotContainer {
                       m_controls::isGamePieceAlgae)))
           .onFalse(
               new ConditionalCommand(
-                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
-                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
                   m_controls::isGamePieceAlgae));
 
       m_operatorController
           .leftBumper()
           .whileTrue(
               new ConditionalCommand(
-                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
-                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.L1),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.L1),
                   m_controls::isGamePieceAlgae))
-          .onFalse(new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED));
+          .onFalse(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED));
 
       m_operatorController
           .povLeft()
@@ -567,7 +567,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
           .onFalse(
               new ParallelCommandGroup(
-                  new SetGroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
                   new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
     }
 
