@@ -39,7 +39,6 @@ public class GroundPivotSetpoint extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (!m_auto) m_groundPivot.setDesiredSetpoint(PIVOT.SETPOINT.STOWED.get());
   }
 
   // Returns true when the command should end.
