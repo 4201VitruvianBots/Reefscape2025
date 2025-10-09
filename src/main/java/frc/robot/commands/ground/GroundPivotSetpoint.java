@@ -6,7 +6,6 @@ package frc.robot.commands.ground;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.GROUND.PIVOT;
 import frc.robot.constants.GROUND.PIVOT.SETPOINT;
 import frc.robot.subsystems.GroundPivot;
 
@@ -38,8 +37,7 @@ public class GroundPivotSetpoint extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
