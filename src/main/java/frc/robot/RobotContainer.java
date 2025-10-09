@@ -660,7 +660,7 @@ public class RobotContainer {
                   new GroundPivotSetpoint(
                       m_groundPivot,
                       SETPOINT
-                          .INTAKE_CORAL))); // move hopper out of the way and yes IK it's stupid to
+                          .INTAKE_CORAL))).onFalse(new GroundPivotSetpoint(m_groundPivot, SETPOINT.INTAKE_CORAL)); // move hopper out of the way and yes IK it's stupid to
       // use a command here but this is the best way to move
       // it in parallel
     }
