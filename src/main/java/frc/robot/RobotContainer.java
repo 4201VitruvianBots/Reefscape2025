@@ -167,7 +167,7 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      //      m_v2Climber = new V2Climber();
+      m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
       m_groundPivot = new GroundPivot();
       m_groundIntake = new GroundIntake();
