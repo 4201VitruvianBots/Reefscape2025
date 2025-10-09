@@ -85,7 +85,7 @@ public class ROBOT {
 
   public static void initV3() {
     robotID = ROBOT_ID.V3;
-    PWM.servo = 0;
+    PWM.servo = 9;
   }
 
   public static void initSim() {

@@ -28,6 +28,7 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
+import frc.robot.commands.climber.RunServo;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
@@ -650,13 +651,18 @@ public class RobotContainer {
           .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
     }
 
-    if (m_hopperIntake != null) {
+    if (m_hopperIntake != null && m_groundPivot != null) {
       m_operatorController
           .start()
           .whileTrue(
-              Commands.startEnd(
-                  () -> m_hopperIntake.moveServo(1.0),
-                  () -> m_hopperIntake.stopServo())); // move hopper out of the way
+              new ParallelCommandGroup(
+                  new RunServo(m_hopperIntake, 1.0),
+                  new GroundPivotSetpoint(
+                      m_groundPivot,
+                      SETPOINT
+                          .INTAKE_CORAL))); // move hopper out of the way and yes IK it's stupid to
+      // use a command here but this is the best way to move
+      // it in parallel
     }
   }
 

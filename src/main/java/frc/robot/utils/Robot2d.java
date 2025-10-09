@@ -201,7 +201,6 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("GroundPivot")) {
       var groundPivotSubsystem = (GroundPivot) m_subsystemMap.get("GroundPivot");
-      //      m_groundIntakePivot2d.update(groundPivotSubsystem.getAngle());
       m_groundIntakePivot2d.update(Degrees.of(0).minus(groundPivotSubsystem.getAngle()));
     }
 
