@@ -26,9 +26,9 @@ public class ENDEFFECTOR {
       AUTOUTTAKE_CORAL(-0.6),
 
       OUTTAKE_CORAL(-0.4),
-      INTAKE_CORAL(-0.2),
+      INTAKE_CORAL(-0.15),
       CORAL_REVERSE(0.2),
-      ZERO(0),
+      ZERO(0.0),
 
       // Algae
       // INTAKE_ALGAE_GROUND(0.35),
