@@ -18,15 +18,15 @@ public class ENDEFFECTOR {
     public static final double gearRatio = 1.0;
     public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
-    public static final double peakForwardOutput = 0.35;
+    public static final double peakForwardOutput = 1.0;
     public static final double peakReverseOutput = -1.0;
 
     public enum ROLLER_SPEED {
       // Coral
       AUTOUTTAKE_CORAL(-0.6),
 
-      OUTTAKE_CORAL(-0.2),
-      INTAKE_CORAL(-0.1),
+      OUTTAKE_CORAL(-0.4),
+      INTAKE_CORAL(-0.2),
       CORAL_REVERSE(0.2),
       ZERO(0),
 
@@ -90,7 +90,7 @@ public class ENDEFFECTOR {
       INTAKE_ALGAE_LOW(Degrees.of(170.0)),
       INTAKE_ALGAE_HIGH(Degrees.of(165)),
       // INTAKE_HOPPER(Degrees.of(-3.0)),
-      INTAKE_HOPPER(Degrees.of(5.0)),
+      INTAKE_HOPPER(Degrees.of(10.0)),
       INTAKE_ALGAE_GROUND(Degrees.of(-15.0)), // TODO: find out the correct setpoint
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),

@@ -586,7 +586,7 @@ public class RobotContainer {
                       .until(m_endEffector::hasCoral)
                       .andThen(
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                              .withTimeout(0.2)),
+                              .withTimeout(0.05)),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(
