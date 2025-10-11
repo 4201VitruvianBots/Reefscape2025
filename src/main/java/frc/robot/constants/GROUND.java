@@ -89,9 +89,9 @@ public class GROUND {
 
     public enum SETPOINT {
       STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      INTAKE_ALGAE(Degrees.of(54.61)),
-      INTAKE_CORAL(Degrees.of(110)),
-      L1(Degrees.of(40));
+      INTAKE_ALGAE(Degrees.of(65.0)),
+      INTAKE_CORAL(Degrees.of(125.0)),
+      L1(Degrees.of(40.0));
 
       private final Angle angle;
 
