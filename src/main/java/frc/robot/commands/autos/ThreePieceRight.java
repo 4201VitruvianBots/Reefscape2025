@@ -67,8 +67,8 @@ public class ThreePieceRight extends SequentialCommandGroup {
           new WaitCommand(0.25).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-                  new WaitCommand(0.3))
-              .withName("Run end effector for 0.3 secs"),
+                  new WaitCommand(0.4))
+              .withName("Run end effector for 0.4 secs"),
           new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
@@ -80,7 +80,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)))
               .until(endEffector::hasCoral)
               .withName("Intake from HP station"),
-          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.25 secs"),
+          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.03 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
                   new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
@@ -95,8 +95,8 @@ public class ThreePieceRight extends SequentialCommandGroup {
               .withName("Move to L4 setpoint"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
-                  new WaitCommand(0.2))
-              .withName("Run end effector for 0.2 seconds"),
+                  new WaitCommand(0.3))
+              .withName("Run end effector for 0.3 seconds"),
           new ParallelCommandGroup(
                   m_ppCommand5.andThen(() -> swerveDrive.setControl(stopRequest)),
                   new ParallelCommandGroup(
@@ -106,7 +106,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
                       new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL)))
               .until(endEffector::hasCoral)
               .withName("Intake from HP station"),
-          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.25 secs"),
+          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.03 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
                   new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
