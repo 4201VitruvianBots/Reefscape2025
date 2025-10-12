@@ -138,7 +138,7 @@ public class RobotContainer {
   @NotLogged
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
+          .withDeadband(MaxSpeed * 0.3)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
 
   @NotLogged boolean isInit = false;
@@ -586,12 +586,12 @@ public class RobotContainer {
                       .until(m_endEffector::hasCoral)
                       .andThen(
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                              .withTimeout(0.2)),
+                              .withTimeout(HOPPERINTAKE.hopperIntakeBeamBreakTimeout)),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                  .withTimeout(1));
+                  .withTimeout(1.0));
 
       // Coral Reverse / Algae Outtake
       m_operatorController

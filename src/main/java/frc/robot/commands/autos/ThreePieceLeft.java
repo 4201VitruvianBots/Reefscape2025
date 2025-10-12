@@ -80,7 +80,7 @@ public class ThreePieceLeft extends SequentialCommandGroup {
                       new EndEffectorSetpoint(endEffectorPivot, PIVOT_SETPOINT.INTAKE_HOPPER)))
               .until(endEffector::hasCoral)
               .withName("Intake from HP station"),
-          new WaitCommand(0.25).withName("Wait 0.25 secs"),
+          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
                   new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
@@ -106,7 +106,7 @@ public class ThreePieceLeft extends SequentialCommandGroup {
                       new RunEndEffectorIntake(endEffector, ROLLER_SPEED.INTAKE_CORAL)))
               .until(endEffector::hasCoral)
               .withName("Intake from HP station"),
-          new WaitCommand(0.25).withName("Wait 0.25 secs"),
+          new WaitCommand(HOPPERINTAKE.hopperIntakeBeamBreakTimeout).withName("Wait 0.25 secs"),
           new ParallelCommandGroup(
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO),
                   new RunHopperIntake(hopperIntake, HOPPERINTAKE.INTAKE_SPEED.ZERO))
