@@ -643,7 +643,7 @@ public class RobotContainer {
     if (m_climber != null) {
       m_operatorController
           .back()
-          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(6.0))); // 40% output
     }
     if (m_v2Climber != null) {
       m_operatorController
