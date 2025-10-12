@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0125068744002954,
-        "y": 1.4831837582467258
+        "x": 2.3120525794805538,
+        "y": 1.5578067034175078
       },
       "isLocked": false,
       "linkedName": "2peice2end"
     },
     {
       "anchor": {
-        "x": 3.9786647727272726,
-        "y": 2.8633096590909086
+        "x": 3.985177820784003,
+        "y": 2.815
       },
       "prevControl": {
-        "x": 3.7806747727238776,
-        "y": 2.677989583595182
+        "x": 3.522379387418582,
+        "y": 2.4847793902617523
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 54.638
+    "rotation": 59.00000000000001
   },
   "reversed": false,
   "folder": "TwoPieceL",
