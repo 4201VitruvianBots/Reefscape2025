@@ -17,7 +17,7 @@ public class HOPPERINTAKE {
   public static final double kInertia = 0.001;
   public static final double peakForwardOutput = 0.6;
   public static final double peakReverseOutput = -0.4;
-  public static final double hopperIntakeBeamBreakTimeout = 0.06;
+  public static final double hopperIntakeBeamBreakTimeout = 0.03;
 
   public enum INTAKE_SPEED {
     INTAKING(0.6),
