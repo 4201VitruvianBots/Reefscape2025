@@ -9,7 +9,6 @@ import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +40,9 @@ public class PlotAutoPath extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (!DriverStation.isFMSAttached()) { // This causes significant delay on the autos. During competition we don't want this
+    if (!DriverStation
+        .isFMSAttached()) { // This causes significant delay on the autos. During competition we
+      // don't want this
       try {
         var trajectory = m_swerveDrive.getTrajectoryUtils().getTrajectoryFromPathPlanner(m_path);
         m_fieldSim.addTrajectory(trajectory);
