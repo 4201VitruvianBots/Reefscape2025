@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.concurrent.locks.Condition;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -37,6 +39,7 @@ import frc.robot.commands.endEffector.RunEndEffectorIntake;
 import frc.robot.commands.ground.GroundPivotSetpoint;
 import frc.robot.commands.ground.SetGroundIntakeSpeed;
 import frc.robot.commands.swerve.DriveToTarget;
+import frc.robot.commands.swerve.LockMovementBackwards;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
@@ -436,6 +439,34 @@ public class RobotContainer {
 
     // Algae Toggle
     m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
+
+    if (m_swerveDrive != null){
+      m_driverController.leftBumper().whileTrue(new ConditionalCommand(m_swerveDrive.applyRequest(
+        () -> {
+          drive
+              .withVelocityX(
+                  -m_driverController.getLeftY()
+                      * MaxSpeed); // Drive forward with negative Y (forward)
+          return drive;
+        }), driveToTarget.generateCommand(isInit), m_controls::isGamePieceAlgae)).onFalse(new ConditionalCommand(m_swerveDrive.applyRequest(
+          () -> {
+            var rotationRate = -m_driverController.getRightX() * MaxAngularRate;
+            // // if heading target
+            // if (m_swerveDrive.isTrackingState()) {
+            //   rotationRate = m_swerveDrive.calculateRotationToTarget();
+            // }
+            drive
+                .withVelocityX(
+                    -m_driverController.getLeftY()
+                        * MaxSpeed) // Drive forward with negative Y (forward)
+                .withVelocityY(
+                    -m_driverController.getLeftX()
+                        * MaxSpeed) // Drive left with negative X (left)
+                .withRotationalRate(
+                    rotationRate); // Drive counterclockwise with negative X (left)
+            return drive;
+          }), null, m_controls::isGamePieceAlgae));
+    }
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
