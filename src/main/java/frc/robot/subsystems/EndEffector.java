@@ -42,8 +42,7 @@ public class EndEffector extends SubsystemBase {
   private final StatusSignal<Current> m_torqueCurrentSignal =
       m_endEffectorMotor.getTorqueCurrent().clone();
 
-
-  private NeutralModeValue m_neutralMode = NeutralModeValue.Coast;  
+  private NeutralModeValue m_neutralMode = NeutralModeValue.Coast;
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.kInertia, ROLLERS.gearRatio),
