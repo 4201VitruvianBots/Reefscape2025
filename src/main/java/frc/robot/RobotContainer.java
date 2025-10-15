@@ -685,10 +685,6 @@ public class RobotContainer {
       m_climber.disabledInit();
     }
 
-    if (m_endEffector != null) {
-      m_endEffector.setNeutralMode(NeutralModeValue.Coast);
-    }
-
     // A bit messy, but it works
   }
 
