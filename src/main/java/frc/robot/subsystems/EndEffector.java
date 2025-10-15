@@ -42,6 +42,7 @@ public class EndEffector extends SubsystemBase {
   private final StatusSignal<Current> m_torqueCurrentSignal =
       m_endEffectorMotor.getTorqueCurrent().clone();
 
+  private NeutralModeValue m_neutralMode = NeutralModeValue.Brake;
   private final DCMotorSim m_endEffectorSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(ROLLERS.gearbox, ROLLERS.kInertia, ROLLERS.gearRatio),
@@ -54,7 +55,7 @@ public class EndEffector extends SubsystemBase {
     config.Slot0.kP = ROLLERS.kP;
     config.Slot0.kI = ROLLERS.kI;
     config.Slot0.kD = ROLLERS.kD;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = m_neutralMode;
     config.Feedback.SensorToMechanismRatio = ROLLERS.gearRatio;
     config.MotorOutput.PeakForwardDutyCycle = ENDEFFECTOR.ROLLERS.peakForwardOutput;
     config.MotorOutput.PeakReverseDutyCycle = ENDEFFECTOR.ROLLERS.peakReverseOutput;
@@ -76,6 +77,12 @@ public class EndEffector extends SubsystemBase {
   public boolean getSensorInput1() {
     // Disabled until sensor installed
     return !m_beamBreakSensor.get();
+  }
+
+  public void setNeutralMode(NeutralModeValue neutralMode) {
+    if (neutralMode == m_neutralMode) return;
+    m_neutralMode = neutralMode;
+    m_endEffectorMotor.setNeutralMode(neutralMode);
   }
 
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
