@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
+import frc.robot.constants.GROUND;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.*;
 import java.util.HashMap;
@@ -129,6 +130,21 @@ public class Robot2d {
   final Flywheel2d m_endEffectorRoller =
       new Flywheel2d(new Flywheel2dConfig("endEffectorRoller2d"), m_endEffectorIntake);
 
+  /** Declare a single point from the main Mechanism2d to attach the Elevator2d */
+  private final MechanismRoot2d m_groundIntakePivotRoot =
+      m_robot.getRoot("GroundIntakePivotRoot", Inches.of(30).magnitude(), Inches.of(6).magnitude());
+
+  /** Create an Arm2d to represent the GroundIntakePivot */
+  private final Arm2d m_groundIntakePivot2d =
+      new Arm2d(
+          new Arm2dConfig(
+                  "GroundIntakePivot2d",
+                  new Color8Bit(255, 50, 50),
+                  GROUND.PIVOT.startingAngle,
+                  GROUND.PIVOT.pivotLength)
+              .withLineWidth(Inches.of(1).magnitude() * pixelsPerInch),
+          m_groundIntakePivotRoot);
+
   /** Map of subsystems for Robot2d to update */
   private final Map<String, Subsystem> m_subsystemMap = new HashMap<>();
 
@@ -185,6 +201,7 @@ public class Robot2d {
 
     if (m_subsystemMap.containsKey("GroundPivot")) {
       var groundPivotSubsystem = (GroundPivot) m_subsystemMap.get("GroundPivot");
+      m_groundIntakePivot2d.update(Degrees.of(0).minus(groundPivotSubsystem.getAngle()));
     }
 
     if (m_subsystemMap.containsKey("GroundIntake")) {

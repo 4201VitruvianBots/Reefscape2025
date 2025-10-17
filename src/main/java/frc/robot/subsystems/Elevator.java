@@ -34,7 +34,8 @@ import org.team4201.codex.utils.CtreUtils;
 
 public class Elevator extends SubsystemBase {
   private final TalonFX[] elevatorMotors = {
-    new TalonFX(CAN.elevatorMotor1), new TalonFX(CAN.elevatorMotor2)
+    new TalonFX(CAN.elevatorMotor1, CAN.driveBaseCanbus),
+    new TalonFX(CAN.elevatorMotor2, CAN.driveBaseCanbus)
   };
 
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);

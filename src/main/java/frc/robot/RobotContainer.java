@@ -15,13 +15,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
@@ -30,12 +28,14 @@ import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
 import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
+import frc.robot.commands.climber.RunServo;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
-import frc.robot.commands.endEffector.EndEffectorJoystick;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
 import frc.robot.commands.endEffector.RunEndEffectorIntake;
+import frc.robot.commands.ground.GroundPivotSetpoint;
+import frc.robot.commands.ground.SetGroundIntakeSpeed;
 import frc.robot.commands.swerve.DriveToTarget;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.SwerveCharacterization;
@@ -43,6 +43,9 @@ import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
 import frc.robot.constants.FIELD;
+import frc.robot.constants.GROUND;
+import frc.robot.constants.GROUND.INTAKE;
+import frc.robot.constants.GROUND.PIVOT.SETPOINT;
 import frc.robot.constants.HOPPERINTAKE;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.SWERVE;
@@ -79,6 +82,12 @@ public class RobotContainer {
   @Logged(name = "Vision", importance = Logged.Importance.INFO)
   private final Vision m_vision = new Vision(m_controls);
 
+  @Logged(name = "Ground Pivot", importance = Logged.Importance.INFO)
+  private GroundPivot m_groundPivot;
+
+  @Logged(name = "Ground Intake", importance = Logged.Importance.INFO)
+  private GroundIntake m_groundIntake;
+
   // AlphaBot subsystems
   private CoralOuttake m_coralOuttake;
   private AlgaeIntake m_algaeIntake;
@@ -110,12 +119,13 @@ public class RobotContainer {
 
   @NotLogged private final SendableChooser<Command> m_sysidChooser = new SendableChooser<>();
 
-  @NotLogged private final Joystick leftJoystick = new Joystick(USB.leftJoystick);
-  @NotLogged private final Joystick rightJoystick = new Joystick(USB.rightJoystick);
-
   @NotLogged
   private final CommandXboxController m_driverController =
-      new CommandXboxController(USB.xBoxController);
+      new CommandXboxController(USB.driver_xBoxController);
+
+  @NotLogged
+  private final CommandXboxController m_operatorController =
+      new CommandXboxController(USB.operator_xBoxController);
 
   @NotLogged private double MaxSpeed;
 
@@ -128,7 +138,7 @@ public class RobotContainer {
   @NotLogged
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
+          .withDeadband(MaxSpeed * 0.3)
           .withRotationalDeadband(MaxAngularRate * 0.1); // Add a 10% deadband
 
   @NotLogged boolean isInit = false;
@@ -157,8 +167,10 @@ public class RobotContainer {
       m_elevator = new Elevator();
       m_endEffector = new EndEffector();
       m_endEffectorPivot = new EndEffectorPivot();
-      //      m_v2Climber = new V2Climber();
+      m_climber = new Climber();
       m_hopperIntake = new HopperIntake();
+      m_groundPivot = new GroundPivot();
+      m_groundIntake = new GroundIntake();
     } else if (ROBOT.robotID.equals(ROBOT.ROBOT_ID.V2)) {
       MaxSpeed =
           V2Constants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -205,17 +217,18 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         m_swerveDrive.applyRequest(
             () -> {
-              var rotationRate = rightJoystick.getRawAxis(0) * MaxAngularRate;
+              var rotationRate = -m_driverController.getRightX() * MaxAngularRate;
               // // if heading target
               // if (m_swerveDrive.isTrackingState()) {
               //   rotationRate = m_swerveDrive.calculateRotationToTarget();
               // }
               drive
                   .withVelocityX(
-                      leftJoystick.getRawAxis(1)
+                      -m_driverController.getLeftY()
                           * MaxSpeed) // Drive forward with negative Y (forward)
                   .withVelocityY(
-                      leftJoystick.getRawAxis(0) * MaxSpeed) // Drive left with negative X (left)
+                      -m_driverController.getLeftX()
+                          * MaxSpeed) // Drive left with negative X (left)
                   .withRotationalRate(
                       rotationRate); // Drive counterclockwise with negative X (left)
               return drive;
@@ -227,11 +240,11 @@ public class RobotContainer {
     }
     if (m_climber != null) {
       m_climber.setDefaultCommand(
-          new RunClimberVoltageJoystick(m_climber, () -> -m_driverController.getLeftY()));
+          new RunClimberVoltageJoystick(m_climber, () -> -m_operatorController.getLeftY()));
     }
     if (m_endEffectorPivot != null) {
-      m_endEffectorPivot.setDefaultCommand(
-          new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
+      // m_endEffectorPivot.setDefaultCommand(
+      //     new EndEffectorJoystick(m_endEffectorPivot, () -> -m_driverController.getRightY()));
     }
   }
 
@@ -372,33 +385,25 @@ public class RobotContainer {
   }
 
   private void configureAlphaBotBindings() {
-    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
-    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
-    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
-    leftTargetTrackingButton.onTrue(driveToTarget.generateCommand(true));
-
-    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
-    rightTargetTrackingButton.onTrue(driveToTarget.generateCommand(false));
-
-    m_driverController.y().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.x().whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
-      m_driverController
+      m_operatorController
           .leftBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
-      m_driverController
+      m_operatorController
           .rightBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, -0.15)); // intake
     }
 
     if (m_algaeIntake != null) {
       // TODO: Make speeds into enum setpoints
-      m_driverController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
-      m_driverController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
+      m_operatorController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
+      m_operatorController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     }
   }
 
@@ -416,24 +421,24 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
+  private ParallelCommandGroup moveGround(
+      SETPOINT groundPivotSetpoint, INTAKE.INTAKE_SPEED intakeSpeed) {
+    return new ParallelCommandGroup(
+        new GroundPivotSetpoint(m_groundPivot, groundPivotSetpoint),
+        new SetGroundIntakeSpeed(m_groundIntake, intakeSpeed));
+  }
+
   private void configureBindings() {
-    Trigger leftTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(1));
-    Trigger rightTargetTrackingButton = new Trigger(() -> rightJoystick.getRawButton(2));
-    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision);
+    var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
-    m_driverController.povLeft().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.povRight().whileTrue(driveToTarget.generateCommand(false));
-    // leftTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, true));
-    leftTargetTrackingButton.whileTrue(driveToTarget.generateCommand(true));
-
-    // rightTargetTrackingButton.onTrue(new SetBranchTarget(m_vision, false));
-    rightTargetTrackingButton.whileTrue(driveToTarget.generateCommand(false));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     // Algae Toggle
-    m_driverController.leftBumper().onTrue(new ToggleGamePiece(m_controls));
+    m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
-      m_driverController
+      m_operatorController
           .a()
           .whileTrue(
               new ConditionalCommand(
@@ -451,7 +456,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .x()
           .whileTrue(
               new ConditionalCommand(
@@ -470,7 +475,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .y()
           .whileTrue(
               new ConditionalCommand(
@@ -494,7 +499,7 @@ public class RobotContainer {
                       .withTimeout(1),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .b()
           .whileTrue(
               new ConditionalCommand(
@@ -513,29 +518,83 @@ public class RobotContainer {
                   m_controls::isGamePieceAlgae));
     }
 
-    // Ground intake on left trigger, TODO: implement
-    // Ground intake algae on povDown, TODO: implement
+    // Ground intake
+    if (m_groundIntake != null && m_groundPivot != null) {
+      m_operatorController
+          .leftTrigger()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  new ConditionalCommand(
+                      moveGround(
+                          GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
+                      moveGround(
+                          GROUND.PIVOT.SETPOINT.INTAKE_CORAL, GROUND.INTAKE.INTAKE_SPEED.CORAL),
+                      m_controls::isGamePieceAlgae)))
+          .onFalse(
+              new ConditionalCommand(
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  m_controls::isGamePieceAlgae));
+
+      m_operatorController
+          .leftBumper()
+          .whileTrue(
+              new ConditionalCommand(
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.L1),
+                  m_controls::isGamePieceAlgae))
+          .onFalse(new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED));
+
+      m_operatorController
+          .povLeft()
+          .whileTrue(
+              new ConditionalCommand(
+                  new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
+                  new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_L1),
+                  m_controls::isGamePieceAlgae));
+    }
+
+    // Ground intake pass to end effector
+    if (m_groundIntake != null
+        && m_groundPivot != null
+        && m_endEffectorPivot != null
+        && m_endEffector != null) {
+      m_operatorController
+          .povRight()
+          .whileTrue(
+              new ParallelCommandGroup(
+                  moveGround(GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND),
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
+          .onFalse(
+              new ParallelCommandGroup(
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
+                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
+    }
 
     if (m_hopperIntake != null
         && m_endEffectorPivot != null
         && m_endEffector != null
         && m_elevator != null) {
       // Ready hopper
-      m_driverController
+      m_operatorController
           .povUp()
           .whileTrue(
               new ParallelCommandGroup(
                   new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.INTAKING),
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
-                      .until(m_endEffector::hasCoral),
+                      .until(m_endEffector::hasCoral)
+                      .andThen(
+                          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_CORAL)
+                              .withTimeout(HOPPERINTAKE.hopperIntakeBeamBreakTimeout)),
                   moveSuperStructure(
                       ELEVATOR_SETPOINT.INTAKE_HOPPER, PIVOT_SETPOINT.INTAKE_HOPPER)))
           .onFalse(
               moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                  .withTimeout(1));
+                  .withTimeout(1.0));
 
       // Coral Reverse / Algae Outtake
-      m_driverController
+      m_operatorController
           .povDown()
           .whileTrue(
               new ConditionalCommand(
@@ -543,9 +602,9 @@ public class RobotContainer {
                       new SequentialCommandGroup(
                           new RunEndEffectorIntake(
                                   m_endEffector, ROLLER_SPEED.HOLD_ALGAE_BARGE_FLICK)
-                              .withTimeout(0.15),
+                              .withTimeout(0.14),
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
-                              .withTimeout(0.5)),
+                              .withTimeout(0.46)),
                       new EndEffectorBarge(m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
@@ -564,7 +623,7 @@ public class RobotContainer {
 
     if (m_endEffector != null) {
       // Score Coral / Algae Intake
-      m_driverController
+      m_operatorController
           .rightTrigger()
           .whileTrue(
               new ConditionalCommand(
@@ -572,7 +631,7 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL),
                   m_controls::isGamePieceAlgae));
 
-      m_driverController
+      m_operatorController
           .rightBumper()
           .whileTrue(
               new ConditionalCommand(
@@ -582,23 +641,29 @@ public class RobotContainer {
     }
 
     if (m_climber != null) {
-      m_driverController
+      m_operatorController
           .back()
-          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(4.8))); // 40% output
+          .whileTrue(new RunClimberVoltage(m_climber, Volts.of(6.0))); // 40% output
     }
     if (m_v2Climber != null) {
-      m_driverController
+      m_operatorController
           .back()
           .whileTrue(new RunV2ClimberVoltage(m_v2Climber, Volts.of(2.5))); // 20.8% output
     }
 
-    if (m_hopperIntake != null) {
-      m_driverController
+    if (m_hopperIntake != null && m_groundPivot != null) {
+      m_operatorController
           .start()
           .whileTrue(
-              Commands.startEnd(
-                  () -> m_hopperIntake.moveServo(1.0),
-                  () -> m_hopperIntake.stopServo())); // move hopper out of the way
+              new ParallelCommandGroup(
+                  new RunServo(m_hopperIntake, 1.0),
+                  new GroundPivotSetpoint(m_groundPivot, SETPOINT.INTAKE_CORAL)))
+          .onFalse(
+              new GroundPivotSetpoint(
+                  m_groundPivot,
+                  SETPOINT.INTAKE_CORAL)); // move hopper out of the way and yes IK it's stupid to
+      // use a command here but this is the best way to move
+      // it in parallel
     }
   }
 
@@ -670,18 +735,20 @@ public class RobotContainer {
 
   public void teleopInit() {
     m_swerveDrive.setNeutralMode(SWERVE.MOTOR_TYPE.ALL, NeutralModeValue.Brake);
+    m_endEffector.setNeutralMode(NeutralModeValue.Brake);
     if (m_elevator != null) m_elevator.teleopInit();
     if (m_hopperIntake != null) m_hopperIntake.teleopInit();
     if (m_endEffectorPivot != null) m_endEffectorPivot.teleopInit();
     if (m_climber != null) m_climber.teleopInit();
+    if (m_groundPivot != null) m_groundPivot.teleopInit();
   }
 
   public void teleopPeriodic() {
-    m_vision.setTargetLock(m_driverController.y().getAsBoolean());
+    m_vision.setTargetLock(m_operatorController.y().getAsBoolean());
     if (m_vision.isOnTarget()) {
-      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
+      m_operatorController.getHID().setRumble(RumbleType.kBothRumble, 0.2);
     } else {
-      m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
+      m_operatorController.getHID().setRumble(RumbleType.kBothRumble, 0);
     }
   }
 

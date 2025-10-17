@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
+import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
@@ -70,6 +71,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
 
+  @Logged(name = "Encoder Latency", importance = Logged.Importance.INFO)
+  private double enocderLatency = 0;
+
   // Simulation Code
   private final SingleJointedArmSim m_endEffectorSim =
       new SingleJointedArmSim(
@@ -100,6 +104,15 @@ public class EndEffectorPivot extends SubsystemBase {
 
   /** Creates a new EndEffectorPivot. */
   public EndEffectorPivot() {
+    // Configure the CANcoder
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    if (RobotBase.isReal()) {
+      encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
+      encoderConfig.MagnetSensor.SensorDirection = PIVOT.encoderDirection;
+      // encoderConfig.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(0.73611);
+    }
+    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
+
     // Configure the Motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     if (RobotBase.isReal()) {
@@ -116,8 +129,8 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+    // motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     if (motorConfig.Feedback.FeedbackSensorSource == FeedbackSensorSourceValue.RotorSensor) {
       // For internal TalonFX Sensor
       motorConfig.Feedback.SensorToMechanismRatio = PIVOT.pivotGearRatio;
@@ -127,14 +140,6 @@ public class EndEffectorPivot extends SubsystemBase {
       motorConfig.Feedback.FeedbackRemoteSensorID = m_pivotEncoder.getDeviceID();
     }
     CtreUtils.configureTalonFx(m_pivotMotor, motorConfig);
-
-    // Configure the CANcoder
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    if (RobotBase.isReal()) {
-      encoderConfig.MagnetSensor.MagnetOffset = PIVOT.encoderOffset.magnitude();
-      encoderConfig.MagnetSensor.SensorDirection = PIVOT.encoderDirection;
-    }
-    CtreUtils.configureCANCoder(m_pivotEncoder, encoderConfig);
 
     if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
@@ -180,7 +185,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   // Base unit from CANcoder is in Radians
   public Angle getCANcoderAngle() {
-    return m_canCoderAbsolutePositionSignal.refresh().getValue();
+    m_canCoderAbsolutePositionSignal.refresh();
+    enocderLatency = m_canCoderAbsolutePositionSignal.getTimestamp().getLatency();
+    return m_canCoderAbsolutePositionSignal.getValue();
   }
 
   @Logged(name = "CANcoder Angle Degrees", importance = Logged.Importance.INFO)
@@ -335,7 +342,7 @@ public class EndEffectorPivot extends SubsystemBase {
     switch (m_controlMode) {
       case NET:
         double bargePercentOutput = 1.0;
-        if (getCANcoderAngleDegrees() <= 10.0) {
+        if (getCANcoderAngleDegrees() <= ENDEFFECTOR.PIVOT.flickStopAngle) {
           setPercentOutput(0.0);
         } else {
           setPercentOutput(-bargePercentOutput);

@@ -1,10 +1,5 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Rotations;
-
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
@@ -49,7 +44,7 @@ public class ROBOT {
     // Robot Serial Numbers (2025)
     ALPHABOT("030cbc95"), // Rio 1.0
     V2("032381FB"), // 23-1 Rio 2.0
-    V3("32398ed"), // 23-2 Rio 2.0
+    V3("032398ED"), // 23-2 Rio 2.0
 
     SIM("");
 
@@ -71,6 +66,13 @@ public class ROBOT {
     public String toString() {
       return value;
     }
+
+    public static ROBOT_ID fromSerial(String serial) {
+      for (ROBOT_ID id : ROBOT_ID.values()) {
+        if (id.value.equalsIgnoreCase(serial)) return id;
+      }
+      throw new IllegalArgumentException("Serial " + serial + " not defined in ROBOT_ID!");
+    }
   }
 
   public static void initAlphaBot() {
@@ -83,34 +85,7 @@ public class ROBOT {
 
   public static void initV3() {
     robotID = ROBOT_ID.V3;
-
-    ELEVATOR.kG = 0.34;
-    ELEVATOR.kS = 0.0;
-    ELEVATOR.kV = 3.2;
-    ELEVATOR.kA = 0.01;
-    ELEVATOR.kP = 200;
-    ELEVATOR.kI = 0.0;
-    ELEVATOR.kD = 0.0;
-    ELEVATOR.motionMagicCruiseVelocity = 2000;
-    ELEVATOR.motionMagicAcceleration = 4000;
-    // ELEVATOR.motionMagicJerk = 2000;
-    ELEVATOR.gearbox = DCMotor.getKrakenX60Foc(2);
-    ELEVATOR.kCarriageMass = Pounds.of(10.0);
-
-    ENDEFFECTOR.PIVOT.kP = 100.0;
-    ENDEFFECTOR.PIVOT.kI = 0.0;
-    ENDEFFECTOR.PIVOT.kD = 0.01;
-    ENDEFFECTOR.PIVOT.kG = 0.06;
-    ENDEFFECTOR.PIVOT.kV = 0.0;
-    ENDEFFECTOR.PIVOT.kA = 0.0;
-    ENDEFFECTOR.PIVOT.kMotionMagicVelocity = 360;
-    ENDEFFECTOR.PIVOT.kMotionMagicAcceleration = 600;
-    ENDEFFECTOR.PIVOT.pivotGearBox = DCMotor.getKrakenX60Foc(1);
-    ENDEFFECTOR.PIVOT.mass = Pounds.of(7); // TODO: Get actual values
-    ENDEFFECTOR.PIVOT.encoderOffset = Rotations.of(0.00341796875);
-    ENDEFFECTOR.PIVOT.encoderDirection = SensorDirectionValue.Clockwise_Positive;
-
-    PWM.servo = 0;
+    PWM.servo = 9;
   }
 
   public static void initSim() {
@@ -122,7 +97,7 @@ public class ROBOT {
     var alert = new Alert("Initializing Robot Constants...", AlertType.kInfo);
 
     try {
-      switch (ROBOT_ID.valueOf(RobotController.getSerialNumber())) {
+      switch (ROBOT_ID.fromSerial(RobotController.getSerialNumber())) {
         case ALPHABOT -> initAlphaBot();
         case V2 -> initV2();
         case V3 -> initV3();

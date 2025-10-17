@@ -7,6 +7,7 @@ package frc.robot.commands.autos;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.io.IOException;
@@ -39,12 +40,15 @@ public class PlotAutoPath extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    try {
-
-      var trajectory = m_swerveDrive.getTrajectoryUtils().getTrajectoryFromPathPlanner(m_path);
-      m_fieldSim.addTrajectory(trajectory);
-    } catch (Exception e) {
-      System.out.println("Could not plot auto path ");
+    if (!DriverStation
+        .isFMSAttached()) { // This causes significant delay on the autos. During competition we
+      // don't want this
+      try {
+        var trajectory = m_swerveDrive.getTrajectoryUtils().getTrajectoryFromPathPlanner(m_path);
+        m_fieldSim.addTrajectory(trajectory);
+      } catch (Exception e) {
+        System.out.println("Could not plot auto path ");
+      }
     }
   }
 

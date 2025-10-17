@@ -6,13 +6,23 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
 
 public class GROUND {
   public static class PIVOT {
     public static final double canCoderOffset = -0.1396484375;
+
+    /* Gravity Feedforward Gain
+    This is added to the closed loop output to counteract the effect of gravity.
+    For an arm, the actual force required is proportional to the angle of the arm,
+    the CTRE library simplifies this for us by only requiring us to feed it a single value,
+    which it uses to determine how much force to apply */
+    public static final double kG = 0;
+
     /* Static Feedforward Gain
     This is added to the closed loop output. The sign is determined by target velocity.
     The unit for this constant is dependent on the control mode,
@@ -37,7 +47,7 @@ public class GROUND {
 
     /* A higher P value means you will put more effort into correcting the measured error,
     but it means you can overshoot your target and then the response will look like an oscillating graph. */
-    public static final double kP = 100.0;
+    public static final double kP = 35.0;
 
     /* I value is generally used to correct steady-state error
     (e.g. your goal is 100, but you are at 99, so the sum of error
@@ -46,43 +56,26 @@ public class GROUND {
 
     /* D is generally used to 'predict' the next output using the slope of the error,
     so it is usually used with P to get a fast, but accurate response. */
-    public static final double kD = 30.0;
-
+    public static final double kD = 1.0;
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
-
-    public enum PIVOT_SETPOINT {
-      STOWED(Degrees.of(0.0)), // TODO: test setpoints
-      ALGAE(Degrees.of(30.0)),
-      GROUND_INTAKE(Degrees.of(60.0));
-
-      private final Angle angle;
-
-      PIVOT_SETPOINT(final Angle angle) {
-        // this.sucks = taxes;
-        this.angle = angle;
-      }
-
-      public Angle get() {
-        return angle;
-      }
-    }
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
 
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
     // TODO update all of these
-    public static final double gearRatio = 180.0 / 1.0;
+    public static final double gearRatio = 1683.0 / 32.0;
 
-    public static final double jointLength = Units.inchesToMeters(5);
-    public static final double pivotVisualizerLength = Units.inchesToMeters(17);
-    public static final double pivotLength = Units.inchesToMeters(21.5);
+    public static final Distance jointLength = Inches.of(5);
+    public static final Distance pivotVisualizerLength = Inches.of(17);
+    public static final Distance pivotLength = Inches.of(21.5);
 
-    public static final double mass = Units.lbsToKilograms(7.0);
+    public static final Mass mass = Pounds.of(12.0);
 
-    public static final Angle minAngle = Degrees.of(-40);
+    public static final Angle minAngle = Degrees.of(0.0);
 
-    public static final Angle maxAngle = Degrees.of(150);
+    public static final Angle maxAngle = Degrees.of(120.0);
 
     public static final Angle startingAngle = minAngle;
 
@@ -93,10 +86,27 @@ public class GROUND {
     public static final double joystickMultiplier = maxOutput;
 
     public static final boolean limitOpenLoop = false;
+
+    public enum SETPOINT {
+      STOWED(Degrees.of(0.0)), // TODO: test setpoints
+      INTAKE_ALGAE(Degrees.of(65.0)),
+      INTAKE_CORAL(Degrees.of(125.0)),
+      L1(Degrees.of(40.0));
+
+      private final Angle angle;
+
+      SETPOINT(final Angle angle) {
+        // this.sucks = taxes;
+        this.angle = angle;
+      }
+
+      public Angle get() {
+        return angle;
+      }
+    }
   }
 
   public static class INTAKE {
-
     public static final double kP = 0.10; // change these
     public static final double kI = 0.00;
     public static final double kD = 0.00;
@@ -104,11 +114,12 @@ public class GROUND {
     public static final DCMotor gearbox = DCMotor.getKrakenX60(1);
     public static final double kInertia = 0.001;
 
+    // TODO: update speeds later
     public enum INTAKE_SPEED {
-      INTAKING(0.5),
-      HOLDING_CORAL(0.5), // TODO: update speeds later
-      OUTTAKING(0.5),
-      OUTTAKE_TO_END_EFFECTOR(0.5);
+      CORAL(-0.60),
+      ALGAE(0.5),
+      SCORE_L1(0.12),
+      SCORE_ALGAE(-0.5);
 
       private final double value;
 

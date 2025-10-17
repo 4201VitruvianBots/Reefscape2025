@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9786647727272726,
-        "y": 2.8633096590909086
+        "x": 3.985177820784003,
+        "y": 2.815
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.218217361159856,
-        "y": 3.122831681978327
+        "x": 4.224730409216587,
+        "y": 3.074522022887418
       },
       "isLocked": false,
       "linkedName": "Pt3 end"
@@ -53,7 +53,7 @@
   "folder": "TwoPieceL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 54.638
+    "rotation": 59.00000000000001
   },
   "useDefaultConstraints": true
 }

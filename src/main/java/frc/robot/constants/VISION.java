@@ -14,8 +14,8 @@ import edu.wpi.first.units.measure.Distance;
 
 public final class VISION {
   public enum CAMERA_SERVER {
-    limelightF("limelight-f", "10.42.1.11"),
-    limelightB("limelight-b", "10.42.1.12");
+    limelightR("limelight-right", "10.42.1.11"),
+    limelightL("limelight-left", "10.42.1.12");
 
     private final String name;
     private final String ip;
@@ -63,18 +63,18 @@ public final class VISION {
   public static final Angle poseRollTolerance = Degrees.of(4);
   public static final Angle poseYawTolerance = Degrees.of(4);
 
-  public enum BRANCH_TARGET {
-    LEFT(true),
-    RIGHT(false);
+  // public enum BRANCH_TARGET {
+  //   LEFT(true),
+  //   RIGHT(false);
 
-    private final boolean m_useLeft;
+  //   private final boolean m_useLeft;
 
-    BRANCH_TARGET(final boolean useLeft) {
-      this.m_useLeft = useLeft;
-    }
+  //   BRANCH_TARGET(final boolean useLeft) {
+  //     this.m_useLeft = useLeft;
+  //   }
 
-    public boolean getTargetType() {
-      return m_useLeft;
-    }
-  }
+  //   public boolean getTargetType() {
+  //     return m_useLeft;
+  //   }
+  // }
 }

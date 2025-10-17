@@ -44,19 +44,19 @@ public class Vision extends SubsystemBase {
 
   private final DoublePublisher estTimeStamp = table.getDoubleTopic("estTimeStamp").publish();
 
-  private final StructPublisher<Pose2d> estPoseLLF =
-      table.getStructTopic("estPoseLLF", Pose2d.struct).publish();
+  private final StructPublisher<Pose2d> estPoseLLR =
+      table.getStructTopic("estPoseLLR", Pose2d.struct).publish();
 
-  private final StructPublisher<Pose2d> estPoseLLB =
-      table.getStructTopic("estPoseLLB", Pose2d.struct).publish();
+  private final StructPublisher<Pose2d> estPoseLLL =
+      table.getStructTopic("estPoseLLL", Pose2d.struct).publish();
 
   public Vision(Controls controls) {
     m_controls = controls;
 
     // Port Forwarding to access limelight web UI on USB Ethernet
     for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port, CAMERA_SERVER.limelightF.toString(), port);
-      PortForwarder.add(port + 10, CAMERA_SERVER.limelightB.toString(), port);
+      PortForwarder.add(port, CAMERA_SERVER.limelightR.toString(), port);
+      PortForwarder.add(port + 10, CAMERA_SERVER.limelightL.toString(), port);
     }
   }
 
@@ -251,17 +251,17 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // limelight f
-    boolean llaFSuccess = processLimelight(CAMERA_SERVER.limelightF.toString(), estPoseLLF);
-    SmartDashboard.putBoolean(CAMERA_SERVER.limelightF + " UpdatedRejected", llaFSuccess);
+    // limelight r
+    boolean llaRSuccess = processLimelight(CAMERA_SERVER.limelightR.toString(), estPoseLLR);
+    SmartDashboard.putBoolean(CAMERA_SERVER.limelightR + " UpdatedRejected", llaRSuccess);
 
-    // limelight b
-    boolean llaBSuccess = processLimelight(CAMERA_SERVER.limelightB.toString(), estPoseLLB);
-    SmartDashboard.putBoolean(CAMERA_SERVER.limelightB + " UpdatedRejected", llaBSuccess);
+    // limelight l
+    boolean llaLSuccess = processLimelight(CAMERA_SERVER.limelightL.toString(), estPoseLLL);
+    SmartDashboard.putBoolean(CAMERA_SERVER.limelightL + " UpdatedRejected", llaLSuccess);
 
     if (!m_localized) {
       // TODO: Change this to check if the robotPose and both limelight are all close to each other
-      m_localized = llaFSuccess && llaBSuccess;
+      m_localized = llaRSuccess && llaLSuccess;
     }
 
     if (m_swerveDriveTrain != null) {

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.SWERVE;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Controls;
 import frc.robot.subsystems.Vision;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,7 @@ import java.util.Set;
 public class DriveToTarget {
   private final CommandSwerveDrivetrain m_swerveDrive;
   private final Vision m_vision;
-  private boolean m_targetType;
+  private final Controls m_controls;
   private final StructPublisher<Pose2d> desiredTargetPublisher =
       NetworkTableInstance.getDefault()
           .getTable("Vision")
@@ -32,17 +33,17 @@ public class DriveToTarget {
           .publish();
 
   /** Creates a new DriveToBranch. */
-  public DriveToTarget(CommandSwerveDrivetrain swerveDrivetrain, Vision vision) {
+  public DriveToTarget(CommandSwerveDrivetrain swerveDrivetrain, Vision vision, Controls controls) {
     m_swerveDrive = swerveDrivetrain;
     m_vision = vision;
+    m_controls = controls;
   }
 
   public Command generateCommand(boolean useLeft) {
-    m_targetType = useLeft;
     return Commands.defer(
         () -> {
           // figure out where we need to drive to
-          m_vision.setLeftTarget(useLeft);
+          if (m_controls.isGamePieceCoral()) m_vision.setLeftTarget(useLeft);
           m_vision.updateNearestScoringTarget();
           var targetPose = m_vision.getNearestTargetPose();
 
