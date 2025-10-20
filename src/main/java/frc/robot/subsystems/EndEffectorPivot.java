@@ -341,7 +341,7 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
-        double bargePercentOutput = 1.0;
+        double bargePercentOutput = 0.90;
         if (getCANcoderAngleDegrees() <= ENDEFFECTOR.PIVOT.flickStopAngle) {
           setPercentOutput(0.0);
         } else {

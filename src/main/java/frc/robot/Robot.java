@@ -41,7 +41,6 @@ public class Robot extends TimedRobot {
           // config.backend = new FileBackend(DataLogManager.getLog());
 
           if (RobotBase.isSimulation()) {
-            config.errorHandler = ErrorHandler.crashOnError();
             config.minimumImportance = Logged.Importance.DEBUG;
           } else {
             // During competition/practice
