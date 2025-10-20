@@ -60,7 +60,7 @@ public class ENDEFFECTOR {
     public static double kMotionMagicVelocity = 7;
     public static double kMotionMagicAcceleration = 7;
     public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
-    public static double flickStopAngle = 5.0;
+    public static double flickStopAngle = 6.5;
 
     public static DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
