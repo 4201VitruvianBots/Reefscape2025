@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
+import frc.robot.commands.ToggleL4Autoscore;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
@@ -62,6 +63,7 @@ import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import org.team4201.codex.simulation.FieldSim;
+import org.team4201.codex.simulation.visualization.VisualizationUtils.ELEVATOR_TYPE;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -431,11 +433,21 @@ public class RobotContainer {
   private void configureBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
-    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
-
     // Algae Toggle
     m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
+    m_driverController.x().onTrue(new ToggleL4Autoscore(m_controls));
+
+    m_driverController.leftBumper().whileTrue(
+      new ConditionalCommand(
+        new SequentialCommandGroup(
+            moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+            .until(m_elevator::atSetpoint),
+            driveToTarget.generateCommand(true)
+              .until(m_vision::isOnTarget), 
+            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL)),
+            driveToTarget.generateCommand(true),
+            m_controls::isL4AutoScoring));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController

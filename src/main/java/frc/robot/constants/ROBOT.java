@@ -31,6 +31,11 @@ public class ROBOT {
     NONE
   }
 
+  public enum L4AutoScore {
+    Scoring,
+    notScoring
+  }
+
   public enum ROBOT_ID {
     // Robot Serial Numbers (2023-2024)
     // FORTE - 030cbc95
