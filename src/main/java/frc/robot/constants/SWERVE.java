@@ -45,7 +45,7 @@ public class SWERVE {
 
   // Auto-alignment constants
   // TODO: Tune values
-  public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(15, 0, 0);
+  public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(17, 0, 0);
   public static final PIDConstants kAutoAlignRotationPID = new PIDConstants(9, 0, 0);
   public static final PPHolonomicDriveController kDriveController =
       new PPHolonomicDriveController(kAutoAlignTranslationPID, kAutoAlignRotationPID);

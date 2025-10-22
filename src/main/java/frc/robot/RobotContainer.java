@@ -435,7 +435,7 @@ public class RobotContainer {
 
     // Algae Toggle
     m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
-    m_driverController.x().onTrue(new ToggleL4Autoscore(m_controls));
+    m_driverController.leftTrigger().onTrue(new ToggleL4Autoscore(m_controls));
 
     m_driverController.leftBumper().whileTrue(
       new ConditionalCommand(
@@ -444,10 +444,20 @@ public class RobotContainer {
             .until(m_elevator::atSetpoint),
             driveToTarget.generateCommand(true)
               .until(m_vision::isOnTarget), 
-            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_CORAL)),
+            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
             driveToTarget.generateCommand(true),
             m_controls::isL4AutoScoring));
-    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
+
+    m_driverController.rightBumper().whileTrue(
+      new ConditionalCommand(
+        new SequentialCommandGroup(
+            moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+            .until(m_elevator::atSetpoint),
+            driveToTarget.generateCommand(false)
+              .until(m_vision::isOnTarget), 
+            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
+            driveToTarget.generateCommand(false),
+            m_controls::isL4AutoScoring));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
