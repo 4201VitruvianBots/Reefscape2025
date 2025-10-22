@@ -43,6 +43,7 @@ import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
+import frc.robot.constants.FIELD.TARGET_TYPE;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.GROUND;
 import frc.robot.constants.GROUND.INTAKE;
@@ -389,8 +390,8 @@ public class RobotContainer {
   private void configureAlphaBotBindings() {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
-    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
-    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
+    // m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    // m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
       // TODO: Make speeds into enum setpoints
@@ -442,10 +443,10 @@ public class RobotContainer {
         new SequentialCommandGroup(
             moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
             .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(true)
+            driveToTarget.generateCommand(true, TARGET_TYPE.REEF)
               .until(m_vision::isOnTarget), 
             new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
-            driveToTarget.generateCommand(true),
+            driveToTarget.generateCommand(true, TARGET_TYPE.REEF),
             m_controls::isL4AutoScoring));
 
     m_driverController.rightBumper().whileTrue(
@@ -453,10 +454,10 @@ public class RobotContainer {
         new SequentialCommandGroup(
             moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
             .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(false)
+            driveToTarget.generateCommand(false, TARGET_TYPE.REEF)
               .until(m_vision::isOnTarget), 
             new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
-            driveToTarget.generateCommand(false),
+            driveToTarget.generateCommand(false, TARGET_TYPE.REEF),
             m_controls::isL4AutoScoring));
 
     if (m_elevator != null && m_endEffectorPivot != null) {

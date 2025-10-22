@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
+import frc.robot.constants.FIELD.TARGET_TYPE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import frc.robot.utils.LimelightSim;
 import org.team4201.codex.simulation.FieldSim;
@@ -25,6 +26,7 @@ public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
 
+  private TARGET_TYPE targetType = TARGET_TYPE.REEF;
   // TODO: Re-add this
   private LimelightSim visionSim;
   private Controls m_controls;
@@ -72,6 +74,9 @@ public class Vision extends SubsystemBase {
     m_useLeftTarget = value;
   }
 
+  public void  setTargetType(TARGET_TYPE type) {
+    targetType = type;    
+  }
   @Logged(name = "Left Target", importance = Logged.Importance.CRITICAL)
   public boolean isTargetingLeft() {
     return m_useLeftTarget;
@@ -85,6 +90,8 @@ public class Vision extends SubsystemBase {
   public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
+    switch(targetType) {
+    case REEF:
     if (m_controls.isGamePieceAlgae()) {
       if (Controls.isBlueAlliance()) {
         nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
@@ -109,6 +116,11 @@ public class Vision extends SubsystemBase {
       robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
     }
     if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
+    break;
+    case CORAL_STATION:
+    default:
+    break;
+    }
   }
 
   public Pose2d getNearestTargetPose() {

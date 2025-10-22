@@ -381,6 +381,7 @@ public class FIELD {
     REEF,
     PROCESSOR,
     BARGE,
+    CORAL_STATION,
     /** Ground Algae staged at the beginning of a match */
     STAGED
   }
@@ -611,4 +612,121 @@ public class FIELD {
       Arrays.stream(ZONES.getAllianceZones(DriverStation.Alliance.Blue))
           .flatMap(Stream::of)
           .toArray(Pose2d[]::new);
+  
+  public enum CORAL_STATION_TARGETS {
+    RED_CORAL_STATION_LEFT(1, TARGET_TYPE.CORAL_STATION, Inches.of(0)),
+    RED_CORAL_STATION_RIGHT(2, TARGET_TYPE.CORAL_STATION, Inches.of(0)),
+    BLUE_CORAL_STATION_LEFT(13, TARGET_TYPE.CORAL_STATION, Inches.of(0)),
+    BLUE_CORAL_STATION_RIGHT(12, TARGET_TYPE.CORAL_STATION, Inches.of(0));
+    private final Pose2d pose;
+
+    /** Pose2d we want the robot to go to relative to the coral station location */
+    private final Pose2d targetPose;
+
+    /** Map to convert the algae Pose2d to the target Pose2d */
+    private static final Map<Pose2d, Pose2d> stationPoseToTargetPose = new HashMap<>();
+
+    CORAL_STATION_TARGETS(final int aprilTagId, TARGET_TYPE type, Distance offset) {
+      Pose2d aprilTagPose = Pose2d.kZero;
+
+      try {
+        aprilTagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
+      } catch (Exception e) {
+        System.out.printf(
+            "[FIELD] Could not get AprilTag %d Pose for CORAL_STATION_TARGET generation!\n", aprilTagId);
+      }
+
+      // TODO: Implement
+      //      Translation2d targetOffset = Translation2d.kZero;
+      //      switch (type) {
+      //        case REEF -> targetOffset = baseReefAlgaeTargetOffset;
+      //        case PROCESSOR -> targetOffset = Translation2d.kZero;
+      //        case BARGE -> targetOffset = Translation2d.kZero;
+      //        case STAGED -> targetOffset = Translation2d.kZero;
+      //      }
+
+      Pose2d targetPose =
+          aprilTagPose.plus(
+              new Transform2d(
+                  baseAlgaeTargetOffset.plus(new Translation2d(offset.in(Meters), 0)),
+                  Rotation2d.kZero));
+
+      this.pose = aprilTagPose;
+      this.targetPose = targetPose;
+    }
+
+    /** Map the coral station pose to the target pose */
+    static {
+      for (CORAL_STATION_TARGETS b : CORAL_STATION_TARGETS.values()) {
+        stationPoseToTargetPose.put(b.getPose2d(), b.getTargetPose2d());
+      }
+    }
+
+    /** Return the selected coral station position as a Pose2d */
+    public Pose2d getPose2d() {
+      return pose;
+    }
+
+    public Pose2d getTargetPose2d() {
+      return targetPose;
+    }
+
+    /** 2d array of all coral stations */
+    public static Pose2d[] getAllPose2d() {
+      return Arrays.stream(CORAL_STATION_TARGETS.values())
+          .map(CORAL_STATION_TARGETS::getPose2d)
+          .toArray(Pose2d[]::new);
+    }
+
+    /** 2d array of coral stations by Alliance color */
+    public static Pose2d[] getAlliancePose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllPose2d()).limit(2).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllPose2d()).skip(2).limit(2).toArray(Pose2d[]::new);
+      }
+    }
+
+    /** 2d array of all coral station targets */
+    public static Pose2d[] getAllTargetPose2d() {
+      return Arrays.stream(CORAL_STATION_TARGETS.values())
+          .map(CORAL_STATION_TARGETS::getTargetPose2d)
+          .toArray(Pose2d[]::new);
+    }
+
+    /** 2d array of coral station targets by Alliance color */
+    public static Pose2d[] getAllianceTargetPose2d(DriverStation.Alliance alliance) {
+      if (alliance == DriverStation.Alliance.Red) {
+        return Arrays.stream(getAllTargetPose2d()).limit(2).toArray(Pose2d[]::new);
+      } else {
+        return Arrays.stream(getAllTargetPose2d()).skip(2).limit(2).toArray(Pose2d[]::new);
+      }
+    }
+
+    /** Convert the nearest algae position to the target position */
+    public static Pose2d getCoralStationPoseToTargetPose(Pose2d branchPose) {
+      if (!stationPoseToTargetPose.containsKey(branchPose)) {
+        DriverStation.reportWarning("[FIELD] Trying to use a non-existent algae pose!", false);
+        return Pose2d.kZero;
+      } else {
+        return stationPoseToTargetPose.get(branchPose);
+      }
+    }
+  }
+
+  /** Static array of all Red Alliance Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> RED_CORAl_STATION =
+      Arrays.asList(CORAL_STATION_TARGETS.getAlliancePose2d(DriverStation.Alliance.Red));
+
+  /** Static array of all Blue Alliance Reef Branches to avoid constantly generating it */
+  public static final List<Pose2d> BLUE_CORAl_STATION =
+      Arrays.asList(CORAL_STATION_TARGETS.getAlliancePose2d(DriverStation.Alliance.Blue));
+
+  /** Static array of all Red Alliance Reef Branch targets to avoid constantly generating it */
+  public static final List<Pose2d> RED_CORAl_STATION_TARGETS =
+      Arrays.asList(CORAL_STATION_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Red));
+
+  /** Static array of all Blue Alliance Reef Branch targets to avoid constantly generating it */
+  public static final List<Pose2d> BLUE_CORAl_STATION_TARGETS =
+      Arrays.asList(CORAL_STATION_TARGETS.getAllianceTargetPose2d(DriverStation.Alliance.Blue));
 }
