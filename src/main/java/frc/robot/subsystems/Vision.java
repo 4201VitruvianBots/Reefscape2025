@@ -26,7 +26,8 @@ public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
 
-  private TARGET_TYPE targetType = TARGET_TYPE.REEF;
+  @Logged (name = "Target Type", importance = Logged.Importance.CRITICAL)
+  private TARGET_TYPE targetType = TARGET_TYPE.CORAL_STATION;
   // TODO: Re-add this
   private LimelightSim visionSim;
   private Controls m_controls;
@@ -64,6 +65,14 @@ public class Vision extends SubsystemBase {
 
   public void registerSwerveDrive(CommandSwerveDrivetrain swerveDriveTrain) {
     m_swerveDriveTrain = swerveDriveTrain;
+  }
+
+  public void switchTargetType(TARGET_TYPE type) {
+    targetType = type;
+  }
+
+  public TARGET_TYPE getTargetType() {
+    return targetType;
   }
 
   public void registerFieldSim(FieldSim fieldSim) {
@@ -119,6 +128,12 @@ public class Vision extends SubsystemBase {
     break;
     case CORAL_STATION:
     default:
+    if (Controls.isBlueAlliance()) {
+        nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAl_STATION);
+      } else {
+        nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAl_STATION);
+      }
+      robotToTarget[1] = FIELD.CORAL_STATION_TARGETS.getCoralStationPoseToTargetPose(nearestObjectPose);
     break;
     }
   }

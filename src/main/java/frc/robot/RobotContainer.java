@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -65,6 +67,7 @@ import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import org.team4201.codex.simulation.FieldSim;
 import org.team4201.codex.simulation.visualization.VisualizationUtils.ELEVATOR_TYPE;
+import frc.robot.commands.ToggleStationAlign;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -435,18 +438,20 @@ public class RobotContainer {
     var driveToTarget = new DriveToTarget(m_swerveDrive, m_vision, m_controls);
 
     // Algae Toggle
-    m_driverController.a().onTrue(new ToggleGamePiece(m_controls));
+    m_operatorController.x().onTrue(new ToggleGamePiece(m_controls));
     m_driverController.leftTrigger().onTrue(new ToggleL4Autoscore(m_controls));
+    m_driverController.rightTrigger().onTrue(new ToggleStationAlign(m_vision));
+  
 
     m_driverController.leftBumper().whileTrue(
       new ConditionalCommand(
         new SequentialCommandGroup(
             moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
             .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(true, TARGET_TYPE.REEF)
+            driveToTarget.generateCommand(true)
               .until(m_vision::isOnTarget), 
-            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
-            driveToTarget.generateCommand(true, TARGET_TYPE.REEF),
+            Commands.defer(() -> new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL), Set.of(m_endEffector))),
+            driveToTarget.generateCommand(true),
             m_controls::isL4AutoScoring));
 
     m_driverController.rightBumper().whileTrue(
@@ -454,10 +459,10 @@ public class RobotContainer {
         new SequentialCommandGroup(
             moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
             .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(false, TARGET_TYPE.REEF)
+            driveToTarget.generateCommand(false)
               .until(m_vision::isOnTarget), 
-            new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)),
-            driveToTarget.generateCommand(false, TARGET_TYPE.REEF),
+            Commands.defer(() -> new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL), Set.of(m_endEffector))),
+            driveToTarget.generateCommand(false),
             m_controls::isL4AutoScoring));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
@@ -469,25 +474,6 @@ public class RobotContainer {
                       ELEVATOR_SETPOINT.ALGAE_REEF_INTAKE_LOWER,
                       PIVOT_SETPOINT.INTAKE_ALGAE_LOW), // Algae L2
                   moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_2, PIVOT_SETPOINT.L3_L2), // Coral L2
-                  m_controls::isGamePieceAlgae))
-          .onFalse(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                          ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
-                      .withTimeout(1),
-                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      .withTimeout(1),
-                  m_controls::isGamePieceAlgae));
-
-      m_operatorController
-          .x()
-          .whileTrue(
-              new ConditionalCommand(
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.PROCESSOR,
-                      PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR), // Algae L1
-                  moveSuperStructure(
-                      ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED), // Coral L1
                   m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
