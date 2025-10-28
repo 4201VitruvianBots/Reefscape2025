@@ -442,28 +442,25 @@ public class RobotContainer {
     m_driverController.leftTrigger().onTrue(new ToggleL4Autoscore(m_controls));
     m_driverController.rightTrigger().onTrue(new ToggleStationAlign(m_vision));
   
-
     m_driverController.leftBumper().whileTrue(
       new ConditionalCommand(
-        new SequentialCommandGroup(
-            moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
-            .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(true)
-              .until(m_vision::isOnTarget), 
-            Commands.defer(() -> new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL), Set.of(m_endEffector))),
-            driveToTarget.generateCommand(true),
-            m_controls::isL4AutoScoring));
+        Commands.defer(() -> new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+          .until(m_elevator::atSetpoint),
+          driveToTarget.generateCommand(true)
+            .until(m_vision::isOnTarget), 
+          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)), Set.of(m_endEffector, m_elevator, m_endEffectorPivot, m_vision)),
+                    driveToTarget.generateCommand(true),
+        m_controls::isL4AutoScoring));
 
     m_driverController.rightBumper().whileTrue(
       new ConditionalCommand(
-        new SequentialCommandGroup(
-            moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
-            .until(m_elevator::atSetpoint),
-            driveToTarget.generateCommand(false)
-              .until(m_vision::isOnTarget), 
-            Commands.defer(() -> new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL), Set.of(m_endEffector))),
-            driveToTarget.generateCommand(false),
-            m_controls::isL4AutoScoring));
+        Commands.defer(() -> new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+          .until(m_elevator::atSetpoint),
+        driveToTarget.generateCommand(false)
+          .until(m_vision::isOnTarget), 
+        new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)), Set.of(m_endEffector, m_elevator, m_vision)),
+        driveToTarget.generateCommand(false),
+      m_controls::isL4AutoScoring));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
