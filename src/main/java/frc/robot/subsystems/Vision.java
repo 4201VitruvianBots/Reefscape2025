@@ -27,7 +27,7 @@ public class Vision extends SubsystemBase {
   private FieldSim m_fieldSim;
 
   @Logged (name = "Target Type", importance = Logged.Importance.CRITICAL)
-  private TARGET_TYPE targetType = TARGET_TYPE.CORAL_STATION;
+  private TARGET_TYPE targetType = TARGET_TYPE.REEF;
   // TODO: Re-add this
   private LimelightSim visionSim;
   private Controls m_controls;
