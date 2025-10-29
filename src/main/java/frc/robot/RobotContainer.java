@@ -439,28 +439,22 @@ public class RobotContainer {
 
     // Algae Toggle
     m_operatorController.x().onTrue(new ToggleGamePiece(m_controls));
-    m_driverController.leftTrigger().onTrue(new ToggleL4Autoscore(m_controls));
-    m_driverController.rightTrigger().onTrue(new ToggleStationAlign(m_vision));
+    m_driverController.povRight().onTrue(new ToggleStationAlign(m_vision));
   
-    m_driverController.leftBumper().whileTrue(
-      new ConditionalCommand(
-        Commands.defer(() -> new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
-          .until(m_elevator::atSetpoint),
-          driveToTarget.generateCommand(true)
-            .until(m_vision::isOnTarget), 
-          new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)), Set.of(m_endEffector, m_elevator, m_endEffectorPivot, m_vision)),
-                    driveToTarget.generateCommand(true),
-        m_controls::isL4AutoScoring));
+    m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
+    m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
-    m_driverController.rightBumper().whileTrue(
-      new ConditionalCommand(
-        Commands.defer(() -> new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
-          .until(m_elevator::atSetpoint),
-        driveToTarget.generateCommand(false)
-          .until(m_vision::isOnTarget), 
-        new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)), Set.of(m_endEffector, m_elevator, m_vision)),
-        driveToTarget.generateCommand(false),
-      m_controls::isL4AutoScoring));
+    m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+      .until(m_elevator::atSetpoint),
+      driveToTarget.generateCommand(true)
+      .until(m_vision::isOnTarget), 
+      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
+
+    m_driverController.rightTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+      .until(m_elevator::atSetpoint),
+      driveToTarget.generateCommand(false)
+      .until(m_vision::isOnTarget), 
+      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
