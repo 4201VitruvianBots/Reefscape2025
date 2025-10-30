@@ -568,8 +568,8 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
           .onFalse(
               new ParallelCommandGroup(
-                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED),
-                  new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.STOWED)));
+                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED), new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF).withTimeout(2.0),
+                  moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR).withTimeout(1.0)));
     }
 
     if (m_hopperIntake != null
