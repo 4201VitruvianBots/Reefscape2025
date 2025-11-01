@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Set;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -568,8 +566,8 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
           .onFalse(
               new ParallelCommandGroup(
-                  new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.STOWED), new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF).withTimeout(2.0),
-                  moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR).withTimeout(1.0)));
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF).withTimeout(5.0),
+                  new SequentialCommandGroup(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND_MIDPOINT).until(m_endEffectorPivot::atSetpoint), moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR).withTimeout(1.0))));
     }
 
     if (m_hopperIntake != null
@@ -605,7 +603,7 @@ public class RobotContainer {
                               .withTimeout(0.14),
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
                               .withTimeout(0.46)),
-                      new EndEffectorBarge(m_endEffectorPivot)), // Net scoring binding here
+                      new EndEffectorBarge(m_elevator, m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),
