@@ -517,17 +517,19 @@ public class RobotContainer {
     }
 
     // Ground intake
-    if (m_groundIntake != null && m_groundPivot != null) {
+    if (m_groundIntake != null && m_groundPivot != null && m_endEffectorPivot != null) {
       m_operatorController
           .leftTrigger()
           .whileTrue(
-              new ParallelCommandGroup(
                   new ConditionalCommand(
+                      new ParallelCommandGroup(
                       moveGround(
                           GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
+                      moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
+                      ),
                       moveGround(
                           GROUND.PIVOT.SETPOINT.INTAKE_CORAL, GROUND.INTAKE.INTAKE_SPEED.CORAL),
-                      m_controls::isGamePieceAlgae)))
+                      m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
@@ -547,7 +549,8 @@ public class RobotContainer {
           .povLeft()
           .whileTrue(
               new ConditionalCommand(
-                  new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
+                  new ParallelCommandGroup(new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
+                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)),
                   new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_L1),
                   m_controls::isGamePieceAlgae));
     }
