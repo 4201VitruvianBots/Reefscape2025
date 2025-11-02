@@ -478,7 +478,7 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.BARGE), // Algae L4
+                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
                   moveSuperStructureDelayed(
                       ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4), // Coral L4
                   m_controls::isGamePieceAlgae))
