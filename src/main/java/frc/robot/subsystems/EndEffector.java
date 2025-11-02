@@ -131,9 +131,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    System.out.println(m_timer.get());
-  }
+  public void periodic() {}
 
   @Override
   public void simulationPeriodic() {
