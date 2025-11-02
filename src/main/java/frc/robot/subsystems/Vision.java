@@ -273,7 +273,7 @@ public class Vision extends SubsystemBase {
     // TODO: Add Rotation delta
     SmartDashboard.putNumber("Target Translation Delta", translationDelta);
 
-    return translationDelta < Inches.of(2.5).in(Meters);
+    return translationDelta < Inches.of(2.0).in(Meters);
   }
 
   @Override
