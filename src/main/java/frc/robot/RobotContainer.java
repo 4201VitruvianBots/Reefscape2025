@@ -442,13 +442,13 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
-    m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+    m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
       .until(m_elevator::atSetpoint),
       driveToTarget.generateCommand(true)
       .until(m_vision::isOnTarget), 
       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
 
-    m_driverController.rightTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4)
+    m_driverController.rightTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
       .until(m_elevator::atSetpoint),
       driveToTarget.generateCommand(false)
       .until(m_vision::isOnTarget), 
@@ -478,9 +478,9 @@ public class RobotContainer {
           .whileTrue(
               new ConditionalCommand(
                   moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.BARGE), // Algae L4
+                      ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.BARGE), // Algae L4
                   moveSuperStructureDelayed(
-                      ELEVATOR_SETPOINT.LEVEL_4, PIVOT_SETPOINT.L4), // Coral L4
+                      ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4), // Coral L4
                   m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(

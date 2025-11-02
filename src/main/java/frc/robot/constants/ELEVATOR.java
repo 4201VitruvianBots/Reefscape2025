@@ -57,7 +57,8 @@ public class ELEVATOR {
     INTAKE_HOPPER(Inches.of(0.4)), // used to be 3.543
     LEVEL_2(Inches.of(13.0)),
     LEVEL_3(Inches.of(27.0)),
-    LEVEL_4(Inches.of(56.0)),
+    LEVEL_4(Inches.of(57.0)),
+    LEVEL_4_TELEOP_SCORE(Inches.of(56.0)),
     NET(Inches.of(57.5));
 
     private final Distance setpoint;
