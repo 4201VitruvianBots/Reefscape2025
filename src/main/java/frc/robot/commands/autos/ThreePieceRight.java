@@ -70,7 +70,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
                   new WaitCommand(0.4))
               .withName("Run end effector for 0.4 secs"),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
+          /*new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),*/
           m_ppCommand2.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
                   m_ppCommand3.andThen(() -> swerveDrive.setControl(stopRequest)),
@@ -124,7 +124,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
                   new RunEndEffectorIntake(endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL),
                   new WaitCommand(0.2))
               .withName("Run end effector for 0.2 secs"),
-          new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),
+          /*new RunEndEffectorIntake(endEffector, ROLLER_SPEED.ZERO).withName("Stop end effector"),*/
           m_ppCommand7.andThen(() -> swerveDrive.setControl(stopRequest)),
           new ParallelCommandGroup(
                   new SetElevatorSetpoint(elevator, ELEVATOR_SETPOINT.START_POSITION)
