@@ -55,6 +55,7 @@ public class ThreePieceRight extends SequentialCommandGroup {
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
+          new InstantCommand(() -> endEffector.m_timer.start()),
           new PlotAutoPath(swerveDrive, fieldSim, path).withName("Start auto path"),
           new ParallelCommandGroup(
                   m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),

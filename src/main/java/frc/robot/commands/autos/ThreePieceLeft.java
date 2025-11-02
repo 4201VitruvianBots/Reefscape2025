@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,6 +26,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.EndEffectorPivot;
 import frc.robot.subsystems.HopperIntake;
+
+import java.util.function.BooleanSupplier;
+
 import org.team4201.codex.simulation.FieldSim;
 
 public class ThreePieceLeft extends SequentialCommandGroup {
@@ -52,9 +56,11 @@ public class ThreePieceLeft extends SequentialCommandGroup {
       // Will throw an exception if the starting pose is not present
       var starting_pose = path.getStartingHolonomicPose().orElseThrow();
 
+
       // Add your commands in the addCommands() call, e.g.
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
+          new InstantCommand(() -> endEffector.m_timer.start()),
           new PlotAutoPath(swerveDrive, fieldSim, path).withName("Start auto path"),
           new ParallelCommandGroup(
                   m_ppCommand.andThen(() -> swerveDrive.setControl(stopRequest)),
