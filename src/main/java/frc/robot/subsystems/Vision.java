@@ -26,8 +26,9 @@ public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
 
-  @Logged (name = "Target Type", importance = Logged.Importance.CRITICAL)
+  @Logged(name = "Target Type", importance = Logged.Importance.CRITICAL)
   private TARGET_TYPE targetType = TARGET_TYPE.REEF;
+
   // TODO: Re-add this
   private LimelightSim visionSim;
   private Controls m_controls;
@@ -83,9 +84,10 @@ public class Vision extends SubsystemBase {
     m_useLeftTarget = value;
   }
 
-  public void  setTargetType(TARGET_TYPE type) {
-    targetType = type;    
+  public void setTargetType(TARGET_TYPE type) {
+    targetType = type;
   }
+
   @Logged(name = "Left Target", importance = Logged.Importance.CRITICAL)
   public boolean isTargetingLeft() {
     return m_useLeftTarget;
@@ -99,42 +101,43 @@ public class Vision extends SubsystemBase {
   public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
-    switch(targetType) {
-    case REEF:
-    if (m_controls.isGamePieceAlgae()) {
-      if (Controls.isBlueAlliance()) {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
-      } else {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
-      }
-      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestObjectPose);
-    } else {
-      if (Controls.isBlueAlliance()) {
-        if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+    switch (targetType) {
+      case REEF:
+        if (m_controls.isGamePieceAlgae()) {
+          if (Controls.isBlueAlliance()) {
+            nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+          } else {
+            nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+          }
+          robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestObjectPose);
         } else {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+          if (Controls.isBlueAlliance()) {
+            if (m_useLeftTarget) {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+            } else {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+            }
+          } else {
+            if (m_useLeftTarget) {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
+            } else {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+            }
+          }
+          robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
         }
-      } else {
-        if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
+        if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
+        break;
+      case CORAL_STATION:
+      default:
+        if (Controls.isBlueAlliance()) {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAl_STATION);
         } else {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAl_STATION);
         }
-      }
-      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
-    }
-    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
-    break;
-    case CORAL_STATION:
-    default:
-    if (Controls.isBlueAlliance()) {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAl_STATION);
-      } else {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAl_STATION);
-      }
-      robotToTarget[1] = FIELD.CORAL_STATION_TARGETS.getCoralStationPoseToTargetPose(nearestObjectPose);
-    break;
+        robotToTarget[1] =
+            FIELD.CORAL_STATION_TARGETS.getCoralStationPoseToTargetPose(nearestObjectPose);
+        break;
     }
   }
 

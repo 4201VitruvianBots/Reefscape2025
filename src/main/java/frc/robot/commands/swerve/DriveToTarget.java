@@ -15,7 +15,6 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.SWERVE;
-import frc.robot.constants.FIELD.TARGET_TYPE;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Controls;
 import frc.robot.subsystems.Vision;
@@ -44,8 +43,8 @@ public class DriveToTarget {
     return Commands.defer(
         () -> {
           // figure out where we need to drive to
-          if (m_controls.isGamePieceCoral()) 
-          {m_vision.setLeftTarget(useLeft);
+          if (m_controls.isGamePieceCoral()) {
+            m_vision.setLeftTarget(useLeft);
           }
           m_vision.updateNearestScoringTarget();
           var targetPose = m_vision.getNearestTargetPose();

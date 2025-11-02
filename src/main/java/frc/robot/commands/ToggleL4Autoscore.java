@@ -24,7 +24,7 @@ public class ToggleL4Autoscore extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_controls.isL4AutoScoring() || m_controls.isGamePieceAlgae()){
+    if (m_controls.isL4AutoScoring() || m_controls.isGamePieceAlgae()) {
       m_controls.setL4AutoScore(L4AutoScore.notScoring);
     } else {
       m_controls.setL4AutoScore(L4AutoScore.Scoring);

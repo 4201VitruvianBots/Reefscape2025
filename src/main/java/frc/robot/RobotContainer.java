@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.RunHopperIntake;
 import frc.robot.commands.ToggleGamePiece;
-import frc.robot.commands.ToggleL4Autoscore;
+import frc.robot.commands.ToggleStationAlign;
 import frc.robot.commands.alphabot.RunAlgaeIntake;
 import frc.robot.commands.alphabot.RunCoralOuttake;
 import frc.robot.commands.autos.*;
@@ -43,7 +43,6 @@ import frc.robot.commands.swerve.SwerveCharacterization;
 import frc.robot.constants.ELEVATOR.ELEVATOR_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ENDEFFECTOR.ROLLERS.ROLLER_SPEED;
-import frc.robot.constants.FIELD.TARGET_TYPE;
 import frc.robot.constants.FIELD;
 import frc.robot.constants.GROUND;
 import frc.robot.constants.GROUND.INTAKE;
@@ -64,8 +63,6 @@ import frc.robot.utils.Robot2d;
 import frc.robot.utils.SysIdUtils;
 import frc.robot.utils.Telemetry;
 import org.team4201.codex.simulation.FieldSim;
-import org.team4201.codex.simulation.visualization.VisualizationUtils.ELEVATOR_TYPE;
-import frc.robot.commands.ToggleStationAlign;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -438,21 +435,27 @@ public class RobotContainer {
     // Algae Toggle
     m_operatorController.x().onTrue(new ToggleGamePiece(m_controls));
     m_driverController.povRight().onTrue(new ToggleStationAlign(m_vision));
-  
+
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
-    m_driverController.leftTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
-      .until(m_elevator::atSetpoint),
-      driveToTarget.generateCommand(true)
-      .until(m_vision::isOnTarget), 
-      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
+    m_driverController
+        .leftTrigger()
+        .whileTrue(
+            new SequentialCommandGroup(
+                moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
+                    .until(m_elevator::atSetpoint),
+                driveToTarget.generateCommand(true).until(m_vision::isOnTarget),
+                new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
 
-    m_driverController.rightTrigger().whileTrue(new SequentialCommandGroup(moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
-      .until(m_elevator::atSetpoint),
-      driveToTarget.generateCommand(false)
-      .until(m_vision::isOnTarget), 
-      new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
+    m_driverController
+        .rightTrigger()
+        .whileTrue(
+            new SequentialCommandGroup(
+                moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
+                    .until(m_elevator::atSetpoint),
+                driveToTarget.generateCommand(false).until(m_vision::isOnTarget),
+                new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
 
     if (m_elevator != null && m_endEffectorPivot != null) {
       m_operatorController
@@ -521,15 +524,13 @@ public class RobotContainer {
       m_operatorController
           .leftTrigger()
           .whileTrue(
-                  new ConditionalCommand(
-                      new ParallelCommandGroup(
+              new ConditionalCommand(
+                  new ParallelCommandGroup(
                       moveGround(
                           GROUND.PIVOT.SETPOINT.INTAKE_ALGAE, GROUND.INTAKE.INTAKE_SPEED.ALGAE),
-                      moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)
-                      ),
-                      moveGround(
-                          GROUND.PIVOT.SETPOINT.INTAKE_CORAL, GROUND.INTAKE.INTAKE_SPEED.CORAL),
-                      m_controls::isGamePieceAlgae))
+                      moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)),
+                  moveGround(GROUND.PIVOT.SETPOINT.INTAKE_CORAL, GROUND.INTAKE.INTAKE_SPEED.CORAL),
+                  m_controls::isGamePieceAlgae))
           .onFalse(
               new ConditionalCommand(
                   new GroundPivotSetpoint(m_groundPivot, GROUND.PIVOT.SETPOINT.INTAKE_ALGAE),
@@ -549,8 +550,10 @@ public class RobotContainer {
           .povLeft()
           .whileTrue(
               new ConditionalCommand(
-                  new ParallelCommandGroup(new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
-                  moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)),
+                  new ParallelCommandGroup(
+                      new SetGroundIntakeSpeed(
+                          m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_ALGAE),
+                      moveSuperStructure(ELEVATOR_SETPOINT.START_POSITION, PIVOT_SETPOINT.STOWED)),
                   new SetGroundIntakeSpeed(m_groundIntake, GROUND.INTAKE.INTAKE_SPEED.SCORE_L1),
                   m_controls::isGamePieceAlgae));
     }
@@ -569,8 +572,15 @@ public class RobotContainer {
                   new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)))
           .onFalse(
               new ParallelCommandGroup(
-                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF).withTimeout(5.0),
-                  new SequentialCommandGroup(new EndEffectorSetpoint(m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND_MIDPOINT).until(m_endEffectorPivot::atSetpoint), moveSuperStructure(ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR).withTimeout(1.0))));
+                  new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.INTAKE_ALGAE_REEF)
+                      .withTimeout(5.0),
+                  new SequentialCommandGroup(
+                      new EndEffectorSetpoint(
+                              m_endEffectorPivot, PIVOT_SETPOINT.INTAKE_ALGAE_GROUND_MIDPOINT)
+                          .until(m_endEffectorPivot::atSetpoint),
+                      moveSuperStructure(
+                              ELEVATOR_SETPOINT.PROCESSOR, PIVOT_SETPOINT.OUTTAKE_ALGAE_PROCESSOR)
+                          .withTimeout(1.0))));
     }
 
     if (m_hopperIntake != null
@@ -606,7 +616,8 @@ public class RobotContainer {
                               .withTimeout(0.14),
                           new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.OUTTAKE_ALGAE_BARGE)
                               .withTimeout(0.46)),
-                      new EndEffectorBarge(m_elevator, m_endEffectorPivot)), // Net scoring binding here
+                      new EndEffectorBarge(
+                          m_elevator, m_endEffectorPivot)), // Net scoring binding here
                   new ParallelCommandGroup(
                       new RunHopperIntake(m_hopperIntake, HOPPERINTAKE.INTAKE_SPEED.FREEING_CORAL),
                       new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.CORAL_REVERSE),

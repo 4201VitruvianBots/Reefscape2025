@@ -612,7 +612,7 @@ public class FIELD {
       Arrays.stream(ZONES.getAllianceZones(DriverStation.Alliance.Blue))
           .flatMap(Stream::of)
           .toArray(Pose2d[]::new);
-  
+
   public enum CORAL_STATION_TARGETS {
     RED_CORAL_STATION_LEFT(1, TARGET_TYPE.CORAL_STATION, Inches.of(0)),
     RED_CORAL_STATION_RIGHT(2, TARGET_TYPE.CORAL_STATION, Inches.of(0)),
@@ -633,7 +633,8 @@ public class FIELD {
         aprilTagPose = APRIL_TAG.getTagById(aprilTagId).getPose2d();
       } catch (Exception e) {
         System.out.printf(
-            "[FIELD] Could not get AprilTag %d Pose for CORAL_STATION_TARGET generation!\n", aprilTagId);
+            "[FIELD] Could not get AprilTag %d Pose for CORAL_STATION_TARGET generation!\n",
+            aprilTagId);
       }
 
       // TODO: Implement

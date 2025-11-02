@@ -30,6 +30,7 @@ public class Controls extends SubsystemBase {
 
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
+
   private static L4AutoScore m_L4AutoScore = L4AutoScore.notScoring;
 
   private static Alert m_usbAlert =
@@ -85,7 +86,7 @@ public class Controls extends SubsystemBase {
   }
 
   @Logged(name = "L4 Auto Scoring?", importance = Logged.Importance.CRITICAL)
-  public boolean isL4AutoScoring(){
+  public boolean isL4AutoScoring() {
     return m_L4AutoScore == L4AutoScore.Scoring;
   }
 
@@ -98,7 +99,7 @@ public class Controls extends SubsystemBase {
     m_selectedGamePiece = gamePiece;
   }
 
-  public static void setL4AutoScore(L4AutoScore l4AutoScore){
+  public static void setL4AutoScore(L4AutoScore l4AutoScore) {
     m_L4AutoScore = l4AutoScore;
   }
 

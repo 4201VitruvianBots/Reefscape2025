@@ -58,7 +58,7 @@ public class ELEVATOR {
     LEVEL_2(Inches.of(13.0)),
     LEVEL_3(Inches.of(27.0)),
     LEVEL_4(Inches.of(57.0)), // Auto L4 elevator height
-    LEVEL_4_TELEOP_SCORE(Inches.of(55.0)), //L4 autoscore and regular L4 in teleop
+    LEVEL_4_TELEOP_SCORE(Inches.of(55.0)), // L4 autoscore and regular L4 in teleop
     NET(Inches.of(57.5));
 
     private final Distance setpoint;
