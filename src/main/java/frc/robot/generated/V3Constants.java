@@ -150,7 +150,7 @@ public class V3Constants {
   private static final int kFrontRightDriveMotorId = CAN.frontRightDriveMotor;
   private static final int kFrontRightSteerMotorId = CAN.frontRightTurnMotor;
   private static final int kFrontRightEncoderId = CAN.frontRightCanCoder;
-  private static final Angle kFrontRightEncoderOffset = Rotations.of(0.3994140625);
+  private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.354248046875).plus(Rotations.of(0.5));
   private static final boolean kFrontRightSteerMotorInverted = true;
   private static final boolean kFrontRightEncoderInverted = false;
 
