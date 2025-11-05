@@ -439,22 +439,26 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(driveToTarget.generateCommand(true));
     m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
+    // L4 Autoscore 
     m_driverController
         .leftTrigger()
         .whileTrue(
             new SequentialCommandGroup(
-                moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
+              // Moves elevator to L4 teleop and pivot to L4 position until the elevator is within 1 inch of it's setpoint
+                moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4) 
                     .until(m_elevator::atSetpoint),
-                driveToTarget.generateCommand(true).until(m_vision::isOnTarget),
-                new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
-
+              // Drive to the reef with left = true, so the left branch      
+                driveToTarget.generateCommand(true).until(m_vision::isOnTarget), 
+              // Outtake coral at auto outtake speed to score faster
+                new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL))); 
+ 
     m_driverController
         .rightTrigger()
         .whileTrue(
             new SequentialCommandGroup(
                 moveSuperStructure(ELEVATOR_SETPOINT.LEVEL_4_TELEOP_SCORE, PIVOT_SETPOINT.L4)
                     .until(m_elevator::atSetpoint),
-                driveToTarget.generateCommand(false).until(m_vision::isOnTarget),
+                driveToTarget.generateCommand(false).until(m_vision::isOnTarget), // Drives to the right 
                 new RunEndEffectorIntake(m_endEffector, ROLLER_SPEED.AUTOUTTAKE_CORAL)));
 
     if (m_elevator != null && m_endEffectorPivot != null) {

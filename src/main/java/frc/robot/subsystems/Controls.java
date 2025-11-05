@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CAN;
 import frc.robot.constants.ROBOT.GAME_PIECE;
-import frc.robot.constants.ROBOT.L4AutoScore;
 import frc.robot.constants.USB;
 import java.io.File;
 import java.util.HashMap;
@@ -30,9 +29,7 @@ public class Controls extends SubsystemBase {
 
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
-
-  private static L4AutoScore m_L4AutoScore = L4AutoScore.notScoring;
-
+  
   private static Alert m_usbAlert =
       new Alert("USB connection alert not properly initialized", AlertType.kError);
   private static Alert m_brownoutAlert =
@@ -85,11 +82,6 @@ public class Controls extends SubsystemBase {
     return m_selectedGamePiece == GAME_PIECE.CORAL;
   }
 
-  @Logged(name = "L4 Auto Scoring?", importance = Logged.Importance.CRITICAL)
-  public boolean isL4AutoScoring() {
-    return m_L4AutoScore == L4AutoScore.Scoring;
-  }
-
   @Logged(name = "Algae Mode", importance = Logged.Importance.CRITICAL)
   public boolean isGamePieceAlgae() {
     return m_selectedGamePiece == GAME_PIECE.ALGAE;
@@ -97,10 +89,6 @@ public class Controls extends SubsystemBase {
 
   public static void setSelectedGamePiece(GAME_PIECE gamePiece) {
     m_selectedGamePiece = gamePiece;
-  }
-
-  public static void setL4AutoScore(L4AutoScore l4AutoScore) {
-    m_L4AutoScore = l4AutoScore;
   }
 
   public static GAME_PIECE getSelectedGamePiece() {

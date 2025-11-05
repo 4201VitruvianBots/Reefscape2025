@@ -94,7 +94,8 @@ public class EndEffector extends SubsystemBase {
 
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
-    if (DriverStation.isAutonomous()) {
+    // Checks for the timer if is in auto to avoid thinking unscored coral is newly loaded coral.
+    if (DriverStation.isAutonomous()) { 
       return m_timer.get() > 4.8 && !m_beamBreakSensor.get();
     } else {
       return !m_beamBreakSensor.get();
