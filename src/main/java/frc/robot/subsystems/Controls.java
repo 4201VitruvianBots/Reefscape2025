@@ -29,7 +29,7 @@ public class Controls extends SubsystemBase {
 
   @Logged(name = "Selected Game Piece", importance = Logged.Importance.CRITICAL)
   private static GAME_PIECE m_selectedGamePiece = GAME_PIECE.CORAL;
-  
+
   private static Alert m_usbAlert =
       new Alert("USB connection alert not properly initialized", AlertType.kError);
   private static Alert m_brownoutAlert =
