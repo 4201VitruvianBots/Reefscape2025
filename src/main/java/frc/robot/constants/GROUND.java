@@ -60,15 +60,14 @@ public class GROUND {
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
-    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine; 
 
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
-    // TODO update all of these
     public static final double gearRatio = 1683.0 / 32.0;
 
-    public static final Distance jointLength = Inches.of(5);
-    public static final Distance pivotVisualizerLength = Inches.of(17);
+    public static final Distance jointLength = Inches.of(5.0);
+    public static final Distance pivotVisualizerLength = Inches.of(17.0);
     public static final Distance pivotLength = Inches.of(21.5);
 
     public static final Mass mass = Pounds.of(12.0);
@@ -79,7 +78,7 @@ public class GROUND {
 
     public static final Angle startingAngle = minAngle;
 
-    public static final Angle mountingAngle = Degrees.of(0);
+    public static final Angle mountingAngle = Degrees.of(0.0);
 
     public static final double maxOutput = 0.6;
 
@@ -88,7 +87,7 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
 
     public enum SETPOINT {
-      STOWED(Degrees.of(0.0)), // TODO: test setpoints
+      STOWED(Degrees.of(0.0)), 
       INTAKE_ALGAE(Degrees.of(65.0)),
       INTAKE_CORAL(Degrees.of(125.0)),
       L1(Degrees.of(40.0));

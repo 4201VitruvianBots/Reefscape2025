@@ -33,7 +33,7 @@ public class CoralOuttake extends SubsystemBase {
   private final LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
   private final DCMotorSim outtakeMotorSim =
-      new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); // TODO implement sim code
+      new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); 
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
@@ -116,8 +116,7 @@ public class CoralOuttake extends SubsystemBase {
     m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     outtakeMotorSim.setInputVoltage(m_outtakeMotorSimState.getMotorVoltage());
 
-    // TODO Right now this thing has no idea what time it is, so gotta update that.
-
+    // I would advise not using any of this as an example. 
     m_outtakeMotorSimState.setRawRotorPosition(
         outtakeMotorSim.getAngularPositionRotations() * CORALOUTTAKE.gearRatio);
     m_outtakeMotorSimState.setRotorVelocity(

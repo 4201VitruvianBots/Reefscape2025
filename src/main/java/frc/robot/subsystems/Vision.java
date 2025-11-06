@@ -169,23 +169,6 @@ public class Vision extends SubsystemBase {
 
       // Only use Reef AprilTags for localization
       LimelightHelpers.SetFiducialIDFiltersOverride(limelightName, reefAprilTags);
-      // TODO: Update code values before using this
-      //      LimelightHelpers.setCameraPose_RobotSpace(
-      //          "limelight-f",
-      //          VISION.limelightFPosition.getX(),
-      //          VISION.limelightFPosition.getY(),
-      //          VISION.limelightFPosition.getZ(),
-      //          VISION.limelightFPosition.getRotation().getMeasureX().in(Degrees),
-      //          VISION.limelightFPosition.getRotation().getMeasureY().in(Degrees),
-      //          VISION.limelightFPosition.getRotation().getMeasureZ().in(Degrees));
-      //      LimelightHelpers.setCameraPose_RobotSpace(
-      //          "limelight-b",
-      //          VISION.limelightBPosition.getX(),
-      //          VISION.limelightBPosition.getY(),
-      //          VISION.limelightBPosition.getZ(),
-      //          VISION.limelightBPosition.getRotation().getMeasureX().in(Degrees),
-      //          VISION.limelightBPosition.getRotation().getMeasureY().in(Degrees),
-      //          VISION.limelightBPosition.getRotation().getMeasureZ().in(Degrees));
     }
 
     LimelightHelpers.SetRobotOrientation(
@@ -221,7 +204,6 @@ public class Vision extends SubsystemBase {
 
       if (!limelightMeasurement.isMegaTag2) {
         // Filter out bad AprilTag vision estimates for MegaTag1
-        // TODO: Check 1 tag from center?
         if (limelightMeasurement.tagCount < 2) {
           return false;
         }
@@ -273,7 +255,6 @@ public class Vision extends SubsystemBase {
             .getTranslation()
             .minus(robotToTarget[1].getTranslation())
             .getNorm();
-    // TODO: Add Rotation delta
     SmartDashboard.putNumber("Target Translation Delta", translationDelta);
 
     return translationDelta < Inches.of(2.0).in(Meters);
@@ -290,7 +271,6 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightL + " UpdatedRejected", llaLSuccess);
 
     if (!m_localized) {
-      // TODO: Change this to check if the robotPose and both limelight are all close to each other
       m_localized = llaRSuccess && llaLSuccess;
     }
 
@@ -301,9 +281,5 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    // if (m_swerveDriveTrain != null) {
-    // visionSim.update(m_swerveDriveTrain.getState().Pose);
-    // visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
-    // }
   }
 }

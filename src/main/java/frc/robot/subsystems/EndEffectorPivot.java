@@ -34,7 +34,6 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.ELEVATOR;
 import frc.robot.constants.ENDEFFECTOR;
 import frc.robot.constants.ENDEFFECTOR.PIVOT;
-import frc.robot.constants.ENDEFFECTOR.PIVOT.PIVOT_SETPOINT;
 import frc.robot.constants.ROBOT;
 import frc.robot.constants.ROBOT.CONTROL_MODE;
 import org.team4201.codex.utils.CtreUtils;
@@ -45,9 +44,9 @@ public class EndEffectorPivot extends SubsystemBase {
 
   private final MotionMagicVoltage m_request =
       new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
-  // private final MotionMagicTorqueCurrentFOC m_request =
-  // new MotionMagicTorqueCurrentFOC(Rotations.of(0));
 
+
+  // Logging Stuff and useful for getting what's going on  
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
   private final StatusSignal<AngularAcceleration> m_accelSignal =
@@ -69,7 +68,7 @@ public class EndEffectorPivot extends SubsystemBase {
   @Logged(name = "Joystick Input", importance = Logged.Importance.DEBUG)
   private double m_joystickInput = 0.0;
 
-  private Angle m_desiredRotation = PIVOT_SETPOINT.STOWED.get();
+  private Angle m_desiredRotation = PIVOT.PIVOT_SETPOINT.STOWED.get();
 
   @Logged(name = "Encoder Latency", importance = Logged.Importance.INFO)
   private double enocderLatency = 0;
@@ -89,10 +88,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
   private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
-  private DoubleSubscriber m_kG_subscriber,
-      m_kS_subscriber,
-      m_kV_Subscriber,
-      m_kA_Subscriber,
+  private DoubleSubscriber 
       m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
@@ -124,7 +120,10 @@ public class EndEffectorPivot extends SubsystemBase {
     motorConfig.Slot0.kI = PIVOT.kI;
     motorConfig.Slot0.kD = PIVOT.kD;
     motorConfig.Slot0.kG = PIVOT.kG;
-    motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;
+    /* Arms have a different way of compensating for gravity than elevators, so we set the gravity type value to be either
+    elevator or arm. If it's an elevator we use a static value for counteracting, but with pivots we use a proportion to the
+    cosine of the angle.*/
+    motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE; 
     motorConfig.ClosedLoopGeneral.ContinuousWrap = false;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
@@ -141,7 +140,7 @@ public class EndEffectorPivot extends SubsystemBase {
     }
     CtreUtils.configureTalonFx(m_pivotMotor, motorConfig);
 
-    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT_SETPOINT.STOWED.get());
+    if (RobotBase.isSimulation()) m_pivotEncoder.setPosition(PIVOT.PIVOT_SETPOINT.STOWED.get());
     m_pivotMotor.setPosition(getCANcoderAngle());
 
     setName("EndEffectorPivot");
@@ -226,11 +225,6 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_voltageSignal.refresh().getValue();
   }
 
-  @Logged(name = "At Midpoint", importance = Logged.Importance.INFO)
-  public boolean atMidpoint() {
-    return (m_desiredRotation.abs(Degree) / 2) - (getAngle()).abs(Degree) <= 1.0;
-  }
-
   public Current getSupplyCurrent() {
     return m_supplyCurrentSignal.refresh().getValue();
   }
@@ -277,6 +271,7 @@ public class EndEffectorPivot extends SubsystemBase {
     return m_pivotMotor.isConnected();
   }
 
+  // We never used test mode on this robot so no promises if it works
   public void testInit() {
     endEffectorPivotTab.getDoubleTopic("kP").publish().set(PIVOT.kP);
     endEffectorPivotTab.getDoubleTopic("kI").publish().set(PIVOT.kI);
@@ -341,6 +336,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
+      /* Use raw percentage because using a setpoint would slow down the end effector prior to the setpoint
+      and not get enough power */
         double bargePercentOutput = 0.90;
         if (getCANcoderAngleDegrees() <= ENDEFFECTOR.PIVOT.flickStopAngle) {
           setPercentOutput(0.0);

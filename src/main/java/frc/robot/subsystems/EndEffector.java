@@ -30,6 +30,7 @@ import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
+  // Keeps track of auto time to sanity check the auto
   public Timer m_timer = new Timer();
 
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);

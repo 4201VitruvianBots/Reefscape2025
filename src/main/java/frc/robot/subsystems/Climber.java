@@ -31,14 +31,15 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 
 public class Climber extends SubsystemBase {
   private final SparkMax m_climberMotor = new SparkMax(CAN.climberMotor, MotorType.kBrushless);
-  // TODO: Add Rev Through Bore Encoder
 
-  private double m_desiredPositionMeters = 0.0;
+  // Ended up not being used because climbing didn't need setpoints this year. 
+  // private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private IdleMode m_neutralMode = IdleMode.kBrake;
 
+  // Sets a timer in order to let down the robot after being disabled for a few seconds to make cleanup easier
   private Timer m_disabledTimer = new Timer();
 
   // Simulation classes help us simulate what's going on
@@ -59,9 +60,9 @@ public class Climber extends SubsystemBase {
         config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void holdClimber() {
-    setDesiredPosition(getPulleyLengthMeters());
-  }
+  // public void holdClimber() {
+  //   setDesiredPosition(getPulleyLengthMeters());
+  // }
 
   public void setJoystickInput(double input) {
     m_joystickInput = input;
@@ -80,9 +81,9 @@ public class Climber extends SubsystemBase {
     m_climberMotor.setVoltage(voltage);
   }
 
-  public void setDesiredPosition(double desiredPosition) {
-    m_desiredPositionMeters = desiredPosition;
-  }
+  // public void setDesiredPosition(double desiredPosition) {
+  //   m_desiredPositionMeters = desiredPosition;
+  // }
 
   public void setControlMode(CONTROL_MODE controlMode) {
     m_controlMode = controlMode;
@@ -162,7 +163,6 @@ public class Climber extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case CLOSED_LOOP:
-        // climberMotor.setControl(m_request.withPosition(m_desiredPositionMeters));
         break;
       case OPEN_LOOP:
       default:

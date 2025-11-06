@@ -33,7 +33,6 @@ public class EndEffectorJoystick extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // TODO determine if we want to change the deadband and exponent
     double m_joystickDeadband = MathUtil.applyDeadband(Math.pow(m_joystickY.getAsDouble(), 3), 0.2);
 
     // if (m_joystickDeadband != 0.0) {

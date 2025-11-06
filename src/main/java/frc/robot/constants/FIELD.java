@@ -21,7 +21,7 @@ public class FIELD {
    *
    * <p>Field constants
    *
-   * <p>Note: Values are using ideal values from WPILib TODO: Create layout from practice field.
+   * <p>Note: Values are using ideal values from WPILib 
    */
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
@@ -125,7 +125,7 @@ public class FIELD {
     }
   }
 
-  // TODO: Is this still needed?
+
   //  public enum APRIL_TAG_OFFSETS {
   //    RED_REEF_NEAR_LEFT(6),
   //    RED_REEF_NEAR_CENTER(7),
@@ -155,7 +155,6 @@ public class FIELD {
   //  static Distance baseReefDepth = Inches.of(24); // CAD Measurement to base
   static final Distance baseReefDepth = Inches.of(2); // CAD Measurement L4 CC distance
 
-  // TODO: Verify these offset is correct
   /**
    * Left/right translation of the reef poles perpendicular to the center of the AprilTag's Pose2d.
    */
@@ -373,7 +372,6 @@ public class FIELD {
   // Algae Branch constants
   //
 
-  // TODO: Verify this offset is correct
   static final Translation2d baseAlgaeTargetOffset =
       new Translation2d(SWERVE.kWheelBase.div(2).plus(SWERVE.kBumperThickness).in(Meters), 0);
 

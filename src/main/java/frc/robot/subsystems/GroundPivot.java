@@ -96,14 +96,8 @@ public class GroundPivot extends SubsystemBase {
     config.MotorOutput.PeakForwardDutyCycle = PIVOT.maxOutput;
     config.MotorOutput.PeakReverseDutyCycle = -PIVOT.maxOutput;
 
-    // Ramp rates TODO: determine if we still need these
-    // config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 2.0;
-    // config.OpenLoopRamps.TorqueOpenLoopRampPeriod = 2.0;
-    // config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 2.0;
-
     config.MotionMagic.MotionMagicAcceleration = PIVOT.kAccel;
     config.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kCruiseVel;
-    // config.MotionMagic.MotionMagicJerk = PIVOT.kJerk;
     CtreUtils.configureTalonFx(m_pivotMotor, config);
 
     if (RobotBase.isSimulation()) {

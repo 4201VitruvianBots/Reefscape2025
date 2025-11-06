@@ -39,7 +39,6 @@ public final class VISION {
   public static final Angle kLimelight4VFOV = Degrees.of(56.2);
   public static final Angle kLimelight4DFOV = Degrees.of(75.07);
 
-  // TODO: Update values
   // Camera offset from robot center. Camera F is positioned on the hopper
   public static final Transform3d limelightFPosition =
       new Transform3d(
@@ -47,7 +46,6 @@ public final class VISION {
               Meters.of(0).magnitude(), Meters.of(0).magnitude(), Meters.of(0).magnitude()),
           new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(180)));
 
-  // TODO: Update values
   // Camera offset from robot center. Camera B is facing out of the rear of the robot (On the
   // EndEffector side)
   public static final Transform3d limelightBPosition =

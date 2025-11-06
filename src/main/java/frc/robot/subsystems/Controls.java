@@ -195,7 +195,7 @@ public class Controls extends SubsystemBase {
     if (m_subsystemMap.containsKey("EndEffector")) {
       var endEffectorSubsystem = (EndEffector) m_subsystemMap.get("EndEffector");
       if (!endEffectorSubsystem.isConnected()) {
-        canAlertMessage += "End Effector (" + CAN.endEffectorMotor + "), ";
+        canAlertMessage += "End Effector (" + CAN.endEffectorOuttakeMotor + "), ";
         m_canAlert.set(true);
       }
     }

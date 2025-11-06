@@ -235,6 +235,7 @@ public class RobotContainer {
               return drive;
             }));
     if (m_elevator != null) {
+      // Commented out because testing is done.
       //   m_elevator.setDefaultCommand(
       //       new RunElevatorJoystick(
       //           m_elevator, () -> -m_driverController.getLeftY())); // Elevator open loop control
@@ -254,21 +255,10 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new WaitCommand(0));
 
     m_chooser.addOption("DriveForward", new DriveForward(m_swerveDrive, m_fieldSim));
-    // m_chooser.addOption("TestAuto1", new TestAuto1(m_swerveDrive, m_fieldSim));
     m_chooser.addOption(
         "OnePieceMiddle",
         new OnePiece(
             m_swerveDrive, m_fieldSim, m_elevator, m_endEffectorPivot, m_endEffector, m_vision));
-
-    // m_chooser.addOption(
-    //     "HopperTest",
-    //     new TestHopperAuto(
-    //         m_swerveDrive,
-    //         m_fieldSim,
-    //         m_elevator,
-    //         m_endEffector,
-    //         m_endEffectorPivot,
-    //         m_hopperIntake));
 
     m_chooser.addOption(
         "ThreePieceRight",
@@ -280,36 +270,6 @@ public class RobotContainer {
             m_endEffector,
             m_hopperIntake));
 
-    // m_chooser.addOption(
-    //     "TwoPiece",
-    //     new TwoPiece(
-    //         m_swerveDrive,
-    //         m_fieldSim,
-    //         m_elevator,
-    //         m_endEffectorPivot,
-    //         m_endEffector,
-    //         m_hopperIntake));
-
-    // m_chooser.addOption(
-    //     "OnePieceLeft",
-    //     new OnePieceLeft(
-    //         m_swerveDrive,
-    //         m_fieldSim,
-    //         m_elevator,
-    //         m_endEffectorPivot,
-    //         m_endEffector,
-    //         m_hopperIntake));
-
-    // m_chooser.addOption(
-    //     "OnePieceRight",
-    //     new OnePieceRight(
-    //         m_swerveDrive,
-    //         m_fieldSim,
-    //         m_elevator,
-    //         m_endEffectorPivot,
-    //         m_endEffector,
-    //         m_hopperIntake));
-
     m_chooser.addOption(
         "ThreePieceLeft",
         new ThreePieceLeft(
@@ -319,15 +279,6 @@ public class RobotContainer {
             m_endEffectorPivot,
             m_endEffector,
             m_hopperIntake));
-    // m_chooser.addOption(
-    //     "VisionTest",
-    //     new VisionTest(
-    //         m_swerveDrive,
-    //         m_fieldSim,
-    //         m_elevator,
-    //         m_endEffectorPivot,
-    //         m_endEffector,
-    //         m_hopperIntake));
   }
 
   private void initSmartDashboard() {
@@ -392,7 +343,6 @@ public class RobotContainer {
     // m_driverController.rightBumper().whileTrue(driveToTarget.generateCommand(false));
 
     if (m_coralOuttake != null) {
-      // TODO: Make speeds into enum setpoints
       m_operatorController
           .leftBumper()
           .whileTrue(new RunCoralOuttake(m_coralOuttake, 0.15)); // outtake
@@ -402,7 +352,6 @@ public class RobotContainer {
     }
 
     if (m_algaeIntake != null) {
-      // TODO: Make speeds into enum setpoints
       m_operatorController.x().whileTrue(new RunAlgaeIntake(m_algaeIntake, 0.5)); // outtake
       m_operatorController.y().whileTrue(new RunAlgaeIntake(m_algaeIntake, -0.5)); // intake
     }
@@ -415,6 +364,7 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
+  // Helps avoid crashing into things 
   private SequentialCommandGroup moveSuperStructureDelayed(
       ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
     return new SequentialCommandGroup(
@@ -710,10 +660,6 @@ public class RobotContainer {
   public void disabledPeriodic() {
     if (RobotBase.isReal()) {
       if (Controls.isRedAlliance()) {
-        // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
-        // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
-        // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
-        // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
         m_fieldSim.initializePoses("Blue Coral Branches", new Pose2d(-5, -5, Rotation2d.kZero));
         m_fieldSim.initializePoses(
             "Blue Coral Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
@@ -727,20 +673,8 @@ public class RobotContainer {
         m_fieldSim.initializePoses("Red Algae Branches", new Pose2d(-5, -5, Rotation2d.kZero));
         m_fieldSim.initializePoses(
             "Red Algae Branches Targets", new Pose2d(-5, -5, Rotation2d.kZero));
-        // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
-        // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
-        // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
-        // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
       }
     } else {
-      // m_fieldSim.initializePoses("Red Coral Branches", FIELD.RED_CORAL_BRANCHES);
-      // m_fieldSim.initializePoses("Red Coral Branches Targets", FIELD.RED_CORAL_TARGETS);
-      // m_fieldSim.initializePoses("Red Algae Branches", FIELD.RED_ALGAE_BRANCHES);
-      // m_fieldSim.initializePoses("Red Algae Branches Targets", FIELD.RED_ALGAE_TARGETS);
-      // m_fieldSim.initializePoses("Blue Coral Branches", FIELD.BLUE_CORAL_BRANCHES);
-      // m_fieldSim.initializePoses("Blue Coral Branches Targets", FIELD.BLUE_CORAL_TARGETS);
-      // m_fieldSim.initializePoses("Blue Algae Branches", FIELD.BLUE_ALGAE_BRANCHES);
-      // m_fieldSim.initializePoses("Blue Algae Branches Targets", FIELD.BLUE_ALGAE_TARGETS);
     }
 
     if (m_climber != null) {
