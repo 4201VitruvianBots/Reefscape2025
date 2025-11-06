@@ -21,7 +21,7 @@ public class FIELD {
    *
    * <p>Field constants
    *
-   * <p>Note: Values are using ideal values from WPILib 
+   * <p>Note: Values are using ideal values from WPILib
    */
   public static final AprilTagFieldLayout wpilibAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
@@ -124,7 +124,6 @@ public class FIELD {
       return Arrays.stream(APRIL_TAG.values()).map(APRIL_TAG::getPose2d).toArray(Pose2d[]::new);
     }
   }
-
 
   //  public enum APRIL_TAG_OFFSETS {
   //    RED_REEF_NEAR_LEFT(6),

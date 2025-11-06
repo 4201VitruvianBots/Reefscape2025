@@ -39,6 +39,7 @@ public class CAN {
   public static final int groundPivotCANcoder = 42;
 
   // Climber
-  public static final int climberMotor = 51; // We formerly had a cage motor that was 50, but it was cut for weight.
+  public static final int climberMotor =
+      51; // We formerly had a cage motor that was 50, but it was cut for weight.
   public static final int climberCANcoder = 52;
 }

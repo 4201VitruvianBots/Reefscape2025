@@ -41,9 +41,9 @@ public class SWERVE {
 
   public static final double kMaxSpeedMetersPerSecond = Units.feetToMeters(18);
   public static final double kMaxRotationRadiansPerSecond =
-      Math.PI * 0.3; // temporary to reduce speed (original value 2.0) 
+      Math.PI * 0.3; // temporary to reduce speed (original value 2.0)
 
-  // Auto-alignment constants 
+  // Auto-alignment constants
   public static final PIDConstants kAutoAlignTranslationPID = new PIDConstants(17, 0, 0);
   public static final PIDConstants kAutoAlignRotationPID = new PIDConstants(9, 0, 0);
   public static final PPHolonomicDriveController kDriveController =

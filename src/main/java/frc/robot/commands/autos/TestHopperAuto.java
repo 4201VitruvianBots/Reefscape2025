@@ -39,7 +39,7 @@ public class TestHopperAuto extends SequentialCommandGroup {
       HopperIntake hopperIntake) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
-      
+
       var point = new SwerveRequest.PointWheelsAt();
 
       // Will throw an exception if the starting pose is not prese

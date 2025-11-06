@@ -58,7 +58,8 @@ public class ENDEFFECTOR {
     public static double kA = 0.0;
     public static double kMotionMagicVelocity = 7.0;
     public static double kMotionMagicAcceleration = 7.0;
-    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine; // Tjis is a pivot so we use Arm Cosine
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE =
+        GravityTypeValue.Arm_Cosine; // Tjis is a pivot so we use Arm Cosine
     public static double flickStopAngle = 6.5;
 
     public static DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
@@ -90,14 +91,14 @@ public class ENDEFFECTOR {
       INTAKE_ALGAE_HIGH(Degrees.of(165.0)),
       // INTAKE_HOPPER(Degrees.of(-3.0)),
       INTAKE_HOPPER(Degrees.of(10.0)),
-      INTAKE_ALGAE_GROUND(Degrees.of(-15.0)), 
+      INTAKE_ALGAE_GROUND(Degrees.of(-15.0)),
       INTAKE_ALGAE_GROUND_MIDPOINT(Degrees.of(75.0)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
       BARGE(Degrees.of(170.0)),
-      BARGEFLICK(Degrees.of(60.0)), 
-      OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0)); 
+      BARGEFLICK(Degrees.of(60.0)),
+      OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0));
 
       private final Angle angle;
 

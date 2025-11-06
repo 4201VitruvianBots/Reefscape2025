@@ -60,7 +60,7 @@ public class GROUND {
     public static final double kAccel = 480;
     public static final double kCruiseVel = 90;
     public static final double kJerk = 0;
-    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine; 
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
 
     public static final DCMotor gearBox = DCMotor.getKrakenX60(1);
 
@@ -87,7 +87,7 @@ public class GROUND {
     public static final boolean limitOpenLoop = false;
 
     public enum SETPOINT {
-      STOWED(Degrees.of(0.0)), 
+      STOWED(Degrees.of(0.0)),
       INTAKE_ALGAE(Degrees.of(65.0)),
       INTAKE_CORAL(Degrees.of(125.0)),
       L1(Degrees.of(40.0));

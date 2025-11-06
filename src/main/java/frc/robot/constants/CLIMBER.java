@@ -7,11 +7,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 
 public class CLIMBER {
-  // PID values weren't needed because we weren't using setpoints. 
+  // PID values weren't needed because we weren't using setpoints.
   public static final double kP = 0.0;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
-  public static final double kLimitedPercentOutputMultiplier = 0.5; // Make climber run slower during open loop 
+  public static final double kLimitedPercentOutputMultiplier =
+      0.5; // Make climber run slower during open loop
   // See ELEVATOR constants for an explanation of a similar concept of converting distance
   public static final double sprocketRadiusMeters = Units.inchesToMeters(0.5) / 2.0;
   public static final Distance sprocketRotationsToMeters =

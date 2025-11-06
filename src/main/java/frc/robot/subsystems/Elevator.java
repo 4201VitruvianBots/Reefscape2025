@@ -108,8 +108,10 @@ public class Elevator extends SubsystemBase {
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 40; // Prevents the elevator from moving too jerkily and also breakage. 
-    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput; // Set limits on motor output. Seperate from current limits
+    config.CurrentLimits.StatorCurrentLimit =
+        40; // Prevents the elevator from moving too jerkily and also breakage.
+    config.MotorOutput.PeakReverseDutyCycle =
+        ELEVATOR.peakReverseOutput; // Set limits on motor output. Seperate from current limits
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
@@ -326,7 +328,8 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  // Hold the elevator at the start of teleop to make sure that it doesn't fall on the reef after auto 
+  // Hold the elevator at the start of teleop to make sure that it doesn't fall on the reef after
+  // auto
   public void teleopInit() {
     holdElevator();
   }

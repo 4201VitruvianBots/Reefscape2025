@@ -12,7 +12,7 @@ public class ELEVATOR {
   public static final Distance lowerLimit = Inches.of(0);
   public static final Distance superStructureHeight = Inches.of(36.25);
 
-  // kG was used rather than gravity type in this case. 
+  // kG was used rather than gravity type in this case.
   public static double kG = 0.36; // output to overcome gravity (output)
   public static double kS = 0.0; // output to overcome static friction (output)
   public static double kV = 0.6306; // output per unit of target velocity (output/rps)
@@ -21,7 +21,7 @@ public class ELEVATOR {
   public static double kI =
       0.0; // output per unit of integrated error in position (output/rotations*s))
   public static double kD = 0.1; // output per unit of error in velocity (output/rps)
-  
+
   public static double motionMagicCruiseVelocity = 20; // target cruise velocity of 10 rps
   public static double motionMagicAcceleration = 40; // target acceleration of 20 rps/s
   public static double motionMagicJerk = 2000; // Target jerk of 2000 rps/s/s
@@ -34,13 +34,14 @@ public class ELEVATOR {
   public static final double peakForwardOutput = 0.65; // Move up to 1.0 after testing
   public static final double peakReverseOutput = -0.4; // Move up to -0.5-0.65 after testing
 
-  // Ask mentors how this is calculated, but basically this is a ratio of how motor motion gets translated into 
-  // elevator motion. This can be found by asking hardware usually as well. 
-  public static final Distance kElevatorDrumDiameter = Inches.of(2.2557); 
+  // Ask mentors how this is calculated, but basically this is a ratio of how motor motion gets
+  // translated into
+  // elevator motion. This can be found by asking hardware usually as well.
+  public static final Distance kElevatorDrumDiameter = Inches.of(2.2557);
   public static final Distance drumRotationsToDistance =
       kElevatorDrumDiameter.times(
           Math.PI); // Divide the setpoint in meters by this to get rotations. Vice versa to get
-  // distance 
+  // distance
   public static final double gearRatio = 48.0 / 10.0;
   public static DCMotor gearbox = DCMotor.getKrakenX60(2);
   public static Mass kCarriageMass = Pounds.of(15.0);

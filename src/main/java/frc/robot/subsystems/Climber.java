@@ -32,14 +32,15 @@ import frc.robot.constants.ROBOT.CONTROL_MODE;
 public class Climber extends SubsystemBase {
   private final SparkMax m_climberMotor = new SparkMax(CAN.climberMotor, MotorType.kBrushless);
 
-  // Ended up not being used because climbing didn't need setpoints this year. 
+  // Ended up not being used because climbing didn't need setpoints this year.
   // private double m_desiredPositionMeters = 0.0;
   // private boolean m_climberInitialized;
   private double m_joystickInput = 0.0;
   private CONTROL_MODE m_controlMode = CONTROL_MODE.OPEN_LOOP;
   private IdleMode m_neutralMode = IdleMode.kBrake;
 
-  // Sets a timer in order to let down the robot after being disabled for a few seconds to make cleanup easier
+  // Sets a timer in order to let down the robot after being disabled for a few seconds to make
+  // cleanup easier
   private Timer m_disabledTimer = new Timer();
 
   // Simulation classes help us simulate what's going on

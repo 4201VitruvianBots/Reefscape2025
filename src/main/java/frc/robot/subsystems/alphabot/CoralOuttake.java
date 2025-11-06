@@ -32,8 +32,7 @@ public class CoralOuttake extends SubsystemBase {
   private boolean m_isOuttaking = false;
   private final LinearSystem<N2, N1, N2> outtakePlant = LinearSystemId.createDCMotorSystem(1, 1);
   private final TalonFX outtakeMotor = new TalonFX(CAN.coralOuttakeMotor);
-  private final DCMotorSim outtakeMotorSim =
-      new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox); 
+  private final DCMotorSim outtakeMotorSim = new DCMotorSim(outtakePlant, CORALOUTTAKE.gearbox);
   private double m_desiredPercentOutput;
   private final DutyCycleOut m_dutyCycleRequest = new DutyCycleOut(0);
   private double m_rpmSetpoint;
@@ -116,7 +115,7 @@ public class CoralOuttake extends SubsystemBase {
     m_outtakeMotorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     outtakeMotorSim.setInputVoltage(m_outtakeMotorSimState.getMotorVoltage());
 
-    // I would advise not using any of this as an example. 
+    // I would advise not using any of this as an example.
     m_outtakeMotorSimState.setRawRotorPosition(
         outtakeMotorSim.getAngularPositionRotations() * CORALOUTTAKE.gearRatio);
     m_outtakeMotorSimState.setRotorVelocity(

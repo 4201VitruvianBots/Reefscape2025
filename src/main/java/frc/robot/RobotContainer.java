@@ -364,7 +364,7 @@ public class RobotContainer {
         new EndEffectorSetpoint(m_endEffectorPivot, pivotSetpoint));
   }
 
-  // Helps avoid crashing into things 
+  // Helps avoid crashing into things
   private SequentialCommandGroup moveSuperStructureDelayed(
       ELEVATOR_SETPOINT elevatorSetpoint, PIVOT_SETPOINT pivotSetpoint) {
     return new SequentialCommandGroup(

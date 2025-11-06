@@ -45,8 +45,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private final MotionMagicVoltage m_request =
       new MotionMagicVoltage(Rotations.of(0)).withEnableFOC(true);
 
-
-  // Logging Stuff and useful for getting what's going on  
+  // Logging Stuff and useful for getting what's going on
   private final StatusSignal<Angle> m_positionSignal = m_pivotMotor.getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal = m_pivotMotor.getVelocity().clone();
   private final StatusSignal<AngularAcceleration> m_accelSignal =
@@ -88,8 +87,7 @@ public class EndEffectorPivot extends SubsystemBase {
   private final TalonFXSimState m_pivotMotorSimState = m_pivotMotor.getSimState();
   private final CANcoderSimState m_pivotEncoderSimState = m_pivotEncoder.getSimState();
 
-  private DoubleSubscriber 
-      m_kP_subscriber,
+  private DoubleSubscriber m_kP_subscriber,
       m_kI_subscriber,
       m_kD_subscriber,
       m_velocitySubscriber,
@@ -123,7 +121,7 @@ public class EndEffectorPivot extends SubsystemBase {
     /* Arms have a different way of compensating for gravity than elevators, so we set the gravity type value to be either
     elevator or arm. If it's an elevator we use a static value for counteracting, but with pivots we use a proportion to the
     cosine of the angle.*/
-    motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE; 
+    motorConfig.Slot0.GravityType = PIVOT.K_GRAVITY_TYPE_VALUE;
     motorConfig.ClosedLoopGeneral.ContinuousWrap = false;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = PIVOT.kMotionMagicVelocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = PIVOT.kMotionMagicAcceleration;
@@ -336,8 +334,8 @@ public class EndEffectorPivot extends SubsystemBase {
     // This method will be called once per scheduler run
     switch (m_controlMode) {
       case NET:
-      /* Use raw percentage because using a setpoint would slow down the end effector prior to the setpoint
-      and not get enough power */
+        /* Use raw percentage because using a setpoint would slow down the end effector prior to the setpoint
+        and not get enough power */
         double bargePercentOutput = 0.90;
         if (getCANcoderAngleDegrees() <= ENDEFFECTOR.PIVOT.flickStopAngle) {
           setPercentOutput(0.0);

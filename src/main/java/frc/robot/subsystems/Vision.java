@@ -280,6 +280,5 @@ public class Vision extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

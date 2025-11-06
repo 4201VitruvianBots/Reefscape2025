@@ -29,7 +29,7 @@ import frc.robot.constants.CAN;
 import frc.robot.constants.LED;
 import frc.robot.constants.LED.*;
 
-// SUBSYSTEM UNTESTED 
+// SUBSYSTEM UNTESTED
 public class LEDSubsystem extends SubsystemBase {
   /** Creates a new LEDSubsystem. */
   private final CANdle m_candle = new CANdle(CAN.CANdle);
