@@ -80,7 +80,7 @@ public class V2Constants {
   public static final CANBus kCANBus = new CANBus("", "./logs/example.hoot");
 
   /*
-   * This part was pasted from AlphaBot for testing purposes and will probably TODO need to be tuned again
+   * This part was pasted from AlphaBot for testing purposes
    * ---------------------------------- */
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot

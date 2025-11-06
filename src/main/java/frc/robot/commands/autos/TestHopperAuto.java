@@ -40,15 +40,9 @@ public class TestHopperAuto extends SequentialCommandGroup {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("DriveForward");
 
-      var m_ppCommand = swerveDrive.getTrajectoryUtils().generatePPHolonomicCommand("DriveForward");
-
       var point = new SwerveRequest.PointWheelsAt();
-      var stopRequest = new SwerveRequest.ApplyRobotSpeeds();
 
-      // Will throw an exception if the starting pose is not present
-      var starting_pose = path.getStartingHolonomicPose().orElseThrow();
-
-      // Add your commands in the addCommands() call, e.g.
+      // Will throw an exception if the starting pose is not prese
       // addCommands(new FooCommand(), new BarCommand());
       addCommands(
           new PrintCommand("path starting point" + path.getStartingHolonomicPose()),

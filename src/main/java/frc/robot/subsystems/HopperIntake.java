@@ -62,6 +62,7 @@ public class HopperIntake extends SubsystemBase {
     m_hopperIntakeMotor.set(speed);
   }
 
+  // Hopper servo drop for climb sequence
   public void moveServo(double speed) {
     m_hopperServo.set(speed);
   }

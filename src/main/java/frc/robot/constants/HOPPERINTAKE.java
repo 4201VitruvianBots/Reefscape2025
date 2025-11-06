@@ -22,7 +22,7 @@ public class HOPPERINTAKE {
   public enum INTAKE_SPEED {
     INTAKING(0.6),
     ZERO(0),
-    FREEING_CORAL(-0.1); // TODO: update speeds later
+    FREEING_CORAL(-0.1);
 
     private final double value;
 

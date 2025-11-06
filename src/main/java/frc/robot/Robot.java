@@ -7,7 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -41,7 +40,6 @@ public class Robot extends TimedRobot {
           // config.backend = new FileBackend(DataLogManager.getLog());
 
           if (RobotBase.isSimulation()) {
-            config.errorHandler = ErrorHandler.crashOnError();
             config.minimumImportance = Logged.Importance.DEBUG;
           } else {
             // During competition/practice
@@ -141,7 +139,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    // TODO: Figure out why this breaks in simulation
     // m_robotContainer.simulationInit();
   }
 

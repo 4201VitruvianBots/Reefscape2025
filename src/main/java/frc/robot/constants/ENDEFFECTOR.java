@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Mass;
 public class ENDEFFECTOR {
 
   public static class ROLLERS {
-    public static final double kP = 0.0; // Why are there PID values on rollers T_T
+    public static final double kP = 0.0; // Why are there unused PID values on rollers T_T
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double gearRatio = 1.0;
@@ -31,7 +31,6 @@ public class ENDEFFECTOR {
       ZERO(0.0),
 
       // Algae
-      // INTAKE_ALGAE_GROUND(0.35),
       INTAKE_ALGAE_REEF(0.55),
       HOLD_ALGAE_BARGE_FLICK(0.35),
       OUTTAKE_ALGAE_BARGE(-1.0),
@@ -57,10 +56,11 @@ public class ENDEFFECTOR {
     public static double kG = 0.0;
     public static double kV = 0.0;
     public static double kA = 0.0;
-    public static double kMotionMagicVelocity = 7;
-    public static double kMotionMagicAcceleration = 7;
-    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE = GravityTypeValue.Arm_Cosine;
-    public static double flickStopAngle = 5.0;
+    public static double kMotionMagicVelocity = 7.0;
+    public static double kMotionMagicAcceleration = 7.0;
+    public static final GravityTypeValue K_GRAVITY_TYPE_VALUE =
+        GravityTypeValue.Arm_Cosine; // Tjis is a pivot so we use Arm Cosine
+    public static double flickStopAngle = 6.5;
 
     public static DCMotor pivotGearBox = DCMotor.getKrakenX60(1);
     public static final double pivotGearRatio = 70.0 / 1.0;
@@ -88,16 +88,17 @@ public class ENDEFFECTOR {
 
     public enum PIVOT_SETPOINT {
       INTAKE_ALGAE_LOW(Degrees.of(170.0)),
-      INTAKE_ALGAE_HIGH(Degrees.of(165)),
+      INTAKE_ALGAE_HIGH(Degrees.of(165.0)),
       // INTAKE_HOPPER(Degrees.of(-3.0)),
       INTAKE_HOPPER(Degrees.of(10.0)),
-      INTAKE_ALGAE_GROUND(Degrees.of(-15.0)), // TODO: find out the correct setpoint
+      INTAKE_ALGAE_GROUND(Degrees.of(-15.0)),
+      INTAKE_ALGAE_GROUND_MIDPOINT(Degrees.of(75.0)),
       STOWED(Degrees.of(30.0)),
       L3_L2(Degrees.of(25.0)),
       L4(Degrees.of(60.0)),
       BARGE(Degrees.of(170.0)),
-      BARGEFLICK(Degrees.of(60.0)), // IDK what this is supposed to be bro
-      OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0)); // TODO: Change AbsoluteSensorDiscontinuityPoint
+      BARGEFLICK(Degrees.of(60.0)),
+      OUTTAKE_ALGAE_PROCESSOR(Degrees.of(181.0));
 
       private final Angle angle;
 

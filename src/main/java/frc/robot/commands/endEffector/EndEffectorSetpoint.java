@@ -20,7 +20,7 @@ public class EndEffectorSetpoint extends Command {
     m_endEffectorPivot = endEffectorPivot;
     m_setpoint = setpoint;
 
-    addRequirements(endEffectorPivot);
+    // addRequirements(endEffectorPivot);
   }
 
   // Called when the command is initially scheduled.

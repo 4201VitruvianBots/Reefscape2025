@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
 public class LED {
-  public static final int LEDcount = 34; // TODO: change the amount od LEDs we have
+  public static final int LEDcount =
+      34; // LED count was never found because LEDs were cut from the robot.
 
   public static final double LEDstripLength = Units.inchesToMeters(7); // meters
 

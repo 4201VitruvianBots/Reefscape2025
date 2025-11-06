@@ -39,12 +39,9 @@ public class Elevator extends SubsystemBase {
   };
 
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0).withEnableFOC(true);
-  // private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   private final MotionMagicVelocityVoltage m_requestVelocity =
       new MotionMagicVelocityVoltage(0).withEnableFOC(true);
-  //   private final MotionMagicVelocityTorqueCurrentFOC m_requestVelocity =
-  //       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   private final StatusSignal<Angle> m_positionSignal = elevatorMotors[0].getPosition().clone();
   private final StatusSignal<AngularVelocity> m_velocitySignal =
@@ -110,11 +107,11 @@ public class Elevator extends SubsystemBase {
     config.Feedback.SensorToMechanismRatio = ELEVATOR.gearRatio;
     config.MotionMagic.MotionMagicCruiseVelocity = ELEVATOR.motionMagicCruiseVelocity;
     config.MotionMagic.MotionMagicAcceleration = ELEVATOR.motionMagicAcceleration;
-    // config.MotionMagic.MotionMagicJerk = ELEVATOR.motionMagicJerk;
     if (!RobotBase.isSimulation()) config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // TODO: Re-tune values before removing these
-    config.CurrentLimits.StatorCurrentLimit = 40;
-    config.MotorOutput.PeakReverseDutyCycle = ELEVATOR.peakReverseOutput;
+    config.CurrentLimits.StatorCurrentLimit =
+        40; // Prevents the elevator from moving too jerkily and also breakage.
+    config.MotorOutput.PeakReverseDutyCycle =
+        ELEVATOR.peakReverseOutput; // Set limits on motor output. Seperate from current limits
     config.MotorOutput.PeakForwardDutyCycle = ELEVATOR.peakForwardOutput;
     config.MotorOutput.NeutralMode = m_neutralMode;
 
@@ -331,6 +328,8 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  // Hold the elevator at the start of teleop to make sure that it doesn't fall on the reef after
+  // auto
   public void teleopInit() {
     holdElevator();
   }

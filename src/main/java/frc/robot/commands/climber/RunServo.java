@@ -32,7 +32,7 @@ public class RunServo extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_hopperintake.moveServo(0.0);
+    m_hopperintake.stopServo();
   }
 
   // Returns true when the command should end.

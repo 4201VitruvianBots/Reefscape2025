@@ -17,8 +17,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +30,9 @@ import frc.robot.constants.ENDEFFECTOR.ROLLERS;
 import org.team4201.codex.utils.CtreUtils;
 
 public class EndEffector extends SubsystemBase {
+  // Keeps track of auto time to sanity check the auto
+  public Timer m_timer = new Timer();
+
   private final TalonFX m_endEffectorMotor = new TalonFX(CAN.endEffectorOuttakeMotor);
   private final DigitalInput m_beamBreakSensor = new DigitalInput(0);
 
@@ -51,6 +56,9 @@ public class EndEffector extends SubsystemBase {
 
   /** Creates a new EndEffector. */
   public EndEffector() {
+    m_timer.reset();
+    m_timer.stop();
+
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kP = ROLLERS.kP;
     config.Slot0.kI = ROLLERS.kI;
@@ -87,7 +95,12 @@ public class EndEffector extends SubsystemBase {
 
   @Logged(name = "Has Coral", importance = Logged.Importance.INFO)
   public boolean hasCoral() {
-    return !m_beamBreakSensor.get();
+    // Checks for the timer if is in auto to avoid thinking unscored coral is newly loaded coral.
+    if (DriverStation.isAutonomous()) {
+      return m_timer.get() > 4.8 && !m_beamBreakSensor.get();
+    } else {
+      return !m_beamBreakSensor.get();
+    }
   }
 
   public AngularVelocity getVelocity() {

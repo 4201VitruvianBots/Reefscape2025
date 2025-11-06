@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.FIELD;
+import frc.robot.constants.FIELD.TARGET_TYPE;
 import frc.robot.constants.VISION.CAMERA_SERVER;
 import frc.robot.utils.LimelightSim;
 import org.team4201.codex.simulation.FieldSim;
@@ -24,6 +25,9 @@ import org.team4201.codex.simulation.FieldSim;
 public class Vision extends SubsystemBase {
   private CommandSwerveDrivetrain m_swerveDriveTrain;
   private FieldSim m_fieldSim;
+
+  @Logged(name = "Target Type", importance = Logged.Importance.CRITICAL)
+  private TARGET_TYPE targetType = TARGET_TYPE.REEF;
 
   // TODO: Re-add this
   private LimelightSim visionSim;
@@ -64,12 +68,24 @@ public class Vision extends SubsystemBase {
     m_swerveDriveTrain = swerveDriveTrain;
   }
 
+  public void switchTargetType(TARGET_TYPE type) {
+    targetType = type;
+  }
+
+  public TARGET_TYPE getTargetType() {
+    return targetType;
+  }
+
   public void registerFieldSim(FieldSim fieldSim) {
     m_fieldSim = fieldSim;
   }
 
   public void setLeftTarget(boolean value) {
     m_useLeftTarget = value;
+  }
+
+  public void setTargetType(TARGET_TYPE type) {
+    targetType = type;
   }
 
   @Logged(name = "Left Target", importance = Logged.Importance.CRITICAL)
@@ -85,30 +101,44 @@ public class Vision extends SubsystemBase {
   public void updateNearestScoringTarget() {
     if (lockTarget) return;
     robotToTarget[0] = m_swerveDriveTrain.getState().Pose;
-    if (m_controls.isGamePieceAlgae()) {
-      if (Controls.isBlueAlliance()) {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
-      } else {
-        nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
-      }
-      robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestObjectPose);
-    } else {
-      if (Controls.isBlueAlliance()) {
-        if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+    switch (targetType) {
+      case REEF:
+        if (m_controls.isGamePieceAlgae()) {
+          if (Controls.isBlueAlliance()) {
+            nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_ALGAE_BRANCHES);
+          } else {
+            nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_ALGAE_BRANCHES);
+          }
+          robotToTarget[1] = FIELD.ALGAE_TARGETS.getAlgaePoseToTargetPose(nearestObjectPose);
         } else {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+          if (Controls.isBlueAlliance()) {
+            if (m_useLeftTarget) {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_LEFT_BRANCHES);
+            } else {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAL_RIGHT_BRANCHES);
+            }
+          } else {
+            if (m_useLeftTarget) {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
+            } else {
+              nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+            }
+          }
+          robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
         }
-      } else {
-        if (m_useLeftTarget) {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_LEFT_BRANCHES);
+        if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
+        break;
+      case CORAL_STATION:
+      default:
+        if (Controls.isBlueAlliance()) {
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.BLUE_CORAl_STATION);
         } else {
-          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAL_RIGHT_BRANCHES);
+          nearestObjectPose = robotToTarget[0].nearest(FIELD.RED_CORAl_STATION);
         }
-      }
-      robotToTarget[1] = FIELD.CORAL_TARGETS.getCoralPoseToTargetPose(nearestObjectPose);
+        robotToTarget[1] =
+            FIELD.CORAL_STATION_TARGETS.getCoralStationPoseToTargetPose(nearestObjectPose);
+        break;
     }
-    if (m_fieldSim != null) m_fieldSim.addPoses("LineToNearestAlgae", robotToTarget);
   }
 
   public Pose2d getNearestTargetPose() {
@@ -139,23 +169,6 @@ public class Vision extends SubsystemBase {
 
       // Only use Reef AprilTags for localization
       LimelightHelpers.SetFiducialIDFiltersOverride(limelightName, reefAprilTags);
-      // TODO: Update code values before using this
-      //      LimelightHelpers.setCameraPose_RobotSpace(
-      //          "limelight-f",
-      //          VISION.limelightFPosition.getX(),
-      //          VISION.limelightFPosition.getY(),
-      //          VISION.limelightFPosition.getZ(),
-      //          VISION.limelightFPosition.getRotation().getMeasureX().in(Degrees),
-      //          VISION.limelightFPosition.getRotation().getMeasureY().in(Degrees),
-      //          VISION.limelightFPosition.getRotation().getMeasureZ().in(Degrees));
-      //      LimelightHelpers.setCameraPose_RobotSpace(
-      //          "limelight-b",
-      //          VISION.limelightBPosition.getX(),
-      //          VISION.limelightBPosition.getY(),
-      //          VISION.limelightBPosition.getZ(),
-      //          VISION.limelightBPosition.getRotation().getMeasureX().in(Degrees),
-      //          VISION.limelightBPosition.getRotation().getMeasureY().in(Degrees),
-      //          VISION.limelightBPosition.getRotation().getMeasureZ().in(Degrees));
     }
 
     LimelightHelpers.SetRobotOrientation(
@@ -191,7 +204,6 @@ public class Vision extends SubsystemBase {
 
       if (!limelightMeasurement.isMegaTag2) {
         // Filter out bad AprilTag vision estimates for MegaTag1
-        // TODO: Check 1 tag from center?
         if (limelightMeasurement.tagCount < 2) {
           return false;
         }
@@ -243,10 +255,9 @@ public class Vision extends SubsystemBase {
             .getTranslation()
             .minus(robotToTarget[1].getTranslation())
             .getNorm();
-    // TODO: Add Rotation delta
     SmartDashboard.putNumber("Target Translation Delta", translationDelta);
 
-    return translationDelta < Inches.of(2).in(Meters);
+    return translationDelta < Inches.of(2.0).in(Meters);
   }
 
   @Override
@@ -260,7 +271,6 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putBoolean(CAMERA_SERVER.limelightL + " UpdatedRejected", llaLSuccess);
 
     if (!m_localized) {
-      // TODO: Change this to check if the robotPose and both limelight are all close to each other
       m_localized = llaRSuccess && llaLSuccess;
     }
 
@@ -270,10 +280,5 @@ public class Vision extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // if (m_swerveDriveTrain != null) {
-    // visionSim.update(m_swerveDriveTrain.getState().Pose);
-    // visionSim.getDebugField().setRobotPose(m_swerveDriveTrain.getState().Pose);
-    // }
-  }
+  public void simulationPeriodic() {}
 }
