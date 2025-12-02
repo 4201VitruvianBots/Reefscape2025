@@ -31,6 +31,7 @@ import frc.robot.commands.climber.RunClimberVoltage;
 import frc.robot.commands.climber.RunClimberVoltageJoystick;
 import frc.robot.commands.climber.RunServo;
 import frc.robot.commands.climber.V2.RunV2ClimberVoltage;
+import frc.robot.commands.elevator.ResetElevator;
 import frc.robot.commands.elevator.SetElevatorSetpoint;
 import frc.robot.commands.endEffector.EndEffectorBarge;
 import frc.robot.commands.endEffector.EndEffectorSetpoint;
@@ -285,6 +286,8 @@ public class RobotContainer {
     if (ROBOT.useSysID) initSysidChooser();
     else initAutoChooser();
     SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
+    SmartDashboard.putData("ResetElevator", new ResetElevator(m_elevator));
+
   }
 
   private void initSysidChooser() {
