@@ -287,7 +287,6 @@ public class RobotContainer {
     else initAutoChooser();
     SmartDashboard.putData("ResetGyro", new ResetGyro(m_swerveDrive));
     SmartDashboard.putData("ResetElevator", new ResetElevator(m_elevator));
-
   }
 
   private void initSysidChooser() {
