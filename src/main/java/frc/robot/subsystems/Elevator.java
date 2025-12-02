@@ -206,6 +206,10 @@ public class Elevator extends SubsystemBase {
     return m_voltageSignal.refresh().getValue();
   }
 
+  public void resetElevator(double height) {
+    elevatorMotors[0].setPosition(height);
+  }
+
   public Current getSupplyCurrent() {
     return m_supplyCurrentSignal.refresh().getValue();
   }
